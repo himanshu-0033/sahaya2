@@ -1,0 +1,89 @@
+import { getCheckins, saveCheckins, getResidents, saveResidents } from '../lib/store.js';
+import { todayISO, pickThought, generateDinnerPassCode, computeFlag, MOOD_OPTIONS } from '../lib/logic.js';
+import { applyCors } from '../lib/cors.js';
+
+function isValidMood(mood) {
+  return MOOD_OPTIONS.some((m) => m.value === mood);
+}
+
+export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
+
+  if (req.method === 'POST') {
+    const { residentId, name, room, words, mood } = req.body || {};
+
+    if (!residentId || typeof residentId !== 'string') {
+      return res.status(400).json({ error: 'residentId is required' });
+    }
+    if (!Array.isArray(words) || words.length !== 3 || words.some((w) => !w || !w.trim())) {
+      return res.status(400).json({ error: 'words must be an array of 3 non-empty strings' });
+    }
+    if (!isValidMood(mood)) {
+      return res.status(400).json({ error: 'mood must be one of ' + MOOD_OPTIONS.map((m) => m.value).join(', ') });
+    }
+
+    const date = todayISO();
+    const checkins = await getCheckins();
+    const residentHistory = checkins
+      .filter((c) => c.residentId === residentId)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    const existingToday = residentHistory.find((c) => c.date === date);
+    if (existingToday) {
+      return res.status(200).json(existingToday);
+    }
+
+    const { flagged, reasons } = computeFlag(residentHistory, words);
+
+    const record = {
+      id: `${residentId}:${date}`,
+      residentId,
+      date,
+      words: words.map((w) => w.trim()),
+      mood,
+      moodScore: mood,
+      thought: pickThought(residentId, date),
+      dinnerPassCode: generateDinnerPassCode(date, residentId),
+      flagged,
+      flagReasons: reasons,
+      createdAt: new Date().toISOString(),
+    };
+
+    await saveCheckins([...checkins, record]);
+
+    const residents = await getResidents();
+    const idx = residents.findIndex((r) => r.id === residentId);
+    const residentRecord = { id: residentId, name: name || 'Resident', room: room || '', updatedAt: record.createdAt };
+    if (idx === -1) {
+      await saveResidents([...residents, { ...residentRecord, createdAt: record.createdAt }]);
+    } else {
+      const updated = [...residents];
+      updated[idx] = { ...updated[idx], ...residentRecord };
+      await saveResidents(updated);
+    }
+
+    return res.status(201).json(record);
+  }
+
+  if (req.method === 'GET') {
+    const { residentId, date } = req.query;
+    if (!residentId) {
+      return res.status(400).json({ error: 'residentId is required' });
+    }
+    const targetDate = date || todayISO();
+    const checkins = await getCheckins();
+    const history = checkins
+      .filter((c) => c.residentId === residentId)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    const record = history.find((c) => c.date === targetDate) || null;
+
+    return res.status(200).json({
+      checkedIn: Boolean(record),
+      record,
+      history: history.slice(-14),
+    });
+  }
+
+  res.setHeader('Allow', 'GET, POST, OPTIONS');
+  return res.status(405).json({ error: 'Method not allowed' });
+}
