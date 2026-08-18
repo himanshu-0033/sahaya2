@@ -12,6 +12,7 @@
     "vercel": "^37.0.0"
   },
   "dependencies": {
+    "google-auth-library": "^11.0.2",
     "mongodb": "^7.5.0"
   }
 }

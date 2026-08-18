@@ -3,9 +3,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
 import { getCaregiverResident } from '../lib/api.js';
+import { getSession } from '../lib/session.js';
 import { MOOD_OPTIONS } from '../lib/moods.js';
 
-const KEY_STORAGE = 'sahay:caregiver-key';
 const moodLabel = (score) => MOOD_OPTIONS.find((m) => m.value === score)?.label || score;
 
 export default function CaregiverResident() {
@@ -15,12 +15,11 @@ export default function CaregiverResident() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const key = sessionStorage.getItem(KEY_STORAGE);
-    if (!key && key !== '') {
+    if (!getSession()) {
       navigate('/caregiver');
       return;
     }
-    getCaregiverResident(residentId, key)
+    getCaregiverResident(residentId)
       .then(setData)
       .catch((err) => setError(err.message));
   }, [residentId, navigate]);

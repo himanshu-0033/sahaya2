@@ -1,5 +1,6 @@
 import { getCheckins, getResidents } from '../../lib/store.js';
-import { applyCors, requireCaregiverKey } from '../../lib/cors.js';
+import { applyCors } from '../../lib/cors.js';
+import { requireCaregiverUser } from '../../lib/auth.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -7,7 +8,8 @@ export default async function handler(req, res) {
     res.setHeader('Allow', 'GET, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  if (!requireCaregiverKey(req, res)) return;
+  const caregiver = await requireCaregiverUser(req, res);
+  if (!caregiver) return;
 
   const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
 

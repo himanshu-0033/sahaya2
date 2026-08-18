@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
-import { getIdentity } from '../lib/identity.js';
+import { getSession } from '../lib/session.js';
 import { getStatus } from '../lib/api.js';
 
 function formatDate(iso) {
@@ -14,25 +14,25 @@ function formatDate(iso) {
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
-  const identity = getIdentity();
+  const session = getSession();
   const [record, setRecord] = useState(location.state?.record || null);
   const [loading, setLoading] = useState(!location.state?.record);
 
   useEffect(() => {
-    if (!identity) {
+    if (!session) {
       navigate('/');
       return;
     }
     if (record) return;
-    getStatus(identity.id)
+    getStatus()
       .then((data) => {
         if (data.record) setRecord(data.record);
         else navigate('/');
       })
       .finally(() => setLoading(false));
-  }, [identity, record, navigate]);
+  }, [session, record, navigate]);
 
-  if (!identity) return null;
+  if (!session) return null;
 
   return (
     <div className="min-h-screen px-6 py-10 md:py-16">

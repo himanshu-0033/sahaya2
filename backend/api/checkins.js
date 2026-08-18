@@ -1,6 +1,7 @@
 import { getCheckins, saveCheckins, getResidents, saveResidents } from '../lib/store.js';
 import { todayISO, pickThought, generateDinnerPassCode, computeFlag, MOOD_OPTIONS } from '../lib/logic.js';
 import { applyCors } from '../lib/cors.js';
+import { requireGoogleUser } from '../lib/auth.js';
 
 function isValidMood(mood) {
   return MOOD_OPTIONS.some((m) => m.value === mood);
@@ -9,12 +10,13 @@ function isValidMood(mood) {
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
 
-  if (req.method === 'POST') {
-    const { residentId, name, room, words, mood } = req.body || {};
+  const googleUser = await requireGoogleUser(req, res);
+  if (!googleUser) return;
+  const residentId = googleUser.sub;
 
-    if (!residentId || typeof residentId !== 'string') {
-      return res.status(400).json({ error: 'residentId is required' });
-    }
+  if (req.method === 'POST') {
+    const { room, words, mood } = req.body || {};
+
     if (!Array.isArray(words) || words.length !== 3 || words.some((w) => !w || !w.trim())) {
       return res.status(400).json({ error: 'words must be an array of 3 non-empty strings' });
     }
@@ -53,7 +55,13 @@ export default async function handler(req, res) {
 
     const residents = await getResidents();
     const idx = residents.findIndex((r) => r.id === residentId);
-    const residentRecord = { id: residentId, name: name || 'Resident', room: room || '', updatedAt: record.createdAt };
+    const residentRecord = {
+      id: residentId,
+      name: googleUser.name,
+      email: googleUser.email,
+      room: room || '',
+      updatedAt: record.createdAt,
+    };
     if (idx === -1) {
       await saveResidents([...residents, { ...residentRecord, createdAt: record.createdAt }]);
     } else {
@@ -66,10 +74,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const { residentId, date } = req.query;
-    if (!residentId) {
-      return res.status(400).json({ error: 'residentId is required' });
-    }
+    const { date } = req.query;
     const targetDate = date || todayISO();
     const checkins = await getCheckins();
     const history = checkins

@@ -2,39 +2,54 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
-import OnboardingForm from '../components/OnboardingForm.jsx';
-import { getIdentity, saveIdentity } from '../lib/identity.js';
+import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import RoomForm from '../components/RoomForm.jsx';
+import { getSession, getRoom, saveRoom } from '../lib/session.js';
 import { getStatus } from '../lib/api.js';
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [identity, setIdentity] = useState(() => getIdentity());
+  const [session, setSession] = useState(() => getSession());
+  const [room, setRoom] = useState(() => (session ? getRoom(session.profile.sub) : ''));
   const [status, setStatus] = useState({ loading: false, checkedIn: false, record: null, error: null });
 
   useEffect(() => {
-    if (!identity) return;
+    if (!session || !room) return;
     setStatus((s) => ({ ...s, loading: true }));
-    getStatus(identity.id)
+    getStatus()
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
       .catch((err) => setStatus({ loading: false, checkedIn: false, record: null, error: err.message }));
-  }, [identity]);
+  }, [session, room]);
 
   return (
     <div className="min-h-screen px-6 py-10 md:py-16">
       <div className="mx-auto max-w-xl">
         <Header />
 
-        {!identity ? (
+        {!session ? (
           <>
             <h2 className="font-display text-4xl md:text-5xl leading-tight mt-10">
-              Let's get to know you first.
+              Sign in to check in.
             </h2>
-            <OnboardingForm onDone={(info) => setIdentity(saveIdentity(info))} />
+            <p className="mt-4 text-[var(--color-ink-soft)]">
+              We use your Google account so your caregiver knows whose check-in this is.
+            </p>
+            <div className="mt-8">
+              <GoogleSignInButton onSignedIn={setSession} />
+            </div>
           </>
+        ) : !room ? (
+          <RoomForm
+            name={session.profile.name}
+            onDone={(r) => {
+              saveRoom(session.profile.sub, r);
+              setRoom(r);
+            }}
+          />
         ) : status.checkedIn ? (
           <>
             <h2 className="font-display text-4xl md:text-5xl leading-tight mt-10">
-              You're checked in for today, {identity.name.split(' ')[0]}.
+              You're checked in for today, {session.profile.name.split(' ')[0]}.
             </h2>
             <p className="mt-4 text-[var(--color-ink-soft)]">
               Come back tomorrow for your next check-in — or view today's dinner pass again below.

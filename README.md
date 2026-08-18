@@ -24,6 +24,11 @@ Vercel project.
 
 ## How it works
 
+- **Sign-in**: both residents and caregivers authenticate with Google
+  (Google Identity Services on the frontend, ID token verified server-side
+  with `google-auth-library`). A resident's Google account `sub` is their
+  stable `residentId`; the app additionally asks for a room/ID once, since
+  Google doesn't know that.
 - **Check-in**: a resident types one word per plate + taps a mood (1–5).
   The backend stores it, generates a `SH-MMDD-XXXX` dinner-pass code, and
   picks a short "thought for today" deterministically from the resident's
@@ -31,9 +36,10 @@ Vercel project.
 - **Flagging**: a check-in (and the resident) gets flagged if mood has been
   low for 3 check-ins running, the weekly average is low, or 2+ of today's
   words hit a small negative-word list. See `backend/lib/logic.js`.
-- **Caregiver access**: gated by a shared secret (`CAREGIVER_ACCESS_KEY`),
-  not real per-caregiver auth — fine for a prototype, not for real
-  resident data. See "Before this handles real data" below.
+- **Caregiver access**: any signed-in Google account can check in as a
+  resident, but the caregiver dashboard additionally checks the signed-in
+  email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See
+  "Before this handles real data" below.
 
 ## Local development
 
@@ -47,6 +53,11 @@ cd frontend && npm install && npm run dev         # Vite on :5173, proxies /api 
 Open http://localhost:5173. Without `STORAGE_URL` set, the backend stores
 data in a local JSON file (`backend/.data/db.json`, gitignored) — fine for
 local dev, **not** for a real deployment (see below).
+
+Both `frontend/.env` and `backend/.env` need `VITE_GOOGLE_CLIENT_ID` /
+`GOOGLE_CLIENT_ID` (same value) from a Google Cloud OAuth Client ID with
+`http://localhost:5173` as an authorized JavaScript origin — sign-in won't
+work without it.
 
 `npm run dev` (instead of `dev:local`) in `backend/` uses `vercel dev`
 instead, which needs `vercel login` first — slower to start but closer to
@@ -69,9 +80,9 @@ a different **Root Directory**.
      `STORAGE_URL`. **Without this, check-ins won't persist** — Vercel's
      filesystem is read-only outside `/tmp`, and `/tmp` doesn't survive
      between requests.
-   - **Settings → Environment Variables**: set `CAREGIVER_ACCESS_KEY` to a
-     secret string, and `ALLOWED_ORIGIN` to your frontend's URL once you
-     know it (step 2).
+   - **Settings → Environment Variables**: set `GOOGLE_CLIENT_ID` (from
+     Google Cloud Console), `CAREGIVER_EMAILS` (comma-separated allowlist),
+     and `ALLOWED_ORIGIN` to your frontend's URL once you know it (step 2).
    - Redeploy after adding env vars so they take effect.
 
 2. **Frontend**:
@@ -79,8 +90,8 @@ a different **Root Directory**.
    cd frontend
    vercel link       # creates/links a project, e.g. sahay-frontend
    ```
-   In its dashboard, set env var `VITE_API_URL` to the backend's deployed
-   URL (e.g. `https://sahay-backend.vercel.app`), then:
+   In its dashboard, set env vars `VITE_API_URL` (the backend's deployed
+   URL) and `VITE_GOOGLE_CLIENT_ID` (same Client ID as the backend), then:
    ```bash
    vercel --prod
    ```
@@ -94,10 +105,11 @@ a different **Root Directory**.
 This was built as a prototype and cuts corners that matter once real
 mental-health-adjacent data is involved:
 
-- Caregiver access is one shared key, not per-person login/audit trail.
-- Residents aren't authenticated — anyone with the app URL can check in
-  as anyone else's `residentId` if they have it (it's a random client-side
-  id in `localStorage`, not tied to a real account).
+- Caregiver access is an email allowlist checked on every request, but
+  there's no audit log of who viewed what.
+- The OAuth consent screen is unverified — Google will show an "unverified
+  app" warning until you go through Google's verification process, which
+  matters once this is used by people who don't personally know you.
 - The flagging heuristic is intentionally simple and will both miss real
   concerns and flag false positives — it's a nudge to check in on someone,
   not a signal to act on alone.
