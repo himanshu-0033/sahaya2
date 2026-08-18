@@ -7,6 +7,7 @@ import PhoneSignInButton from '../components/PhoneSignInButton.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import AccountForm from '../components/AccountForm.jsx';
 import AmbientBlots from '../components/AmbientBlots.jsx';
+import Inkblot3D from '../components/Inkblot3D.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile } from '../lib/api.js';
 
@@ -53,7 +54,10 @@ export default function Landing() {
 
         {!session ? (
           <>
-            <div className="mt-10 flex justify-center animate-fade-up" style={{ animationDelay: '0.05s' }}>
+            <div className="mt-8 animate-fade-up" style={{ animationDelay: '0s' }}>
+              <Inkblot3D />
+            </div>
+            <div className="mt-6 flex justify-center animate-fade-up" style={{ animationDelay: '0.05s' }}>
               <span className="rounded-full bg-[var(--color-teal-soft)] px-4 py-1 text-xs tracking-[0.15em] text-[var(--color-teal-dark)] uppercase">
                 A quiet minute, once a day
               </span>
