@@ -8,10 +8,10 @@
     "dev:local": "node dev-server.js",
     "deploy": "vercel --prod"
   },
-  "dependencies": {
-    "@vercel/kv": "^3.0.0"
-  },
   "devDependencies": {
     "vercel": "^37.0.0"
+  },
+  "dependencies": {
+    "mongodb": "^7.5.0"
   }
 }

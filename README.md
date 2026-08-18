@@ -44,9 +44,9 @@ cd backend && npm install && npm run dev:local   # plain Node server on :3000, n
 cd frontend && npm install && npm run dev         # Vite on :5173, proxies /api to :3000
 ```
 
-Open http://localhost:5173. Without `KV_REST_API_URL`/`KV_REST_API_TOKEN`
-set, the backend stores data in a local JSON file (`backend/.data/db.json`,
-gitignored) — fine for local dev, **not** for a real deployment (see below).
+Open http://localhost:5173. Without `STORAGE_URL` set, the backend stores
+data in a local JSON file (`backend/.data/db.json`, gitignored) — fine for
+local dev, **not** for a real deployment (see below).
 
 `npm run dev` (instead of `dev:local`) in `backend/` uses `vercel dev`
 instead, which needs `vercel login` first — slower to start but closer to
@@ -64,10 +64,11 @@ a different **Root Directory**.
    vercel --prod
    ```
    Then in the Vercel dashboard for that project:
-   - **Storage → Create → KV** (or connect an Upstash Redis) and attach it —
-     this auto-populates `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
-     **Without this, check-ins won't persist** — Vercel's filesystem is
-     read-only outside `/tmp`, and `/tmp` doesn't survive between requests.
+   - **Storage → connect a MongoDB database** (Atlas or another Marketplace
+     provider) with the default `STORAGE` prefix, so it lands in
+     `STORAGE_URL`. **Without this, check-ins won't persist** — Vercel's
+     filesystem is read-only outside `/tmp`, and `/tmp` doesn't survive
+     between requests.
    - **Settings → Environment Variables**: set `CAREGIVER_ACCESS_KEY` to a
      secret string, and `ALLOWED_ORIGIN` to your frontend's URL once you
      know it (step 2).
