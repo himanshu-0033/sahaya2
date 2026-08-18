@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "dev:local": "node dev-server.js",
+    "dev:local": "node --env-file=.env.local dev-server.js",
     "deploy": "vercel --prod"
   },
   "devDependencies": {

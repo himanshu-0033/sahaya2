@@ -4,7 +4,7 @@ import InkblotPlate from '../components/InkblotPlate.jsx';
 import Button from '../components/Button.jsx';
 import { INKBLOTS } from '../lib/inkblots.js';
 import { MOOD_OPTIONS } from '../lib/moods.js';
-import { getSession, getRoom } from '../lib/session.js';
+import { getSession } from '../lib/session.js';
 import { submitCheckin } from '../lib/api.js';
 
 const TOTAL_PLATE_STEPS = INKBLOTS.length;
@@ -12,7 +12,6 @@ const TOTAL_PLATE_STEPS = INKBLOTS.length;
 export default function CheckIn() {
   const navigate = useNavigate();
   const session = getSession();
-  const room = session ? getRoom(session.profile.sub) : '';
   const [step, setStep] = useState(0); // 0..2 plates, 3 = mood
   const [words, setWords] = useState(['', '', '']);
   const [mood, setMood] = useState(null);
@@ -21,8 +20,8 @@ export default function CheckIn() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!session || !room) navigate('/');
-  }, [session, room, navigate]);
+    if (!session) navigate('/');
+  }, [session, navigate]);
 
   useEffect(() => {
     if (step >= TOTAL_PLATE_STEPS) return;
@@ -33,7 +32,7 @@ export default function CheckIn() {
     return () => clearInterval(id);
   }, [step]);
 
-  if (!session || !room) return null;
+  if (!session) return null;
 
   const isPlateStep = step < TOTAL_PLATE_STEPS;
   const progress = `${Math.min(step + 1, TOTAL_PLATE_STEPS + 1)} / ${TOTAL_PLATE_STEPS + 1}`;
@@ -46,9 +45,13 @@ export default function CheckIn() {
     setSubmitting(true);
     setError(null);
     try {
-      const record = await submitCheckin({ room, words, mood });
+      const record = await submitCheckin({ words, mood });
       navigate('/results', { state: { record } });
     } catch (err) {
+      if (err.message.includes('Create your account')) {
+        navigate('/');
+        return;
+      }
       setError(err.message);
       setSubmitting(false);
     }

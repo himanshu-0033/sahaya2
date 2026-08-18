@@ -3,23 +3,44 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
 import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
-import RoomForm from '../components/RoomForm.jsx';
-import { getSession, getRoom, saveRoom } from '../lib/session.js';
-import { getStatus } from '../lib/api.js';
+import AccountForm from '../components/AccountForm.jsx';
+import { getSession } from '../lib/session.js';
+import { getStatus, getProfile, saveProfile } from '../lib/api.js';
 
 export default function Landing() {
   const navigate = useNavigate();
   const [session, setSession] = useState(() => getSession());
-  const [room, setRoom] = useState(() => (session ? getRoom(session.profile.sub) : ''));
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState(null);
   const [status, setStatus] = useState({ loading: false, checkedIn: false, record: null, error: null });
 
   useEffect(() => {
-    if (!session || !room) return;
+    if (!session) return;
+    setProfileLoading(true);
+    getProfile()
+      .then((data) => setProfile(data.profile))
+      .catch((err) => setProfileError(err.message))
+      .finally(() => setProfileLoading(false));
+  }, [session]);
+
+  useEffect(() => {
+    if (!session || !profile) return;
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
       .catch((err) => setStatus({ loading: false, checkedIn: false, record: null, error: err.message }));
-  }, [session, room]);
+  }, [session, profile]);
+
+  function handleCreateAccount(values) {
+    setSavingProfile(true);
+    setProfileError(null);
+    saveProfile(values)
+      .then((data) => setProfile(data.profile))
+      .catch((err) => setProfileError(err.message))
+      .finally(() => setSavingProfile(false));
+  }
 
   return (
     <div className="min-h-screen px-6 py-10 md:py-16">
@@ -38,18 +59,20 @@ export default function Landing() {
               <GoogleSignInButton onSignedIn={setSession} />
             </div>
           </>
-        ) : !room ? (
-          <RoomForm
+        ) : profileLoading ? (
+          <p className="mt-10 text-[var(--color-ink-soft)]">Loading your account…</p>
+        ) : !profile ? (
+          <AccountForm
             name={session.profile.name}
-            onDone={(r) => {
-              saveRoom(session.profile.sub, r);
-              setRoom(r);
-            }}
+            email={session.profile.email}
+            onDone={handleCreateAccount}
+            saving={savingProfile}
+            error={profileError}
           />
         ) : status.checkedIn ? (
           <>
             <h2 className="font-display text-4xl md:text-5xl leading-tight mt-10">
-              You're checked in for today, {session.profile.name.split(' ')[0]}.
+              You're checked in for today, {profile.name.split(' ')[0]}.
             </h2>
             <p className="mt-4 text-[var(--color-ink-soft)]">
               Come back tomorrow for your next check-in — or view today's dinner pass again below.

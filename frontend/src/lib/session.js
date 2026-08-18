@@ -30,11 +30,3 @@ export function saveSession({ idToken, profile }) {
 export function clearSession() {
   sessionStorage.removeItem(SESSION_KEY);
 }
-
-export function getRoom(sub) {
-  return localStorage.getItem(`sahay:room:${sub}`) || '';
-}
-
-export function saveRoom(sub, room) {
-  localStorage.setItem(`sahay:room:${sub}`, room.trim());
-}

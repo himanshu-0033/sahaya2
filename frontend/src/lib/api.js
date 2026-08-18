@@ -19,15 +19,26 @@ async function request(path, options = {}) {
   return data;
 }
 
-export function submitCheckin({ room, words, mood }) {
+export function submitCheckin({ words, mood }) {
   return request('/api/checkins', {
     method: 'POST',
-    body: JSON.stringify({ room, words, mood }),
+    body: JSON.stringify({ words, mood }),
   });
 }
 
 export function getStatus() {
   return request('/api/checkins');
+}
+
+export function getProfile() {
+  return request('/api/profile');
+}
+
+export function saveProfile(profile) {
+  return request('/api/profile', {
+    method: 'POST',
+    body: JSON.stringify(profile),
+  });
 }
 
 export function getCaregiverResidents() {

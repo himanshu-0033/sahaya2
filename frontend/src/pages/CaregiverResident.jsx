@@ -37,7 +37,30 @@ export default function CaregiverResident() {
         {data && (
           <>
             <h2 className="font-display text-3xl mt-6">{data.resident.name}</h2>
-            <p className="text-sm text-[var(--color-muted)]">{data.resident.room}</p>
+            <p className="text-sm text-[var(--color-muted)]">{data.resident.email}</p>
+
+            <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-[var(--color-cream-soft)] p-6 text-sm">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Room</p>
+                <p className="mt-1">{data.resident.room || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Roll number</p>
+                <p className="mt-1">{data.resident.rollNo || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Phone</p>
+                <p className="mt-1">{data.resident.phone || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Occupation</p>
+                <p className="mt-1">{data.resident.occupation || '—'}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Address</p>
+                <p className="mt-1">{data.resident.address || '—'}</p>
+              </div>
+            </div>
 
             <div className="mt-6 rounded-2xl bg-[var(--color-cream-soft)] p-6">
               <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase mb-3">

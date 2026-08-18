@@ -5,6 +5,7 @@ import http from 'node:http';
 import { URL } from 'node:url';
 
 import checkinsHandler from './api/checkins.js';
+import profileHandler from './api/profile.js';
 import caregiverResidentsHandler from './api/caregiver/residents.js';
 import caregiverResidentHandler from './api/caregiver/resident.js';
 
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 const routes = {
   '/api/checkins': checkinsHandler,
+  '/api/profile': profileHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
 };
