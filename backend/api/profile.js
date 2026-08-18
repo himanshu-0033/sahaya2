@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { rollNo, phone, address, occupation, room } = req.body || {};
+    const { name, email, dob, rollNo, phone, address, occupation, room } = req.body || {};
     if (!room || !room.trim()) {
       return res.status(400).json({ error: 'room is required' });
     }
@@ -26,8 +26,9 @@ export default async function handler(req, res) {
     const now = new Date().toISOString();
     const profile = {
       id: residentId,
-      name: googleUser.name,
-      email: googleUser.email,
+      name: (name || '').trim() || googleUser.name,
+      email: (email || '').trim() || googleUser.email,
+      dob: (dob || '').trim(),
       rollNo: (rollNo || '').trim(),
       phone: (phone || '').trim(),
       address: (address || '').trim(),

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import CrisisContacts from './CrisisContacts.jsx';
 
 export default function Header() {
   return (
@@ -9,12 +10,15 @@ export default function Header() {
           Daily Check-in
         </p>
       </div>
-      <Link
-        to="/caregiver"
-        className="text-sm text-[var(--color-teal)] underline underline-offset-4 decoration-[var(--color-teal-soft)] hover:text-[var(--color-teal-dark)]"
-      >
-        Caregiver
-      </Link>
+      <div className="flex items-center gap-4">
+        <CrisisContacts variant="link" />
+        <Link
+          to="/caregiver"
+          className="text-sm text-[var(--color-teal)] underline underline-offset-4 decoration-[var(--color-teal-soft)] hover:text-[var(--color-teal-dark)]"
+        >
+          Caregiver
+        </Link>
+      </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { INKBLOTS } from '../lib/inkblots.js';
 import { MOOD_OPTIONS } from '../lib/moods.js';
 import { getSession } from '../lib/session.js';
 import { submitCheckin } from '../lib/api.js';
+import CrisisContacts from '../components/CrisisContacts.jsx';
 
 const TOTAL_PLATE_STEPS = INKBLOTS.length;
 
@@ -60,7 +61,10 @@ export default function CheckIn() {
   return (
     <div className="min-h-screen px-6 py-10 md:py-16">
       <div className="mx-auto max-w-xl">
-        <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase">{progress}</p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase">{progress}</p>
+          <CrisisContacts variant="link" />
+        </div>
 
         {isPlateStep ? (
           <div className="mt-8 flex flex-col items-center text-center">
