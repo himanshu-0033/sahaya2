@@ -3,7 +3,7 @@ import { decodeJwt, saveSession } from '../lib/session.js';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-export default function GoogleSignInButton({ onSignedIn }) {
+export default function GoogleSignInButton({ onSignedIn, dark = false }) {
   const ref = useRef(null);
   const [error, setError] = useState(null);
 
@@ -26,7 +26,7 @@ export default function GoogleSignInButton({ onSignedIn }) {
         },
       });
       window.google.accounts.id.renderButton(ref.current, {
-        theme: 'outline',
+        theme: dark ? 'filled_black' : 'outline',
         size: 'large',
         shape: 'pill',
         width: 320,

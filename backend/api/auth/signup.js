@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { getResidents, saveResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { signSessionToken } from '../../lib/auth.js';
+import { phonesMatch } from '../../lib/phone.js';
 
 function makeId() {
   return 'local_' + randomUUID();
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, password } = req.body || {};
+  const { name, email, phone, password } = req.body || {};
   if (!name || !name.trim()) {
     return res.status(400).json({ error: 'Name is required' });
   }
@@ -37,6 +38,13 @@ export default async function handler(req, res) {
     });
   }
 
+  if (phone && phone.trim()) {
+    const phoneTaken = residents.some((r) => phonesMatch(r.phone, phone));
+    if (phoneTaken) {
+      return res.status(409).json({ error: 'This phone number is already in use by another account.' });
+    }
+  }
+
   const passwordHash = await bcrypt.hash(password, 10);
   const id = makeId();
   const now = new Date().toISOString();
@@ -44,6 +52,7 @@ export default async function handler(req, res) {
     id,
     name: name.trim(),
     email: normalizedEmail,
+    phone: (phone || '').trim(),
     passwordHash,
     createdAt: now,
     updatedAt: now,

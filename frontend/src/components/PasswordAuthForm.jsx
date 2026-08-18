@@ -2,20 +2,34 @@ import { useState } from 'react';
 import Button from './Button.jsx';
 import { signup, login } from '../lib/api.js';
 import { decodeJwt, saveSession } from '../lib/session.js';
+import { COUNTRY_CODES } from '../lib/countryCodes.js';
 
-const inputClass =
-  'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-
-export default function PasswordAuthForm({ onSignedIn }) {
+export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [phoneLocal, setPhoneLocal] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   const isSignup = mode === 'signup';
-  const canSubmit = email.trim() && password.length >= (isSignup ? 8 : 1) && (!isSignup || name.trim());
+  const canSubmit = isSignup
+    ? name.trim() && email.trim() && password.length >= 8
+    : identifier.trim() && password.length > 0;
+
+  const inputClass = dark
+    ? 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
+    : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
+  const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
+  const linkClass = dark ? 'text-white underline' : 'text-[var(--color-teal)] underline';
+
+  function switchMode(next) {
+    setMode(next);
+    setError(null);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,8 +38,13 @@ export default function PasswordAuthForm({ onSignedIn }) {
     setError(null);
     try {
       const { token } = isSignup
-        ? await signup({ name, email, password })
-        : await login({ email, password });
+        ? await signup({
+            name,
+            email,
+            phone: phoneLocal.trim() ? `${countryCode} ${phoneLocal.trim()}` : '',
+            password,
+          })
+        : await login({ identifier, password });
       onSignedIn(saveSession({ idToken: token, profile: decodeJwt(token) }));
     } catch (err) {
       setError(err.message);
@@ -36,27 +55,35 @@ export default function PasswordAuthForm({ onSignedIn }) {
 
   return (
     <div className="w-[320px]">
-      <div className="mb-4 flex rounded-full bg-[var(--color-cream-soft)] p-1 text-sm">
+      <div
+        className={`mb-4 flex rounded-full p-1 text-sm ${dark ? 'bg-white/5' : 'bg-[var(--color-cream-soft)]'}`}
+      >
         <button
           type="button"
-          onClick={() => {
-            setMode('login');
-            setError(null);
-          }}
+          onClick={() => switchMode('login')}
           className={`flex-1 rounded-full py-2 transition-colors ${
-            mode === 'login' ? 'bg-white shadow-sm font-medium' : 'text-[var(--color-muted)]'
+            mode === 'login'
+              ? dark
+                ? 'bg-white/15 font-medium text-white'
+                : 'bg-white shadow-sm font-medium'
+              : dark
+                ? 'text-white/40'
+                : 'text-[var(--color-muted)]'
           }`}
         >
           Log in
         </button>
         <button
           type="button"
-          onClick={() => {
-            setMode('signup');
-            setError(null);
-          }}
+          onClick={() => switchMode('signup')}
           className={`flex-1 rounded-full py-2 transition-colors ${
-            mode === 'signup' ? 'bg-white shadow-sm font-medium' : 'text-[var(--color-muted)]'
+            mode === 'signup'
+              ? dark
+                ? 'bg-white/15 font-medium text-white'
+                : 'bg-white shadow-sm font-medium'
+              : dark
+                ? 'text-white/40'
+                : 'text-[var(--color-muted)]'
           }`}
         >
           Sign up
@@ -64,23 +91,62 @@ export default function PasswordAuthForm({ onSignedIn }) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        {isSignup && (
+        {isSignup ? (
+          <>
+            <div>
+              <label className={labelClass}>Name</label>
+              <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Phone number (optional)</label>
+              <div className="mt-1 flex gap-2">
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className={
+                    dark
+                      ? 'rounded-xl border border-white/15 bg-white/5 px-2 py-3 text-sm text-white outline-none focus:border-white/40'
+                      : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
+                  }
+                >
+                  {COUNTRY_CODES.map((c) => (
+                    <option key={c.code} value={c.code} className="text-black">
+                      {c.code}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={phoneLocal}
+                  onChange={(e) => setPhoneLocal(e.target.value)}
+                  placeholder="98765 43210"
+                  className={`${inputClass} mt-0`}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
           <div>
-            <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+            <label className={labelClass}>Email or phone number</label>
+            <input
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="you@example.com or 98765 43210"
+              className={inputClass}
+            />
           </div>
         )}
+
         <div>
-          <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Password</label>
+          <label className={labelClass}>Password</label>
           <input
             type="password"
             value={password}
@@ -95,6 +161,24 @@ export default function PasswordAuthForm({ onSignedIn }) {
         <Button type="submit" disabled={!canSubmit || submitting}>
           {submitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in'}
         </Button>
+
+        <p className={`text-center text-xs ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`}>
+          {isSignup ? (
+            <>
+              Already have an account?{' '}
+              <button type="button" onClick={() => switchMode('login')} className={linkClass}>
+                Log in
+              </button>
+            </>
+          ) : (
+            <>
+              New here?{' '}
+              <button type="button" onClick={() => switchMode('signup')} className={linkClass}>
+                Create an account
+              </button>
+            </>
+          )}
+        </p>
       </form>
     </div>
   );

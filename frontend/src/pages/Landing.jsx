@@ -2,13 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
-import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
-import PhoneSignInButton from '../components/PhoneSignInButton.jsx';
-import PasswordAuthForm from '../components/PasswordAuthForm.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
 import AccountForm from '../components/AccountForm.jsx';
 import AmbientBlots from '../components/AmbientBlots.jsx';
-import Inkblot3D from '../components/Inkblot3D.jsx';
+import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile } from '../lib/api.js';
 
@@ -47,59 +43,17 @@ export default function Landing() {
       .finally(() => setSavingProfile(false));
   }
 
+  if (!session) {
+    return <DarkSignInHero onSignedIn={setSession} />;
+  }
+
   return (
     <div className="relative min-h-screen px-6 py-10 md:py-16">
       <AmbientBlots />
       <div className="mx-auto max-w-xl">
         <Header />
 
-        {!session ? (
-          <>
-            <div className="mt-8 animate-fade-up" style={{ animationDelay: '0s' }}>
-              <Inkblot3D />
-            </div>
-            <div className="mt-6 flex justify-center animate-fade-up" style={{ animationDelay: '0.05s' }}>
-              <span className="rounded-full bg-[var(--color-teal-soft)] px-4 py-1 text-xs tracking-[0.15em] text-[var(--color-teal-dark)] uppercase">
-                A quiet minute, once a day
-              </span>
-            </div>
-            <h2
-              className="font-display text-4xl md:text-5xl leading-tight mt-6 text-center animate-fade-up"
-              style={{ animationDelay: '0.15s' }}
-            >
-              Sign in to check in.
-            </h2>
-            <p
-              className="mt-4 text-center text-[var(--color-ink-soft)] animate-fade-up"
-              style={{ animationDelay: '0.28s' }}
-            >
-              We use your Google account so your caregiver knows whose check-in this is.
-            </p>
-            <div
-              className="mt-10 flex flex-col items-center gap-3 animate-fade-up"
-              style={{ animationDelay: '0.42s' }}
-            >
-              <div className="animate-soft-pulse rounded-full">
-                <GoogleSignInButton onSignedIn={setSession} />
-              </div>
-              <PhoneSignInButton />
-
-              <div className="flex w-[320px] items-center gap-3 py-1 text-xs text-[var(--color-muted)]">
-                <span className="h-px flex-1 bg-[var(--color-ink)]/10" />
-                or
-                <span className="h-px flex-1 bg-[var(--color-ink)]/10" />
-              </div>
-
-              <PasswordAuthForm onSignedIn={setSession} />
-            </div>
-            <div
-              className="mt-10 animate-fade-up"
-              style={{ animationDelay: '0.55s' }}
-            >
-              <CrisisContacts />
-            </div>
-          </>
-        ) : profileLoading ? (
+        {profileLoading ? (
           <p className="mt-10 text-[var(--color-ink-soft)]">Loading your account…</p>
         ) : profileError && !profile ? (
           <p className="mt-10 text-sm text-[var(--color-flag)]">

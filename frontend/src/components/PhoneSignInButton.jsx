@@ -6,7 +6,7 @@ const PhoneIcon = () => (
   </svg>
 );
 
-export default function PhoneSignInButton() {
+export default function PhoneSignInButton({ dark = false }) {
   const [showNotice, setShowNotice] = useState(false);
   const enabled = Boolean(import.meta.env.VITE_FIREBASE_API_KEY);
 
@@ -14,13 +14,17 @@ export default function PhoneSignInButton() {
     <div>
       <button
         onClick={() => setShowNotice(true)}
-        className="flex w-[320px] items-center justify-center gap-2 rounded-full border border-[var(--color-ink)]/15 bg-white py-3.5 text-sm font-medium text-[var(--color-ink)] shadow-sm transition-colors hover:bg-[var(--color-cream-soft)]"
+        className={
+          dark
+            ? 'flex w-[320px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10'
+            : 'flex w-[320px] items-center justify-center gap-2 rounded-full border border-[var(--color-ink)]/15 bg-white py-3.5 text-sm font-medium text-[var(--color-ink)] shadow-sm transition-colors hover:bg-[var(--color-cream-soft)]'
+        }
       >
         <PhoneIcon />
         Continue with phone number
       </button>
       {showNotice && !enabled && (
-        <p className="mt-2 text-center text-xs text-[var(--color-muted)]">
+        <p className={`mt-2 text-center text-xs ${dark ? 'text-white/50' : 'text-[var(--color-muted)]'}`}>
           Phone sign-in is being set up — use Google for now.
         </p>
       )}

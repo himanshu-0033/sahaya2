@@ -19,17 +19,17 @@ async function request(path, options = {}) {
   return data;
 }
 
-export function signup({ name, email, password }) {
+export function signup({ name, email, phone, password }) {
   return request('/api/auth/signup', {
     method: 'POST',
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ name, email, phone, password }),
   });
 }
 
-export function login({ email, password }) {
+export function login({ identifier, password }) {
   return request('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ identifier, password }),
   });
 }
 

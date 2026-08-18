@@ -8,7 +8,7 @@ const HELPLINES = [
   { name: 'AASRA', number: '9820466726', note: '24/7' },
 ];
 
-export default function CrisisContacts({ variant = 'button' }) {
+export default function CrisisContacts({ variant = 'button', dark = false }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -16,14 +16,22 @@ export default function CrisisContacts({ variant = 'button' }) {
       {variant === 'button' ? (
         <button
           onClick={() => setOpen(true)}
-          className="w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag-soft)]/70"
+          className={
+            dark
+              ? 'w-full rounded-full border border-red-400/30 bg-red-500/10 px-5 py-3 text-sm font-medium text-red-300 transition-colors hover:bg-red-500/20'
+              : 'w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag-soft)]/70'
+          }
         >
           Need help right now? Crisis contacts
         </button>
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="text-sm text-[var(--color-flag)] underline underline-offset-4 decoration-[var(--color-flag-soft)] hover:text-[var(--color-flag)]/80"
+          className={
+            dark
+              ? 'text-sm text-red-300/90 underline underline-offset-4 hover:text-red-300'
+              : 'text-sm text-[var(--color-flag)] underline underline-offset-4 decoration-[var(--color-flag-soft)] hover:text-[var(--color-flag)]/80'
+          }
         >
           Need help now?
         </button>
