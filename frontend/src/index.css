@@ -73,9 +73,8 @@ body {
 }
 
 @keyframes spin-3d {
-  0% { transform: rotateY(0deg) rotateX(8deg); }
-  50% { transform: rotateY(180deg) rotateX(-8deg); }
-  100% { transform: rotateY(360deg) rotateX(8deg); }
+  0%, 100% { transform: rotateY(-38deg) rotateX(7deg); }
+  50% { transform: rotateY(38deg) rotateX(-7deg); }
 }
 
 @keyframes glow-pulse {
@@ -84,7 +83,7 @@ body {
 }
 
 .animate-spin-3d {
-  animation: spin-3d 16s linear infinite;
+  animation: spin-3d 9s ease-in-out infinite;
 }
 
 .animate-glow-pulse {
