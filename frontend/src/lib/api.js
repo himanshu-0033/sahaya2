@@ -19,6 +19,20 @@ async function request(path, options = {}) {
   return data;
 }
 
+export function signup({ name, email, password }) {
+  return request('/api/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, password }),
+  });
+}
+
+export function login({ email, password }) {
+  return request('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
 export function submitCheckin({ words, mood }) {
   return request('/api/checkins', {
     method: 'POST',

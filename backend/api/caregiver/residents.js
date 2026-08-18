@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     return {
       id: resident.id,
       name: resident.name,
-      room: resident.room,
+      email: resident.email,
       lastCheckIn: last ? { date: last.date, mood: last.mood, flagged: last.flagged } : null,
       totalCheckIns: history.length,
       streak,

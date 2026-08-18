@@ -1,7 +1,15 @@
 import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+const SESSION_ISSUER = 'sahay-ai';
+
+function jwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET is not configured on the server');
+  return secret;
+}
 
 function bearerToken(req) {
   const header = req.headers['authorization'] || '';
@@ -9,12 +17,13 @@ function bearerToken(req) {
   return scheme === 'Bearer' && token ? token : null;
 }
 
-// Returns { sub, email, name, picture } for a verified Google ID token, or
-// null if there's no token / it fails verification. `res` is only used to
-// write an error response when verification is explicitly required.
-export async function verifyGoogleUser(req) {
-  const token = bearerToken(req);
-  if (!token) return null;
+// Issues our own session token for email/password accounts, shaped like a
+// decoded Google ID token so the frontend's session handling works for both.
+export function signSessionToken({ sub, email, name }) {
+  return jwt.sign({ sub, email, name, iss: SESSION_ISSUER }, jwtSecret(), { expiresIn: '30d' });
+}
+
+async function verifyGoogleIdToken(token) {
   if (!client) {
     throw new Error('GOOGLE_CLIENT_ID is not configured on the server');
   }
@@ -28,16 +37,34 @@ export async function verifyGoogleUser(req) {
   };
 }
 
+function verifyOwnSessionToken(token) {
+  const payload = jwt.verify(token, jwtSecret(), { issuer: SESSION_ISSUER });
+  return { sub: payload.sub, email: payload.email, name: payload.name };
+}
+
+// Returns { sub, email, name } for a verified session — either our own
+// email/password JWT or a Google ID token — or null if there's no token.
+export async function verifyGoogleUser(req) {
+  const token = bearerToken(req);
+  if (!token) return null;
+
+  const unverified = jwt.decode(token);
+  if (unverified?.iss === SESSION_ISSUER) {
+    return verifyOwnSessionToken(token);
+  }
+  return verifyGoogleIdToken(token);
+}
+
 export async function requireGoogleUser(req, res) {
   try {
     const user = await verifyGoogleUser(req);
     if (!user) {
-      res.status(401).json({ error: 'Sign in with Google is required' });
+      res.status(401).json({ error: 'Sign in is required' });
       return null;
     }
     return user;
   } catch (err) {
-    res.status(401).json({ error: 'Invalid or expired Google session: ' + err.message });
+    res.status(401).json({ error: 'Invalid or expired session: ' + err.message });
     return null;
   }
 }

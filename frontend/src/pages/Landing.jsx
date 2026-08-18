@@ -4,6 +4,7 @@ import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
 import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
 import PhoneSignInButton from '../components/PhoneSignInButton.jsx';
+import PasswordAuthForm from '../components/PasswordAuthForm.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import AccountForm from '../components/AccountForm.jsx';
 import AmbientBlots from '../components/AmbientBlots.jsx';
@@ -30,7 +31,7 @@ export default function Landing() {
   }, [session]);
 
   useEffect(() => {
-    if (!session || !profile) return;
+    if (!session || !profile?.onboarded) return;
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
@@ -82,6 +83,14 @@ export default function Landing() {
                 <GoogleSignInButton onSignedIn={setSession} />
               </div>
               <PhoneSignInButton />
+
+              <div className="flex w-[320px] items-center gap-3 py-1 text-xs text-[var(--color-muted)]">
+                <span className="h-px flex-1 bg-[var(--color-ink)]/10" />
+                or
+                <span className="h-px flex-1 bg-[var(--color-ink)]/10" />
+              </div>
+
+              <PasswordAuthForm onSignedIn={setSession} />
             </div>
             <div
               className="mt-10 animate-fade-up"
@@ -96,10 +105,10 @@ export default function Landing() {
           <p className="mt-10 text-sm text-[var(--color-flag)]">
             Couldn't reach the server: {profileError}
           </p>
-        ) : !profile ? (
+        ) : !profile?.onboarded ? (
           <AccountForm
-            name={session.profile.name}
-            email={session.profile.email}
+            name={profile?.name || session.profile.name}
+            email={profile?.email || session.profile.email}
             onDone={handleCreateAccount}
             saving={savingProfile}
             error={profileError}

@@ -1,10 +1,10 @@
 # Sahay AI — Daily Check-in
 
-A hostel/college wellness check-in prototype: a resident looks at three
-abstract "plates," types the first word each brings to mind, taps a mood,
-and gets a short affirming thought plus a dinner pass. A caregiver
-dashboard surfaces residents whose recent check-ins look worth a real
-conversation, using a plain rule-based heuristic — not a diagnosis.
+A wellness check-in prototype: a resident looks at three abstract "plates,"
+types the first word each brings to mind, taps a mood, and gets a short
+affirming thought plus a dinner pass. A caregiver dashboard surfaces
+residents whose recent check-ins look worth a real conversation, using a
+plain rule-based heuristic — not a diagnosis.
 
 This is a **reflective prototype, not a medical device**. It does not
 perform clinical assessment of any kind.
@@ -24,11 +24,13 @@ Vercel project.
 
 ## How it works
 
-- **Sign-in**: both residents and caregivers authenticate with Google
-  (Google Identity Services on the frontend, ID token verified server-side
-  with `google-auth-library`). A resident's Google account `sub` is their
-  stable `residentId`; the app additionally asks for a room/ID once, since
-  Google doesn't know that.
+- **Sign-in**: Google (Google Identity Services, ID token verified
+  server-side with `google-auth-library`) or email/password (bcrypt hash +
+  a self-issued JWT signed with `JWT_SECRET`) — both produce the same
+  `{ sub, email, name }` shape, so the rest of the backend doesn't care
+  which one was used. A resident's `sub` is their stable `residentId`. The
+  app additionally asks for phone/DOB/address/occupation once via the
+  account form, since auth alone doesn't cover those.
 - **Check-in**: a resident types one word per plate + taps a mood (1–5).
   The backend stores it, generates a `SH-MMDD-XXXX` dinner-pass code, and
   picks a short "thought for today" deterministically from the resident's

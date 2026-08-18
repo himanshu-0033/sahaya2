@@ -68,7 +68,7 @@ export default function Caregiver() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{r.name}</p>
-                    <p className="text-xs text-[var(--color-muted)]">{r.room}</p>
+                    <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
                   </div>
                   {r.flaggedRecently && (
                     <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag)] text-xs px-3 py-1">

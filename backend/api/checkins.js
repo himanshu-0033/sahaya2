@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     const residents = await getResidents();
-    if (!residents.some((r) => r.id === residentId)) {
+    if (!residents.some((r) => r.id === residentId && r.onboarded)) {
       return res.status(400).json({ error: 'Create your account before checking in' });
     }
 

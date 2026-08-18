@@ -1,6 +1,7 @@
 import { getResidents, saveResidents } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
+import { publicResident } from '../lib/sanitize.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -12,14 +13,11 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const residents = await getResidents();
     const profile = residents.find((r) => r.id === residentId) || null;
-    return res.status(200).json({ profile });
+    return res.status(200).json({ profile: publicResident(profile) });
   }
 
   if (req.method === 'POST') {
-    const { name, email, dob, rollNo, phone, address, occupation, room } = req.body || {};
-    if (!room || !room.trim()) {
-      return res.status(400).json({ error: 'room is required' });
-    }
+    const { name, email, dob, phone, address, occupation } = req.body || {};
 
     const residents = await getResidents();
     const idx = residents.findIndex((r) => r.id === residentId);
@@ -29,11 +27,10 @@ export default async function handler(req, res) {
       name: (name || '').trim() || googleUser.name,
       email: (email || '').trim() || googleUser.email,
       dob: (dob || '').trim(),
-      rollNo: (rollNo || '').trim(),
       phone: (phone || '').trim(),
       address: (address || '').trim(),
       occupation: (occupation || '').trim(),
-      room: room.trim(),
+      onboarded: true,
       updatedAt: now,
     };
 

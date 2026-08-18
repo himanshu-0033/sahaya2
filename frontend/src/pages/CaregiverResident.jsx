@@ -41,16 +41,12 @@ export default function CaregiverResident() {
 
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-[var(--color-cream-soft)] p-6 text-sm">
               <div>
-                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Room</p>
-                <p className="mt-1">{data.resident.room || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Roll number</p>
-                <p className="mt-1">{data.resident.rollNo || '—'}</p>
-              </div>
-              <div>
                 <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Phone</p>
                 <p className="mt-1">{data.resident.phone || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Date of birth</p>
+                <p className="mt-1">{data.resident.dob || '—'}</p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Occupation</p>

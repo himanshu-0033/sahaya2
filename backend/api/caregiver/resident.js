@@ -1,6 +1,7 @@
 import { getCheckins, getResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireCaregiverUser } from '../../lib/auth.js';
+import { publicResident } from '../../lib/sanitize.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -22,5 +23,5 @@ export default async function handler(req, res) {
     .filter((c) => c.residentId === residentId)
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  return res.status(200).json({ resident, history });
+  return res.status(200).json({ resident: publicResident(resident), history });
 }
