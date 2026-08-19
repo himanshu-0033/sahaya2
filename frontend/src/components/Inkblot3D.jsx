@@ -110,34 +110,14 @@ function Sculpture() {
 // The viewBox reserves space below the sculpture for its reflection, so the
 // rendered box is taller than it is wide.
 const VB = { x: -124, y: -112, w: 248, h: 300 };
+const VIEW_BOX = `${VB.x} ${VB.y} ${VB.w} ${VB.h}`;
 
-export default function Inkblot3D({ size = 240 }) {
-  const height = (size * VB.h) / VB.w;
-
+// Gradients live in one hidden SVG so both rotation planes can reference them
+// without duplicating ids into the document.
+function Defs() {
   return (
-    <div className="relative mx-auto" style={{ width: size, height }}>
-      <div
-        className="animate-glow-pulse absolute inset-x-0 mx-auto -translate-y-1/2 rounded-full"
-        style={{
-          top: '37%',
-          width: size,
-          height: size * 0.62,
-          background:
-            'radial-gradient(closest-side, rgba(80,210,200,0.3), rgba(255,138,61,0.16), transparent)',
-          filter: 'blur(36px)',
-        }}
-        aria-hidden="true"
-      />
-
-      <div style={{ perspective: '1400px', width: size, height }}>
-        <div
-          className="animate-spin-3d"
-          style={{ width: size, height, transformStyle: 'preserve-3d' }}
-          role="img"
-          aria-label="A slowly turning glass sculpture with mirrored, ink-blot-like symmetry"
-        >
-          <svg viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} width="100%" height="100%">
-            <defs>
+    <svg width="0" height="0" className="absolute" aria-hidden="true">
+      <defs>
               <linearGradient id="g-glass" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#eafcfa" stopOpacity="0.72" />
                 <stop offset="50%" stopColor="#6fd3cc" stopOpacity="0.36" />
@@ -168,25 +148,67 @@ export default function Inkblot3D({ size = 240 }) {
                 <stop offset="0%" stopColor="white" stopOpacity="0.8" />
                 <stop offset="100%" stopColor="white" stopOpacity="0" />
               </linearGradient>
-              <mask id="m-reflect">
-                <rect x={VB.x} y="116" width={VB.w} height="74" fill="url(#g-fade)" />
-              </mask>
-            </defs>
+        <mask id="m-reflect">
+          <rect x={VB.x} y="116" width={VB.w} height="74" fill="url(#g-fade)" />
+        </mask>
+      </defs>
+    </svg>
+  );
+}
 
-            <g style={{ filter: 'drop-shadow(0 0 30px rgba(63,215,201,0.4))' }}>
-              <Sculpture />
-            </g>
+function Plane({ rotateY = 0 }) {
+  return (
+    <div
+      className="absolute inset-0"
+      style={{ transform: rotateY ? `rotateY(${rotateY}deg)` : undefined }}
+    >
+      <svg viewBox={VIEW_BOX} width="100%" height="100%">
+        <g style={{ filter: 'drop-shadow(0 0 30px rgba(63,215,201,0.4))' }}>
+          <Sculpture />
+        </g>
 
-            {/* Mirrored about y=115 and vertically compressed, the way a
-                reflection foreshortens on a glossy floor. The mask sits on an
-                outer group so its coordinates stay in untransformed user
-                space — SVG resolves mask after an element's own transform. */}
-            <g mask="url(#m-reflect)">
-              <g transform="translate(0,161) scale(1,-0.4)" opacity="0.5">
-                <Sculpture />
-              </g>
-            </g>
-          </svg>
+        {/* Mirrored about y=115 and vertically compressed, the way a
+            reflection foreshortens on a glossy floor. The mask sits on an
+            outer group so its coordinates stay in untransformed user space —
+            SVG resolves mask after an element's own transform. */}
+        <g mask="url(#m-reflect)">
+          <g transform="translate(0,161) scale(1,-0.4)" opacity="0.5">
+            <Sculpture />
+          </g>
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+// `spin` turns continuously through a full circle; without it the piece just
+// sways. Width comes from the parent — the box keeps the viewBox aspect.
+export default function Inkblot3D({ className = '', spin = false }) {
+  return (
+    <div className={`relative ${className}`} style={{ aspectRatio: `${VB.w} / ${VB.h}` }}>
+      <Defs />
+
+      <div
+        className="animate-glow-pulse absolute left-1/2 w-full -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          top: '37%',
+          height: '62%',
+          background:
+            'radial-gradient(closest-side, rgba(80,210,200,0.3), rgba(255,138,61,0.16), transparent)',
+          filter: 'blur(40px)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="absolute inset-0" style={{ perspective: '1600px' }}>
+        <div
+          className={`absolute inset-0 ${spin ? 'animate-spin-3d-full' : 'animate-spin-3d'}`}
+          style={{ transformStyle: 'preserve-3d' }}
+          role="img"
+          aria-label="A slowly turning glass sculpture with mirrored, ink-blot-like symmetry"
+        >
+          <Plane />
+          {spin && <Plane rotateY={90} />}
         </div>
       </div>
     </div>

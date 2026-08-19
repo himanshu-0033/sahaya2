@@ -77,6 +77,18 @@ body {
   50% { transform: rotateY(38deg) rotateX(-7deg); }
 }
 
+/* Continuous turn for the hero sculpture. Two perpendicular planes are
+   rendered, so as one goes edge-on the other faces the viewer and the form
+   always keeps its mass. */
+@keyframes spin-3d-full {
+  from { transform: rotateX(6deg) rotateY(0deg); }
+  to { transform: rotateX(6deg) rotateY(360deg); }
+}
+
+.animate-spin-3d-full {
+  animation: spin-3d-full 30s linear infinite;
+}
+
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.5; transform: scale(1); }
   50% { opacity: 0.8; transform: scale(1.08); }
@@ -117,6 +129,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   .animate-drift-c,
   .animate-soft-pulse,
   .animate-spin-3d,
+  .animate-spin-3d-full,
   .animate-glow-pulse {
     animation: none;
   }
