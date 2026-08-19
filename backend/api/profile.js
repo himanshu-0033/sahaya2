@@ -2,6 +2,7 @@ import { getResidents, saveResidents } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 import { publicResident } from '../lib/sanitize.js';
+import { withoutInvitedPlaceholder } from '../lib/residents.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
     };
 
     if (idx === -1) {
-      await saveResidents([...residents, { ...profile, createdAt: now }]);
+      await saveResidents([...withoutInvitedPlaceholder(residents, profile.email), { ...profile, createdAt: now }]);
     } else {
       const updated = [...residents];
       updated[idx] = { ...updated[idx], ...profile };

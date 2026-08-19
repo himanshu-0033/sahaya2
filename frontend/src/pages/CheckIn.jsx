@@ -79,7 +79,7 @@ export default function CheckIn() {
               value={words[step]}
               onChange={(e) => updateWord(e.target.value)}
               placeholder="One word…"
-              className="mt-4 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white px-4 py-3 text-center text-lg outline-none focus:border-[var(--color-teal)]"
+              className="mt-4 w-full rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] px-4 py-3 text-center text-lg outline-none focus:border-[var(--color-teal)]"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && words[step].trim()) setStep((s) => s + 1);
               }}
@@ -103,7 +103,7 @@ export default function CheckIn() {
                   className={`rounded-xl border px-4 py-3 text-left transition-colors ${
                     mood === m.value
                       ? 'border-[var(--color-teal)] bg-[var(--color-teal-soft)]'
-                      : 'border-[var(--color-ink)]/10 bg-white hover:border-[var(--color-teal)]/40'
+                      : 'border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] hover:border-[var(--color-teal)]/40'
                   }`}
                 >
                   {m.label}

@@ -33,7 +33,7 @@ export default function DarkSignInHero({ onSignedIn }) {
 
         <div className="mt-12 flex flex-col items-center gap-10 md:mt-20 md:flex-row md:items-center md:gap-16">
           <div className="shrink-0 animate-fade-up">
-            <Inkblot3D size={240} dark />
+            <Inkblot3D size={240} />
           </div>
 
           <div className="text-center md:text-left">

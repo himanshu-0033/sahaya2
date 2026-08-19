@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
-import AccountForm from '../components/AccountForm.jsx';
 import AmbientBlots from '../components/AmbientBlots.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
+import DarkAccountHero from '../components/DarkAccountHero.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile } from '../lib/api.js';
 
@@ -47,27 +47,41 @@ export default function Landing() {
     return <DarkSignInHero onSignedIn={setSession} />;
   }
 
+  if (profileLoading) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#07080a] text-white/60">
+        Loading your account…
+      </div>
+    );
+  }
+
+  if (profileError && !profile) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#07080a] px-6 text-center text-red-300">
+        Couldn't reach the server: {profileError}
+      </div>
+    );
+  }
+
+  if (!profile?.onboarded) {
+    return (
+      <DarkAccountHero
+        name={profile?.name || session.profile.name}
+        email={profile?.email || session.profile.email}
+        onDone={handleCreateAccount}
+        saving={savingProfile}
+        error={profileError}
+      />
+    );
+  }
+
   return (
     <div className="relative min-h-screen px-6 py-10 md:py-16">
       <AmbientBlots />
       <div className="mx-auto max-w-xl">
         <Header />
 
-        {profileLoading ? (
-          <p className="mt-10 text-[var(--color-ink-soft)]">Loading your account…</p>
-        ) : profileError && !profile ? (
-          <p className="mt-10 text-sm text-[var(--color-flag)]">
-            Couldn't reach the server: {profileError}
-          </p>
-        ) : !profile?.onboarded ? (
-          <AccountForm
-            name={profile?.name || session.profile.name}
-            email={profile?.email || session.profile.email}
-            onDone={handleCreateAccount}
-            saving={savingProfile}
-            error={profileError}
-          />
-        ) : status.checkedIn ? (
+        {status.checkedIn ? (
           <>
             <h2 className="font-display text-4xl md:text-5xl leading-tight mt-10 animate-fade-up">
               You're checked in for today, {profile.name.split(' ')[0]}.

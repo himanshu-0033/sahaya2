@@ -73,6 +73,12 @@ export default function CaregiverResident() {
               </div>
             </div>
 
+            {data.history.length === 0 && (
+              <p className="mt-6 text-sm text-[var(--color-muted)]">
+                Invited but hasn't signed in or checked in yet.
+              </p>
+            )}
+
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

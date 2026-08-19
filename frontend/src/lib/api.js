@@ -59,6 +59,13 @@ export function getCaregiverResidents() {
   return request('/api/caregiver/residents');
 }
 
+export function inviteResident({ name, email }) {
+  return request('/api/caregiver/residents', {
+    method: 'POST',
+    body: JSON.stringify({ name, email }),
+  });
+}
+
 export function getCaregiverResident(residentId) {
   return request(`/api/caregiver/resident?residentId=${encodeURIComponent(residentId)}`);
 }

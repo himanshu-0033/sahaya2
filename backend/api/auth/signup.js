@@ -4,6 +4,7 @@ import { getResidents, saveResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { signSessionToken } from '../../lib/auth.js';
 import { phonesMatch } from '../../lib/phone.js';
+import { withoutInvitedPlaceholder } from '../../lib/residents.js';
 
 function makeId() {
   return 'local_' + randomUUID();
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
   const normalizedEmail = email.trim().toLowerCase();
   const residents = await getResidents();
   const existing = residents.find((r) => (r.email || '').toLowerCase() === normalizedEmail);
-  if (existing) {
+  if (existing && !existing.invited) {
     return res.status(409).json({
       error: existing.passwordHash
         ? 'An account with this email already exists. Try logging in instead.'
@@ -57,7 +58,7 @@ export default async function handler(req, res) {
     createdAt: now,
     updatedAt: now,
   };
-  await saveResidents([...residents, resident]);
+  await saveResidents([...withoutInvitedPlaceholder(residents, normalizedEmail), resident]);
 
   const token = signSessionToken({ sub: id, email: normalizedEmail, name: name.trim() });
   return res.status(201).json({ token });
