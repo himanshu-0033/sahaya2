@@ -11,13 +11,13 @@ export default function PhoneSignInButton({ dark = false }) {
   const enabled = Boolean(import.meta.env.VITE_FIREBASE_API_KEY);
 
   return (
-    <div>
+    <div className="w-full">
       <button
         onClick={() => setShowNotice(true)}
         className={
           dark
-            ? 'flex w-[320px] items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10'
-            : 'flex w-[320px] items-center justify-center gap-2 rounded-full border border-[var(--color-ink)]/15 bg-white py-3.5 text-sm font-medium text-[var(--color-ink)] shadow-sm transition-colors hover:bg-[var(--color-cream-soft)]'
+            ? 'flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10'
+            : 'flex w-full items-center justify-center gap-2 rounded-full border border-[var(--color-ink)]/15 bg-white py-3 text-sm font-medium text-[var(--color-ink)] shadow-sm transition-colors hover:bg-[var(--color-cream-soft)]'
         }
       >
         <PhoneIcon />

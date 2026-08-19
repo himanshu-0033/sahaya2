@@ -24,7 +24,6 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
     ? 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
     : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
-  const linkClass = dark ? 'text-white underline' : 'text-[var(--color-teal)] underline';
 
   function switchMode(next) {
     setMode(next);
@@ -54,7 +53,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   }
 
   return (
-    <div className="w-[320px]">
+    <div className="w-full">
       <div
         className={`mb-4 flex rounded-full p-1 text-sm ${dark ? 'bg-white/5' : 'bg-[var(--color-cream-soft)]'}`}
       >
@@ -161,24 +160,6 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         <Button type="submit" disabled={!canSubmit || submitting}>
           {submitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in'}
         </Button>
-
-        <p className={`text-center text-xs ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`}>
-          {isSignup ? (
-            <>
-              Already have an account?{' '}
-              <button type="button" onClick={() => switchMode('login')} className={linkClass}>
-                Log in
-              </button>
-            </>
-          ) : (
-            <>
-              New here?{' '}
-              <button type="button" onClick={() => switchMode('signup')} className={linkClass}>
-                Create an account
-              </button>
-            </>
-          )}
-        </p>
       </form>
     </div>
   );
