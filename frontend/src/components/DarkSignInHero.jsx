@@ -24,7 +24,7 @@ export default function DarkSignInHero({ onSignedIn }) {
         style={{ width: 'min(115vh, 140vw, 900px)' }}
         aria-hidden="true"
       >
-        <Inkblot3D spin className="w-full opacity-40" />
+        <Inkblot3D spin interactive className="w-full opacity-40" />
       </div>
 
       <div

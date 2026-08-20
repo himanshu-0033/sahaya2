@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+
 // A symmetrical glass sculpture. Every path draws the LEFT half only and is
 // mirrored to complete the form, the way a folded ink blot is made.
 //
@@ -107,6 +109,41 @@ function Sculpture() {
   );
 }
 
+
+// Follows the cursor with a little lag. The tilt is applied to a wrapper
+// *around* the spinning layer: a JS transform on the animated element itself
+// would be clobbered by the CSS keyframes, whereas nesting lets the two
+// transforms compose.
+function usePointerTilt(enabled) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const frame = useRef(0);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    // Coarse pointers (touch) have no hover position to follow.
+    if (window.matchMedia?.('(pointer: coarse)').matches) return;
+
+    function onMove(e) {
+      // rAF-throttled: mousemove fires far more often than we can paint.
+      cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(() => {
+        const nx = (e.clientX / window.innerWidth) * 2 - 1; // -1 .. 1
+        const ny = (e.clientY / window.innerHeight) * 2 - 1;
+        setTilt({ x: nx, y: ny });
+      });
+    }
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(frame.current);
+    };
+  }, [enabled]);
+
+  return tilt;
+}
+
 // The viewBox reserves space below the sculpture for its reflection, so the
 // rendered box is taller than it is wide.
 const VB = { x: -124, y: -112, w: 248, h: 300 };
@@ -183,7 +220,9 @@ function Plane({ rotateY = 0 }) {
 
 // `spin` turns continuously through a full circle; without it the piece just
 // sways. Width comes from the parent — the box keeps the viewBox aspect.
-export default function Inkblot3D({ className = '', spin = false }) {
+export default function Inkblot3D({ className = '', spin = false, interactive = false }) {
+  const tilt = usePointerTilt(interactive);
+
   return (
     <div className={`relative ${className}`} style={{ aspectRatio: `${VB.w} / ${VB.h}` }}>
       <Defs />
@@ -202,13 +241,25 @@ export default function Inkblot3D({ className = '', spin = false }) {
 
       <div className="absolute inset-0" style={{ perspective: '1600px' }}>
         <div
-          className={`absolute inset-0 ${spin ? 'animate-spin-3d-full' : 'animate-spin-3d'}`}
-          style={{ transformStyle: 'preserve-3d' }}
-          role="img"
-          aria-label="A slowly turning glass sculpture with mirrored, ink-blot-like symmetry"
+          className="absolute inset-0"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: `translate3d(${tilt.x * -14}px, ${tilt.y * -10}px, 0) rotateY(${
+              tilt.x * 16
+            }deg) rotateX(${tilt.y * -12}deg)`,
+            // Long ease so the piece drifts after the cursor instead of snapping.
+            transition: 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
         >
-          <Plane />
-          {spin && <Plane rotateY={90} />}
+          <div
+            className={`absolute inset-0 ${spin ? 'animate-spin-3d-full' : 'animate-spin-3d'}`}
+            style={{ transformStyle: 'preserve-3d' }}
+            role="img"
+            aria-label="A slowly turning glass sculpture with mirrored, ink-blot-like symmetry"
+          >
+            <Plane />
+            {spin && <Plane rotateY={90} />}
+          </div>
         </div>
       </div>
     </div>

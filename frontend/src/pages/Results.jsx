@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Button from '../components/Button.jsx';
+import ChatPanel from '../components/ChatPanel.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus } from '../lib/api.js';
 
@@ -16,6 +17,7 @@ export default function Results() {
   const navigate = useNavigate();
   const session = getSession();
   const [record, setRecord] = useState(location.state?.record || null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(!location.state?.record);
 
   useEffect(() => {
@@ -69,12 +71,25 @@ export default function Results() {
               </p>
             </div>
 
+            {chatOpen ? (
+              <div className="mt-6">
+                <ChatPanel
+                  checkin={{ mood: record.mood, words: record.words }}
+                  onClose={() => setChatOpen(false)}
+                />
+              </div>
+            ) : (
+              <Button className="mt-6" variant="secondary" onClick={() => setChatOpen(true)}>
+                Talk about it
+              </Button>
+            )}
+
             <p className="mt-6 text-xs text-center text-[var(--color-muted)]">
               Sahay AI is a reflective prototype, not a medical device. If you feel unsafe,
               contact a local helpline, your warden or a professional.
             </p>
 
-            <Button className="mt-6" variant="secondary" onClick={() => navigate('/')}>
+            <Button className="mt-4" variant="secondary" onClick={() => navigate('/')}>
               Done
             </Button>
           </>
