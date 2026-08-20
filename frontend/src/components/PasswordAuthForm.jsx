@@ -12,6 +12,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   const [phoneLocal, setPhoneLocal] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPhone, setShowPhone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -21,9 +22,9 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
     : identifier.trim() && password.length > 0;
 
   const inputClass = dark
-    ? 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
-    : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-  const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
+    ? 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
+    : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
+  const labelClass = `text-[10px] uppercase tracking-wider ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
 
   function switchMode(next) {
     setMode(next);
@@ -55,12 +56,12 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   return (
     <div className="w-full">
       <div
-        className={`mb-4 flex rounded-full p-1 text-sm ${dark ? 'bg-white/5' : 'bg-[var(--color-cream-soft)]'}`}
+        className={`mb-3 flex rounded-full p-1 text-sm ${dark ? 'bg-white/5' : 'bg-[var(--color-cream-soft)]'}`}
       >
         <button
           type="button"
           onClick={() => switchMode('login')}
-          className={`flex-1 rounded-full py-2 transition-colors ${
+          className={`flex-1 rounded-full py-1.5 transition-colors ${
             mode === 'login'
               ? dark
                 ? 'bg-white/15 font-medium text-white'
@@ -75,7 +76,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         <button
           type="button"
           onClick={() => switchMode('signup')}
-          className={`flex-1 rounded-full py-2 transition-colors ${
+          className={`flex-1 rounded-full py-1.5 transition-colors ${
             mode === 'signup'
               ? dark
                 ? 'bg-white/15 font-medium text-white'
@@ -89,7 +90,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-2.5">
         {isSignup ? (
           <>
             <div>
@@ -105,32 +106,47 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                 className={inputClass}
               />
             </div>
-            <div>
-              <label className={labelClass}>Phone number (optional)</label>
-              <div className="mt-1 flex gap-2">
-                <select
-                  value={countryCode}
-                  onChange={(e) => setCountryCode(e.target.value)}
-                  className={
-                    dark
-                      ? 'rounded-xl border border-white/15 bg-white/5 px-2 py-3 text-sm text-white outline-none focus:border-white/40'
-                      : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
-                  }
-                >
-                  {COUNTRY_CODES.map((c) => (
-                    <option key={c.code} value={c.code} className="text-black">
-                      {c.code}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  value={phoneLocal}
-                  onChange={(e) => setPhoneLocal(e.target.value)}
-                  placeholder="98765 43210"
-                  className={`${inputClass} mt-0`}
-                />
+            {/* Optional, so it stays collapsed until asked for — keeps the
+                signup form short enough to fit without scrolling. */}
+            {showPhone ? (
+              <div>
+                <label className={labelClass}>Phone number (optional)</label>
+                <div className="mt-1 flex gap-2">
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className={
+                      dark
+                        ? 'rounded-xl border border-white/15 bg-white/5 px-2 py-2.5 text-sm text-white outline-none focus:border-white/40'
+                        : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]'
+                    }
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.code} value={c.code} className="text-black">
+                        {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    autoFocus
+                    value={phoneLocal}
+                    onChange={(e) => setPhoneLocal(e.target.value)}
+                    placeholder="98765 43210"
+                    className={`${inputClass} mt-0`}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowPhone(true)}
+                className={`text-xs underline underline-offset-4 ${
+                  dark ? 'text-white/45 hover:text-white/70' : 'text-[var(--color-muted)]'
+                }`}
+              >
+                + Add phone number (optional)
+              </button>
+            )}
           </>
         ) : (
           <div>
@@ -157,7 +173,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
 
         {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
 
-        <Button type="submit" disabled={!canSubmit || submitting}>
+        <Button type="submit" size="compact" disabled={!canSubmit || submitting}>
           {submitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in'}
         </Button>
       </form>
