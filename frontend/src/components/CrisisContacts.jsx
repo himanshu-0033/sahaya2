@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const HELPLINES = [
   { name: 'Emergency (police / ambulance)', number: '112', note: 'If you or someone else is in immediate danger' },
@@ -10,6 +10,17 @@ const HELPLINES = [
 
 export default function CrisisContacts({ variant = 'button', dark = false }) {
   const [open, setOpen] = useState(false);
+
+  // Escape must always get you out — this dialog can appear at a bad moment and
+  // must never feel like a trap.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
 
   return (
     <>
@@ -39,43 +50,68 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-ink)]/55 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-ink)]/70 p-4"
           onClick={() => setOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Crisis contacts"
         >
+          {/* Column layout: header and footer stay put, only the list scrolls,
+              so a way out is always on screen. */}
           <div
-            className="card-soft max-h-[85vh] w-full max-w-md overflow-y-auto rounded-3xl p-6"
+            className="card-soft flex max-h-[88vh] w-full max-w-md flex-col rounded-3xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase">
-              You're not alone
-            </p>
-            <h3 className="font-display text-2xl mt-2">Someone is ready to talk right now.</h3>
-            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-              These lines are free and confidential. If you're in immediate danger, call 112.
-            </p>
-
-            <div className="mt-5 space-y-2">
-              {HELPLINES.map((h) => (
-                <a
-                  key={h.number}
-                  href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
-                  className="flex items-center justify-between rounded-xl border border-[var(--color-ink)]/8 bg-[var(--color-cream-soft)] px-4 py-3 hover:border-[var(--color-teal)]/40"
-                >
-                  <span>
-                    <span className="block text-sm font-medium">{h.name}</span>
-                    <span className="block text-xs text-[var(--color-muted)]">{h.note}</span>
-                  </span>
-                  <span className="font-display text-lg text-[var(--color-teal-dark)]">{h.number}</span>
-                </a>
-              ))}
+            <div className="flex shrink-0 items-start justify-between gap-4 p-6 pb-4">
+              <div>
+                <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase">
+                  You're not alone
+                </p>
+                <h3 className="font-display text-2xl mt-2">Someone is ready to talk right now.</h3>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="-mr-1 -mt-1 shrink-0 rounded-full border border-[var(--color-ink)]/10 p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-cream-soft)]"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            <button
-              onClick={() => setOpen(false)}
-              className="mt-5 w-full rounded-full border border-[var(--color-ink)]/10 py-3 text-sm text-[var(--color-ink-soft)] hover:bg-[var(--color-cream-soft)]"
-            >
-              Close
-            </button>
+            <div className="min-h-0 flex-1 overflow-y-auto px-6">
+              <p className="text-sm text-[var(--color-ink-soft)]">
+                These lines are free and confidential. If you're in immediate danger, call 112.
+              </p>
+
+              <div className="mt-4 space-y-2 pb-2">
+                {HELPLINES.map((h) => (
+                  <a
+                    key={h.number}
+                    href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)]/8 bg-[var(--color-cream-soft)] px-4 py-3 hover:border-[var(--color-teal)]/40"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">{h.name}</span>
+                      <span className="block text-xs text-[var(--color-muted)]">{h.note}</span>
+                    </span>
+                    <span className="shrink-0 font-display text-lg whitespace-nowrap text-[var(--color-teal-dark)]">
+                      {h.number}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="shrink-0 p-6 pt-4">
+              <button
+                onClick={() => setOpen(false)}
+                className="w-full rounded-full border border-[var(--color-ink)]/10 py-3 text-sm text-[var(--color-ink-soft)] hover:bg-[var(--color-cream-soft)]"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

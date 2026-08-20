@@ -1,0 +1,15 @@
+{
+  "name": "sahay-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "dev:local": "node --env-file=.env.local dev-server.js",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.0.2",
+    "jsonwebtoken": "^9.0.3"
+  }
+}
