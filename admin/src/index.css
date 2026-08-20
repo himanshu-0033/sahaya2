@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+/* Same palette as the resident app so the two feel like one product, with
+   lavender promoted to the accent so a counsellor can tell at a glance which
+   window they are looking at. */
+@theme {
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #07080a;
+  --color-cream-soft: #15171b;
+  --color-ink: #f4f2ee;
+  --color-ink-soft: #b7bcc0;
+  --color-muted: #8b929c;
+  --color-teal: #1fae95;
+  --color-teal-dark: #5fd6bf;
+  --color-teal-soft: rgba(31, 174, 149, 0.16);
+  --color-amber: #d9a55c;
+  --color-lavender: #a79cf0;
+  --color-lavender-soft: rgba(167, 156, 240, 0.16);
+  --color-flag: #ef8064;
+  --color-flag-soft: rgba(239, 128, 100, 0.14);
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.card-soft {
+  background: var(--color-cream-soft);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.6);
+}
+
+.input-soft {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-soft::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.input-soft:focus {
+  border-color: var(--color-lavender);
+  box-shadow: 0 0 0 3px var(--color-lavender-soft);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; }
+}

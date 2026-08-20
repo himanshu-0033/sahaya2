@@ -88,3 +88,27 @@ export async function requireCaregiverUser(req, res) {
   res.status(403).json({ error: `${user.email} is not on the caregiver allowlist` });
   return null;
 }
+
+// The counsellor/admin console is a separate app with its own allowlist.
+// Falls back to CAREGIVER_EMAILS so a single-allowlist deployment keeps
+// working without extra configuration.
+export async function requireAdminUser(req, res) {
+  const user = await requireGoogleUser(req, res);
+  if (!user) return null;
+
+  const raw = process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS || '';
+  const allowlist = raw
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (allowlist.length === 0) {
+    // No allowlist configured — open for local/dev prototyping.
+    return user;
+  }
+  if (allowlist.includes(user.email.toLowerCase())) {
+    return user;
+  }
+  res.status(403).json({ error: `${user.email} is not on the counsellor allowlist` });
+  return null;
+}

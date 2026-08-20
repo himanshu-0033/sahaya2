@@ -10,6 +10,10 @@ import signupHandler from './api/auth/signup.js';
 import loginHandler from './api/auth/login.js';
 import caregiverResidentsHandler from './api/caregiver/residents.js';
 import caregiverResidentHandler from './api/caregiver/resident.js';
+import adminMeHandler from './api/admin/me.js';
+import adminOverviewHandler from './api/admin/overview.js';
+import adminResidentsHandler from './api/admin/residents.js';
+import adminResidentHandler from './api/admin/resident.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -20,6 +24,10 @@ const routes = {
   '/api/auth/login': loginHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
+  '/api/admin/me': adminMeHandler,
+  '/api/admin/overview': adminOverviewHandler,
+  '/api/admin/residents': adminResidentsHandler,
+  '/api/admin/resident': adminResidentHandler,
 };
 
 function enhanceResponse(res) {

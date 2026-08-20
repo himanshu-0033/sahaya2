@@ -2,7 +2,7 @@
 
 A wellness check-in prototype: a resident looks at three abstract "plates,"
 types the first word each brings to mind, taps a mood, and gets a short
-affirming thought plus a dinner pass. A caregiver dashboard surfaces
+affirming thought plus a dinner pass. A separate counsellor console surfaces
 residents whose recent check-ins look worth a real conversation, using a
 plain rule-based heuristic — not a diagnosis.
 
@@ -11,16 +11,23 @@ perform clinical assessment of any kind.
 
 ## Structure
 
-Two independently deployable modules:
+Independently deployable modules:
 
 ```
-frontend/   React + Vite + Tailwind — the resident and caregiver UI
+frontend/   React + Vite + Tailwind — the resident UI (and a light caregiver view)
+admin/      React + Vite + Tailwind — the counsellor/admin console, its own window
 backend/    Vercel serverless functions (/api) — check-ins, residents, storage
+agent/      Vercel serverless function (/api/chat) — the supportive chat companion
 ```
 
-They talk over HTTP (`VITE_API_URL` on the frontend points at the backend's
-deployed URL). Each has its own `package.json` and deploys as its own
-Vercel project.
+They talk over HTTP (`VITE_API_URL` in `frontend/` and `admin/` points at the
+backend's deployed URL). Each has its own `package.json` and deploys as its
+own Vercel project.
+
+`admin/` is deliberately a separate app rather than another route in
+`frontend/`: a counsellor keeps it open in its own window, it signs in under
+its own storage key (so it doesn't collide with a resident session in another
+window of the same browser), and it never ships resident-facing code.
 
 ## How it works
 
@@ -42,17 +49,27 @@ Vercel project.
   resident, but the caregiver dashboard additionally checks the signed-in
   email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See
   "Before this handles real data" below.
+- **Counsellor console** (`admin/`): the same sign-in, checked against
+  `ADMIN_EMAILS` (falling back to `CAREGIVER_EMAILS`) on every request. It
+  shows a cohort dashboard — today's participation, 14-day check-in trend,
+  mood mix, who is flagged, and who has gone quiet — plus a searchable,
+  filterable resident list and a per-resident page with contact details, mood
+  trend, and the full check-in history. Lists and histories export to CSV.
+  All of it is read-only apart from inviting a new resident.
 
 ## Local development
 
-Two terminals:
+Separate terminals, one per module you need:
 
 ```bash
 cd backend && npm install && npm run dev:local   # plain Node server on :3000, no Vercel login needed
 cd frontend && npm install && npm run dev         # Vite on :5173, proxies /api to :3000
+cd admin && npm install && npm run dev            # Vite on :5174, proxies /api to :3000
 ```
 
-Open http://localhost:5173. Without `STORAGE_URL` set, the backend stores
+Open http://localhost:5173 for the resident app and http://localhost:5174 for
+the counsellor console — they're meant to be two windows, and each keeps its
+own sign-in. Without `STORAGE_URL` set, the backend stores
 data in a local JSON file (`backend/.data/db.json`, gitignored) — fine for
 local dev, **not** for a real deployment (see below).
 
@@ -83,8 +100,9 @@ a different **Root Directory**.
      filesystem is read-only outside `/tmp`, and `/tmp` doesn't survive
      between requests.
    - **Settings → Environment Variables**: set `GOOGLE_CLIENT_ID` (from
-     Google Cloud Console), `CAREGIVER_EMAILS` (comma-separated allowlist),
-     and `ALLOWED_ORIGIN` to your frontend's URL once you know it (step 2).
+     Google Cloud Console), `CAREGIVER_EMAILS` and `ADMIN_EMAILS`
+     (comma-separated allowlists), and `ALLOWED_ORIGIN` to your frontend and
+     admin URLs, comma-separated, once you know them (steps 2 and 3).
    - Redeploy after adding env vars so they take effect.
 
 2. **Frontend**:
@@ -98,17 +116,28 @@ a different **Root Directory**.
    vercel --prod
    ```
 
-3. Go back to the backend project and set `ALLOWED_ORIGIN` to the
-   frontend's URL, then redeploy the backend so CORS is locked down
-   instead of `*`.
+3. **Admin console** — same shape as the frontend, its own project:
+   ```bash
+   cd admin
+   vercel link       # creates/links a project, e.g. sahay-admin
+   ```
+   Set `VITE_API_URL` and `VITE_GOOGLE_CLIENT_ID` in its dashboard (same
+   values as the frontend), then `vercel --prod`. Add its URL to the Google
+   OAuth Client's authorized JavaScript origins too, or sign-in won't render.
+
+4. Go back to the backend project and set `ALLOWED_ORIGIN` to the frontend's
+   and admin's URLs, comma-separated, then redeploy the backend so CORS is
+   locked down instead of `*`.
 
 ## Before this handles real residents' data
 
 This was built as a prototype and cuts corners that matter once real
 mental-health-adjacent data is involved:
 
-- Caregiver access is an email allowlist checked on every request, but
-  there's no audit log of who viewed what.
+- Caregiver and counsellor access is an email allowlist checked on every
+  request, but there's no audit log of who viewed what — and the admin
+  console shows contact details and exports them to CSV, so that gap matters
+  more there than anywhere else.
 - The OAuth consent screen is unverified — Google will show an "unverified
   app" warning until you go through Google's verification process, which
   matters once this is used by people who don't personally know you.

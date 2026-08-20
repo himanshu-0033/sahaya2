@@ -1,0 +1,52 @@
+import { randomUUID } from 'node:crypto';
+import { getCheckins, getResidents, saveResidents } from '../../lib/store.js';
+import { applyCors } from '../../lib/cors.js';
+import { requireAdminUser } from '../../lib/auth.js';
+import { summarizeResidents } from '../../lib/analytics.js';
+
+export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
+
+  const admin = await requireAdminUser(req, res);
+  if (!admin) return;
+
+  if (req.method === 'POST') {
+    const { name, email } = req.body || {};
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ error: 'A valid email is required' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const residents = await getResidents();
+    if (residents.some((r) => (r.email || '').toLowerCase() === normalizedEmail)) {
+      return res.status(409).json({ error: 'Someone with this email is already on the list.' });
+    }
+
+    const now = new Date().toISOString();
+    const resident = {
+      id: 'invited_' + randomUUID(),
+      name: name.trim(),
+      email: normalizedEmail,
+      invited: true,
+      invitedBy: admin.email,
+      onboarded: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await saveResidents([...residents, resident]);
+    return res.status(201).json({ resident });
+  }
+
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET, POST, OPTIONS');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
+  return res.status(200).json({
+    residents: summarizeResidents(residents, checkins, { detailed: true }),
+  });
+}
