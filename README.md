@@ -73,10 +73,16 @@ own sign-in. Without `STORAGE_URL` set, the backend stores
 data in a local JSON file (`backend/.data/db.json`, gitignored) — fine for
 local dev, **not** for a real deployment (see below).
 
-Both `frontend/.env` and `backend/.env` need `VITE_GOOGLE_CLIENT_ID` /
-`GOOGLE_CLIENT_ID` (same value) from a Google Cloud OAuth Client ID with
-`http://localhost:5173` as an authorized JavaScript origin — sign-in won't
-work without it.
+`frontend/.env`, `admin/.env` and `backend/.env` all need
+`VITE_GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_ID` (same value) from a Google Cloud
+OAuth Client ID — sign-in won't work without it. That Client ID needs **both**
+`http://localhost:5173` and `http://localhost:5174` listed as authorized
+JavaScript origins (Google checks the origin, and the two apps run on
+different ports), otherwise the Google button won't render in the console.
+Email/password sign-in works either way.
+
+Vite reads `.env.local` once at startup, so restart the dev server after
+creating or editing it.
 
 `npm run dev` (instead of `dev:local`) in `backend/` uses `vercel dev`
 instead, which needs `vercel login` first — slower to start but closer to

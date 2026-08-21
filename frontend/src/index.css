@@ -1,8 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap");
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
 
 @theme {
-  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-cream: #07080a;
@@ -28,6 +28,24 @@ body {
 
 .font-display {
   font-family: var(--font-serif);
+}
+
+/* The hero headline: light, wide-tracked capitals. Cormorant's caps are
+   small relative to its point size, so this runs larger than a sans would
+   at the same visual weight. */
+.font-hero {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  line-height: 1.08;
+}
+
+/* Small caps used for the wordmark and the eyebrow labels. */
+.font-eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
 }
 
 @keyframes fade-in-up {
