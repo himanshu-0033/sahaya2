@@ -5,7 +5,7 @@ const PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
 const CLIENT_EMAIL = process.env.FIREBASE_CLIENT_EMAIL;
 // Env vars can't carry real newlines, so the service-account key is pasted
 // with literal \n sequences and unescaped here.
-const PRIVATE_KEY = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\n/g, '\n');
+const PRIVATE_KEY = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
 
 let app = null;
 
