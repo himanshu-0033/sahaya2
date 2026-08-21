@@ -82,10 +82,10 @@ export async function requireCaregiverUser(req, res) {
     // No allowlist configured — open for local/dev prototyping.
     return user;
   }
-  if (allowlist.includes(user.email.toLowerCase())) {
+  if (allowlist.includes((user.email || '').toLowerCase())) {
     return user;
   }
-  res.status(403).json({ error: `${user.email} is not on the caregiver allowlist` });
+  res.status(403).json({ error: `${user.email || 'This account'} is not on the caregiver allowlist` });
   return null;
 }
 
@@ -106,9 +106,9 @@ export async function requireAdminUser(req, res) {
     // No allowlist configured — open for local/dev prototyping.
     return user;
   }
-  if (allowlist.includes(user.email.toLowerCase())) {
+  if (allowlist.includes((user.email || '').toLowerCase())) {
     return user;
   }
-  res.status(403).json({ error: `${user.email} is not on the counsellor allowlist` });
+  res.status(403).json({ error: `${user.email || 'This account'} is not on the counsellor allowlist` });
   return null;
 }

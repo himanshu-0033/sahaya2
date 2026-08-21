@@ -22,13 +22,16 @@ export default async function handler(req, res) {
 
     const residents = await getResidents();
     const idx = residents.findIndex((r) => r.id === residentId);
+    const existing = idx === -1 ? null : residents[idx];
     const now = new Date().toISOString();
     const profile = {
       id: residentId,
       name: (name || '').trim() || googleUser.name,
-      email: (email || '').trim() || googleUser.email,
+      email: (email || '').trim() || googleUser.email || '',
       dob: (dob || '').trim(),
-      phone: (phone || '').trim(),
+      // For a phone-verified account the number IS the login identity, so a
+      // blank field here means "unchanged", not "delete it".
+      phone: (phone || '').trim() || existing?.phone || '',
       address: (address || '').trim(),
       occupation: (occupation || '').trim(),
       onboarded: true,

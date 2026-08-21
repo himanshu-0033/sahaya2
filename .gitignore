@@ -27,3 +27,9 @@ backend/.data
 *.sln
 *.sw?
 agent/.data
+
+# Firebase service-account keys — the console downloads these as a JSON file
+# with a name like my-project-firebase-adminsdk-ab12c-3d4e5f6a7b.json.
+# Copy the three fields you need into .env.local instead of committing it.
+*firebase-adminsdk*.json
+serviceAccountKey.json

@@ -158,7 +158,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                 >
                   <div className="flex flex-col items-stretch gap-2">
                     <GoogleSignInButton dark onSignedIn={onSignedIn} />
-                    <PhoneSignInButton dark />
+                    <PhoneSignInButton dark onSignedIn={onSignedIn} />
                   </div>
 
                   <div className="my-4 flex items-center gap-3 text-[11px] tracking-wide text-white/25">
