@@ -9,6 +9,8 @@ import profileHandler from './api/profile.js';
 import signupHandler from './api/auth/signup.js';
 import loginHandler from './api/auth/login.js';
 import phoneHandler from './api/auth/phone.js';
+import phoneStartHandler from './api/auth/phone-start.js';
+import phoneVerifyHandler from './api/auth/phone-verify.js';
 import caregiverResidentsHandler from './api/caregiver/residents.js';
 import caregiverResidentHandler from './api/caregiver/resident.js';
 import adminMeHandler from './api/admin/me.js';
@@ -24,6 +26,8 @@ const routes = {
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
   '/api/auth/phone': phoneHandler,
+  '/api/auth/phone-start': phoneStartHandler,
+  '/api/auth/phone-verify': phoneVerifyHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
   '/api/admin/me': adminMeHandler,

@@ -84,11 +84,11 @@ JavaScript origins (Google checks the origin, and the two apps run on
 different ports), otherwise the Google button won't render in the console.
 Email/password sign-in works either way.
 
-Phone sign-in is optional and off until configured: set the four
-`VITE_FIREBASE_*` vars in `frontend/.env.local` and the three
-`FIREBASE_*` vars in `backend/.env.local` (see the `.env.example` files).
-With them unset the phone button stays a placeholder and nothing else
-changes. Setup steps are in "Phone sign-in" below.
+Phone sign-in needs `DEV_OTP=true` in `backend/.env.local` — the code is then
+printed to the backend terminal instead of being sent by SMS, which costs
+nothing and needs no provider account. Real SMS via Firebase is the
+alternative and needs a paid plan. Both are covered under "Phone sign-in"
+below.
 
 Vite reads `.env.local` once at startup, so restart the dev server after
 creating or editing it.
@@ -146,9 +146,46 @@ a different **Root Directory**.
 
 ## Phone sign-in
 
-Optional. Firebase does the SMS and the code check; this app only trusts the
-signed token it hands back. Unconfigured, the phone button shows a
-placeholder and every other sign-in path is unaffected.
+Two interchangeable routes, picked by environment. The account side is
+identical either way (`lib/phoneAccount.js`): a verified number matches an
+existing resident or becomes a new one, and both end up issuing the same
+`JWT_SECRET`-signed session as every other sign-in.
+
+| | Backend OTP (default) | Firebase |
+|---|---|---|
+| Real SMS | No — code goes to the backend terminal | Yes |
+| Cost | Free | Needs the Blaze plan (card on file) |
+| Switched on by | `DEV_OTP=true` in `backend/.env.local` | the four `VITE_FIREBASE_*` vars |
+
+The frontend picks Firebase when all four `VITE_FIREBASE_*` vars are set and
+falls back to the backend OTP route otherwise, so commenting those four out
+is the whole switch.
+
+### Backend OTP (no SMS provider)
+
+Set `DEV_OTP=true` in `backend/.env.local`. `POST /api/auth/phone-start`
+generates a 6-digit code, stores **only a bcrypt hash** of it with a 5-minute
+expiry, prints it to the backend terminal and returns it in the response;
+`POST /api/auth/phone-verify` checks it and issues the session. Codes are
+single-use, capped at 5 wrong attempts, rate-limited to one per 30s and five
+per hour per number.
+
+Returning the code to the caller is an open door into any account, so both
+routes **refuse to run at all** unless `DEV_OTP=true` — they cannot ship to
+production by accident. Swapping in Twilio/MSG91 later is a change to those
+two files only: stop returning `devCode`, send it instead.
+
+### Firebase (real SMS)
+
+Firebase does the SMS and the code check; this app only trusts the signed
+token it hands back.
+
+**Phone Auth is not on the Spark free plan** — it is listed as "Not applicable"
+there and needs the pay-as-you-go **Blaze** plan with a billing account. The
+first 10 SMS/day are not billed and test numbers send no SMS at all, so
+development is free, but a card has to be on file. If you go this way, set an
+SMS region allowlist and a budget alert first — a public phone-auth endpoint
+with billing attached is a target for SMS pumping.
 
 1. **Create the Firebase project** — [console.firebase.google.com](https://console.firebase.google.com)
    → *Add project*. Google Analytics is not needed.

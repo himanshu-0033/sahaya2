@@ -42,6 +42,20 @@ export function phoneLogin({ firebaseToken, name }) {
   });
 }
 
+export function phoneStart({ phone }) {
+  return request('/api/auth/phone-start', {
+    method: 'POST',
+    body: JSON.stringify({ phone }),
+  });
+}
+
+export function phoneVerify({ phone, code, name }) {
+  return request('/api/auth/phone-verify', {
+    method: 'POST',
+    body: JSON.stringify({ phone, code, name }),
+  });
+}
+
 export function submitCheckin({ words, mood }) {
   return request('/api/checkins', {
     method: 'POST',

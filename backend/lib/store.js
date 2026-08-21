@@ -80,3 +80,17 @@ export async function saveResidents(residents) {
 }
 
 export const storageMode = MONGO_URI ? 'mongodb' : 'local-file';
+
+// Pending phone one-time codes. Short-lived by nature — every record carries
+// its own expiry and is pruned on the next write.
+export async function getOtps() {
+  if (MONGO_URI) return readState('otps');
+  return readFileDb().otps || [];
+}
+
+export async function saveOtps(otps) {
+  if (MONGO_URI) return writeState('otps', otps);
+  const db = readFileDb();
+  db.otps = otps;
+  writeFileDb(db);
+}

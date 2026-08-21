@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Button from './Button.jsx';
-import { phoneLogin } from '../lib/api.js';
+import { phoneLogin, phoneStart, phoneVerify } from '../lib/api.js';
 import { decodeJwt, saveSession } from '../lib/session.js';
 import { COUNTRY_CODES } from '../lib/countryCodes.js';
 import { loadPhoneAuth, phoneAuthConfigured, toE164 } from '../lib/firebase.js';
@@ -37,7 +37,8 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
-  const [unconfigured, setUnconfigured] = useState(false);
+  // Only set in the no-SMS-provider mode, where the backend returns the code.
+  const [devCode, setDevCode] = useState(null);
 
   const recaptchaRef = useRef(null);
   const verifierRef = useRef(null);
@@ -69,13 +70,20 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
     setBusy(true);
     setError(null);
     try {
-      const { auth, RecaptchaVerifier, signInWithPhoneNumber } = await loadPhoneAuth();
-      const verifier = ensureVerifier(RecaptchaVerifier, auth);
-      confirmationRef.current = await signInWithPhoneNumber(
-        auth,
-        toE164(countryCode, phoneLocal),
-        verifier,
-      );
+      if (phoneAuthConfigured) {
+        const { auth, RecaptchaVerifier, signInWithPhoneNumber } = await loadPhoneAuth();
+        const verifier = ensureVerifier(RecaptchaVerifier, auth);
+        confirmationRef.current = await signInWithPhoneNumber(
+          auth,
+          toE164(countryCode, phoneLocal),
+          verifier,
+        );
+      } else {
+        // No SMS provider: the backend hands the code straight back and also
+        // prints it to its own terminal.
+        const { devCode } = await phoneStart({ phone: toE164(countryCode, phoneLocal) });
+        setDevCode(devCode || null);
+      }
       setCode('');
       setStep('code');
     } catch (err) {
@@ -92,11 +100,19 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
     setBusy(true);
     setError(null);
     try {
-      const credential = await confirmationRef.current.confirm(code.trim());
-      // Firebase has proven the number; our backend turns that into a Sahay
-      // session so the rest of the app keeps seeing one kind of token.
-      const firebaseToken = await credential.user.getIdToken();
-      const { token } = await phoneLogin({ firebaseToken });
+      let token;
+      if (phoneAuthConfigured) {
+        // Firebase has proven the number; our backend turns that into a Sahay
+        // session so the rest of the app keeps seeing one kind of token.
+        const credential = await confirmationRef.current.confirm(code.trim());
+        const firebaseToken = await credential.user.getIdToken();
+        ({ token } = await phoneLogin({ firebaseToken }));
+      } else {
+        ({ token } = await phoneVerify({
+          phone: toE164(countryCode, phoneLocal),
+          code: code.trim(),
+        }));
+      }
       onSignedIn(saveSession({ idToken: token, profile: decodeJwt(token) }));
     } catch (err) {
       setError(readableError(err));
@@ -108,6 +124,7 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
   function leave(nextStep) {
     resetVerifier();
     setError(null);
+    setDevCode(null);
     setStep(nextStep);
   }
 
@@ -125,7 +142,7 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
       <div className="w-full">
         <button
           type="button"
-          onClick={() => (phoneAuthConfigured ? setStep('number') : setUnconfigured(true))}
+          onClick={() => setStep('number')}
           className={
             dark
               ? 'flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10'
@@ -135,13 +152,6 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
           <PhoneIcon />
           Continue with phone number
         </button>
-        {unconfigured && (
-          <p
-            className={`mt-2 text-center text-xs ${dark ? 'text-white/50' : 'text-[var(--color-muted)]'}`}
-          >
-            Phone sign-in is being set up — use Google for now.
-          </p>
-        )}
       </div>
     );
   }
@@ -198,8 +208,13 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
               className={`mt-1 tracking-[0.4em] ${inputClass}`}
             />
             <p className={`mt-1.5 text-xs ${dark ? 'text-white/35' : 'text-[var(--color-muted)]'}`}>
-              Sent to {toE164(countryCode, phoneLocal)}
+              {devCode ? 'No SMS provider is set up, so the code is shown here and in the backend terminal.' : `Sent to ${toE164(countryCode, phoneLocal)}`}
             </p>
+            {devCode && (
+              <p className={`mt-1 font-mono text-sm ${dark ? 'text-white/70' : 'text-[var(--color-ink)]'}`}>
+                {devCode}
+              </p>
+            )}
           </div>
           {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
           <Button type="submit" size="compact" disabled={busy || code.replace(/\D/g, '').length < 6}>
