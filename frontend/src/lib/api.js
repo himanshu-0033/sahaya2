@@ -211,3 +211,19 @@ export function logGroundingPractice({ techniqueId, secondsPracticed, completed,
     body: JSON.stringify({ techniqueId, secondsPracticed, completed, before, after }),
   });
 }
+
+export function getPaths() {
+  return request('/api/paths');
+}
+
+export function getPath(pathId) {
+  return request(`/api/paths?pathId=${encodeURIComponent(pathId)}`);
+}
+
+// action: 'start' | 'complete' | 'undo' | 'leave'
+export function updatePath({ pathId, action, day }) {
+  return request('/api/paths', {
+    method: 'POST',
+    body: JSON.stringify({ pathId, action, day }),
+  });
+}

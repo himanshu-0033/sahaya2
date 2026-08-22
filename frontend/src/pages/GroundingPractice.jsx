@@ -36,7 +36,7 @@ function SettledPicker({ value, onChange, accentName }) {
             type="button"
             onClick={() => onChange(selected ? null : option.value)}
             aria-pressed={selected}
-            className="press lift rounded-2xl border px-4 py-2.5 text-sm transition-all duration-200"
+            className="press rounded-full border px-4 py-2.5 text-sm transition-colors duration-200"
             style={{
               borderColor: selected ? base : 'rgba(244, 242, 238, 0.12)',
               background: selected ? alpha(base, 0.16) : 'transparent',
@@ -265,26 +265,18 @@ export default function GroundingPractice() {
     <div className="relative min-h-screen overflow-hidden">
       {/* Ambience in the practice's own accent, so the screen changes character
           between a breath exercise and a self-compassion break. */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
         <div
-          className="animate-aurora-a absolute -top-48 left-1/4 h-[38rem] w-[38rem] rounded-full opacity-30"
+          className="absolute inset-x-0 top-0 h-[26rem]"
           style={{
-            background: `radial-gradient(circle, ${alpha(colors.base, 0.55)}, transparent 66%)`,
-            filter: 'blur(70px)',
-          }}
-        />
-        <div
-          className="animate-aurora-b absolute -bottom-48 -left-32 h-[32rem] w-[32rem] rounded-full opacity-20"
-          style={{
-            background: `radial-gradient(circle, ${alpha(colors.bright, 0.5)}, transparent 66%)`,
-            filter: 'blur(80px)',
+            background: `radial-gradient(120% 100% at 50% 0%, ${alpha(colors.base, 0.14)}, transparent 70%)`,
           }}
         />
       </div>
 
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
         {loading && !technique && (
-          <p className="mt-16 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+          <p className="stack-section animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
         )}
         {error && !technique && (
           <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -336,7 +328,7 @@ export default function GroundingPractice() {
 
             {/* Cautions come before the start button, never after it. */}
             {technique.cautions && (
-              <div className="mt-7 rounded-2xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] p-5">
+              <div className="mt-6 rounded-2xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] p-5">
                 <p className="marginalia" style={{ color: 'var(--color-flag)' }}>Before you start</p>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
                   {technique.cautions}
@@ -344,7 +336,7 @@ export default function GroundingPractice() {
               </div>
             )}
 
-            <p className="mt-7 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            <p className="mt-6 text-sm leading-relaxed text-[var(--color-ink-soft)]">
               {technique.why}
             </p>
 
@@ -364,7 +356,7 @@ export default function GroundingPractice() {
               Start — {formatDuration(technique.seconds)}
             </Button>
 
-            <div className="mt-12">
+            <div className="stack-section">
               <p className="marginalia">
                 Why this is in here
               </p>
@@ -373,7 +365,7 @@ export default function GroundingPractice() {
                 style={{ borderColor: alpha(colors.base, 0.2) }}
               >
                 <span
-                  className="inline-block rounded-full px-3 py-1 text-[10px]"
+                  className="inline-block rounded-full px-3 py-1 text-[11px]"
                   style={{ background: alpha(colors.base, 0.18), color: colors.bright }}
                 >
                   {EVIDENCE_LABEL[technique.evidence.strength]}
@@ -397,12 +389,12 @@ export default function GroundingPractice() {
               </div>
             </div>
 
-            <div className="mt-12">
+            <div className="stack-section">
               <VideoShelf videos={technique.videos} accentName={accentName} />
             </div>
 
-            <footer className="mt-12 flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="text-[10px] text-[var(--color-muted)]">
+            <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
+              <p className="text-[11px] text-[var(--color-muted)]">
                 A practice, not a treatment.
               </p>
               <CrisisContacts variant="link" />
@@ -432,7 +424,7 @@ export default function GroundingPractice() {
             <button
               type="button"
               onClick={() => stop(false)}
-              className="press mt-12 text-xs text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
+              className="press stack-section text-xs text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
             >
               Stop here — that still counts
             </button>
@@ -441,7 +433,7 @@ export default function GroundingPractice() {
 
         {/* ----------------------------------------------------------- done */}
         {technique && phase === 'done' && (
-          <div className="animate-fade-up mt-10">
+          <div className="animate-fade-up stack-block">
             <div className="relative flex justify-center py-6">
               <span
                 aria-hidden="true"
@@ -461,7 +453,7 @@ export default function GroundingPractice() {
 
             {!result && (
               <>
-                <div className="mt-10">
+                <div className="stack-block">
                   <p className="marginalia">
                     How settled do you feel now?
                   </p>
@@ -493,7 +485,7 @@ export default function GroundingPractice() {
             )}
 
             {result && (
-              <div className="glass mt-10 rounded-3xl p-6 text-center">
+              <div className="card stack-block p-6 text-center">
                 <p className="font-display text-2xl">
                   <span className="num">{result.streak}</span> day{result.streak === 1 ? '' : 's'} in a row
                 </p>
@@ -512,7 +504,7 @@ export default function GroundingPractice() {
               </div>
             )}
 
-            <div className="mt-14">
+            <div className="stack-section">
               <VideoShelf
                 videos={technique.videos}
                 accentName={accentName}
@@ -520,8 +512,8 @@ export default function GroundingPractice() {
               />
             </div>
 
-            <footer className="mt-12 flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="text-[10px] leading-relaxed text-[var(--color-muted)]">
+            <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
+              <p className="text-[11px] leading-relaxed text-[var(--color-muted)]">
                 Sahaya records that you practised and how settled you said you felt — never a score.
               </p>
               <CrisisContacts variant="link" />

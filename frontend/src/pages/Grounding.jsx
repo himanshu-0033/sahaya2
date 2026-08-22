@@ -26,10 +26,10 @@ function MoodPicker({ moods, active, onPick }) {
             type="button"
             onClick={() => onPick(selected ? null : mood.id)}
             aria-pressed={selected}
-            className={`press rounded-full border px-4 py-2 text-sm transition-all duration-200 ${
+            className={`press rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${
               selected
-                ? 'border-[var(--sec-calm)] bg-[var(--sec-calm)]/14 text-[var(--color-ink)]'
-                : 'border-white/12 text-[var(--color-ink-soft)] lift hover:border-[var(--sec-calm)]/45'
+                ? 'border-[var(--sec-calm)] bg-[var(--sec-calm)]/12 text-[var(--color-ink)]'
+                : 'border-white/10 text-[var(--color-ink-soft)] hover:border-white/25'
             }`}
           >
             {mood.label}
@@ -40,65 +40,43 @@ function MoodPicker({ moods, active, onPick }) {
   );
 }
 
+// One uniform surface. The practice's accent survives in exactly two small
+// places — the duration pill and the "done" stamp — which is enough to tell
+// a breath exercise from a kindness one without giving every card its own
+// coloured background.
 function TechniqueCard({ technique, last, index }) {
   const { base, bright } = accent(technique.accent);
 
   return (
     <Link
       to={`/grounding/${technique.id}`}
-      style={{
-        animationDelay: `${Math.min(index, 8) * 45}ms`,
-        borderColor: alpha(base, 0.22),
-        background: `linear-gradient(145deg, ${alpha(base, 0.14)}, rgba(21, 23, 27, 0.85) 62%)`,
-      }}
-      className="animate-pop press lift group relative overflow-hidden rounded-3xl border p-5"
+      style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+      className="animate-slide-up card press flex flex-col p-5"
     >
-      {/* A soft bloom in the corner, in the practice's own accent — the only
-          thing distinguishing one card from the next at a glance. */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-16 -right-12 h-40 w-40 rounded-full opacity-60 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ background: `radial-gradient(circle, ${alpha(bright, 0.35)}, transparent 68%)` }}
-      />
-
-      <div className="relative">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="font-display text-2xl leading-snug">{technique.name}</p>
-            {technique.aka && (
-              <p className="mt-0.5 text-[11px] text-[var(--color-muted)]">{technique.aka}</p>
-            )}
-          </div>
-          <span
-            className="shrink-0 rounded-full px-2.5 py-1 text-[10px] whitespace-nowrap"
-            style={{ background: alpha(base, 0.18), color: bright }}
-          >
-            {formatDuration(technique.seconds)}
-          </span>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-display text-xl leading-snug">{technique.name}</p>
+          {technique.aka && (
+            <p className="mt-1 text-xs text-[var(--color-muted)]">{technique.aka}</p>
+          )}
         </div>
+        <span
+          className="shrink-0 rounded-full px-2.5 py-1 text-[11px] whitespace-nowrap"
+          style={{ background: alpha(base, 0.14), color: bright }}
+        >
+          {formatDuration(technique.seconds)}
+        </span>
+      </div>
 
-        <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          {technique.tagline}
-        </p>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+        {technique.tagline}
+      </p>
 
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {technique.bestFor.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-[var(--color-ink)]/10 px-2.5 py-1 text-[10px] text-[var(--color-muted)]"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-4 flex items-center justify-between gap-3 text-[10px] text-[var(--color-muted)]">
-          <span>{SPEED_LABEL[technique.speed]}</span>
-          <span className="flex items-center gap-2">
-            {technique.videoCount > 0 && <span>{technique.videoCount} videos</span>}
-            {last && <span style={{ color: bright }}>done {last}</span>}
-          </span>
-        </div>
+      {/* Pushed to the bottom so every card in a row shares one baseline,
+          however long its tagline runs. */}
+      <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-xs text-[var(--color-muted)]">
+        <span>{SPEED_LABEL[technique.speed]}</span>
+        {last && <span style={{ color: bright }}>done {last}</span>}
       </div>
     </Link>
   );
@@ -168,16 +146,13 @@ export default function Grounding() {
     <PageShell section="calm" width="wide">
       <Header eyebrow="Calm" />
 
-      <div className="animate-slide-up mt-8">
-        <h1 className="font-display text-[2.4rem] leading-[1.06] sm:text-5xl">
-          Thirteen things
-          <br />
-          for when your
-          <br />
-          head is loud
+      <div className="animate-slide-up stack-block">
+        <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
+          Thirteen things for when
+          <br className="hidden sm:block" /> your head is loud
           <span className="text-[var(--sec-calm)]">.</span>
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           Short practices you run right here — the app counts, paces and prompts. Each says what
           it is for, how strong the evidence actually is, and links a guided video if you would
           rather be talked through it.
@@ -185,7 +160,7 @@ export default function Grounding() {
       </div>
 
       {loading && !data && (
-        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
       )}
       {error && !data && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -194,12 +169,12 @@ export default function Grounding() {
       {data && (
         <>
           {data.streak > 0 && (
-            <p className="mt-6 inline-block rounded-full border border-[var(--sec-calm)]/25 bg-[var(--sec-calm)]/12 px-4 py-2 text-xs">
+            <p className="mt-6 inline-block rounded-full border border-white/10 px-4 py-2 text-xs text-[var(--color-ink-soft)]">
               <span className="num">{data.streak}</span> day{data.streak === 1 ? '' : 's'} in a row. Nice.
             </p>
           )}
 
-          <section className="mt-10">
+          <section className="stack-section">
             <p className="marginalia">
               How are you right now?
             </p>
@@ -207,11 +182,11 @@ export default function Grounding() {
           </section>
 
           {suggested && (
-            <section className="mt-8">
+            <section className="stack-block">
               <p className="text-sm text-[var(--color-ink-soft)]">
                 Start with the first one — they are in the order most people find useful.
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {suggested.map((technique, i) => (
                   <TechniqueCard
                     key={technique.id}
@@ -228,18 +203,18 @@ export default function Grounding() {
             </section>
           )}
 
-          <div className="mt-14">
+          <div className="stack-section">
             <p className="marginalia">
               {suggested ? 'Everything else' : 'The whole library'}
             </p>
 
             {grouped.map(([family, list]) => (
-              <section key={family.id} className="mt-8">
+              <section key={family.id} className="stack-group">
                 <div className="flex items-baseline gap-3">
                   <h2 className="font-display text-xl">{family.label}</h2>
                   <p className="text-xs text-[var(--color-muted)]">{family.note}</p>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {list.map((technique, i) => (
                     <TechniqueCard
                       key={technique.id}
@@ -253,7 +228,7 @@ export default function Grounding() {
             ))}
           </div>
 
-          <div className="glass mt-12 rounded-3xl p-6">
+          <div className="card stack-section p-6">
             <p className="marginalia">
               What these are and are not
             </p>

@@ -25,6 +25,7 @@ import { useLocation } from 'react-router-dom';
 // page.
 
 const SECTION_HUE = [
+  ['/paths', 'var(--sec-paths)'],
   ['/grounding', 'var(--sec-calm)'],
   ['/assessments', 'var(--sec-tests)'],
   ['/inkblot-test', 'var(--sec-inkblot)'],

@@ -6,6 +6,8 @@ import Results from './pages/Results.jsx';
 import InkblotTest from './pages/InkblotTest.jsx';
 import Assessments from './pages/Assessments.jsx';
 import AssessmentRun from './pages/AssessmentRun.jsx';
+import Paths from './pages/Paths.jsx';
+import PathRun from './pages/PathRun.jsx';
 import Grounding from './pages/Grounding.jsx';
 import GroundingPractice from './pages/GroundingPractice.jsx';
 import Caregiver from './pages/Caregiver.jsx';
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="/inkblot-test" element={<InkblotTest />} />
         <Route path="/assessments" element={<Assessments />} />
         <Route path="/assessments/:instrumentId" element={<AssessmentRun />} />
+        <Route path="/paths" element={<Paths />} />
+        <Route path="/paths/:pathId" element={<PathRun />} />
         <Route path="/grounding" element={<Grounding />} />
         <Route path="/grounding/:techniqueId" element={<GroundingPractice />} />
         <Route path="/caregiver" element={<Caregiver />} />

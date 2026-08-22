@@ -99,7 +99,7 @@ export default function DarkSignInHero({ onSignedIn }) {
           {/* The copy. */}
           <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
             <span
-              className="animate-fade-up font-eyebrow rounded-full border border-white/12 bg-white/5 px-3.5 py-1 text-[10px] text-white/55 backdrop-blur"
+              className="animate-fade-up font-eyebrow rounded-full border border-white/12 bg-white/5 px-3.5 py-1 text-[11px] text-white/55 backdrop-blur"
               style={{ animationDelay: '0.08s' }}
             >
               A quiet minute, once a day

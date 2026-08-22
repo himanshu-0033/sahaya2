@@ -20,12 +20,14 @@ function formatDate(iso) {
 // on the left and right edges of the seam.
 function DinnerPass({ record }) {
   return (
-    <div className="relative overflow-hidden rounded-[26px] border border-[var(--color-amber)]/25"
-      style={{ background: 'linear-gradient(155deg, rgba(217,165,92,0.16), rgba(21,23,27,0.92) 58%)' }}>
+    <div
+      className="relative overflow-hidden rounded-[18px] border border-[var(--color-amber)]/22"
+      style={{ background: 'rgba(217,165,92,0.07)' }}
+    >
       <div className="p-6">
         <div className="flex items-start justify-between gap-4">
           <span className="marginalia">Dinner pass</span>
-          <span className="rounded-full border border-[var(--color-teal)]/40 bg-[var(--color-teal)]/10 px-2.5 py-1 text-[10px] text-[var(--color-teal-dark)]">
+          <span className="rounded-full border border-[var(--color-teal)]/40 bg-[var(--color-teal)]/10 px-2.5 py-1 text-[11px] text-[var(--color-teal-dark)]">
             Valid
           </span>
         </div>
@@ -89,7 +91,7 @@ export default function Results() {
       <Header eyebrow="Today" />
 
       {loading || !record ? (
-        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading today's pass…</p>
+        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading today's pass…</p>
       ) : (
         <>
           {/* The thought is the emotional payload, so it gets the largest type
@@ -107,9 +109,9 @@ export default function Results() {
             </blockquote>
           </section>
 
-          <div className="rule-fade mt-9" />
+          <div className="rule-fade mt-8" />
 
-          <div className="animate-slide-up mt-9" style={{ animationDelay: '90ms' }}>
+          <div className="animate-slide-up mt-8" style={{ animationDelay: '90ms' }}>
             <DinnerPass record={record} />
           </div>
 
@@ -125,7 +127,7 @@ export default function Results() {
               <button
                 type="button"
                 onClick={() => setChatOpen(true)}
-                className="glass press lift flex w-full items-center justify-between gap-4 rounded-3xl p-5 text-left"
+                className="card press flex w-full items-center justify-between gap-4 p-5 text-left"
               >
                 <span>
                   <span className="font-display block text-xl">Want to talk about it?</span>
@@ -142,13 +144,12 @@ export default function Results() {
             )}
           </div>
 
-          <section className="animate-slide-up mt-10" style={{ animationDelay: '210ms' }}>
+          <section className="animate-slide-up stack-block" style={{ animationDelay: '210ms' }}>
             <p className="marginalia">When you have longer</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <Link
                 to="/inkblot-test"
-                className="glass lift press rounded-3xl p-5"
-                style={{ borderColor: 'rgba(217,165,92,0.24)' }}
+                className="card press p-5"
               >
                 <p className="font-display text-xl">The ten-plate inkblot</p>
                 <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
@@ -157,8 +158,7 @@ export default function Results() {
               </Link>
               <Link
                 to="/grounding"
-                className="glass lift press rounded-3xl p-5"
-                style={{ borderColor: 'rgba(167,156,240,0.24)' }}
+                className="card press p-5"
               >
                 <p className="font-display text-xl">Something to calm down</p>
                 <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
@@ -168,7 +168,7 @@ export default function Results() {
             </div>
           </section>
 
-          <div className="rule-fade mt-12" />
+          <div className="rule-fade stack-section" />
 
           <p className="mt-6 pb-2 text-[11px] leading-relaxed text-[var(--color-muted)]">
             Sahaya is a reflective prototype, not a medical device. If you feel unsafe, contact a

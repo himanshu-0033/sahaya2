@@ -15,6 +15,9 @@ Independently deployable modules:
 
 ```
 frontend/   React + Vite + Tailwind — the resident UI (and a light caregiver view)
+            Five tabs: Home, Paths, Calm, Tests, Inkblot. Shared shell in
+            components/PageShell.jsx; one card treatment (.card) and a four-step
+            vertical rhythm (.stack-*) live in src/index.css.
 admin/      React + Vite + Tailwind — the counsellor/admin console, its own window
 backend/    Vercel serverless functions (/api) — check-ins, residents, storage
 agent/      Vercel serverless function (/api/chat) — the supportive chat companion
@@ -84,6 +87,25 @@ window of the same browser), and it never ships resident-facing code.
   answered, words written, which words recurred across plates. Free text is
   screened by `backend/lib/safety.js` before storage. The plates are
   original shapes, not the Rorschach plates.
+- **Guided paths** (`/paths`): five multi-day sequences that put one existing
+  grounding practice in front of a resident per day, in an order that builds —
+  seven days of breathwork for background anxiety, five nights of winding
+  down, a week of getting out of a spinning head, six days of self-compassion,
+  and five days timed around an exam. Days are stored as a list, not a count,
+  because they can be done **out of order**, undone, and picked up on day nine;
+  nothing is gated and there is no streak to break. Four of the five bracket a
+  questionnaire (GAD-7, AIS-8, PSS-10, SCS-SF), taken at the start and again at
+  the end.
+
+  That comparison is the one number in this app most likely to be misread, so
+  `backend/lib/paths.js` enforces three things and
+  `backend/test/paths.test.mjs` asserts them: a bookended path **must** carry
+  `closingCaveat` explaining what a change does *not* mean; it must open and
+  close on the same instrument; and where a minimal clinically important
+  difference is published (4 points for the GAD-7) a smaller move is reported
+  as "no measurable change" rather than as a direction. A path is described
+  throughout as a way to practise, never as a course of treatment.
+
 - **Caregiver access**: any signed-in Google account can check in as a
   resident, but the caregiver dashboard additionally checks the signed-in
   email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See
@@ -312,6 +334,11 @@ mental-health-adjacent data is involved:
   the source document — check them against their citations before using them
   with real students. PSS-10 is free for research and teaching but needs its
   author's permission for commercial use.
+- A guided path is a sequence of practices, not a clinical protocol. The
+  bookend questionnaires exist so a resident has a before and after to look
+  at; they are not outcome measures and a seven-day change is dominated by
+  noise and regression to the mean. If anyone ever wants to report on these,
+  that needs a real design, not this.
 - The grounding videos are other people's, on YouTube. They were all live
   when added, but they can be deleted, made private or region-blocked
   without anyone touching this repo — `backend/test/grounding.test.mjs`

@@ -33,22 +33,7 @@ function Rail({ value, total }) {
 // bloom a black shape on a black page has no presence at all.
 function Pedestal({ path, size }) {
   return (
-    <div
-      className="relative rounded-[32px] p-7 sm:p-9"
-      style={{
-        background: 'linear-gradient(160deg, rgba(255,255,255,0.055), rgba(21,23,27,0.9) 62%)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 44px 96px -54px rgba(0,0,0,0.95)',
-      }}
-    >
-      <span
-        aria-hidden="true"
-        className="animate-float pointer-events-none absolute -inset-8 -z-10 rounded-full opacity-55"
-        style={{
-          background: 'radial-gradient(circle, rgba(217,165,92,0.2), transparent 68%)',
-          filter: 'blur(34px)',
-        }}
-      />
+    <div className="card p-7 sm:p-9">
       <InkblotPlate path={path} size={size} />
     </div>
   );
@@ -56,7 +41,7 @@ function Pedestal({ path, size }) {
 
 function Stat({ label, value, suffix }) {
   return (
-    <div className="glass rounded-3xl p-5">
+    <div className="card p-5">
       <p className="marginalia">{label}</p>
       <p className="num mt-2.5 text-[2.2rem] leading-none">
         {value}
@@ -154,7 +139,7 @@ export default function InkblotTest() {
       {phase !== 'test' && <Header eyebrow="Inkblot" />}
 
       {loading && plates.length === 0 && (
-        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Preparing the plates…</p>
+        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Preparing the plates…</p>
       )}
       {error && plates.length === 0 && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -163,12 +148,8 @@ export default function InkblotTest() {
       {/* ------------------------------------------------------------ intro */}
       {!loading && phase === 'intro' && (
         <div className="animate-slide-up mt-8">
-          <h1 className="font-display text-[2.4rem] leading-[1.06] sm:text-5xl">
-            Ten plates.
-            <br />
-            Say whatever
-            <br />
-            you see
+          <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
+            Ten plates. Say whatever you see
             <span className="text-[var(--sec-inkblot)]">.</span>
           </h1>
 
@@ -185,7 +166,7 @@ export default function InkblotTest() {
             <p>You can skip any plate, and you can say more than one thing about a plate.</p>
           </div>
 
-          <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
             <p className="marginalia">What this is not</p>
             <p className="mt-2.5 text-xs leading-relaxed text-[var(--color-muted)]">
               Sahaya keeps what you write and shows it to your counsellor alongside your check-ins.
@@ -249,7 +230,7 @@ export default function InkblotTest() {
             </div>
 
             <p
-              className="animate-slide-up mt-7 text-center text-sm text-[var(--color-muted)]"
+              className="animate-slide-up mt-6 text-center text-sm text-[var(--color-muted)]"
               style={{ animationDelay: '80ms' }}
             >
               Take your time. There are no wrong answers.
@@ -333,7 +314,7 @@ export default function InkblotTest() {
             Counts, not conclusions. Nothing here is an interpretation of what you wrote.
           </p>
 
-          <div className="mt-7 grid grid-cols-2 gap-3">
+          <div className="mt-6 grid grid-cols-2 gap-3">
             <Stat
               label="Plates answered"
               value={result.summary.respondedCount}
@@ -343,7 +324,7 @@ export default function InkblotTest() {
           </div>
 
           {result.summary.recurring.length > 0 && (
-            <div className="glass mt-3 rounded-3xl p-6">
+            <div className="card mt-3 p-6">
               <p className="marginalia">Came up on more than one plate</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {result.summary.recurring.map((r) => (

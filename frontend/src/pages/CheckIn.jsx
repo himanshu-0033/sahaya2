@@ -109,24 +109,12 @@ export default function CheckIn() {
         // Keyed on step so the whole block re-enters — a new plate should
         // arrive, not swap silently under a cursor that has not moved.
         <div key={step} className="mt-8 flex flex-col items-center">
-          <div
-            className="animate-slide-up relative rounded-[32px] p-7 sm:p-9"
-            style={{
-              background: 'linear-gradient(160deg, rgba(255,255,255,0.05), rgba(21,23,27,0.9) 62%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 40px 90px -50px rgba(0,0,0,0.9)',
-            }}
-          >
-            <span
-              aria-hidden="true"
-              className="animate-float pointer-events-none absolute -inset-6 -z-10 rounded-full opacity-50"
-              style={{ background: 'radial-gradient(circle, rgba(31,174,149,0.18), transparent 68%)', filter: 'blur(30px)' }}
-            />
+          <div className="animate-slide-up card p-7 sm:p-9">
             <InkblotPlate path={INKBLOTS[step].path} />
           </div>
 
           <p
-            className="animate-slide-up mt-7 text-center text-sm text-[var(--color-muted)]"
+            className="animate-slide-up mt-6 text-center text-sm text-[var(--color-muted)]"
             style={{ animationDelay: '90ms' }}
             aria-live="polite"
           >
@@ -163,7 +151,7 @@ export default function CheckIn() {
           </p>
         </div>
       ) : (
-        <div className="mt-9">
+        <div className="mt-8">
           <h1 className="font-display animate-slide-up text-[2rem] leading-tight sm:text-4xl">
             How does today
             <br />
@@ -179,7 +167,7 @@ export default function CheckIn() {
           {/* A five-stop scale rather than five stacked buttons: mood is a
               continuum, and a vertical list makes it look like five unrelated
               options. */}
-          <div className="animate-slide-up mt-7 grid grid-cols-5 gap-2" style={{ animationDelay: '120ms' }}>
+          <div className="animate-slide-up mt-6 grid grid-cols-5 gap-2" style={{ animationDelay: '120ms' }}>
             {MOOD_OPTIONS.map((m, i) => {
               const selected = mood === m.value;
               const hue = MOOD_HUE[i];
@@ -219,7 +207,7 @@ export default function CheckIn() {
 
           {/* What they typed, played back. It makes the three plates feel like
               they added up to something rather than vanishing. */}
-          <div className="mt-9">
+          <div className="mt-8">
             <p className="marginalia">You said</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {words.map((w, i) => (

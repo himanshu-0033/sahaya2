@@ -9,6 +9,7 @@ import profileHandler from './api/profile.js';
 import inkblotTestHandler from './api/inkblot-test.js';
 import assessmentsHandler from './api/assessments.js';
 import groundingHandler from './api/grounding.js';
+import pathsHandler from './api/paths.js';
 import signupHandler from './api/auth/signup.js';
 import loginHandler from './api/auth/login.js';
 import phoneHandler from './api/auth/phone.js';
@@ -29,6 +30,7 @@ const routes = {
   '/api/inkblot-test': inkblotTestHandler,
   '/api/assessments': assessmentsHandler,
   '/api/grounding': groundingHandler,
+  '/api/paths': pathsHandler,
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
   '/api/auth/phone': phoneHandler,

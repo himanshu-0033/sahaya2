@@ -136,3 +136,18 @@ export async function saveGroundingSessions(sessions) {
   db.groundingSessions = sessions;
   writeFileDb(db);
 }
+
+// Guided-path progress. One record per resident per path, holding which days
+// they have completed — days are stored as a list rather than a count because
+// they can be done out of order.
+export async function getPathProgress() {
+  if (MONGO_URI) return readState('pathProgress');
+  return readFileDb().pathProgress || [];
+}
+
+export async function savePathProgress(progress) {
+  if (MONGO_URI) return writeState('pathProgress', progress);
+  const db = readFileDb();
+  db.pathProgress = progress;
+  writeFileDb(db);
+}

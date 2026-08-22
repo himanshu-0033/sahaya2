@@ -47,15 +47,10 @@ function InstrumentCard({ instrument, last, index }) {
   return (
     <Link
       to={`/assessments/${instrument.id}`}
-      style={{ animationDelay: `${Math.min(index, 10) * 35}ms` }}
-      className="animate-slide-up glass lift press group relative overflow-hidden rounded-3xl p-5"
+      style={{ animationDelay: `${Math.min(index, 10) * 30}ms` }}
+      className="animate-slide-up card press flex flex-col p-5"
     >
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-16 -right-12 h-36 w-36 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ background: 'radial-gradient(circle, rgba(88,182,245,0.24), transparent 70%)' }}
-      />
-      <div className="relative flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="font-display text-xl leading-snug">{instrument.name}</p>
           <p className="mt-1.5 text-sm leading-snug text-[var(--color-ink-soft)]">
@@ -77,7 +72,7 @@ function InstrumentCard({ instrument, last, index }) {
         )}
       </div>
 
-      <div className="relative mt-4 flex items-center gap-2 text-[10px] text-[var(--color-muted)]">
+      <div className="mt-auto flex items-center gap-2 pt-4 text-xs text-[var(--color-muted)]">
         <span>{instrument.itemCount} questions</span>
         <span aria-hidden="true">·</span>
         <span>~{instrument.minutes} min</span>
@@ -145,14 +140,12 @@ export default function Assessments() {
     <PageShell section="tests">
       <Header eyebrow="Tests" />
 
-      <div className="animate-slide-up mt-8">
-        <h1 className="font-display text-[2.4rem] leading-[1.06] sm:text-5xl">
-          The real
-          <br />
-          questionnaires
+      <div className="animate-slide-up stack-block">
+        <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
+          The real questionnaires
           <span className="text-[var(--sec-tests)]">.</span>
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+        <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           The same instruments used in clinics and research — PHQ-9, GAD-7 and nineteen more.
           Each gives a score and the range it falls in. A range is a description of a few weeks,
           not a diagnosis of you.
@@ -160,7 +153,7 @@ export default function Assessments() {
       </div>
 
       {loading && instruments.length === 0 && (
-        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
       )}
       {error && instruments.length === 0 && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -170,7 +163,7 @@ export default function Assessments() {
         <>
           {/* Horizontal scrolling filter — 14 domains will never fit as a
               wrapped row on a phone without eating half the screen. */}
-          <div className="animate-slide-up -mx-5 mt-8 overflow-x-auto px-5 pb-1" style={{ animationDelay: '60ms' }}>
+          <div className="animate-slide-up stack-block -mx-5 overflow-x-auto px-5 pb-1" style={{ animationDelay: '60ms' }}>
             <div className="flex w-max items-center gap-2">
               <button
                 type="button"
@@ -208,13 +201,13 @@ export default function Assessments() {
           </div>
 
           {grouped.map(([domain, list]) => (
-            <section key={domain} className="mt-10">
+            <section key={domain} className="stack-group">
               <div className="flex items-baseline gap-3">
                 <h2 className="font-display text-lg">{domain}</h2>
                 <span className="rule-fade flex-1" />
                 <span className="marginalia">{list.length}</span>
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {list.map((instrument, i) => (
                   <InstrumentCard
                     key={instrument.id}
@@ -227,7 +220,7 @@ export default function Assessments() {
             </section>
           ))}
 
-          <div className="rule-fade mt-12" />
+          <div className="rule-fade stack-section" />
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pb-2">
             <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">

@@ -182,19 +182,15 @@ export default function AssessmentRun() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
         <div
-          className="animate-aurora-a absolute -top-52 -left-40 h-[42rem] w-[42rem] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(88,182,245,0.34), transparent 64%)', filter: 'blur(80px)' }}
-        />
-        <div
-          className="animate-aurora-b absolute -right-56 bottom-[-18rem] h-[38rem] w-[38rem] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(31,174,149,0.24), transparent 66%)', filter: 'blur(90px)' }}
+          className="absolute inset-x-0 top-0 h-[26rem]"
+          style={{ background: 'radial-gradient(120% 100% at 50% 0%, rgba(88,182,245,0.12), transparent 70%)' }}
         />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
-        {loading && <p className="mt-16 text-[var(--color-ink-soft)]">Loading…</p>}
+        {loading && <p className="stack-section text-[var(--color-ink-soft)]">Loading…</p>}
         {error && !instrument && (
           <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
         )}
@@ -232,7 +228,7 @@ export default function AssessmentRun() {
             )}
 
             {/* keyed on step so the whole block re-enters on each question */}
-            <div key={step} className="mt-10 flex flex-1 flex-col">
+            <div key={step} className="stack-block flex flex-1 flex-col">
               {instrument.prompt && (
                 <p className="animate-rise text-xs tracking-wide text-[var(--color-muted)]">
                   {instrument.prompt}
@@ -284,7 +280,7 @@ export default function AssessmentRun() {
 
               {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
-              <p className="mt-7 text-xs text-[var(--color-muted)]">
+              <p className="mt-6 text-xs text-[var(--color-muted)]">
                 {encouragement(step, instrument.items.length)}
               </p>
 
@@ -302,8 +298,8 @@ export default function AssessmentRun() {
               </div>
             </div>
 
-            <footer className="mt-10 flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="hidden text-[10px] text-[var(--color-muted)] sm:block">
+            <footer className="stack-block flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
+              <p className="hidden text-[11px] text-[var(--color-muted)] sm:block">
                 Press 1–{item.options.length} to answer · ← → to move
               </p>
               <CrisisContacts variant="link" />
@@ -334,7 +330,7 @@ export default function AssessmentRun() {
               </div>
             )}
 
-            <p className="marginalia mt-10 block">
+            <p className="marginalia stack-block block">
               {result.instrumentName}
             </p>
 
@@ -376,7 +372,7 @@ export default function AssessmentRun() {
             </div>
 
             {result.subscales && (
-              <div className="glass mt-9 rounded-3xl p-6">
+              <div className="card mt-8 p-6">
                 <p className="marginalia">
                   Where the support comes from
                 </p>
@@ -434,7 +430,7 @@ export default function AssessmentRun() {
         )}
 
         {instrument && (
-          <p className="mt-12 text-[10px] leading-relaxed text-[var(--color-muted)]">
+          <p className="stack-section text-[11px] leading-relaxed text-[var(--color-muted)]">
             {instrument.fullName}. {instrument.citation}. Licence: {instrument.license}.
           </p>
         )}

@@ -30,6 +30,12 @@ const TABS = [
     ),
   },
   {
+    to: '/paths',
+    label: 'Paths',
+    hue: 'var(--sec-paths)',
+    icon: <path d="M6 21c0-4 3-5 6-6s6-2 6-6a3 3 0 0 0-3-3M6 21h12M8.5 6.5h.01M6 3.5h.01M11 4h.01" />,
+  },
+  {
     to: '/grounding',
     label: 'Calm',
     hue: 'var(--sec-calm)',

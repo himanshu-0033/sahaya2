@@ -9,7 +9,7 @@
   --color-cream-soft: #15171b;
   --color-ink: #f4f2ee;
   --color-ink-soft: #b7bcc0;
-  --color-muted: #8b929c;
+  --color-muted: #99a0aa;
   --color-teal: #1fae95;
   --color-teal-dark: #5fd6bf;
   --color-teal-soft: rgba(31, 174, 149, 0.16);
@@ -286,6 +286,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
    colour-mix() call, which is still uneven on older mobile Safari. */
 :root {
   --sec-home: #1fae95;
+  --sec-paths: #e0a3d5;
   --sec-calm: #a79cf0;
   --sec-tests: #58b6f5;
   --sec-inkblot: #d9a55c;
@@ -521,6 +522,7 @@ p, li {
    hierarchy is wrong rather than that a fifth value is needed. */
 .stack-item { margin-top: 0.75rem; }   /* 12px — within a block            */
 .stack-block { margin-top: 1.5rem; }   /* 24px — between blocks            */
+.stack-group { margin-top: 2rem; }     /* 32px — between repeated groups   */
 .stack-section { margin-top: 3rem; }   /* 48px — between sections          */
 .stack-major { margin-top: 4.5rem; }   /* 72px — before a footer or a rule */
 
@@ -552,8 +554,11 @@ p, li {
    editorial device rather than another badge. */
 .marginalia {
   font-family: var(--font-sans);
-  font-size: 10px;
-  letter-spacing: 0.24em;
+  /* 11px, not 10. Wide tracking already costs legibility, and this style
+     labels every section in the app — at 10px on a phone it was decoration
+     that happened to contain words. */
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted);
 }

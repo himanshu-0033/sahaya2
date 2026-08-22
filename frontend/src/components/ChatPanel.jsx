@@ -92,7 +92,7 @@ export default function ChatPanel({ checkin, onClose }) {
     <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] tracking-[0.22em] text-[var(--color-muted)] uppercase">
+          <p className="text-[11px] tracking-[0.22em] text-[var(--color-muted)] uppercase">
             Talk it through
           </p>
           <h3 className="mt-1 font-display text-xl">A moment to reflect</h3>

@@ -113,28 +113,23 @@ export default function Landing() {
       <Header eyebrow="Home" />
 
       {/* ---------------------------------------------------------- hero */}
-      <div className="animate-slide-up mt-8">
+      <div className="animate-slide-up stack-block">
         <p className="marginalia">{greeting()}</p>
-        <h1 className="font-display mt-2 text-[2.6rem] leading-[1.05] sm:text-6xl">
+        <h1 className="font-display mt-2 text-[2.2rem] leading-[1.05] sm:text-[3.2rem]">
           {first}
           <span className="text-[var(--color-teal)]">.</span>
         </h1>
       </div>
 
       {/* --------------------------------------------------- primary action */}
-      <div className="animate-slide-up mt-7" style={{ animationDelay: '80ms' }}>
+      <div className="animate-slide-up stack-block" style={{ animationDelay: '80ms' }}>
         {status.checkedIn ? (
           <Link
             to="/results"
             state={{ record: status.record }}
-            className="glass lift press relative block overflow-hidden rounded-[28px] p-6 sm:p-7"
+            className="card press block p-6 sm:p-7"
           >
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -top-20 -right-16 h-52 w-52 rounded-full opacity-60"
-              style={{ background: 'radial-gradient(circle, rgba(31,174,149,0.32), transparent 68%)' }}
-            />
-            <div className="relative">
+            <div>
               <div className="flex items-center gap-2.5">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#07080a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -160,15 +155,10 @@ export default function Landing() {
         ) : (
           <Link
             to="/checkin"
-            className="lift press relative block overflow-hidden rounded-[28px] border border-[var(--color-teal)]/30 p-6 sm:p-8"
-            style={{ background: 'linear-gradient(145deg, rgba(31,174,149,0.20), rgba(21,23,27,0.86) 64%)' }}
+            className="press block rounded-[18px] border border-[var(--color-teal)]/25 p-6 sm:p-8"
+            style={{ background: 'rgba(31,174,149,0.08)' }}
           >
-            <span
-              aria-hidden="true"
-              className="animate-float pointer-events-none absolute -top-24 -right-20 h-64 w-64 rounded-full"
-              style={{ background: 'radial-gradient(circle, rgba(95,214,191,0.34), transparent 66%)' }}
-            />
-            <div className="relative">
+            <div>
               <span className="marginalia">Today</span>
               <p className="font-display mt-3 text-[1.9rem] leading-[1.15] sm:text-[2.5rem]">
                 Three shapes,
@@ -190,7 +180,7 @@ export default function Landing() {
       </div>
 
       {/* --------------------------------------------------------- right now */}
-      <section className="animate-slide-up mt-10" style={{ animationDelay: '150ms' }}>
+      <section className="animate-slide-up stack-section" style={{ animationDelay: '150ms' }}>
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-display text-xl">Right now, I feel…</h2>
           <Link to="/grounding" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
@@ -204,24 +194,18 @@ export default function Landing() {
             <Link
               key={q.mood}
               to={q.to}
-              className="press lift group relative overflow-hidden rounded-2xl border p-4"
-              style={{
-                animationDelay: `${180 + i * 45}ms`,
-                borderColor: `color-mix(in srgb, ${q.hue} 26%, transparent)`,
-                background: `linear-gradient(150deg, color-mix(in srgb, ${q.hue} 14%, transparent), rgba(21,23,27,0.8) 70%)`,
-              }}
+              className="card press p-4"
+              style={{ animationDelay: `${180 + i * 40}ms` }}
             >
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-8 -right-6 h-20 w-20 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                style={{ background: `radial-gradient(circle, color-mix(in srgb, ${q.hue} 40%, transparent), transparent 70%)` }}
-              />
-              <span className="relative block text-sm font-medium" style={{ color: q.hue }}>
+              <span className="flex items-center gap-2 text-sm font-medium">
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{ background: q.hue }}
+                />
                 {q.label}
               </span>
-              <span className="relative mt-1 block text-[10px] text-[var(--color-muted)]">
-                tap to start
-              </span>
+              <span className="mt-1 block text-xs text-[var(--color-muted)]">tap to start</span>
             </Link>
           ))}
         </div>
@@ -230,15 +214,10 @@ export default function Landing() {
       {/* ------------------------------------------------------------ streak */}
       {streak > 0 && (
         <div
-          className="animate-slide-up relative mt-8 overflow-hidden rounded-2xl border border-[var(--color-lavender)]/25 px-5 py-4"
-          style={{ animationDelay: '230ms', background: 'rgba(167,156,240,0.09)' }}
+          className="animate-slide-up card stack-block px-5 py-4"
+          style={{ animationDelay: '230ms' }}
         >
-          <span
-            aria-hidden="true"
-            className="animate-shimmer pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 skew-x-12"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)' }}
-          />
-          <p className="relative text-sm">
+          <p className="text-sm">
             <span className="num text-2xl text-[var(--color-lavender)]">{streak}</span>
             <span className="ml-2 text-[var(--color-ink-soft)]">
               day{streak === 1 ? '' : 's'} of grounding in a row.
@@ -248,18 +227,12 @@ export default function Landing() {
       )}
 
       {/* ------------------------------------------------- the 2/1 split row */}
-      <div className="animate-slide-up mt-10 grid gap-3 sm:grid-cols-3" style={{ animationDelay: '280ms' }}>
+      <div className="animate-slide-up stack-section grid gap-3 sm:grid-cols-3" style={{ animationDelay: '280ms' }}>
         <Link
           to="/assessments"
-          className="glass lift press relative overflow-hidden rounded-3xl p-5 sm:col-span-2"
-          style={{ borderColor: 'rgba(88,182,245,0.24)' }}
+          className="card press p-5 sm:col-span-2"
         >
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-12 -bottom-16 h-44 w-44 rounded-full opacity-70"
-            style={{ background: 'radial-gradient(circle, rgba(88,182,245,0.26), transparent 68%)' }}
-          />
-          <div className="relative">
+          <div>
             <span className="marginalia">Tests</span>
             <p className="font-display mt-2.5 text-2xl leading-snug">
               Twenty-one questionnaires
@@ -273,15 +246,9 @@ export default function Landing() {
 
         <Link
           to="/inkblot-test"
-          className="glass lift press relative overflow-hidden rounded-3xl p-5"
-          style={{ borderColor: 'rgba(217,165,92,0.24)' }}
+          className="card press p-5"
         >
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-10 -right-8 h-32 w-32 rounded-full opacity-70"
-            style={{ background: 'radial-gradient(circle, rgba(217,165,92,0.28), transparent 68%)' }}
-          />
-          <div className="relative">
+          <div>
             <span className="marginalia">Inkblot</span>
             <p className="font-display mt-2.5 text-2xl leading-snug">Ten plates</p>
             <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
@@ -297,7 +264,7 @@ export default function Landing() {
         </p>
       )}
 
-      <div className="rule-fade mt-12" />
+      <div className="rule-fade stack-section" />
 
       <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 pb-4">
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
