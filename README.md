@@ -48,6 +48,42 @@ window of the same browser), and it never ships resident-facing code.
 - **Flagging**: a check-in (and the resident) gets flagged if mood has been
   low for 3 check-ins running, the weekly average is low, or 2+ of today's
   words hit a small negative-word list. See `backend/lib/logic.js`.
+- **Assessments** (`/assessments`): twenty-one published, self-scoring
+  questionnaires — PHQ-9, GAD-7, K10, WHO-5, PSS-10, UCLA-3, MSPSS,
+  Mini-SPIN, RSES, BRS, GSE-10, Flourishing, CBI (personal), AIS-8, SAS-SV,
+  AUDIT-C, PHQ-15, PC-PTSD-5, SCOFF, BSMAS and SCS-SF. Items, answer scales,
+  licence and citation all live in `backend/lib/instruments.js`; scoring is a
+  sum, an optional published transform and a band lookup in
+  `backend/lib/scoring.js` — deliberately hand-checkable, with no modelling
+  anywhere. A positive answer to PHQ-9 item 9 routes into the crisis path
+  regardless of the total score. The band tables for the screens that have a
+  published cut-off (PC-PTSD-5 at 3, SCOFF at 2, BSMAS at 24, Mini-SPIN and
+  UCLA-3 at 6) are tested exactly on the boundary, which is the part of a
+  band table that is easiest to get wrong by one.
+
+- **Grounding** (`/grounding`): thirteen practices a resident runs in the app
+  rather than fills in — 5-4-3-2-1, cyclic sighing, box breathing, 4-7-8,
+  orienting, feet on the floor, butterfly hug, muscle release, body scan,
+  cold water (DBT's TIPP), cognitive grounding, a self-compassion break and
+  NSDR. Two shapes, both defined in `backend/lib/grounding.js`: a `pacer`
+  (an animated breath or tap cycle) or `steps` (a sequence of timed
+  prompts). Nothing here is scored — the app records that you practised and,
+  only if you offer it, a 1–5 self-report of how settled you felt either
+  side. Every technique carries its evidence at the strength it actually
+  has (`trial`, `mechanism` or `clinical`), and the ones with real
+  contraindications — cold water, and both breath-hold patterns — carry
+  caution text that the UI shows *before* the start button. Each links two
+  to four guided YouTube videos; all 40 ids were checked against YouTube's
+  oEmbed endpoint, and nothing loads from YouTube until someone presses
+  play.
+- **Inkblot test** (`/inkblot-test`): ten abstract symmetric plates, one at
+  a time, answered in free text or by voice (the browser's own
+  SpeechRecognition — no key, no upload). It is **not scored**: a real
+  Rorschach is administered and coded by a trained clinician, so the app
+  stores what was written and reports only descriptive counts — plates
+  answered, words written, which words recurred across plates. Free text is
+  screened by `backend/lib/safety.js` before storage. The plates are
+  original shapes, not the Rorschach plates.
 - **Caregiver access**: any signed-in Google account can check in as a
   resident, but the caregiver dashboard additionally checks the signed-in
   email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See
@@ -269,6 +305,20 @@ mental-health-adjacent data is involved:
 - The OAuth consent screen is unverified — Google will show an "unverified
   app" warning until you go through Google's verification process, which
   matters once this is used by people who don't personally know you.
+- The assessments are screening instruments, not diagnostic ones, and the
+  entries marked `wordingVerified: false` in `backend/lib/instruments.js`
+  (K10, MSPSS, CBI, AIS-8, SAS-SV, and all five of PHQ-15, PC-PTSD-5, SCOFF,
+  BSMAS and SCS-SF) were written from memory rather than transcribed from
+  the source document — check them against their citations before using them
+  with real students. PSS-10 is free for research and teaching but needs its
+  author's permission for commercial use.
+- The grounding videos are other people's, on YouTube. They were all live
+  when added, but they can be deleted, made private or region-blocked
+  without anyone touching this repo — `backend/test/grounding.test.mjs`
+  only catches malformed ids, not dead ones. Re-check them periodically.
+- The cold-water practice can slow the heart, which is the point and also
+  the risk. Its caution text is asserted by name in the test suite so it
+  cannot be edited away by accident; treat that assertion as load-bearing.
 - The flagging heuristic is intentionally simple and will both miss real
   concerns and flag false positives — it's a nudge to check in on someone,
   not a signal to act on alone.

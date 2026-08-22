@@ -41,12 +41,12 @@ const DATA_FILE = path.join(DATA_DIR, 'db.json');
 
 function readFileDb() {
   if (!fs.existsSync(DATA_FILE)) {
-    return { checkins: [], residents: [] };
+    return { checkins: [], residents: [], inkblotSessions: [], assessments: [] };
   }
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
   } catch {
-    return { checkins: [], residents: [] };
+    return { checkins: [], residents: [], inkblotSessions: [], assessments: [] };
   }
 }
 
@@ -92,5 +92,47 @@ export async function saveOtps(otps) {
   if (MONGO_URI) return writeState('otps', otps);
   const db = readFileDb();
   db.otps = otps;
+  writeFileDb(db);
+}
+
+// Inkblot test sessions. One record per completed sitting, so a resident can
+// have several over time and the counsellor console can read them in order.
+export async function getInkblotSessions() {
+  if (MONGO_URI) return readState('inkblotSessions');
+  return readFileDb().inkblotSessions || [];
+}
+
+export async function saveInkblotSessions(sessions) {
+  if (MONGO_URI) return writeState('inkblotSessions', sessions);
+  const db = readFileDb();
+  db.inkblotSessions = sessions;
+  writeFileDb(db);
+}
+
+// Completed questionnaire sittings — one record per instrument per sitting.
+export async function getAssessments() {
+  if (MONGO_URI) return readState('assessments');
+  return readFileDb().assessments || [];
+}
+
+export async function saveAssessments(assessments) {
+  if (MONGO_URI) return writeState('assessments', assessments);
+  const db = readFileDb();
+  db.assessments = assessments;
+  writeFileDb(db);
+}
+
+// Grounding practices a resident has run. Not a score and never treated as
+// one — one record per completed (or abandoned) sitting, so the app can show a
+// streak and a counsellor can see that someone reached for a tool.
+export async function getGroundingSessions() {
+  if (MONGO_URI) return readState('groundingSessions');
+  return readFileDb().groundingSessions || [];
+}
+
+export async function saveGroundingSessions(sessions) {
+  if (MONGO_URI) return writeState('groundingSessions', sessions);
+  const db = readFileDb();
+  db.groundingSessions = sessions;
   writeFileDb(db);
 }

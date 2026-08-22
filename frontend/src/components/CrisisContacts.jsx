@@ -30,7 +30,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           className={
             dark
               ? 'w-full rounded-full border border-red-400/30 bg-red-500/10 px-5 py-3 text-sm font-medium text-red-300 transition-colors hover:bg-red-500/20'
-              : 'w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag-soft)]/70'
+              : 'press w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag)]/20'
           }
         >
           Need help right now? Crisis contacts
@@ -50,7 +50,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-ink)]/70 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -59,20 +59,18 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           {/* Column layout: header and footer stay put, only the list scrolls,
               so a way out is always on screen. */}
           <div
-            className="card-soft flex max-h-[88vh] w-full max-w-md flex-col rounded-3xl"
+            className="glass flex max-h-[88vh] w-full max-w-md flex-col rounded-[28px]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex shrink-0 items-start justify-between gap-4 p-6 pb-4">
               <div>
-                <p className="text-xs tracking-[0.2em] text-[var(--color-muted)] uppercase">
-                  You're not alone
-                </p>
+                <p className="marginalia">You're not alone</p>
                 <h3 className="font-display text-2xl mt-2">Someone is ready to talk right now.</h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="-mr-1 -mt-1 shrink-0 rounded-full border border-[var(--color-ink)]/10 p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-cream-soft)]"
+                className="press -mr-1 -mt-1 shrink-0 rounded-full border border-white/12 p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-white/8"
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M18 6 6 18M6 6l12 12" />
@@ -90,7 +88,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
                   <a
                     key={h.number}
                     href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)]/8 bg-[var(--color-cream-soft)] px-4 py-3 hover:border-[var(--color-teal)]/40"
+                    className="press flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 transition-colors hover:border-[var(--color-teal)]/40 hover:bg-white/[0.07]"
                   >
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{h.name}</span>
@@ -107,7 +105,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
             <div className="shrink-0 p-6 pt-4">
               <button
                 onClick={() => setOpen(false)}
-                className="w-full rounded-full border border-[var(--color-ink)]/10 py-3 text-sm text-[var(--color-ink-soft)] hover:bg-[var(--color-cream-soft)]"
+                className="press w-full rounded-full border border-white/10 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-white/8"
               >
                 Close
               </button>

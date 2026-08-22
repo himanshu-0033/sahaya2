@@ -6,6 +6,9 @@ import { URL } from 'node:url';
 
 import checkinsHandler from './api/checkins.js';
 import profileHandler from './api/profile.js';
+import inkblotTestHandler from './api/inkblot-test.js';
+import assessmentsHandler from './api/assessments.js';
+import groundingHandler from './api/grounding.js';
 import signupHandler from './api/auth/signup.js';
 import loginHandler from './api/auth/login.js';
 import phoneHandler from './api/auth/phone.js';
@@ -23,6 +26,9 @@ const PORT = process.env.PORT || 3000;
 const routes = {
   '/api/checkins': checkinsHandler,
   '/api/profile': profileHandler,
+  '/api/inkblot-test': inkblotTestHandler,
+  '/api/assessments': assessmentsHandler,
+  '/api/grounding': groundingHandler,
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
   '/api/auth/phone': phoneHandler,

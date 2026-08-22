@@ -6,7 +6,7 @@ export const MOOD_OPTIONS = [
   { value: 5, label: 'Bright' },
 ];
 
-const NEGATIVE_LEXICON = [
+export const NEGATIVE_LEXICON = [
   'tired', 'exhausted', 'alone', 'lonely', 'sad', 'empty', 'numb', 'hopeless',
   'dark', 'heavy', 'lost', 'nothing', 'scared', 'anxious', 'worthless', 'stuck',
   'crying', 'tears', 'hurt', 'pain', 'broken', 'fear', 'panic', 'trapped',

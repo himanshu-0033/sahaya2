@@ -18,6 +18,14 @@
   --color-lavender-soft: rgba(167, 156, 240, 0.16);
   --color-flag: #ef8064;
   --color-flag-soft: rgba(239, 128, 100, 0.14);
+
+  /* Two more accents, added for the grounding room. Each practice family
+     carries one, so a breath exercise and a kindness exercise never look
+     like the same screen. */
+  --color-sky: #58b6f5;
+  --color-sky-soft: rgba(88, 182, 245, 0.16);
+  --color-rose: #f2789f;
+  --color-rose-soft: rgba(242, 120, 159, 0.16);
 }
 
 body {
@@ -140,8 +148,38 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   opacity: 0.6;
 }
 
+/* Assessment flow: each question's options enter in sequence, so a new
+   question reads as arriving rather than snapping into place. The delay is
+   set inline per option. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The ring on the result screen draws itself once, anticlockwise from the
+   top. stroke-dasharray is set inline from the score. */
+@keyframes draw-ring {
+  from { stroke-dashoffset: var(--ring-circumference); }
+}
+
+.animate-draw-ring {
+  animation: draw-ring 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
+  .animate-rise,
+  .animate-draw-ring,
   .animate-drift-a,
   .animate-drift-b,
   .animate-drift-c,
@@ -151,4 +189,308 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   .animate-glow-pulse {
     animation: none;
   }
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Grounding room                                                      */
+/*                                                                     */
+/* The orb's own scaling is NOT a keyframe animation — a breath cycle  */
+/* changes length between phases, so the runner sets transform and     */
+/* transition-duration inline from the phase it is on. What lives here */
+/* is the ambience around it, which runs at its own pace regardless.   */
+/* ------------------------------------------------------------------ */
+
+/* A slow wash behind the practice screen. Two blobs on different periods so
+   the loop never lines up visibly. */
+@keyframes aurora-a {
+  0%, 100% { transform: translate3d(-12%, -8%, 0) scale(1); }
+  50% { transform: translate3d(10%, 12%, 0) scale(1.25); }
+}
+
+@keyframes aurora-b {
+  0%, 100% { transform: translate3d(14%, 10%, 0) scale(1.15); }
+  50% { transform: translate3d(-10%, -12%, 0) scale(0.9); }
+}
+
+.animate-aurora-a { animation: aurora-a 26s ease-in-out infinite; }
+.animate-aurora-b { animation: aurora-b 34s ease-in-out infinite; }
+
+/* Rings leaving the orb on every phase change. Keyed on the phase index in
+   the runner, so React remounts them and the animation restarts. */
+@keyframes ripple-out {
+  from { opacity: 0.5; transform: scale(0.85); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+
+.animate-ripple { animation: ripple-out 3.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Cards entering the grounding index, staggered inline by index. */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-pop { animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* The countdown ring around a timed step. Duration is set inline from the
+   step's own length. */
+@keyframes deplete {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: var(--ring-circumference); }
+}
+
+.animate-deplete { animation: deplete linear both; }
+
+/* Used on the "you finished" screen only — a single, unrepeated bloom. */
+@keyframes bloom {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 0.85; }
+  100% { opacity: 0; transform: scale(2.2); }
+}
+
+.animate-bloom { animation: bloom 1.6s ease-out both; }
+
+/* Reduced motion: the ambience stops entirely, and the orb's inline
+   transition is dropped by the runner in JS. The practice still works —
+   every phase is labelled in text, and the label is the instruction. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora-a,
+  .animate-aurora-b,
+  .animate-ripple,
+  .animate-pop,
+  .animate-deplete,
+  .animate-bloom {
+    animation: none;
+  }
+}
+
+
+/* ================================================================== */
+/* Design system — the shared vocabulary every page draws on.         */
+/*                                                                    */
+/* The app is used by hostel students, mostly on a phone, often at a  */
+/* bad moment. Three rules fall out of that:                          */
+/*                                                                    */
+/*   1. WAYFINDING IS COLOUR. Each section owns a hue, so you know    */
+/*      which part of the app you are in before you read a word.      */
+/*   2. TOUCH GETS ANSWERED. Every pressable thing moves when pressed.*/
+/*      On a phone that is the only feedback there is.                */
+/*   3. THE SERIF STAYS. Cormorant on headlines is what stops this    */
+/*      looking like every other wellness app. Everything around it   */
+/*      gets bolder; the headline face does not change.               */
+/* ================================================================== */
+
+/* Section hues, used by the tab bar and the page shells. Kept as raw
+   channels as well as hex so they can be dropped into rgba() without a
+   colour-mix() call, which is still uneven on older mobile Safari. */
+:root {
+  --sec-home: #1fae95;
+  --sec-calm: #a79cf0;
+  --sec-tests: #58b6f5;
+  --sec-inkblot: #d9a55c;
+
+  /* Height of the mobile tab bar, so pages can reserve room for it in one
+     place rather than each guessing at a padding value. */
+  --tabbar-h: 4.75rem;
+}
+
+/* Gradient headline text. Falls back to plain ink where background-clip is
+   unsupported, so a headline is never invisible. */
+.text-gradient {
+  background: linear-gradient(120deg, var(--grad-from, var(--color-ink)), var(--grad-to, var(--color-teal-dark)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-gradient { color: var(--color-ink); }
+}
+
+/* The card treatment used across every section. The border is a hairline of
+   the section colour rather than plain white, which is what makes two cards
+   from different sections read as different without any other change. */
+.glass {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.055), rgba(21, 23, 27, 0.72) 62%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+/* Press feedback. `active:` rather than `hover:` because the primary input
+   here is a thumb, and a phone has no hover. */
+.press {
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
+}
+.press:active { transform: scale(0.972); }
+
+/* Lift on hover for pointer devices only, so a tap on a phone doesn't leave
+   a card stuck in its hovered state. */
+@media (hover: hover) and (pointer: fine) {
+  .lift { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease; }
+  .lift:hover { transform: translateY(-4px); }
+}
+
+/* A slow drift for decorative blobs behind a hero. */
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-18px) scale(1.05); }
+}
+.animate-float { animation: float-soft 9s ease-in-out infinite; }
+
+/* Sweep across a surface — used once, on the streak card, so it reads as
+   something earned rather than another panel. */
+@keyframes shimmer {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(220%); }
+}
+.animate-shimmer { animation: shimmer 3.4s ease-in-out infinite; }
+
+/* A slowly moving gradient, for the one hero headline that carries it. */
+@keyframes gradient-drift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 220% 220%;
+  animation: gradient-drift 11s ease infinite;
+}
+
+/* Entrance for stacked content. Delay is set inline per child so a list
+   arrives in sequence instead of all at once. */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* The dot under the active tab. */
+@keyframes tab-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.7); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-tab-in { animation: tab-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Reserve room for the mobile tab bar. Applied by the page shell rather than
+   globally, because the sign-in hero and the running practice screens are
+   deliberately full-bleed with no tab bar at all. */
+.pad-tabbar { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1rem); }
+
+@media (min-width: 768px) {
+  .pad-tabbar { padding-bottom: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-shimmer,
+  .animate-gradient,
+  .animate-slide-up,
+  .animate-tab-in {
+    animation: none;
+  }
+  .press:active { transform: none; }
+  .lift:hover { transform: none; }
+}
+
+
+/* ================================================================== */
+/* Craft details                                                      */
+/*                                                                    */
+/* The small things that separate a designed interface from a         */
+/* generated one: a real selection colour, scrollbars that belong to  */
+/* the palette, focus rings that are visible without being ugly, and  */
+/* a film grain over the whole thing so the flat dark background      */
+/* reads as a surface instead of an empty div.                        */
+/* ================================================================== */
+
+/* Custom cursor. The class is added by Cursor.jsx only once it is actually
+   drawing, so a JS failure leaves the normal arrow in place. Text fields keep
+   their caret — swapping an I-beam for a dot makes a form feel broken. */
+.has-custom-cursor,
+.has-custom-cursor a,
+.has-custom-cursor button,
+.has-custom-cursor [role='button'],
+.has-custom-cursor label,
+.has-custom-cursor select {
+  cursor: none;
+}
+
+.has-custom-cursor input:not([type='checkbox']):not([type='radio']):not([type='range']),
+.has-custom-cursor textarea {
+  cursor: text;
+}
+
+/* Film grain. A single inline SVG turbulence tile, fixed over the viewport at
+   very low opacity. This is the cheapest way to stop a large flat dark area
+   looking like an empty canvas, and it costs no network request. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Selection in the app's own teal rather than the browser's blue. */
+::selection {
+  background: rgba(31, 174, 149, 0.32);
+  color: var(--color-ink);
+}
+
+/* Scrollbars, on the browsers that let us. Thin, unobtrusive, and the same
+   ink as everything else. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 242, 238, 0.16) transparent;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(244, 242, 238, 0.14);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(244, 242, 238, 0.26); background-clip: content-box; }
+
+/* Keyboard focus stays clearly visible — the custom cursor does nothing for
+   anyone navigating by tab, so this carries the whole burden for them. */
+:focus-visible {
+  outline: 2px solid var(--color-teal-dark);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Headline balance. `text-wrap: balance` stops a two-line hero breaking with
+   one orphaned word, which is the single most common thing that makes a
+   layout look unconsidered. */
+h1, h2, .font-hero {
+  text-wrap: balance;
+}
+
+p, li {
+  text-wrap: pretty;
+}
+
+/* Numbers that line up in columns — scores, streaks, timers, codes. */
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* A hairline rule with a fade at both ends, used to separate editorial
+   sections without the hard line of a border. */
+.rule-fade {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 242, 238, 0.14) 22%, rgba(244, 242, 238, 0.14) 78%, transparent);
+}
+
+/* Section index numbers in the margins. Small caps, wide tracking — an
+   editorial device rather than another badge. */
+.marginalia {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-muted);
 }

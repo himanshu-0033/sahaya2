@@ -17,6 +17,11 @@ const CSV_COLUMNS = [
   { label: 'Recorded at', value: (c) => c.createdAt || '' },
 ];
 
+function plateLabel(plateId) {
+  const n = Number(String(plateId).replace(/[^0-9]/g, ''));
+  return Number.isFinite(n) && n > 0 ? `Plate ${n}` : plateId;
+}
+
 function Field({ label, value }) {
   return (
     <div>
@@ -198,6 +203,115 @@ export default function ResidentDetail() {
                 </table>
               </div>
             )}
+          </section>
+
+          <section>
+            <h3 className="font-display text-xl">Inkblot test</h3>
+            {!data.inkblotSessions || data.inkblotSessions.length === 0 ? (
+              <p className="mt-3 text-sm text-[var(--color-muted)]">
+                No sittings recorded yet.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {data.inkblotSessions.map((s) => (
+                  <details key={s.id} className="card-soft rounded-2xl px-5 py-4">
+                    <summary className="flex cursor-pointer flex-wrap items-center gap-3 text-sm">
+                      <span>{formatDate(s.date)}</span>
+                      <span className="text-[var(--color-muted)]">
+                        {s.summary.respondedCount} of {s.summary.plateCount} plates ·{' '}
+                        {s.summary.wordCount} words
+                      </span>
+                      {s.flagged && <FlagBadge />}
+                    </summary>
+
+                    {s.flagged && (
+                      <p className="mt-3 text-xs text-[var(--color-flag)]">
+                        {(s.flagReasons || []).join('; ')}
+                      </p>
+                    )}
+
+                    {s.summary.recurring.length > 0 && (
+                      <p className="mt-3 text-xs text-[var(--color-muted)]">
+                        Repeated across plates:{' '}
+                        {s.summary.recurring.map((r) => `${r.word} (×${r.plates})`).join(', ')}
+                      </p>
+                    )}
+
+                    <ul className="mt-4 space-y-3">
+                      {s.responses
+                        .filter((r) => r.text)
+                        .map((r) => (
+                          <li key={r.plateId} className="border-t border-white/6 pt-3">
+                            <p className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
+                              {plateLabel(r.plateId)}
+                              {r.latencyMs != null && (
+                                <span className="ml-2 normal-case tracking-normal">
+                                  {Math.round(r.latencyMs / 1000)}s to first word
+                                </span>
+                              )}
+                            </p>
+                            <p className="mt-1 text-sm text-[var(--color-ink-soft)]">{r.text}</p>
+                          </li>
+                        ))}
+                    </ul>
+
+                    <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+                      Responses are stored as written and are not scored. Counts and timings
+                      are descriptive only.
+                    </p>
+                  </details>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section>
+            <h3 className="font-display text-xl">Assessments</h3>
+            {!data.assessments || data.assessments.length === 0 ? (
+              <p className="mt-3 text-sm text-[var(--color-muted)]">
+                No questionnaires completed yet.
+              </p>
+            ) : (
+              <div className="card-soft mt-4 overflow-x-auto rounded-2xl">
+                <table className="w-full min-w-[560px] text-sm">
+                  <thead>
+                    <tr className="text-left text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
+                      <th className="px-5 py-3">Date</th>
+                      <th className="px-5 py-3">Instrument</th>
+                      <th className="px-5 py-3">Score</th>
+                      <th className="px-5 py-3">Range</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.assessments.map((a) => (
+                      <tr key={a.id} className="border-t border-white/6 align-top">
+                        <td className="whitespace-nowrap px-5 py-3">{formatDate(a.date)}</td>
+                        <td className="px-5 py-3">
+                          <span>{a.instrumentName}</span>
+                          <span className="ml-2 text-xs text-[var(--color-muted)]">{a.domain}</span>
+                        </td>
+                        <td className="whitespace-nowrap px-5 py-3">
+                          {a.score}
+                          <span className="text-xs text-[var(--color-muted)]">/{a.maxScore}</span>
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className="text-[var(--color-ink-soft)]">{a.band.label}</span>
+                          {a.flagged && (
+                            <span className="ml-2 text-xs text-[var(--color-flag)]">
+                              {(a.flagReasons || []).join('; ')}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <p className="mt-3 text-[10px] leading-relaxed text-[var(--color-muted)]">
+              Scores place a resident in a range the published instrument defines. They are
+              screening measures, not diagnoses.
+            </p>
           </section>
         </>
       )}

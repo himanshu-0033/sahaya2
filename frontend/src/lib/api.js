@@ -100,3 +100,44 @@ export function sendChat({ messages, checkin }) {
     AGENT_BASE,
   );
 }
+
+export function getInkblotTest() {
+  return request('/api/inkblot-test');
+}
+
+export function submitInkblotTest({ responses }) {
+  return request('/api/inkblot-test', {
+    method: 'POST',
+    body: JSON.stringify({ responses }),
+  });
+}
+
+export function getAssessmentCatalog() {
+  return request('/api/assessments');
+}
+
+export function getAssessmentInstrument(instrumentId) {
+  return request(`/api/assessments?instrumentId=${encodeURIComponent(instrumentId)}`);
+}
+
+export function submitAssessment({ instrumentId, answers }) {
+  return request('/api/assessments', {
+    method: 'POST',
+    body: JSON.stringify({ instrumentId, answers }),
+  });
+}
+
+export function getGroundingCatalog() {
+  return request('/api/grounding');
+}
+
+export function getGroundingTechnique(techniqueId) {
+  return request(`/api/grounding?techniqueId=${encodeURIComponent(techniqueId)}`);
+}
+
+export function logGroundingPractice({ techniqueId, secondsPracticed, completed, before, after }) {
+  return request('/api/grounding', {
+    method: 'POST',
+    body: JSON.stringify({ techniqueId, secondsPracticed, completed, before, after }),
+  });
+}
