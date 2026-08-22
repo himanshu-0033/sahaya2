@@ -1,0 +1,12 @@
+{
+  "name": "sahaya",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Runs the backend, resident app and counsellor console together. See scripts/dev.mjs.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install && npm --prefix admin install",
+    "test": "npm --prefix backend test"
+  }
+}

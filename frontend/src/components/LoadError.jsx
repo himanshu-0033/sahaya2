@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 // What a page shows when its data did not arrive.
 //
 // This replaces rendering `err.message` directly, which produced the browser's
@@ -11,9 +13,48 @@
 //              retry is the main affordance and the tone is unalarming.
 //   anything else — the server answered and said no. That message came from
 //              our own backend, so it is shown as written.
+//
+// When it is the offline case, this component also retries on its own: on a
+// timer, when the tab is looked at again, and the moment the browser reports
+// it is back online. Someone who left the page open while the server was
+// restarting should find it working when they look back, not find a button
+// waiting to be pressed. Only the offline case does this — a 401 or a 500 is
+// the server having answered, and hammering it changes nothing.
+
+const POLL_MS = 5000;
+
 export default function LoadError({ error, onRetry, retrying = false }) {
   const offline = error?.offline;
   const message = error?.message || 'Something went wrong.';
+
+  // Kept in a ref so the effect below depends only on `offline`. Passing
+  // onRetry itself would re-arm the timer on every parent render, which for an
+  // inline arrow prop is every render.
+  const retryRef = useRef(onRetry);
+  retryRef.current = onRetry;
+  const retryingRef = useRef(retrying);
+  retryingRef.current = retrying;
+
+  useEffect(() => {
+    if (!offline || !onRetry) return undefined;
+
+    const attempt = () => {
+      if (retryingRef.current) return;
+      if (document.visibilityState === 'hidden') return;
+      retryRef.current?.();
+    };
+
+    const timer = setInterval(attempt, POLL_MS);
+    window.addEventListener('online', attempt);
+    document.addEventListener('visibilitychange', attempt);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('online', attempt);
+      document.removeEventListener('visibilitychange', attempt);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offline, Boolean(onRetry)]);
 
   return (
     <div
@@ -32,7 +73,7 @@ export default function LoadError({ error, onRetry, retrying = false }) {
 
       {offline && (
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          This is usually temporary. Nothing you have done is lost.
+          This is usually temporary — we&apos;ll keep trying. Nothing you have done is lost.
         </p>
       )}
 

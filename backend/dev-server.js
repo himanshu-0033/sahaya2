@@ -24,7 +24,15 @@ import adminResidentHandler from './api/admin/resident.js';
 
 const PORT = process.env.PORT || 3000;
 
+// Answers without touching auth or storage, so "is the backend up?" has an
+// answer that never depends on being signed in. The frontend uses it to tell
+// "the server is down" apart from "the server said no".
+function healthHandler(req, res) {
+  res.status(200).json({ ok: true, uptime: Math.round(process.uptime()) });
+}
+
 const routes = {
+  '/api/health': healthHandler,
   '/api/checkins': checkinsHandler,
   '/api/profile': profileHandler,
   '/api/inkblot-test': inkblotTestHandler,
@@ -84,11 +92,58 @@ const server = http.createServer(async (req, res) => {
   try {
     await handler(req, res);
   } catch (err) {
-    console.error(err);
+    console.error(`[${req.method} ${url.pathname}]`, err);
+    // If the handler already started the response, writing a second one throws
+    // ERR_HTTP_HEADERS_SENT from inside this catch — which is unhandled, and
+    // used to take the whole server down with it.
+    if (res.headersSent) {
+      res.destroy();
+      return;
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+// A dev server that exits silently is worse than one that errors loudly: the
+// frontend keeps running, every tab shows "Can't reach the server", and there
+// is nothing on screen saying why. Node exits on an unhandled rejection by
+// default, so one stray floating promise in a handler kills the process.
+// These keep it serving and put the reason where it can be read.
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandled rejection — server kept alive]', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[uncaught exception — server kept alive]', err);
+});
+
+// Binding can lose a race with a previous instance that is still shutting
+// down and has not let go of the port yet — which is exactly what happens when
+// this server is restarted automatically after a crash. Treating that first
+// EADDRINUSE as fatal would turn a one-second gap into a backend that stays
+// down, so it is retried a few times before giving up. Only a port still
+// occupied after several seconds is a real conflict worth reporting.
+const BIND_RETRIES = 6;
+const BIND_RETRY_MS = 700;
+let bindAttempt = 0;
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    bindAttempt += 1;
+    if (bindAttempt <= BIND_RETRIES) {
+      console.warn(`Port ${PORT} busy, retrying (${bindAttempt}/${BIND_RETRIES})...`);
+      setTimeout(() => server.listen(PORT), BIND_RETRY_MS);
+      return;
+    }
+    console.error(
+      `Port ${PORT} is already in use - another backend is still running.\n` +
+        `Free it with:  npx kill-port ${PORT}`,
+    );
+    process.exit(1);
+  }
+  console.error('[server error]', err);
+});
+
 server.listen(PORT, () => {
+  bindAttempt = 0;
   console.log(`Sahay backend (local dev) listening on http://localhost:${PORT}`);
 });
