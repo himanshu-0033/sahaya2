@@ -311,9 +311,37 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* The card treatment used across every section. The border is a hairline of
    the section colour rather than plain white, which is what makes two cards
    from different sections read as different without any other change. */
+/* THE card. One surface, used everywhere.
+   
+   This replaced a per-card linear-gradient plus a radial "bloom" in the
+   corner, applied in slightly different colours on every page. Twenty-four
+   separate gradient decorations were competing for attention at once, which
+   is the specific thing that makes an interface look assembled rather than
+   designed. A single flat surface, one hairline, and a hover state is enough
+   to say "this is a card" — the content is supposed to be the interesting
+   part. Section colour now appears only in small, deliberate places: the
+   active tab, a duration pill, a section marker. */
+.card {
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 18px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.card:hover,
+  button.card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+}
+
+/* Kept for the two places that genuinely sit over moving colour — the crisis
+   dialog and the chat panel — where a flat translucent panel would let the
+   background bleed through the text. */
 .glass {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.055), rgba(21, 23, 27, 0.72) 62%);
-  backdrop-filter: blur(14px);
+  background: rgba(14, 16, 19, 0.86);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
@@ -429,7 +457,7 @@ body::after {
   inset: 0;
   z-index: 9997;
   pointer-events: none;
-  opacity: 0.028;
+  opacity: 0.014;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -483,6 +511,18 @@ h1, h2, .font-hero {
 p, li {
   text-wrap: pretty;
 }
+
+/* Vertical rhythm.
+   
+   Before this the app used fourteen different top-margin values, including
+   several used once. Four steps cover everything: items inside a block, the
+   gap between blocks, the gap between sections, and the break before a
+   footer. Anything that does not fit one of these is usually a sign the
+   hierarchy is wrong rather than that a fifth value is needed. */
+.stack-item { margin-top: 0.75rem; }   /* 12px — within a block            */
+.stack-block { margin-top: 1.5rem; }   /* 24px — between blocks            */
+.stack-section { margin-top: 3rem; }   /* 48px — between sections          */
+.stack-major { margin-top: 4.5rem; }   /* 72px — before a footer or a rule */
 
 /* Numbers that line up in columns — scores, streaks, timers, codes. */
 .tnum { font-variant-numeric: tabular-nums; }
