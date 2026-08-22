@@ -11,6 +11,7 @@ import PathRun from './pages/PathRun.jsx';
 import Grounding from './pages/Grounding.jsx';
 import Read from './pages/Read.jsx';
 import ReadArticle from './pages/ReadArticle.jsx';
+import ReadTest from './pages/ReadTest.jsx';
 import GroundingPractice from './pages/GroundingPractice.jsx';
 import Caregiver from './pages/Caregiver.jsx';
 import CaregiverResident from './pages/CaregiverResident.jsx';
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/paths" element={<Paths />} />
         <Route path="/paths/:pathId" element={<PathRun />} />
         <Route path="/read" element={<Read />} />
+        <Route path="/read/tests/:instrumentId" element={<ReadTest />} />
         <Route path="/read/:articleId" element={<ReadArticle />} />
         <Route path="/grounding" element={<Grounding />} />
         <Route path="/grounding/:techniqueId" element={<GroundingPractice />} />

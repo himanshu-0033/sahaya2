@@ -4,6 +4,7 @@ import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import { useSession } from '../lib/useSession.js';
 import { ARTICLES, TOPICS } from '../lib/articles.js';
+import { TEST_INDEX } from '../lib/testIndex.js';
 
 // The reading index.
 //
@@ -13,6 +14,15 @@ import { ARTICLES, TOPICS } from '../lib/articles.js';
 // somewhere to go that is not a questionnaire.
 //
 // No fetch, no loading state, no error state. The articles ship with the app.
+
+// Grouped by domain, in the order the instruments are declared, so this list
+// and the Tests tab present the questionnaires in the same sequence.
+const DOMAINS = TEST_INDEX.reduce((groups, test) => {
+  const existing = groups.find(([domain]) => domain === test.domain);
+  if (existing) existing[1].push(test);
+  else groups.push([test.domain, [test]]);
+  return groups;
+}, []);
 
 function ArticleCard({ article, index }) {
   const topic = TOPICS[article.topic] || TOPICS.calm;
@@ -82,6 +92,47 @@ export default function Read() {
           <ArticleCard key={article.id} article={article} index={i} />
         ))}
       </div>
+
+      {/* Every questionnaire in the Tests tab, grouped the way that tab groups
+          them. A list rather than twenty-one more cards: these are reference
+          pages you arrive at with a specific questionnaire in mind, not things
+          to browse, and giving them the same visual weight as the essays would
+          bury the essays. */}
+      <section className="stack-section">
+        <p className="marginalia">The questionnaires, one by one</p>
+        <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          What each one was built to detect, who built it, how to read the score, and — the part
+          that usually goes unsaid — what it is known to be bad at.
+        </p>
+
+        <div className="mt-5 grid gap-6">
+          {DOMAINS.map(([domain, tests]) => (
+            <div key={domain}>
+              <p className="text-xs text-[var(--color-muted)]">{domain}</p>
+              <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                {tests.map((test) => (
+                  <li key={test.id}>
+                    <Link
+                      to={`/read/tests/${test.id}`}
+                      className="press card flex items-baseline justify-between gap-3 px-4 py-3"
+                    >
+                      <span className="min-w-0">
+                        <span className="text-sm">{test.name}</span>
+                        <span className="block truncate text-xs text-[var(--color-muted)]">
+                          {test.fullName}
+                        </span>
+                      </span>
+                      <span className="num shrink-0 text-xs text-[var(--color-muted)]">
+                        {test.itemCount}q
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <div className="card stack-section p-6">
         <p className="marginalia">One caveat for all of it</p>

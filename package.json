@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "install:all": "npm --prefix backend install && npm --prefix frontend install && npm --prefix admin install",
-    "test": "npm --prefix backend test"
+    "test": "npm --prefix backend test",
+    "sync:tests": "node scripts/sync-tests.mjs"
   }
 }

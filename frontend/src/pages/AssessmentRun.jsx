@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
@@ -407,6 +407,20 @@ export default function AssessmentRun() {
               a diagnosis, it describes the last few weeks rather than you, and it can move a
               lot with sleep, exams and illness. Your counsellor can see this result.
             </p>
+
+            {/* Placed on the result rather than before the questions. Nobody
+                wants a methodology essay standing between them and a form,
+                but the moment a number appears is exactly when "how much
+                should I believe this?" becomes a live question. */}
+            <Link
+              to={`/read/tests/${instrumentId}`}
+              className="press mt-4 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+            >
+              What the {result.instrumentName} can and cannot tell you
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Button className="w-auto px-6" onClick={() => navigate('/assessments')}>
