@@ -5,7 +5,7 @@ import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import { INKBLOTS } from '../lib/inkblots.js';
 import { MOOD_OPTIONS } from '../lib/moods.js';
-import { getSession } from '../lib/session.js';
+import { useSession } from '../lib/useSession.js';
 import { submitCheckin } from '../lib/api.js';
 
 const TOTAL_PLATE_STEPS = INKBLOTS.length;
@@ -36,7 +36,7 @@ function Rail({ step, total }) {
 
 export default function CheckIn() {
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
   const [step, setStep] = useState(0); // 0..2 plates, 3 = mood
   const [words, setWords] = useState(['', '', '']);
   const [mood, setMood] = useState(null);

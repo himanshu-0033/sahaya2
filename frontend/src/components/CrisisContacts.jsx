@@ -94,7 +94,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
                       <span className="block text-sm font-medium">{h.name}</span>
                       <span className="block text-xs text-[var(--color-muted)]">{h.note}</span>
                     </span>
-                    <span className="shrink-0 font-display text-lg whitespace-nowrap text-[var(--color-teal-dark)]">
+                    <span className="num shrink-0 text-lg whitespace-nowrap text-[var(--color-teal-dark)]">
                       {h.number}
                     </span>
                   </a>

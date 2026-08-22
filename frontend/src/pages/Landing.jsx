@@ -239,7 +239,7 @@ export default function Landing() {
             style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)' }}
           />
           <p className="relative text-sm">
-            <span className="font-display tnum text-2xl text-[var(--color-lavender)]">{streak}</span>
+            <span className="num text-2xl text-[var(--color-lavender)]">{streak}</span>
             <span className="ml-2 text-[var(--color-ink-soft)]">
               day{streak === 1 ? '' : 's'} of grounding in a row.
             </span>

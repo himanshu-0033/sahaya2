@@ -4,7 +4,8 @@ import Button from '../components/Button.jsx';
 import BreathPacer from '../components/BreathPacer.jsx';
 import VideoShelf from '../components/VideoShelf.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
-import { getSession } from '../lib/session.js';
+import LoadError from '../components/LoadError.jsx';
+import { useSession } from '../lib/useSession.js';
 import { getGroundingTechnique, logGroundingPractice } from '../lib/api.js';
 import { accent, alpha, EVIDENCE_LABEL, formatDuration } from '../lib/accents.js';
 
@@ -115,7 +116,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
   return (
     <div className="flex flex-col items-center">
       <StepRing seconds={step.seconds} stepKey={index} accentName={accentName}>
-        <p className="font-display text-6xl leading-none" style={{ color: bright }}>
+        <p className="num text-6xl leading-none" style={{ color: bright }}>
           {step.label}
         </p>
         {step.count ? (
@@ -177,7 +178,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
 export default function GroundingPractice() {
   const { techniqueId } = useParams();
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
 
   const [technique, setTechnique] = useState(null);
   const [phase, setPhase] = useState('intro'); // intro | running | done
@@ -187,6 +188,7 @@ export default function GroundingPractice() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const startedAt = useRef(null);
   const completedRef = useRef(false);
@@ -197,11 +199,12 @@ export default function GroundingPractice() {
       return;
     }
     setLoading(true);
+    setError(null);
     getGroundingTechnique(techniqueId)
       .then((data) => setTechnique(data.technique))
-      .catch((err) => setError(err.message))
+      .catch(setError)
       .finally(() => setLoading(false));
-  }, [techniqueId, session, navigate]);
+  }, [techniqueId, session, navigate, reloadKey]);
 
   const accentName = technique?.accent;
   const colors = accent(accentName);
@@ -234,7 +237,7 @@ export default function GroundingPractice() {
       });
       setResult(data);
     } catch (err) {
-      setError(err.message);
+      setError(err);
     } finally {
       setSaving(false);
     }
@@ -280,8 +283,12 @@ export default function GroundingPractice() {
       </div>
 
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
-        {loading && <p className="mt-16 text-[var(--color-ink-soft)]">Loading…</p>}
-        {error && !technique && <p className="mt-16 text-sm text-[var(--color-flag)]">{error}</p>}
+        {loading && !technique && (
+          <p className="mt-16 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+        )}
+        {error && !technique && (
+          <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
+        )}
 
         {technique && (
           <header className="flex items-center justify-between gap-4">
@@ -472,7 +479,7 @@ export default function GroundingPractice() {
                   )}
                 </div>
 
-                {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error}</p>}
+                {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Button className="w-auto px-6" disabled={saving} onClick={save}>
@@ -488,7 +495,7 @@ export default function GroundingPractice() {
             {result && (
               <div className="glass mt-10 rounded-3xl p-6 text-center">
                 <p className="font-display text-2xl">
-                  {result.streak} day{result.streak === 1 ? '' : 's'} in a row
+                  <span className="num">{result.streak}</span> day{result.streak === 1 ? '' : 's'} in a row
                 </p>
                 <p className="mt-2 text-xs text-[var(--color-muted)]">
                   {result.totalPractices} practice{result.totalPractices === 1 ? '' : 's'} logged in

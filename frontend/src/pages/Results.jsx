@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import ChatPanel from '../components/ChatPanel.jsx';
-import { getSession } from '../lib/session.js';
+import { useSession } from '../lib/useSession.js';
 import { getStatus } from '../lib/api.js';
 
 function formatDate(iso) {
@@ -29,7 +29,7 @@ function DinnerPass({ record }) {
             Valid
           </span>
         </div>
-        <p className="font-display tnum mt-4 text-[2.1rem] leading-none tracking-wide sm:text-[2.6rem]">
+        <p className="num mt-4 text-[2.1rem] leading-none tracking-wide sm:text-[2.6rem]">
           {record.dinnerPassCode}
         </p>
         <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{formatDate(record.date)}</p>
@@ -63,7 +63,7 @@ function DinnerPass({ record }) {
 export default function Results() {
   const location = useLocation();
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
   const [record, setRecord] = useState(location.state?.record || null);
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(!location.state?.record);

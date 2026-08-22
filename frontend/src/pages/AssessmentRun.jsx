@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
-import { getSession } from '../lib/session.js';
+import LoadError from '../components/LoadError.jsx';
+import { useSession } from '../lib/useSession.js';
 import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
 import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
 
@@ -50,7 +51,7 @@ function Dots({ answers, current, onJump }) {
 export default function AssessmentRun() {
   const { instrumentId } = useParams();
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
 
   const [instrument, setInstrument] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -62,6 +63,7 @@ export default function AssessmentRun() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const advanceRef = useRef(null);
   useEffect(() => () => clearTimeout(advanceRef.current), []);
@@ -72,6 +74,7 @@ export default function AssessmentRun() {
       return;
     }
     setLoading(true);
+    setError(null);
     getAssessmentInstrument(instrumentId)
       .then((data) => {
         const count = data.instrument.items.length;
@@ -95,9 +98,9 @@ export default function AssessmentRun() {
         setStep(firstGap === -1 ? 0 : firstGap);
         setResult(null);
       })
-      .catch((err) => setError(err.message))
+      .catch(setError)
       .finally(() => setLoading(false));
-  }, [instrumentId, session, navigate]);
+  }, [instrumentId, session, navigate, reloadKey]);
 
   const submit = useCallback(
     async (finalAnswers) => {
@@ -114,7 +117,7 @@ export default function AssessmentRun() {
           // Nothing to clean up if storage is unavailable.
         }
       } catch (err) {
-        setError(err.message);
+        setError(err);
       } finally {
         setSubmitting(false);
       }
@@ -192,7 +195,9 @@ export default function AssessmentRun() {
 
       <div className="relative mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
         {loading && <p className="mt-16 text-[var(--color-ink-soft)]">Loading…</p>}
-        {error && !instrument && <p className="mt-16 text-sm text-[var(--color-flag)]">{error}</p>}
+        {error && !instrument && (
+          <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
+        )}
 
         {/* ---------- taking it ---------- */}
         {!loading && instrument && !result && (
@@ -277,7 +282,7 @@ export default function AssessmentRun() {
                 })}
               </div>
 
-              {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error}</p>}
+              {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
               <p className="mt-7 text-xs text-[var(--color-muted)]">
                 {encouragement(step, instrument.items.length)}

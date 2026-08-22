@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
-import { getSession } from '../lib/session.js';
+import LoadError from '../components/LoadError.jsx';
+import { useSession } from '../lib/useSession.js';
 import { getAssessmentCatalog } from '../lib/api.js';
 import { bandColor, bandTint } from '../lib/bands.js';
 
@@ -70,7 +71,7 @@ function InstrumentCard({ instrument, last, index }) {
             className="shrink-0 rounded-xl px-2.5 py-1.5 text-center"
             style={{ background: bandTint(last.band), color: bandColor(last.band) }}
           >
-            <span className="font-display tnum block text-lg leading-none">{last.score}</span>
+            <span className="num block text-lg leading-none">{last.score}</span>
             <span className="mt-1 block text-[9px] opacity-80">{formatWhen(last.createdAt)}</span>
           </span>
         )}
@@ -93,26 +94,29 @@ function InstrumentCard({ instrument, last, index }) {
 
 export default function Assessments() {
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
   const [instruments, setInstruments] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [filter, setFilter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!session) {
       navigate('/');
       return;
     }
+    setLoading(true);
+    setError(null);
     getAssessmentCatalog()
       .then((data) => {
         setInstruments(data.instruments || []);
         setSessions(data.sessions || []);
       })
-      .catch((err) => setError(err.message))
+      .catch(setError)
       .finally(() => setLoading(false));
-  }, [session, navigate]);
+  }, [session, navigate, reloadKey]);
 
   const lastByInstrument = useMemo(() => {
     const map = new Map();
@@ -155,8 +159,12 @@ export default function Assessments() {
         </p>
       </div>
 
-      {loading && <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>}
-      {error && <p className="mt-6 text-sm text-[var(--color-flag)]">{error}</p>}
+      {loading && instruments.length === 0 && (
+        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+      )}
+      {error && instruments.length === 0 && (
+        <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
+      )}
 
       {!loading && instruments.length > 0 && (
         <>

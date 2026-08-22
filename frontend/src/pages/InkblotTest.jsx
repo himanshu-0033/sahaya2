@@ -5,7 +5,8 @@ import PageShell from '../components/PageShell.jsx';
 import InkblotPlate from '../components/InkblotPlate.jsx';
 import VoiceInputButton from '../components/VoiceInputButton.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
-import { getSession } from '../lib/session.js';
+import LoadError from '../components/LoadError.jsx';
+import { useSession } from '../lib/useSession.js';
 import { getInkblotTest, submitInkblotTest } from '../lib/api.js';
 
 // Ten plates of free text.
@@ -57,7 +58,7 @@ function Stat({ label, value, suffix }) {
   return (
     <div className="glass rounded-3xl p-5">
       <p className="marginalia">{label}</p>
-      <p className="font-display tnum mt-2.5 text-[2.2rem] leading-none">
+      <p className="num mt-2.5 text-[2.2rem] leading-none">
         {value}
         {suffix && <span className="text-lg text-[var(--color-muted)]">{suffix}</span>}
       </p>
@@ -67,7 +68,7 @@ function Stat({ label, value, suffix }) {
 
 export default function InkblotTest() {
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
 
   const [phase, setPhase] = useState('intro');
   const [plates, setPlates] = useState([]);
@@ -79,6 +80,7 @@ export default function InkblotTest() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // When the current plate first appeared, so we can record how long it took
   // to put anything down. Descriptive only — nothing scores off it.
@@ -89,11 +91,13 @@ export default function InkblotTest() {
       navigate('/');
       return;
     }
+    setLoading(true);
+    setError(null);
     getInkblotTest()
       .then((data) => setPlates(data.plates || []))
-      .catch((err) => setError(err.message))
+      .catch(setError)
       .finally(() => setLoading(false));
-  }, [session, navigate]);
+  }, [session, navigate, reloadKey]);
 
   useEffect(() => {
     if (phase === 'test') shownAtRef.current = Date.now();
@@ -134,7 +138,7 @@ export default function InkblotTest() {
       setHelplines(data.helplines);
       setPhase('done');
     } catch (err) {
-      setError(err.message);
+      setError(err);
     } finally {
       setSubmitting(false);
     }
@@ -149,7 +153,12 @@ export default function InkblotTest() {
     <PageShell section="inkblot" tabs={phase !== 'test'}>
       {phase !== 'test' && <Header eyebrow="Inkblot" />}
 
-      {loading && <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Preparing the plates…</p>}
+      {loading && plates.length === 0 && (
+        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Preparing the plates…</p>
+      )}
+      {error && plates.length === 0 && (
+        <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
+      )}
 
       {/* ------------------------------------------------------------ intro */}
       {!loading && phase === 'intro' && (
@@ -186,7 +195,9 @@ export default function InkblotTest() {
             </p>
           </div>
 
-          {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error}</p>}
+          {error && plates.length > 0 && (
+            <p className="mt-4 text-sm text-[var(--color-flag)]">{error.message}</p>
+          )}
 
           <button
             type="button"
@@ -261,7 +272,7 @@ export default function InkblotTest() {
               <VoiceInputButton onTranscript={appendTranscript} />
             </div>
 
-            {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error}</p>}
+            {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
             <div className="mt-6 w-full">
               {step < plates.length - 1 ? (

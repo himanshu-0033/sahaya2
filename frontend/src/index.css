@@ -464,6 +464,15 @@ body::after {
   border-radius: 6px;
 }
 
+/* Text fields style their own focus (border goes teal, background lifts), so
+   the global ring on top of that was drawing two concentric outlines around
+   every input. Their own treatment is a sufficient focus indicator, so the
+   outer ring is dropped here rather than doubled. */
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
 /* Headline balance. `text-wrap: balance` stops a two-line hero breaking with
    one orphaned word, which is the single most common thing that makes a
    layout look unconsidered. */
@@ -477,6 +486,20 @@ p, li {
 
 /* Numbers that line up in columns — scores, streaks, timers, codes. */
 .tnum { font-variant-numeric: tabular-nums; }
+
+/* Numerals that have to be unambiguous, set in the sans face.
+   Cormorant's "1" is a bare vertical stroke with serifs and is very nearly
+   its capital "I" — at a glance "1 day in a row" reads as "I day in a row",
+   and a dinner-pass code full of 1s and 0s is worse than useless if the person
+   at the counter cannot transcribe it. So anything that is a *value* rather
+   than prose gets Inter with lining tabular figures, even inside a heading
+   otherwise set in the display face. */
+.num {
+  font-family: var(--font-sans);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
 
 /* A hairline rule with a fade at both ends, used to separate editorial
    sections without the hard line of a border. */

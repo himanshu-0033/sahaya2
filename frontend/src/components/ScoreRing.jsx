@@ -37,7 +37,7 @@ export default function ScoreRing({ score, maxScore, band, size = 190, stroke = 
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-display text-5xl leading-none" style={{ color }}>
+        <span className="num text-5xl leading-none" style={{ color }}>
           {score}
         </span>
         <span className="mt-1 text-xs text-[var(--color-muted)]">of {maxScore}</span>

@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
-import { getSession } from '../lib/session.js';
+import LoadError from '../components/LoadError.jsx';
+import { useSession } from '../lib/useSession.js';
 import { getGroundingCatalog } from '../lib/api.js';
 import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../lib/accents.js';
 
@@ -114,23 +115,28 @@ function formatWhen(iso) {
 
 export default function Grounding() {
   const navigate = useNavigate();
-  const session = getSession();
+  const session = useSession();
 
   const [data, setData] = useState(null);
   const [mood, setMood] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Bumped by the retry button; the effect keys off it so a retry is just a
+  // re-run of the same load path rather than a second, divergent one.
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!session) {
       navigate('/');
       return;
     }
+    setLoading(true);
+    setError(null);
     getGroundingCatalog()
       .then(setData)
-      .catch((err) => setError(err.message))
+      .catch(setError)
       .finally(() => setLoading(false));
-  }, [session, navigate]);
+  }, [session, navigate, reloadKey]);
 
   const lastByTechnique = useMemo(() => {
     const map = new Map();
@@ -178,14 +184,18 @@ export default function Grounding() {
         </p>
       </div>
 
-      {loading && <p className="mt-10 text-[var(--color-ink-soft)]">Loading…</p>}
-      {error && <p className="mt-6 text-sm text-[var(--color-flag)]">{error}</p>}
+      {loading && !data && (
+        <p className="mt-10 animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+      )}
+      {error && !data && (
+        <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
+      )}
 
       {data && (
         <>
           {data.streak > 0 && (
             <p className="mt-6 inline-block rounded-full border border-[var(--sec-calm)]/25 bg-[var(--sec-calm)]/12 px-4 py-2 text-xs">
-              {data.streak} day{data.streak === 1 ? '' : 's'} in a row. Nice.
+              <span className="num">{data.streak}</span> day{data.streak === 1 ? '' : 's'} in a row. Nice.
             </p>
           )}
 

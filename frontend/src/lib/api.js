@@ -4,21 +4,91 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 // The agent is its own deployable module, so it gets its own base URL.
 const AGENT_BASE = import.meta.env.VITE_AGENT_URL || '';
 
+// An error the UI can act on, rather than a bare string.
+//
+// `offline` marks the case where the request never reached a server at all —
+// fetch() rejects with a TypeError whose message is the famously unhelpful
+// "Failed to fetch". Rendering that verbatim tells a student nothing and
+// offers them nothing to do, so it is tagged here and the pages turn it into
+// a real message with a retry.
+export class ApiError extends Error {
+  constructor(message, { status = 0, offline = false } = {}) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.offline = offline;
+  }
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Statuses that mean "the API itself never answered" rather than "the API
+// answered and said no". A dev server mid-restart, or a serverless cold start
+// that timed out, surfaces as one of these — from the proxy in front of the
+// API, not from the API. They are treated exactly like a dropped connection:
+// worth retrying, and worth describing to the user as a reachability problem
+// rather than quoting a bare status code at them.
+const UPSTREAM_DOWN = new Set([502, 503, 504]);
+
 async function request(path, options = {}, base = API_BASE) {
   const session = getSession();
-  const res = await fetch(`${base}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(session ? { Authorization: `Bearer ${session.idToken}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    throw new Error(data?.error || `Request failed (${res.status})`);
+  const method = (options.method || 'GET').toUpperCase();
+
+  // Retry only reads, and only on a network-level failure. A GET is safe to
+  // repeat; a POST is not — retrying a check-in or a logged practice would
+  // duplicate it. The delay covers the common local case of the dev server
+  // being a second into a restart.
+  const attempts = method === 'GET' ? 3 : 1;
+  let lastError = null;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    let res;
+    try {
+      res = await fetch(`${base}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session ? { Authorization: `Bearer ${session.idToken}` } : {}),
+          ...(options.headers || {}),
+        },
+      });
+    } catch {
+      // Network-level: DNS, connection refused, CORS, offline, server mid-restart.
+      lastError = new ApiError(
+        navigator.onLine === false
+          ? "You're offline. Check your connection and try again."
+          : "Can't reach the server right now.",
+        { offline: true },
+      );
+      if (attempt < attempts - 1) {
+        await sleep(400 * (attempt + 1));
+        continue;
+      }
+      throw lastError;
+    }
+
+    if (UPSTREAM_DOWN.has(res.status)) {
+      lastError = new ApiError("Can't reach the server right now.", {
+        status: res.status,
+        offline: true,
+      });
+      if (attempt < attempts - 1) {
+        await sleep(400 * (attempt + 1));
+        continue;
+      }
+      throw lastError;
+    }
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      // A real answer with a real status is the API talking, not a
+      // reachability problem — never retried, and reported as it was sent.
+      throw new ApiError(data?.error || `Request failed (${res.status})`, { status: res.status });
+    }
+    return data;
   }
-  return data;
+
+  throw lastError;
 }
 
 export function signup({ name, email, phone, password }) {
