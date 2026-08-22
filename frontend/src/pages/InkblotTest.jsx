@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import InkblotPlate from '../components/InkblotPlate.jsx';
@@ -31,10 +31,10 @@ function Rail({ value, total }) {
 
 // The plate sits on its own pedestal with a warm bloom behind it. Without the
 // bloom a black shape on a black page has no presence at all.
-function Pedestal({ path, size }) {
+function Pedestal({ plate, size }) {
   return (
     <div className="card p-7 sm:p-9">
-      <InkblotPlate path={path} size={size} />
+      <InkblotPlate path={plate?.path} image={plate?.image} size={size} />
     </div>
   );
 }
@@ -154,14 +154,14 @@ export default function InkblotTest() {
           </h1>
 
           <div className="mt-6 flex justify-center py-4 sm:justify-start">
-            {plates[0] && <Pedestal path={plates[0].path} size={150} />}
+            {plates[0] && <Pedestal plate={plates[0]} size={150} />}
           </div>
 
           <div className="mt-6 max-w-lg space-y-4 text-sm leading-relaxed text-[var(--color-ink-soft)]">
             <p>
-              Ten abstract inkblots, one at a time. For each, write or say what it looks like to
-              you. There is no right answer and nothing to get through quickly — most people take
-              ten to fifteen minutes.
+              The ten original Rorschach plates, one at a time, in the order they were published
+              in. For each, write or say what it looks like to you. There is no right answer and
+              nothing to get through quickly — most people take ten to fifteen minutes.
             </p>
             <p>You can skip any plate, and you can say more than one thing about a plate.</p>
           </div>
@@ -171,9 +171,19 @@ export default function InkblotTest() {
             <p className="mt-2.5 text-xs leading-relaxed text-[var(--color-muted)]">
               Sahaya keeps what you write and shows it to your counsellor alongside your check-ins.
               It does <span className="text-[var(--color-ink-soft)]">not</span> score your answers:
-              a real Rorschach is administered and coded by a trained clinician, and this is a
-              reflective exercise, not a clinical assessment or a diagnosis.
+              a real Rorschach is administered one-to-one by a trained clinician and coded against
+              a formal system, and this is a reflective exercise, not a clinical assessment or a
+              diagnosis.
             </p>
+            <Link
+              to="/read/the-inkblots-honestly"
+              className="press mt-3.5 inline-flex items-center gap-1.5 text-xs text-[var(--sec-inkblot)]"
+            >
+              What the inkblots actually measure
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
           </div>
 
           {error && plates.length > 0 && (
@@ -226,7 +236,7 @@ export default function InkblotTest() {
           {/* Keyed so each plate arrives rather than swapping in place. */}
           <div key={plate.id} className="mt-8 flex flex-col items-center">
             <div className="animate-slide-up">
-              <Pedestal path={plate.path} size={230} />
+              <Pedestal plate={plate} size={230} />
             </div>
 
             <p

@@ -48,6 +48,12 @@ const TABS = [
     icon: <path d="M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm1.5 5h5M9.5 12h5M9.5 16h3" />,
   },
   {
+    to: '/read',
+    label: 'Read',
+    hue: 'var(--sec-read)',
+    icon: <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 16.5Zm16 0A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4.5a1.5 1.5 0 0 0 1.5-1.5Z" />,
+  },
+  {
     to: '/inkblot-test',
     label: 'Inkblot',
     hue: 'var(--sec-inkblot)',

@@ -290,6 +290,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   --sec-calm: #a79cf0;
   --sec-tests: #58b6f5;
   --sec-inkblot: #d9a55c;
+  --sec-read: #8fd6b4;
 
   /* Height of the mobile tab bar, so pages can reserve room for it in one
      place rather than each guessing at a padding value. */

@@ -1,12 +1,20 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 // A plate.
 //
-// The shape is drawn once and mirrored across the vertical axis, which is what
-// makes it read as an inkblot rather than as a blob — real Rorschach plates
-// get their symmetry from folding wet paper in half.
+// Two ways of drawing one, and which you get depends on the data:
 //
-// Two details do most of the work of making it look like ink rather than a
+//   * `image` — one of the ten real Rorschach plates (public domain, 1921),
+//     served from /plates/. Used by the inkblot reflection.
+//   * `path`  — an original abstract shape, drawn once and mirrored across the
+//     vertical axis. Used by the check-in, and used as the fallback if a plate
+//     image fails to load, so a dropped request degrades to something that
+//     still reads as an inkblot rather than to a broken-image icon.
+//
+// The mirroring is what makes a `path` read as an inkblot rather than as a
+// blob — real plates get their symmetry from folding wet paper in half.
+//
+// Two details do most of the work of making a path look like ink rather than a
 // flat sticker: a gradient so the fill has a light source, and a small blur
 // pushed back out through a contrast curve, which bleeds the edge slightly the
 // way ink bleeds into paper instead of cutting it with a vector edge. The
@@ -17,10 +25,31 @@ import { useId } from 'react';
 // screen shows a preview while the test shows the live one) must not share a
 // gradient id, and React 18 guarantees these are unique and stable across
 // hydration.
-export default function InkblotPlate({ path, size = 220 }) {
+export default function InkblotPlate({ path, image, size = 220, alt }) {
   const id = useId().replace(/:/g, '');
   const gradientId = `blot-fill-${id}`;
   const filterId = `blot-ink-${id}`;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (image && !imageFailed) {
+    return (
+      <img
+        src={image}
+        width={size}
+        height={size}
+        onError={() => setImageFailed(true)}
+        // The plates are wider than they are tall and none of them should be
+        // stretched — `contain` keeps each one's real proportions inside the
+        // square the layout reserves.
+        className="block h-auto max-w-full object-contain"
+        style={{ width: size }}
+        // Decoding off the main thread; the next plate is often prefetched
+        // while someone is still typing about the current one.
+        decoding="async"
+        alt={alt || 'An inkblot. There is no right answer to what it shows.'}
+      />
+    );
+  }
 
   return (
     <svg
@@ -28,7 +57,7 @@ export default function InkblotPlate({ path, size = 220 }) {
       width={size}
       height={size}
       role="img"
-      aria-label="Abstract ink blot shape"
+      aria-label={alt || 'Abstract ink blot shape'}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0.35" y2="1">

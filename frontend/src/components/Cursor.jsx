@@ -29,6 +29,7 @@ const SECTION_HUE = [
   ['/grounding', 'var(--sec-calm)'],
   ['/assessments', 'var(--sec-tests)'],
   ['/inkblot-test', 'var(--sec-inkblot)'],
+  ['/read', 'var(--sec-read)'],
 ];
 
 function hueFor(pathname) {

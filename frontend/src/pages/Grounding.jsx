@@ -242,6 +242,26 @@ export default function Grounding() {
               means clinicians teach it but the single skill has not been trialled on its own.
               Sahaya records that you practised, never how you did.
             </p>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+              <Link
+                to="/read/why-a-long-exhale-works"
+                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm)]"
+              >
+                Why a long exhale works so fast
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+              <Link
+                to="/read/which-technique-when"
+                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm)]"
+              >
+                Which one, and when
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </div>
             <div className="mt-5">
               <CrisisContacts variant="button" />
             </div>

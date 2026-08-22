@@ -21,6 +21,7 @@ const WASH = {
   calm: 'rgba(167, 156, 240, 0.14)',
   tests: 'rgba(88, 182, 245, 0.12)',
   inkblot: 'rgba(217, 165, 92, 0.12)',
+  read: 'rgba(143, 214, 180, 0.12)',
 };
 
 const WIDTH = {
