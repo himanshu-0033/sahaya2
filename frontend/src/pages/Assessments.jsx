@@ -150,6 +150,38 @@ export default function Assessments() {
           Each gives a score and the range it falls in. A range is a description of a few weeks,
           not a diagnosis of you.
         </p>
+
+        {/* Two links rather than three paragraphs of caveat here. Someone who
+            has come to take a questionnaire should not have to read an essay
+            first — but the two questions they will have afterwards are which
+            one to pick and how much to believe the number, so both are one
+            tap away. */}
+        <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+          <Link
+            to="/read/which-test-and-what-for"
+            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+          >
+            Which test, and what for
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </Link>
+          <Link
+            to="/read/a-positive-screen-is-not-a-diagnosis"
+            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+          >
+            A positive screen is not a diagnosis
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </Link>
+          <Link
+            to="/read/where-your-answers-go"
+            className="press inline-flex items-center gap-1.5 text-xs text-[var(--color-muted)]"
+          >
+            Where your answers go
+          </Link>
+        </div>
       </div>
 
       {loading && instruments.length === 0 && (

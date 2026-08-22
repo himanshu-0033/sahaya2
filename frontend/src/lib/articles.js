@@ -357,6 +357,231 @@ export const ARTICLES = [
       },
     ],
   },
+  // ----------------------------------------------------------------- 5
+  {
+    id: 'a-positive-screen-is-not-a-diagnosis',
+    title: 'A positive screen is not a diagnosis',
+    standfirst:
+      'The most misread thing about questionnaires: even an accurate screen is wrong more often than it is right, and the arithmetic behind that is worth ten minutes of your life.',
+    topic: 'tests',
+    minutes: 6,
+    sections: [
+      {
+        heading: 'Two numbers every screening test has',
+        blocks: [
+          {
+            p: 'Sensitivity is the share of people who have the thing and get flagged. Specificity is the share of people who do not have it and correctly do not get flagged. The PHQ-9 at a threshold of 10 was reported at about 88% on both in its original validation, which sounds close to conclusive.',
+          },
+          { p: 'It is not, and the reason is arithmetic rather than psychology.' },
+        ],
+      },
+      {
+        heading: 'Work it through with a thousand students',
+        blocks: [
+          {
+            p: 'Say a hostel has a thousand students and one in ten is genuinely experiencing a depressive disorder. Everyone fills in a PHQ-9.',
+          },
+          {
+            list: [
+              'Of the 100 who do have it, 88% get flagged — 88 correct flags, and 12 people missed.',
+              'Of the 900 who do not, 88% correctly pass. But 12% do not, and that is 108 people flagged who are fine.',
+              'So 196 students screen positive, and only 88 of them have the thing being screened for.',
+            ],
+          },
+          {
+            p: 'Fewer than half — from a test that is right 88% of the time in both directions. If you screened positive, the single most likely explanation is still that you do not have a depressive disorder.',
+          },
+          {
+            note: 'It gets worse as the condition gets rarer. At one in twenty rather than one in ten, the same test gives 44 true flags against 114 false ones: barely one positive in four is real.',
+          },
+        ],
+      },
+      {
+        heading: 'Why the thresholds are set to over-refer anyway',
+        blocks: [
+          {
+            p: 'Knowing all that, cut-offs are still placed deliberately to catch too many people rather than too few. That is a considered trade rather than an oversight: an unnecessary conversation costs an hour of someone’s time, and a missed case can cost considerably more.',
+          },
+          {
+            p: 'The SCOFF is the clearest case in this app. Two yes answers out of five is a low bar, and it is meant to be, because eating disorders are dangerous, treatable, and easy to hide.',
+          },
+        ],
+      },
+      {
+        heading: 'What to actually do with a high score',
+        blocks: [
+          {
+            p: 'Treat it as a question rather than an answer. The useful response is a conversation with someone who can ask the follow-ups — how long, how much it is interfering, what else is going on, what changed. Those are what turn a flag into an assessment, and none of them fit on a form.',
+          },
+          {
+            p: 'The wrong response is to conclude you have a condition. The other wrong response is to dismiss it because you have just read that most positives are false. Yours might be one of the true ones, and that is the entire reason the question is worth asking out loud.',
+          },
+        ],
+      },
+    ],
+    sources: [
+      {
+        label: 'Kroenke, K., Spitzer, R. L. & Williams, J. B. (2001). J Gen Intern Med 16(9), 606–613.',
+        detail: 'Source of the sensitivity and specificity figures used above.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/11556941/',
+      },
+      {
+        label: 'Levis, B., Benedetti, A. & Thombs, B. D. (2019). BMJ 365, l1476.',
+        detail: 'Individual-participant meta-analysis: real-world PHQ-9 accuracy is generally lower than the original validation reported.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/30967483/',
+      },
+    ],
+  },
+
+  // ----------------------------------------------------------------- 6
+  {
+    id: 'which-test-and-what-for',
+    title: 'Which test, and what for',
+    standfirst:
+      'Twenty-one questionnaires is an unhelpful number to be offered when you are already not feeling well. Find the sentence below that sounds like yours.',
+    topic: 'tests',
+    minutes: 5,
+    sections: [
+      {
+        heading: 'Start with one',
+        blocks: [
+          {
+            p: 'The instinct on seeing a list this long is to work through it, and that is the one approach worth avoiding. Twenty-one scores is not twenty-one times the insight — it is a pile of overlapping numbers, several of which will appear to contradict each other, and an afternoon spent being measured.',
+          },
+          { p: 'Pick the one that matches what you are actually wondering about.' },
+        ],
+      },
+      {
+        heading: '“I feel flat, or low, or like nothing is interesting”',
+        blocks: [
+          {
+            p: 'PHQ-9 asks about depression symptoms directly. WHO-5 reaches the same territory from the opposite side, asking what is present rather than what is wrong — some people find that far easier to answer honestly, and a low WHO-5 next to a mild PHQ-9 is a real and informative combination rather than a contradiction.',
+          },
+        ],
+      },
+      {
+        heading: '“I can’t stop worrying” · “everything is too much”',
+        blocks: [
+          {
+            p: 'GAD-7 for worry that will not switch off. PSS-10 when the problem is less anxiety than sheer load — it asks how unpredictable and uncontrollable the last month felt rather than what happened in it. K10 is the one for knowing something is wrong but not being able to say what.',
+          },
+        ],
+      },
+      {
+        heading: '“I am exhausted” · “I can’t sleep”',
+        blocks: [
+          {
+            p: 'The CBI personal burnout subscale measures exhaustion without mentioning work, which is why it transfers to students. AIS-8 is for sleep specifically, and it is worth doing before drawing conclusions from any of the others — badly slept people score worse on nearly every scale here.',
+          },
+        ],
+      },
+      {
+        heading: '“I feel alone” · “I dread being looked at”',
+        blocks: [
+          {
+            p: 'UCLA-3 is three questions and never uses the word lonely, deliberately. MSPSS asks the different and sometimes harder question of who you believe you could actually call. Mini-SPIN is for the specific fear of embarrassment and of being watched.',
+          },
+        ],
+      },
+      {
+        heading: '“I am hard on myself” · “am I coping?”',
+        blocks: [
+          {
+            p: 'RSES for overall self-worth; SCS-SF for how you treat yourself specifically when things have gone badly. On coping: BRS measures how quickly you recover, GSE-10 whether you believe you can handle what is coming, and the Flourishing Scale whether life is going well in the ways people actually care about.',
+          },
+        ],
+      },
+      {
+        heading: 'The specific ones',
+        blocks: [
+          {
+            list: [
+              'PHQ-15 — persistent physical symptoms: headaches, stomach trouble, dizziness.',
+              'PC-PTSD-5 — after something frightening or harmful happened to you.',
+              'SCOFF — food and eating.',
+              'SAS-SV and BSMAS — phone and social media use that has started to cost you something.',
+              'AUDIT-C — how much you drink.',
+            ],
+          },
+          {
+            note: 'These are screens for particular things, and a positive result on any of them is a reason to talk to someone rather than a conclusion. PC-PTSD-5 asks you to think about the worst thing that has happened to you — it will keep until a day you have chosen.',
+          },
+        ],
+      },
+      {
+        heading: 'Then leave it a fortnight',
+        blocks: [
+          {
+            p: 'Most of these ask about the last two weeks or the last month, so taking the same one twice in a few days measures little beyond the difference between Tuesday and Thursday. The number starts being useful when you have two of them a proper interval apart.',
+          },
+        ],
+      },
+    ],
+    sources: [],
+  },
+
+  // ----------------------------------------------------------------- 7
+  {
+    id: 'where-your-answers-go',
+    title: 'Where your answers go',
+    standfirst:
+      'What Sahaya stores when you finish a questionnaire, who can read it, and what happens if you answer one particular question.',
+    topic: 'tests',
+    minutes: 4,
+    sections: [
+      {
+        heading: 'What is kept',
+        blocks: [
+          {
+            p: 'When you submit a questionnaire, Sahaya stores your individual answers — not only the total. It also keeps the score, the band, the date, and which questionnaire it was.',
+          },
+          {
+            p: 'That is more than the result screen needs, and it is the kind of thing worth knowing before you answer rather than after.',
+          },
+        ],
+      },
+      {
+        heading: 'Who can read it',
+        blocks: [
+          {
+            p: 'Your counsellor. The console shows the people assigned to it, and for each person their check-ins, their inkblot sittings and their questionnaire results, newest first.',
+          },
+          {
+            p: 'That is the design of the app rather than an unfortunate side effect. Sahaya was built for a hostel where somebody is responsible for the students in it, and a screening result nobody ever reads is not much use to anyone. But it does mean this is not a private diary and should not be treated as one.',
+          },
+          {
+            note: 'If what you want is somewhere to think without it being read, the grounding practices record only that you practised — never what you were feeling, and never anything you wrote.',
+          },
+        ],
+      },
+      {
+        heading: 'The one question that is treated differently',
+        blocks: [
+          {
+            p: 'Item 9 of the PHQ-9 asks about thoughts of being better off dead or of hurting yourself. Answering anything other than “not at all” does two things immediately: it puts crisis contacts on your screen, and it flags that result in the counsellor console.',
+          },
+          {
+            p: 'The flag does not depend on your total. Someone can answer that item positively and still land in a band labelled mild, and the app deliberately does not let the total bury it.',
+          },
+          {
+            p: 'It is the only item wired this way, because it is the only one that asks about self-harm directly. Which is worth stating plainly: answer it honestly and someone will see.',
+          },
+        ],
+      },
+      {
+        heading: 'And if that is not what you want today',
+        blocks: [
+          {
+            p: 'Then do not fill one in. Nothing here is compulsory, nothing is scored on whether you took it, and a questionnaire answered dishonestly because you were worried about who would read it is worse than no questionnaire at all.',
+          },
+          {
+            p: 'The crisis contacts on every screen go to people who are not your counsellor and who do not know your name.',
+          },
+        ],
+      },
+    ],
+    sources: [],
+  },
 ];
 
 export const ARTICLE_IDS = ARTICLES.map((a) => a.id);

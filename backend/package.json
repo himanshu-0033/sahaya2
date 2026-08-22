@@ -7,7 +7,7 @@
     "dev": "vercel dev",
     "dev:local": "node --env-file=.env.local dev-server.js",
     "deploy": "vercel --prod",
-    "test": "node test/scoring.test.mjs && node test/reflection.test.mjs && node test/grounding.test.mjs && node test/paths.test.mjs && node test/test-notes.test.mjs"
+    "test": "node test/scoring.test.mjs && node test/reflection.test.mjs && node test/grounding.test.mjs && node test/paths.test.mjs && node test/test-notes.test.mjs && node test/articles.test.mjs"
   },
   "devDependencies": {
     "vercel": "^37.0.0"
