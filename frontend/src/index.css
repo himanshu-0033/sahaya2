@@ -410,6 +410,77 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   .pad-tabbar { padding-bottom: 3rem; }
 }
 
+/* ------------------------------------------------------------------ */
+/* Butterflies (sign-in)                                               */
+/*                                                                     */
+/* Three stacked transforms per butterfly — cross the screen, wander    */
+/* vertically, flap — kept on separate elements because one element     */
+/* can only hold one `transform`. All of it is compositor-only work.    */
+
+.bf-field { z-index: 0; }
+
+/* The horizontal pass. Starts and ends fully off-screen so nothing ever  */
+/* pops into existence at the edge. `will-change` is set here and nowhere */
+/* else: this is the only thing on the page animating continuously.       */
+.bf-drift {
+  position: absolute;
+  left: 0;
+  animation-name: bf-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes bf-drift {
+  from { transform: translate3d(-12vw, 0, 0); }
+  to { transform: translate3d(112vw, 0, 0); }
+}
+
+/* The feature butterfly takes its time — a minute and a half for one pass. */
+.bf-drift-feature { animation-duration: 92s; }
+
+/* The vertical wander. Deliberately on its own period so it never lines up */
+/* with the drift into a visibly repeating arc. The tilt sells the turn.    */
+.bf-bob {
+  animation-name: bf-bob;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  animation-iteration-count: infinite;
+}
+
+@keyframes bf-bob {
+  0% { transform: translateY(0) rotate(-7deg); }
+  50% { transform: translateY(-34px) rotate(7deg); }
+  100% { transform: translateY(0) rotate(-7deg); }
+}
+
+/* The wings. `transform-box: view-box` makes the origin refer to the SVG   */
+/* viewBox rather than each wing's own bounding box, so both pairs pivot on */
+/* the body axis at x=0 instead of around their own centres.               */
+.bf-wing {
+  transform-box: view-box;
+  transform-origin: 0px 0px;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  /* Promotes each wing pair so a flap composites instead of repainting the
+     whole SVG. Worth the layer here because these never stop moving. */
+  will-change: transform;
+}
+
+.bf-wing-r { animation-name: bf-flap-r; }
+.bf-wing-l { animation-name: bf-flap-l; }
+
+@keyframes bf-flap-r {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.46); }
+}
+
+/* The left pair is the same artwork mirrored, so its resting state is -1 */
+/* and it flaps toward zero from the other side. */
+@keyframes bf-flap-l {
+  0%, 100% { transform: scaleX(-1); }
+  50% { transform: scaleX(-0.46); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-float,
   .animate-shimmer,
@@ -420,6 +491,10 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   }
   .press:active { transform: none; }
   .lift:hover { transform: none; }
+
+  /* Hidden rather than frozen. A dozen butterflies stopped dead mid-air
+     reads as a rendering fault; the screen loses nothing without them. */
+  .bf-field { display: none; }
 }
 
 

@@ -5,6 +5,7 @@ import PhoneSignInButton from './PhoneSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
 import CrisisContacts from './CrisisContacts.jsx';
 import Inkblot3D from './Inkblot3D.jsx';
+import Butterflies, { FeatureButterfly } from './Butterflies.jsx';
 
 // three.js is most of the bundle and nothing above the fold needs it, so the
 // WebGL sculpture loads on its own. The SVG version stands in meanwhile —
@@ -44,7 +45,15 @@ export default function DarkSignInHero({ onSignedIn }) {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-6 lg:px-10">
+      {/* The ambient field sits on the ground tone, under everything else.
+          The feature butterfly is one layer up so it can pass in front of
+          the sculpture — but both are still beneath the content column,
+          which carries its own z-index, so nothing ever drifts across the
+          sign-in form or makes the copy harder to read. */}
+      <Butterflies />
+      <FeatureButterfly className="z-[1]" />
+
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-6 lg:px-10">
         <header className="flex shrink-0 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5">
             <span
