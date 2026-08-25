@@ -79,6 +79,9 @@ export default function AssessmentRun() {
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const [helplines, setHelplines] = useState(null);
+  // { level, message } — the backend decides the wording, because which
+  // instrument asked and how urgent the answer was both live there.
+  const [crisis, setCrisis] = useState(null);
   const [resumed, setResumed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -143,6 +146,7 @@ export default function AssessmentRun() {
         setResult(data.record);
         setPrevious(data.previous);
         setHelplines(data.helplines);
+        setCrisis(data.crisis || null);
         try {
           window.localStorage.removeItem(draftKey(instrumentId));
         } catch {
@@ -418,11 +422,21 @@ export default function AssessmentRun() {
         {result && (
           <div className="animate-fade-up">
             {helplines && (
-              <div className="rounded-3xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] p-6">
-                <p className="text-sm leading-relaxed">
-                  You said you have had thoughts of being better off dead or of hurting
-                  yourself. Thank you for answering honestly. Please talk to someone about
-                  that — today if you can.
+              <div
+                className={`rounded-3xl border p-6 ${
+                  crisis?.level === 'acute'
+                    ? 'border-[var(--color-flag)] bg-[var(--color-flag-soft)] ring-1 ring-[var(--color-flag)]/40'
+                    : 'border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)]'
+                }`}
+              >
+                {crisis?.level === 'acute' && (
+                  <p className="font-display text-xl leading-snug text-[var(--color-flag)]">
+                    Please call someone now.
+                  </p>
+                )}
+                <p className={`text-sm leading-relaxed ${crisis?.level === 'acute' ? 'mt-3' : ''}`}>
+                  {crisis?.message ||
+                    'Thank you for answering honestly. Please talk to someone about that — today if you can.'}
                 </p>
                 <ul className="mt-4 space-y-1 text-sm">
                   {helplines.map((h) => (
@@ -434,6 +448,9 @@ export default function AssessmentRun() {
                     </li>
                   ))}
                 </ul>
+                <p className="mt-4 text-xs leading-relaxed text-[var(--color-ink-soft)]">
+                  Your counsellor can see this result.
+                </p>
               </div>
             )}
 
@@ -556,6 +573,7 @@ export default function AssessmentRun() {
                   setResult(null);
                   setPrevious(null);
                   setHelplines(null);
+                  setCrisis(null);
                   setAnswers(new Array(instrument.items.length).fill(null));
                   setFollowUpAnswer(null);
                   setStep(0);

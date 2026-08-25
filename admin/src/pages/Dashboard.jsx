@@ -26,7 +26,8 @@ export default function Dashboard() {
   if (error) return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
   if (!data) return null;
 
-  const { totals, trend, moodDistribution, recentFlags, needsAttention, quietest } = data;
+  const { totals, trend, moodDistribution, recentFlags, recentRiskScreens, needsAttention, quietest } =
+    data;
   const maxMoodCount = Math.max(1, ...moodDistribution.map((m) => m.count));
 
   return (
@@ -41,9 +42,19 @@ export default function Dashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
+          label="Positive risk screens"
+          value={totals.atRisk}
+          hint={
+            totals.acuteRisk > 0
+              ? `${totals.acuteRisk} said "right now" — call first`
+              : 'In the last 14 days'
+          }
+          tone="flag"
+        />
+        <StatCard
           label="Needs a conversation"
           value={totals.flaggedResidents}
-          hint="Flagged in their last 3 check-ins"
+          hint="Check-in flags and risk screens"
           tone="flag"
         />
         <StatCard
@@ -58,7 +69,11 @@ export default function Dashboard() {
           hint={`${totals.onboarded} joined · ${totals.invited} invited`}
           tone="lavender"
         />
-        <StatCard label="Check-ins recorded" value={totals.totalCheckIns} hint="All time" />
+        <StatCard
+          label="Questionnaires taken"
+          value={totals.assessmentsTaken}
+          hint={`${totals.totalCheckIns} check-ins recorded`}
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -147,6 +162,54 @@ export default function Dashboard() {
               </Link>
             ))}
           </div>
+        )}
+      </section>
+
+      <section className="card-soft rounded-2xl p-6">
+        <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
+          Recent risk screens
+        </h3>
+        {recentRiskScreens.length === 0 ? (
+          <p className="mt-3 text-sm text-[var(--color-muted)]">
+            No questionnaire has flagged anyone.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {recentRiskScreens.map((screen) => (
+              <li
+                key={`${screen.residentId}:${screen.createdAt}`}
+                className="border-t border-white/6 pt-3 first:border-0 first:pt-0"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/residents/${encodeURIComponent(screen.residentId)}`}
+                      className="text-sm font-medium text-[var(--color-ink)] hover:text-[var(--color-lavender)]"
+                    >
+                      {screen.residentName}
+                    </Link>
+                    <span
+                      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] ${
+                        screen.level === 'acute'
+                          ? 'bg-[var(--color-flag)] text-white'
+                          : 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
+                      }`}
+                    >
+                      {screen.level === 'acute' ? 'At risk now' : 'Positive'}
+                    </span>
+                  </div>
+                  <span className="text-xs text-[var(--color-muted)]">
+                    {screen.instrumentName} · {formatDate(screen.date)}
+                  </span>
+                </div>
+                {screen.reasons.length > 0 && (
+                  <p className="mt-1 text-xs leading-snug text-[var(--color-flag)]">
+                    {screen.reasons.join(' · ')}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

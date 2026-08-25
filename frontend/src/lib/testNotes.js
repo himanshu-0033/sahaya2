@@ -21,6 +21,32 @@
 // terms of its strengths is being sold rather than explained.
 
 export const TEST_NOTES = {
+  // ----------------------------------------------------------------- safety
+  asq: {
+    range: '0–4',
+    cutoffs: 'Any single yes is a positive screen; the acuity question then decides how urgent it is',
+    measures:
+      'Four direct questions about wishing you were dead, feeling your family would be better off without you, thoughts of killing yourself in the past week, and any past attempt. A fifth question is asked only if you answered yes to one of those, and it asks whether the thoughts are happening right now.',
+    origin:
+      'Developed at the US National Institute of Mental Health by Horowitz and colleagues and published in 2012, built to be usable by someone who is not a mental health specialist — a nurse in an emergency room with two minutes. It is public domain, which is why it can appear in an app like this one at all.',
+    reading:
+      'It is deliberately over-inclusive. At a single yes it catches very nearly everyone who is at risk, and in exchange it flags a lot of people who are not — that trade is intentional and correct for a screen whose failure mode is somebody being missed.',
+    limits:
+      'It tells you that a conversation needs to happen. It cannot tell you how likely anything is to happen, and nothing can: no questionnaire in existence predicts suicide at the level of an individual person, and any tool claiming to is overselling itself. Treat a positive screen as the beginning of a conversation, never as a probability.',
+    watch:
+      'Answering yes to anything here puts crisis numbers on your screen straight away and flags the result in the counsellor console. That is the intended behaviour rather than a punishment for answering — the point of asking is that someone gets to respond.',
+    sources: [
+      {
+        label: 'Horowitz, L. M. et al. (2012). Arch Pediatr Adolesc Med 166(12), 1170–1176.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/23027429/',
+      },
+      {
+        label: 'NIMH ASQ Toolkit — the official screening materials and follow-up scripts.',
+        url: 'https://www.nimh.nih.gov/research/research-conducted-at-nimh/asq-toolkit-materials',
+      },
+    ],
+  },
+
   // ---------------------------------------------------------- mood/anxiety
   'phq-9': {
     range: '0–27',
@@ -49,7 +75,7 @@ export const TEST_NOTES = {
     measures:
       'Seven symptoms of generalised anxiety over two weeks — the worrying itself, and what it does to the body: restlessness, irritability, being unable to settle.',
     origin:
-      'Spitzer and colleagues built it in 2006 as the anxiety counterpart to the PHQ-9, starting from a longer item pool and keeping the seven that best separated people with generalised anxiety disorder from those without.',
+      'Spitzer and colleagues built it in 2006 as the anxiety counterpart to the PHQ-9, starting from a longer item pool and keeping the seven that best separated people with generalised anxiety disorder from those without. Its form ends with the same unscored difficulty question the PHQ-9 uses — how hard these problems have made work, home and other people — and for the same reason: the total says how much anxiety, never how much it is costing you.',
     reading:
       'At 10 or more it identifies about 89% of people with generalised anxiety disorder. It also picks up panic disorder, social anxiety and PTSD at a decent rate — useful in practice, but it means a high score tells you that something anxious is going on, not which thing.',
     limits:

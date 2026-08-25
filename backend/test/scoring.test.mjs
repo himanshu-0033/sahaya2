@@ -64,7 +64,18 @@ assert.deepEqual(
   difficulty.options.map((o) => o.label),
   ['Not difficult at all', 'Somewhat difficult', 'Very difficult', 'Extremely difficult'],
 );
-assert.equal(resolveFollowUp(getInstrument('gad-7')), null, 'only forms that print one have one');
+assert.equal(resolveFollowUp(getInstrument('ucla-3')), null, 'only forms that print one have one');
+// The PHQ-9 and GAD-7 forms print the identical question, so they must share
+// one definition rather than two copies that can drift apart.
+assert.deepEqual(
+  resolveFollowUp(getInstrument('gad-7')),
+  resolveFollowUp(getInstrument('phq-9')),
+  'PHQ-9 and GAD-7 share the difficulty question word for word',
+);
+const gadDifficulty = score('gad-7', fill('gad-7', 2), 3);
+assert.equal(gadDifficulty.score, 14, 'GAD-7 difficulty stays out of the total');
+assert.equal(gadDifficulty.followUp.label, 'Extremely difficult');
+assert.equal(gadDifficulty.crisis, null, 'GAD-7 has no crisis item of its own');
 // The runner needs it in the payload, and the item list must not grow.
 assert.ok(instrumentDetail(getInstrument('phq-9')).followUp, 'the runner is told about it');
 assert.equal(instrumentDetail(getInstrument('phq-9')).items.length, 9);
@@ -92,8 +103,60 @@ assert.equal(score('phq-9', oneProblem, 2).followUp.label, 'Very difficult', 'on
 
 // Bad or misplaced follow-up answers are 400s, not silent corruption.
 assert.match(score('phq-9', bothered, 9).error, /follow-up answer is not one of the allowed/);
-assert.match(score('gad-7', fill('gad-7', 1), 1).error, /has no follow-up question/);
-assert.equal(score('gad-7', fill('gad-7', 1)).followUp, null);
+assert.match(score('ucla-3', fill('ucla-3', 2), 1).error, /has no follow-up question/);
+assert.equal(score('ucla-3', fill('ucla-3', 2)).followUp, null);
+
+// --- ASQ: the suicide-risk screen -----------------------------------------
+// The behaviour that matters here is not the arithmetic — it is that nothing
+// gets quietly filed. Every assertion below is about a disclosure reaching a
+// human.
+const asq = getInstrument('asq');
+assert.equal(asq.items.length, 4);
+assert.deepEqual(asq.crisisItems, [0, 1, 2, 3], 'a yes to ANY item is a positive screen');
+assert.ok(asq.crisisMessage, 'the instrument carries its own crisis wording');
+assert.equal(asq.wordingVerified, false, 'flagged as needing a check against the NIMH toolkit');
+
+const asqClear = score('asq', [0, 0, 0, 0]);
+assert.equal(asqClear.score, 0);
+assert.equal(asqClear.band.label, 'No screen triggered');
+assert.equal(asqClear.crisis, null);
+
+// Each of the four items alone is enough, which is the entire point.
+for (let i = 0; i < 4; i += 1) {
+  const sheet = [0, 0, 0, 0];
+  sheet[i] = 1;
+  const result = score('asq', sheet);
+  assert.equal(result.band.label, 'Positive screen', `ASQ item ${i + 1} alone screens positive`);
+  assert.ok(result.crisis, `ASQ item ${i + 1} alone reaches the crisis path`);
+  assert.equal(result.crisis.level, 'positive');
+  assert.equal(result.crisis.reasons.length, 1);
+  assert.match(result.crisis.reasons[0], /^Answered "Yes" to: /);
+}
+
+// A low count is still a positive screen — 1 out of 4 is not "mild".
+assert.equal(score('asq', [0, 0, 0, 1]).score, 1);
+assert.equal(score('asq', [1, 1, 1, 1]).score, 4);
+assert.equal(score('asq', [1, 1, 1, 1]).crisis.items.length, 4, 'every yes is listed for the counsellor');
+
+// The acuity question is asked only after a yes, is never counted, and is the
+// only thing that raises the level to acute.
+assert.equal(score('asq', [0, 0, 1, 0], 0).crisis.level, 'positive');
+const acute = score('asq', [0, 0, 1, 0], 1);
+assert.equal(acute.score, 1, 'the acuity answer is not added to anything');
+assert.equal(acute.crisis.level, 'acute');
+assert.match(acute.crisis.reasons[0], /right now/, 'the urgent reason is listed first');
+assert.equal(acute.followUp.label, 'Yes');
+
+// Skipping the acuity question leaves a positive screen positive, not clear.
+assert.equal(score('asq', [1, 0, 0, 0], null).crisis.level, 'positive');
+
+// The gate normally drops an answer it would not have asked for — but never
+// an admission of imminent risk. This is the one place the rule bends, and it
+// only ever bends toward showing help.
+assert.equal(score('phq-9', fill('phq-9', 0), 2).followUp, null, 'ordinary follow-up is dropped');
+const contradictory = score('asq', [0, 0, 0, 0], 1);
+assert.equal(contradictory.followUp.label, 'Yes', 'an imminent-risk answer is never discarded');
+assert.equal(contradictory.crisis.level, 'acute', 'and it still reaches a human');
 
 // --- GAD-7, WHO-5 ---------------------------------------------------------
 assert.equal(score('gad-7', fill('gad-7', 3)).score, 21);

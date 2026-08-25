@@ -1,4 +1,4 @@
-import { getCheckins, getResidents } from '../../lib/store.js';
+import { getCheckins, getResidents, getAssessments } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { buildOverview } from '../../lib/analytics.js';
@@ -13,6 +13,10 @@ export default async function handler(req, res) {
   const admin = await requireAdminUser(req, res);
   if (!admin) return;
 
-  const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
-  return res.status(200).json(buildOverview(residents, checkins));
+  const [residents, checkins, assessments] = await Promise.all([
+    getResidents(),
+    getCheckins(),
+    getAssessments(),
+  ]);
+  return res.status(200).json(buildOverview(residents, checkins, { assessments }));
 }

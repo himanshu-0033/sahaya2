@@ -4,7 +4,7 @@
 // transform, look the total up in its published bands. No modelling, no
 // inference, nothing that would turn a questionnaire into a claim about a
 // person. Everything here can be checked by hand against the source paper.
-import { resolveItems, resolveFollowUp } from './instruments.js';
+import { resolveItems, resolveFollowUp, followUpDef } from './instruments.js';
 
 function bounds(options) {
   const values = options.map((o) => o.value);
@@ -81,10 +81,58 @@ function resolveFollowUpAnswer(instrument, items, answers, value) {
   const option = followUp.options.find((o) => o.value === value);
   if (!option) return { error: 'the follow-up answer is not one of the allowed options' };
   if (followUp.condition === 'anyEndorsed' && !anyEndorsed(items, answers)) {
-    return { answer: null };
+    // One exception, and it only ever goes one way: never discard a
+    // disclosure of imminent risk on the grounds that the gate which would
+    // have asked for it was not met.
+    const crisisValue = followUpDef(instrument).crisisValue;
+    if (crisisValue == null || value < crisisValue) return { answer: null };
   }
 
   return { answer: { id: followUp.id, text: followUp.text, value: option.value, label: option.label } };
+}
+
+// Which answers, if any, mean this sitting has to reach a human rather than
+// just be filed.
+//
+// Two shapes feed in. `crisisItem` is a single index (PHQ-9's item 9);
+// `crisisItems` is a list, because the ASQ treats a yes to ANY of its four
+// questions as a positive screen. On top of that, a follow-up carrying a
+// `crisisValue` raises the level to acute — the ASQ's acuity question asks
+// whether the thoughts are happening right now, and "right now" is a
+// different response than "in the past few weeks".
+//
+// `itemIndex` and `value` are kept for the first hit so this stays readable
+// to anything written against the single-item shape.
+function crisisFor(instrument, items, answers, followUpValue) {
+  const indices = instrument.crisisItems || (instrument.crisisItem != null ? [instrument.crisisItem] : []);
+
+  const hits = indices
+    .filter((i) => answers[i] > bounds(items[i].options).min)
+    .map((i) => ({
+      index: i,
+      value: answers[i],
+      text: items[i].text,
+      label: items[i].options.find((o) => o.value === answers[i])?.label || String(answers[i]),
+    }));
+
+  const followUp = followUpDef(instrument);
+  const acute =
+    followUp?.crisisValue != null && followUpValue != null && followUpValue >= followUp.crisisValue;
+
+  if (hits.length === 0 && !acute) return null;
+
+  const reasons = hits.map((h) => `Answered "${h.label}" to: ${h.text}`);
+  if (acute) reasons.unshift(`Answered "${followUp.options.find((o) => o.value === followUpValue)?.label}" to: ${followUp.text}`);
+
+  return {
+    // 'acute' means right now. Everything downstream — the resident's screen,
+    // the counsellor's list — sorts on this word.
+    level: acute ? 'acute' : 'positive',
+    reasons,
+    items: hits,
+    itemIndex: hits.length > 0 ? hits[0].index : null,
+    value: hits.length > 0 ? hits[0].value : null,
+  };
 }
 
 // Returns { error } on anything malformed, so the handler can 400 without
@@ -115,13 +163,9 @@ export function scoreInstrument(instrument, answers, followUpValue = null) {
   const bandIndex = bandFor(instrument, score);
   const band = instrument.bands[bandIndex];
 
-  // PHQ-9 item 9 asks about self-harm. Any non-zero answer routes into the
-  // same crisis path as a free-text disclosure — a number on its own is not
-  // something to quietly file.
-  const crisis =
-    instrument.crisisItem != null && answers[instrument.crisisItem] > 0
-      ? { itemIndex: instrument.crisisItem, value: answers[instrument.crisisItem] }
-      : null;
+  // A crisis answer routes into the same path as a free-text disclosure — a
+  // number on its own is not something to quietly file.
+  const crisis = crisisFor(instrument, items, answers, followUp.answer ? followUp.answer.value : null);
 
   return {
     raw: sum,

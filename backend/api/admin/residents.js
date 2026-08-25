@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { getCheckins, getResidents, saveResidents } from '../../lib/store.js';
+import { getCheckins, getResidents, saveResidents, getAssessments } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
@@ -45,8 +45,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
+  const [residents, checkins, assessments] = await Promise.all([
+    getResidents(),
+    getCheckins(),
+    getAssessments(),
+  ]);
   return res.status(200).json({
-    residents: summarizeResidents(residents, checkins, { detailed: true }),
+    residents: summarizeResidents(residents, checkins, { detailed: true, assessments }),
   });
 }

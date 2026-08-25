@@ -197,9 +197,17 @@ export const SCALES = {
       { value: 2, label: 'Bothered a lot' },
     ],
   },
-  // Two separate yes/no scales rather than one shared one: the prompt lives on
-  // the scale, and these two instruments ask their yes/no questions about very
+  // Three separate yes/no scales rather than one shared one: the prompt lives
+  // on the scale, and these instruments ask their yes/no questions about very
   // different things. Sharing the scale would mean sharing the wrong preamble.
+  asq: {
+    id: 'asq',
+    prompt: 'Answer yes or no. Being asked these questions does not plant the idea.',
+    options: [
+      { value: 0, label: 'No' },
+      { value: 1, label: 'Yes' },
+    ],
+  },
   ptsd5: {
     id: 'ptsd5',
     prompt:
@@ -242,12 +250,87 @@ export const SCALES = {
   },
 };
 
+// Shared follow-ups, for the same reason SCALES are shared. The PHQ-9 and the
+// GAD-7 print the *same* difficulty question at the foot of their forms, word
+// for word — they came out of the same PRIME-MD work — so they reference one
+// definition rather than keeping two copies that can drift.
+export const FOLLOW_UPS = {
+  difficulty: {
+    id: 'difficulty',
+    condition: 'anyEndorsed',
+    text: 'If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?',
+    note: 'This one is not part of the score. It is on the form because the same total can mean very different days.',
+    options: [
+      { value: 0, label: 'Not difficult at all' },
+      { value: 1, label: 'Somewhat difficult' },
+      { value: 2, label: 'Very difficult' },
+      { value: 3, label: 'Extremely difficult' },
+    ],
+  },
+};
+
 // `transform` turns the raw item sum into the instrument's reported score:
 //   sum   — report the sum as is (default)
 //   mean  — average across items (MSPSS, BRS)
 //   x4    — WHO-5's 0–25 becomes 0–100
 //   x25   — CBI's 0–4 mean becomes 0–100
 export const INSTRUMENTS = [
+  // Placed first deliberately. A screen for suicidal thinking that is buried
+  // three domains down is a screen nobody takes on the day it matters.
+  //
+  // This is the NIMH's ASQ, not a questionnaire written for this app. Asking
+  // directly is the whole design: the evidence is that being asked about
+  // suicide does not plant the idea, and the alternative — hinting — leaves
+  // someone having to raise it themselves, which is the thing they are least
+  // able to do.
+  //
+  // `crisisItems` means ANY yes routes into the crisis path, and the acuity
+  // question is carried as a `followUp` with a `crisisValue`: it is not part
+  // of the count, it decides how fast someone has to reach a human.
+  {
+    id: 'asq',
+    name: 'ASQ',
+    fullName: 'Ask Suicide-Screening Questions',
+    domain: 'Safety',
+    blurb: 'Four direct questions about thoughts of suicide. Takes a minute.',
+    minutes: 1,
+    scale: 'asq',
+    license: 'Public domain (developed by the U.S. National Institute of Mental Health; free to use, no permission needed)',
+    citation: 'Horowitz et al. (2012), Arch Pediatr Adolesc Med 166(12):1170-6',
+    wordingVerified: false,
+    crisisItems: [0, 1, 2, 3],
+    crisisMessage:
+      'You answered yes to at least one of these. Thank you for saying so — it is the hardest thing on this whole app to answer honestly. Please talk to someone today: a counsellor, someone you trust, or one of these numbers.',
+    items: [
+      { text: 'In the past few weeks, have you wished you were dead?' },
+      { text: 'In the past few weeks, have you felt that you or your family would be better off if you were dead?' },
+      { text: 'In the past week, have you been having thoughts about killing yourself?' },
+      { text: 'Have you ever tried to kill yourself?' },
+    ],
+    followUp: {
+      id: 'acuity',
+      condition: 'anyEndorsed',
+      text: 'Are you having thoughts of killing yourself right now?',
+      note: 'This one is not counted. It decides how quickly someone should be with you.',
+      crisisValue: 1,
+      options: [
+        { value: 0, label: 'No' },
+        { value: 1, label: 'Yes' },
+      ],
+    },
+    bands: [
+      {
+        max: 0,
+        label: 'No screen triggered',
+        note: 'You answered no to all four. Nothing here needs acting on today — and this screen is here any time that changes.',
+      },
+      {
+        max: 4,
+        label: 'Positive screen',
+        note: 'At least one yes. This is not a diagnosis and it is not a verdict on you — it means the right next step is a conversation with a counsellor, soon.',
+      },
+    ],
+  },
   {
     id: 'phq-9',
     name: 'PHQ-9',
@@ -260,6 +343,8 @@ export const INSTRUMENTS = [
     citation: 'Kroenke, Spitzer & Williams (2001), J Gen Intern Med 16(9):606-13',
     wordingVerified: true,
     crisisItem: 8,
+    crisisMessage:
+      'You said you have had thoughts of being better off dead or of hurting yourself. Thank you for answering honestly. Please talk to someone about that — today if you can.',
     items: [
       { text: 'Little interest or pleasure in doing things' },
       { text: 'Feeling down, depressed, or hopeless' },
@@ -271,18 +356,7 @@ export const INSTRUMENTS = [
       { text: 'Moving or speaking so slowly that other people could have noticed — or being so fidgety or restless that you have been moving around a lot more than usual' },
       { text: 'Thoughts that you would be better off dead or of hurting yourself in some way' },
     ],
-    followUp: {
-      id: 'difficulty',
-      condition: 'anyEndorsed',
-      text: 'If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?',
-      note: 'This one is not part of the score. It is on the form because the same total can mean very different days.',
-      options: [
-        { value: 0, label: 'Not difficult at all' },
-        { value: 1, label: 'Somewhat difficult' },
-        { value: 2, label: 'Very difficult' },
-        { value: 3, label: 'Extremely difficult' },
-      ],
-    },
+    followUp: 'difficulty',
     bands: [
       { max: 4, label: 'Minimal', note: 'Few or no depression symptoms reported.' },
       { max: 9, label: 'Mild', note: 'Some symptoms. Worth watching over the next few weeks.' },
@@ -311,6 +385,7 @@ export const INSTRUMENTS = [
       { text: 'Becoming easily annoyed or irritable' },
       { text: 'Feeling afraid, as if something awful might happen' },
     ],
+    followUp: 'difficulty',
     bands: [
       { max: 4, label: 'Minimal', note: 'Little anxiety reported.' },
       { max: 9, label: 'Mild', note: 'Some anxiety. Often manageable with routine and rest.' },
@@ -892,8 +967,16 @@ export function resolveItems(instrument) {
 // The unscored question some source forms print after their scored items.
 // Returned separately from `items` so nothing that sums an array can reach it
 // by accident.
-export function resolveFollowUp(instrument) {
+// The raw definition, including anything the browser has no business seeing.
+// Scoring reads this one; the client gets resolveFollowUp() below.
+export function followUpDef(instrument) {
   const followUp = instrument.followUp;
+  if (!followUp) return null;
+  return typeof followUp === 'string' ? FOLLOW_UPS[followUp] : followUp;
+}
+
+export function resolveFollowUp(instrument) {
+  const followUp = followUpDef(instrument);
   if (!followUp) return null;
   return {
     id: followUp.id,

@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   return res.status(200).json({
     resident: publicResident(resident),
-    summary: summarizeResident(resident, checkins, { detailed: true }),
+    summary: summarizeResident(resident, checkins, { detailed: true, assessments }),
     history: historyFor(checkins, residentId),
     inkblotSessions: inkblotSessions
       .filter((s) => s.residentId === residentId)

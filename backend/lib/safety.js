@@ -34,6 +34,12 @@ export const HELPLINES = [
   { name: 'AASRA', number: '9820466726' },
 ];
 
+// Shown when someone says the thoughts are happening right now. It does not
+// vary by instrument, because at that point which questionnaire asked is the
+// least relevant fact on the screen.
+export const ACUTE_MESSAGE =
+  'You said you are having these thoughts right now. Please do not sit with this alone — call one of the numbers below, or go to the nearest hospital emergency department. If someone is with you, tell them now.';
+
 export function screenForCrisis(text) {
   const normalized = (text || '').toLowerCase().replace(/\s+/g, ' ');
   const hit = CRISIS_PATTERNS.find((p) => normalized.includes(p));

@@ -1,7 +1,7 @@
 import { getAssessments, saveAssessments, getResidents } from '../lib/store.js';
 import { catalog, getInstrument, instrumentDetail } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
-import { HELPLINES } from '../lib/safety.js';
+import { HELPLINES, ACUTE_MESSAGE } from '../lib/safety.js';
 import { todayISO } from '../lib/logic.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
@@ -65,9 +65,12 @@ export default async function handler(req, res) {
       subscales: result.subscales,
       followUp: result.followUp,
       // A crisis item is a flag on its own, independent of the total: someone
-      // can answer item 9 positively and still land in a "mild" band.
+      // can answer item 9 positively and still land in a "mild" band, and an
+      // ASQ positive screen scores 1 out of 4.
       flagged: Boolean(result.crisis),
-      flagReasons: result.crisis ? ['Answered the self-harm item positively'] : [],
+      flagReasons: result.crisis ? result.crisis.reasons : [],
+      // 'acute' | 'positive' | null. The counsellor console sorts on this.
+      riskLevel: result.crisis ? result.crisis.level : null,
       createdAt: new Date().toISOString(),
     };
 
@@ -82,6 +85,17 @@ export default async function handler(req, res) {
     return res.status(201).json({
       record,
       previous: previous ? { score: previous.score, band: previous.band, createdAt: previous.createdAt } : null,
+      // The wording belongs to the instrument that asked, except when someone
+      // says "right now" — then there is only one thing worth saying.
+      crisis: result.crisis
+        ? {
+            level: result.crisis.level,
+            message:
+              result.crisis.level === 'acute'
+                ? ACUTE_MESSAGE
+                : instrument.crisisMessage || ACUTE_MESSAGE,
+          }
+        : null,
       helplines: result.crisis ? HELPLINES : null,
     });
   }

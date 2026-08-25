@@ -22,6 +22,68 @@ function plateLabel(plateId) {
   return Number.isFinite(n) && n > 0 ? `Plate ${n}` : plateId;
 }
 
+// Sits above everything else on the page. The rest of this screen is a
+// month of moods and a table of scores; none of it is the thing you need to
+// see first if someone has just answered yes to the ASQ.
+function ago(date) {
+  const days = daysSince(date);
+  if (days === null) return '';
+  if (days <= 0) return 'today';
+  if (days === 1) return 'yesterday';
+  return `${days} days ago`;
+}
+
+function RiskBanner({ risk, resident }) {
+  if (!risk) return null;
+  const acute = risk.level === 'acute';
+
+  return (
+    <section
+      className={`rounded-2xl border p-6 ${
+        acute
+          ? 'border-[var(--color-flag)] bg-[var(--color-flag-soft)] ring-1 ring-[var(--color-flag)]/40'
+          : 'border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)]'
+      }`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-xl text-[var(--color-flag)]">
+            {acute ? 'Said they are at risk right now' : 'Positive risk screen'}
+          </p>
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            {risk.instrumentName} · {formatDate(risk.date)} · {ago(risk.date)}
+            {!risk.recent && ' · older than two weeks'}
+          </p>
+        </div>
+        {resident.phone && (
+          <a
+            href={`tel:${resident.phone}`}
+            className="whitespace-nowrap rounded-full bg-[var(--color-flag)] px-4 py-2 text-sm font-medium text-white"
+          >
+            Call {resident.phone}
+          </a>
+        )}
+      </div>
+
+      {risk.reasons.length > 0 && (
+        <ul className="mt-4 space-y-1.5 text-sm text-[var(--color-ink-soft)]">
+          {risk.reasons.map((reason) => (
+            <li key={reason} className="leading-snug">
+              {reason}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+        A screening questionnaire says a conversation is needed. It does not say how likely
+        anything is — no instrument does that for an individual person
+        {risk.totalFlagged > 1 && ` · ${risk.totalFlagged} flagged sittings in total`}.
+      </p>
+    </section>
+  );
+}
+
 function Field({ label, value }) {
   return (
     <div>
@@ -84,6 +146,8 @@ export default function ResidentDetail() {
               </button>
             </div>
           </div>
+
+          <RiskBanner risk={data.summary.riskScreen} resident={data.resident} />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
@@ -267,6 +331,19 @@ export default function ResidentDetail() {
 
           <section>
             <h3 className="font-display text-xl">Assessments</h3>
+            {data.summary.lastAssessment && (
+              <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+                Most recent: {data.summary.lastAssessment.instrumentName} —{' '}
+                <span className="text-[var(--color-ink)]">
+                  {data.summary.lastAssessment.band.label}
+                </span>{' '}
+                ({data.summary.lastAssessment.score}/{data.summary.lastAssessment.maxScore})
+                {data.summary.lastAssessment.followUp &&
+                  ` · day-to-day ${data.summary.lastAssessment.followUp.label.toLowerCase()}`}
+                {' · '}
+                {formatDate(data.summary.lastAssessment.date)}
+              </p>
+            )}
             {!data.assessments || data.assessments.length === 0 ? (
               <p className="mt-3 text-sm text-[var(--color-muted)]">
                 No questionnaires completed yet.
@@ -297,8 +374,13 @@ export default function ResidentDetail() {
                         <td className="px-5 py-3">
                           <span className="text-[var(--color-ink-soft)]">{a.band.label}</span>
                           {a.flagged && (
-                            <span className="ml-2 text-xs text-[var(--color-flag)]">
-                              {(a.flagReasons || []).join('; ')}
+                            <span className="ml-2 whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag)]">
+                              {a.riskLevel === 'acute' ? 'At risk now' : 'Flagged'}
+                            </span>
+                          )}
+                          {a.flagged && (a.flagReasons || []).length > 0 && (
+                            <span className="mt-1 block text-xs leading-snug text-[var(--color-flag)]">
+                              {a.flagReasons.join(' · ')}
                             </span>
                           )}
                           {/* The PHQ-9's unscored difficulty question. Same

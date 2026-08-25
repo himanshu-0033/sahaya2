@@ -11,6 +11,15 @@
 
 export const TEST_INDEX = [
   {
+    "id": "asq",
+    "name": "ASQ",
+    "fullName": "Ask Suicide-Screening Questions",
+    "domain": "Safety",
+    "itemCount": 4,
+    "minutes": 1,
+    "wordingVerified": false
+  },
+  {
     "id": "phq-9",
     "name": "PHQ-9",
     "fullName": "Patient Health Questionnaire-9",

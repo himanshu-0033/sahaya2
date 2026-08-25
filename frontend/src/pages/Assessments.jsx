@@ -9,10 +9,12 @@ import { getAssessmentCatalog } from '../lib/api.js';
 import { bandColor, bandTint } from '../lib/bands.js';
 
 // Order the domains deliberately rather than however the catalog arrives:
-// mood and distress first, the social block next, strengths after that, and
-// the habit screens last — which is roughly the order of "how likely is this
-// to be the reason you opened the app".
+// safety first, then mood and distress, the social block next, strengths after
+// that, and the habit screens last — which is roughly the order of "how likely
+// is this to be the reason you opened the app", with the one exception that
+// Safety leads regardless of likelihood.
 const DOMAIN_ORDER = [
+  'Safety',
   'Mood',
   'Anxiety',
   'General distress',
