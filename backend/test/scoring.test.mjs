@@ -1,9 +1,9 @@
 import assert from 'node:assert';
-import { INSTRUMENTS, getInstrument, resolveItems, catalog } from '../lib/instruments.js';
+import { INSTRUMENTS, getInstrument, resolveItems, resolveFollowUp, catalog, instrumentDetail } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 
 const fill = (id, value) => resolveItems(getInstrument(id)).map(() => value);
-const score = (id, answers) => scoreInstrument(getInstrument(id), answers);
+const score = (id, answers, followUp) => scoreInstrument(getInstrument(id), answers, followUp);
 
 // --- catalog sanity -------------------------------------------------------
 assert.ok(INSTRUMENTS.length >= 15, `expected 15+ instruments, got ${INSTRUMENTS.length}`);
@@ -52,6 +52,48 @@ phqSneaky[8] = 1;
 const sneaky = score('phq-9', phqSneaky);
 assert.equal(sneaky.band.label, 'Minimal');
 assert.ok(sneaky.crisis, 'low total still flags on item 9');
+
+// --- PHQ-9 difficulty question -------------------------------------------
+// The source form ends with an unscored question about how difficult the
+// symptoms have made work, home and other people. Everything below is about
+// it staying OUT of the arithmetic while still being kept.
+const difficulty = resolveFollowUp(getInstrument('phq-9'));
+assert.equal(difficulty.id, 'difficulty');
+assert.equal(difficulty.condition, 'anyEndorsed');
+assert.deepEqual(
+  difficulty.options.map((o) => o.label),
+  ['Not difficult at all', 'Somewhat difficult', 'Very difficult', 'Extremely difficult'],
+);
+assert.equal(resolveFollowUp(getInstrument('gad-7')), null, 'only forms that print one have one');
+// The runner needs it in the payload, and the item list must not grow.
+assert.ok(instrumentDetail(getInstrument('phq-9')).followUp, 'the runner is told about it');
+assert.equal(instrumentDetail(getInstrument('phq-9')).items.length, 9);
+
+// It never touches the total, at either end of its own range.
+const bothered = fill('phq-9', 1);
+assert.equal(score('phq-9', bothered).score, 9);
+assert.equal(score('phq-9', bothered, 0).score, 9, 'answering it changes nothing');
+assert.equal(score('phq-9', bothered, 3).score, 9);
+assert.equal(score('phq-9', bothered, 3).raw, 9);
+assert.equal(score('phq-9', bothered, 3).maxScore, 27, 'the ceiling does not move either');
+assert.equal(score('phq-9', bothered, 3).followUp.label, 'Extremely difficult');
+assert.equal(score('phq-9', bothered, 3).followUp.value, 3);
+
+// Skipping it is legitimate — the form only asks it conditionally.
+assert.equal(score('phq-9', bothered).followUp, null);
+assert.equal(score('phq-9', bothered, null).followUp, null);
+
+// "If you checked off any problems": a sheet of straight zeroes is never
+// asked, so an answer to it is dropped rather than filed.
+assert.equal(score('phq-9', fill('phq-9', 0), 2).followUp, null, 'not asked, not kept');
+const oneProblem = fill('phq-9', 0);
+oneProblem[2] = 1;
+assert.equal(score('phq-9', oneProblem, 2).followUp.label, 'Very difficult', 'one tick is enough');
+
+// Bad or misplaced follow-up answers are 400s, not silent corruption.
+assert.match(score('phq-9', bothered, 9).error, /follow-up answer is not one of the allowed/);
+assert.match(score('gad-7', fill('gad-7', 1), 1).error, /has no follow-up question/);
+assert.equal(score('gad-7', fill('gad-7', 1)).followUp, null);
 
 // --- GAD-7, WHO-5 ---------------------------------------------------------
 assert.equal(score('gad-7', fill('gad-7', 3)).score, 21);

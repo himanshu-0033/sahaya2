@@ -4,7 +4,7 @@
 // transform, look the total up in its published bands. No modelling, no
 // inference, nothing that would turn a questionnaire into a claim about a
 // person. Everything here can be checked by hand against the source paper.
-import { resolveItems } from './instruments.js';
+import { resolveItems, resolveFollowUp } from './instruments.js';
 
 function bounds(options) {
   const values = options.map((o) => o.value);
@@ -58,9 +58,38 @@ function subscaleScores(instrument, items, answers) {
   });
 }
 
+// "Checked off a problem" means answering above the floor of that item's own
+// option set, which is what the PHQ-9 sheet means by a tick in any column
+// other than "Not at all".
+function anyEndorsed(items, answers) {
+  return items.some((item, index) => answers[index] > bounds(item.options).min);
+}
+
+// The unscored trailing question. It is validated like an item and then kept
+// entirely out of the arithmetic — no sum, no band, no transform.
+//
+// Leaving it unanswered is legitimate: the PHQ-9 only asks it of someone who
+// endorsed something, so an answer that arrives when the condition is not met
+// is dropped rather than rejected — the form would not have asked.
+function resolveFollowUpAnswer(instrument, items, answers, value) {
+  const followUp = resolveFollowUp(instrument);
+  if (!followUp) {
+    return value == null ? { answer: null } : { error: `${instrument.name} has no follow-up question` };
+  }
+  if (value == null) return { answer: null };
+
+  const option = followUp.options.find((o) => o.value === value);
+  if (!option) return { error: 'the follow-up answer is not one of the allowed options' };
+  if (followUp.condition === 'anyEndorsed' && !anyEndorsed(items, answers)) {
+    return { answer: null };
+  }
+
+  return { answer: { id: followUp.id, text: followUp.text, value: option.value, label: option.label } };
+}
+
 // Returns { error } on anything malformed, so the handler can 400 without
 // having to re-validate.
-export function scoreInstrument(instrument, answers) {
+export function scoreInstrument(instrument, answers, followUpValue = null) {
   const items = resolveItems(instrument);
 
   if (!Array.isArray(answers)) return { error: 'answers must be an array' };
@@ -77,6 +106,9 @@ export function scoreInstrument(instrument, answers) {
       return { error: `answer ${index + 1} is not one of the allowed options` };
     }
   }
+
+  const followUp = resolveFollowUpAnswer(instrument, items, answers, followUpValue);
+  if (followUp.error) return { error: followUp.error };
 
   const sum = items.reduce((total, item, index) => total + itemScore(item, answers[index]), 0);
   const score = applyTransform(sum, items.length, instrument.transform);
@@ -105,6 +137,8 @@ export function scoreInstrument(instrument, answers) {
       higherIsBetter: Boolean(instrument.higherIsBetter),
     },
     subscales: subscaleScores(instrument, items, answers),
+    // Reported next to the score, deliberately not folded into it.
+    followUp: followUp.answer,
     crisis,
   };
 }

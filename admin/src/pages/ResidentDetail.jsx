@@ -301,6 +301,14 @@ export default function ResidentDetail() {
                               {(a.flagReasons || []).join('; ')}
                             </span>
                           )}
+                          {/* The PHQ-9's unscored difficulty question. Same
+                              total, very different day — worth seeing next to
+                              the band rather than buried in the raw answers. */}
+                          {a.followUp && (
+                            <span className="mt-1 block text-xs text-[var(--color-muted)]">
+                              Day-to-day: {a.followUp.label.toLowerCase()}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}

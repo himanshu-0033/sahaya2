@@ -22,6 +22,14 @@
 // PHQ-9 item 9 asks about self-harm. It is marked with `crisisItem` and the
 // API routes a positive answer into the same crisis path as the inkblot
 // free-text, rather than just filing a number.
+//
+// An instrument may also carry a `followUp`: a question printed on the source
+// form that is deliberately NOT part of the total. The PHQ-9 sheet ends by
+// asking how difficult the symptoms have made work, home and other people —
+// two people can reach 14 with one of them still working and the other unable
+// to leave a room, and the sum cannot tell them apart. It is stored beside the
+// score, never added to it, and `condition: 'anyEndorsed'` reproduces the
+// form's own "If you checked off any problems" gate.
 
 // Shared answer scales, so instruments that share one stay literally identical.
 export const SCALES = {
@@ -263,6 +271,18 @@ export const INSTRUMENTS = [
       { text: 'Moving or speaking so slowly that other people could have noticed — or being so fidgety or restless that you have been moving around a lot more than usual' },
       { text: 'Thoughts that you would be better off dead or of hurting yourself in some way' },
     ],
+    followUp: {
+      id: 'difficulty',
+      condition: 'anyEndorsed',
+      text: 'If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?',
+      note: 'This one is not part of the score. It is on the form because the same total can mean very different days.',
+      options: [
+        { value: 0, label: 'Not difficult at all' },
+        { value: 1, label: 'Somewhat difficult' },
+        { value: 2, label: 'Very difficult' },
+        { value: 3, label: 'Extremely difficult' },
+      ],
+    },
     bands: [
       { max: 4, label: 'Minimal', note: 'Few or no depression symptoms reported.' },
       { max: 9, label: 'Mild', note: 'Some symptoms. Worth watching over the next few weeks.' },
@@ -869,6 +889,23 @@ export function resolveItems(instrument) {
   }));
 }
 
+// The unscored question some source forms print after their scored items.
+// Returned separately from `items` so nothing that sums an array can reach it
+// by accident.
+export function resolveFollowUp(instrument) {
+  const followUp = instrument.followUp;
+  if (!followUp) return null;
+  return {
+    id: followUp.id,
+    text: followUp.text,
+    note: followUp.note || null,
+    // 'anyEndorsed' means the form only asks this of someone who answered
+    // above the floor on at least one scored item; null means always ask.
+    condition: followUp.condition || null,
+    options: followUp.options,
+  };
+}
+
 // The catalog the client renders — everything except the scoring key, which
 // is not something the browser needs.
 export function catalog() {
@@ -902,5 +939,6 @@ export function instrumentDetail(instrument) {
     citation: instrument.citation,
     wordingVerified: instrument.wordingVerified,
     items: resolveItems(instrument),
+    followUp: resolveFollowUp(instrument),
   };
 }

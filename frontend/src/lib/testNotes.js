@@ -34,7 +34,7 @@ export const TEST_NOTES = {
     limits:
       'It cannot distinguish depression from the things that imitate it. Grief, thyroid problems, anaemia, a new medication, chronic pain and simple sustained exhaustion all push this score up, and the questionnaire has no way to tell them apart from each other.',
     watch:
-      'Item 9 asks about thoughts of being better off dead or of hurting yourself. It is not really part of the total: if it is true for you, that matters on its own, whatever the other eight items added up to.',
+      'Item 9 asks about thoughts of being better off dead or of hurting yourself. It is not really part of the total: if it is true for you, that matters on its own, whatever the other eight items added up to. The form then asks one more, also unscored — how difficult these problems have made work, home and other people — because two people can both score 14 with one of them still going to class and the other unable to leave a room.',
     sources: [
       {
         label: 'Kroenke, K., Spitzer, R. L. & Williams, J. B. (2001). J Gen Intern Med 16(9), 606–613.',

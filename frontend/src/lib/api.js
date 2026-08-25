@@ -190,10 +190,13 @@ export function getAssessmentInstrument(instrumentId) {
   return request(`/api/assessments?instrumentId=${encodeURIComponent(instrumentId)}`);
 }
 
-export function submitAssessment({ instrumentId, answers }) {
+// `followUp` is the unscored trailing question a form may carry (the PHQ-9's
+// difficulty question). Null when the instrument has none, or when it was
+// asked and skipped.
+export function submitAssessment({ instrumentId, answers, followUp = null }) {
   return request('/api/assessments', {
     method: 'POST',
-    body: JSON.stringify({ instrumentId, answers }),
+    body: JSON.stringify({ instrumentId, answers, followUp }),
   });
 }
 

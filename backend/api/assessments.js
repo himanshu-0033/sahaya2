@@ -38,11 +38,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Create your account before taking an assessment' });
     }
 
-    const { instrumentId, answers } = req.body || {};
+    const { instrumentId, answers, followUp } = req.body || {};
     const instrument = getInstrument(instrumentId);
     if (!instrument) return res.status(400).json({ error: 'Unknown instrument' });
 
-    const result = scoreInstrument(instrument, answers);
+    // `followUp` is the unscored question some forms print after their items —
+    // the PHQ-9's "how difficult have these problems made it". It is validated
+    // here and filed beside the score, never inside it.
+    const result = scoreInstrument(instrument, answers, followUp ?? null);
     if (result.error) return res.status(400).json({ error: result.error });
 
     const assessments = await getAssessments();
@@ -60,6 +63,7 @@ export default async function handler(req, res) {
       maxScore: result.maxScore,
       band: result.band,
       subscales: result.subscales,
+      followUp: result.followUp,
       // A crisis item is a flag on its own, independent of the total: someone
       // can answer item 9 positively and still land in a "mild" band.
       flagged: Boolean(result.crisis),

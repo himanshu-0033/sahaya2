@@ -33,3 +33,8 @@ agent/.data
 # Copy the three fields you need into .env.local instead of committing it.
 *firebase-adminsdk*.json
 serviceAccountKey.json
+
+# Source questionnaire forms. Kept locally to transcribe wording from, but
+# they are published third-party documents rather than part of this codebase —
+# instruments.js carries the wording, its licence and its citation.
+*.pdf

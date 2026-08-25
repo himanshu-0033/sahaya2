@@ -13,13 +13,30 @@ const draftKey = (id) => `sahay:assessment-draft:${id}`;
 // A questionnaire is a chore. The only honest way to make it lighter is to
 // say true things at the right moment, so these track position rather than
 // congratulating anyone for answering a question.
-function encouragement(step, total) {
+function encouragement(step, total, followUpPending) {
   const left = total - step;
   if (step === 0) return 'Answer with your first instinct — it is usually the accurate one.';
-  if (left === 1) return 'Last one.';
+  if (left === 1) {
+    return followUpPending ? 'Last symptom — then one short question about your days.' : 'Last one.';
+  }
   if (left <= 3) return `${left} to go.`;
   if (step / total >= 0.5) return 'Past halfway.';
   return 'No rush. You can stop and come back.';
+}
+
+// The PHQ-9 sheet gates its last question on "If you checked off any problems"
+// — i.e. at least one item answered above the floor of its own options. The
+// same gate lives in backend/lib/scoring.js; this one only decides whether the
+// question is put on screen.
+function asksFollowUp(instrument, answers) {
+  const followUp = instrument?.followUp;
+  if (!followUp) return false;
+  if (followUp.condition !== 'anyEndorsed') return true;
+  return instrument.items.some((item, i) => {
+    const answer = answers[i];
+    if (answer === null || answer === undefined) return false;
+    return answer > Math.min(...item.options.map((o) => o.value));
+  });
 }
 
 function Dots({ answers, current, onJump }) {
@@ -55,6 +72,9 @@ export default function AssessmentRun() {
 
   const [instrument, setInstrument] = useState(null);
   const [answers, setAnswers] = useState([]);
+  // The unscored trailing question, kept out of `answers` so nothing that
+  // counts or sums that array can pick it up.
+  const [followUpAnswer, setFollowUpAnswer] = useState(null);
   const [step, setStep] = useState(0);
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
@@ -83,16 +103,24 @@ export default function AssessmentRun() {
         // Pick up an unfinished sitting rather than making someone restart a
         // twelve-item scale because they closed the tab.
         let restored = null;
+        let restoredFollowUp = null;
         try {
           const raw = window.localStorage.getItem(draftKey(instrumentId));
           const parsed = raw ? JSON.parse(raw) : null;
-          if (Array.isArray(parsed) && parsed.length === count) restored = parsed;
+          // Drafts saved before instruments could carry a follow-up are a bare
+          // array; both shapes still resume.
+          const saved = Array.isArray(parsed) ? { answers: parsed, followUp: null } : parsed;
+          if (saved && Array.isArray(saved.answers) && saved.answers.length === count) {
+            restored = saved.answers;
+            restoredFollowUp = typeof saved.followUp === 'number' ? saved.followUp : null;
+          }
         } catch {
           // Unreadable or unavailable storage just means a fresh start.
         }
 
         const next = restored || new Array(count).fill(null);
         setAnswers(next);
+        setFollowUpAnswer(restoredFollowUp);
         setResumed(Boolean(restored) && next.some((a) => a !== null));
         const firstGap = next.findIndex((a) => a === null);
         setStep(firstGap === -1 ? 0 : firstGap);
@@ -103,11 +131,15 @@ export default function AssessmentRun() {
   }, [instrumentId, session, navigate, reloadKey]);
 
   const submit = useCallback(
-    async (finalAnswers) => {
+    async (finalAnswers, finalFollowUp = null) => {
       setSubmitting(true);
       setError(null);
       try {
-        const data = await submitAssessment({ instrumentId, answers: finalAnswers });
+        const data = await submitAssessment({
+          instrumentId,
+          answers: finalAnswers,
+          followUp: finalFollowUp,
+        });
         setResult(data.record);
         setPrevious(data.previous);
         setHelplines(data.helplines);
@@ -125,30 +157,69 @@ export default function AssessmentRun() {
     [instrumentId],
   );
 
+  const saveDraft = useCallback(
+    (draftAnswers, draftFollowUp) => {
+      try {
+        window.localStorage.setItem(
+          draftKey(instrumentId),
+          JSON.stringify({ answers: draftAnswers, followUp: draftFollowUp }),
+        );
+      } catch {
+        // A draft that cannot be saved is not worth failing the answer over.
+      }
+    },
+    [instrumentId],
+  );
+
   const choose = useCallback(
     (value) => {
       if (!instrument || result) return;
       setResumed(false);
+
+      // The follow-up lives past the last scored item and ends the sitting.
+      if (step === instrument.items.length) {
+        setFollowUpAnswer(value);
+        saveDraft(answers, value);
+        clearTimeout(advanceRef.current);
+        advanceRef.current = setTimeout(() => {
+          if (answers.every((a) => a !== null)) submit(answers, value);
+        }, 240);
+        return;
+      }
+
       setAnswers((prev) => {
         const next = [...prev];
         next[step] = value;
-        try {
-          window.localStorage.setItem(draftKey(instrumentId), JSON.stringify(next));
-        } catch {
-          // A draft that cannot be saved is not worth failing the answer over.
-        }
+        saveDraft(next, followUpAnswer);
 
         clearTimeout(advanceRef.current);
         advanceRef.current = setTimeout(() => {
           if (step < next.length - 1) setStep(step + 1);
-          else if (next.every((a) => a !== null)) submit(next);
+          else if (!next.every((a) => a !== null)) return;
+          // A form that asks its follow-up only of people who endorsed
+          // something must not ask it of someone who endorsed nothing.
+          else if (asksFollowUp(instrument, next)) setStep(next.length);
+          else submit(next, null);
         }, 240);
 
         return next;
       });
     },
-    [instrument, result, step, instrumentId, submit],
+    [instrument, result, step, answers, followUpAnswer, saveDraft, submit],
   );
+
+  const followUp = instrument?.followUp || null;
+  const itemCount = instrument ? instrument.items.length : 0;
+  const needsFollowUp = Boolean(instrument) && asksFollowUp(instrument, answers);
+  const lastStep = Math.max(0, itemCount - 1 + (needsFollowUp ? 1 : 0));
+  const onFollowUp = needsFollowUp && step === itemCount;
+  const item = onFollowUp ? followUp : instrument?.items[Math.min(step, itemCount - 1)];
+
+  // Going back and zeroing every item retracts the follow-up, so nobody should
+  // be left standing on a step that no longer exists.
+  useEffect(() => {
+    if (instrument && step > lastStep) setStep(lastStep);
+  }, [instrument, step, lastStep]);
 
   // Number keys pick an option, arrows move. Anyone filling in ten of these
   // will want them, and they cost nothing to anyone who does not.
@@ -156,19 +227,19 @@ export default function AssessmentRun() {
     if (!instrument || result) return undefined;
     function onKey(e) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const options = instrument.items[step].options;
+      const options = item.options;
       const digit = Number(e.key);
       if (Number.isInteger(digit) && digit >= 1 && digit <= options.length) {
         e.preventDefault();
         choose(options[digit - 1].value);
         return;
       }
-      if (e.key === 'ArrowRight' && step < instrument.items.length - 1) setStep((s) => s + 1);
+      if (e.key === 'ArrowRight' && step < lastStep) setStep((s) => s + 1);
       if (e.key === 'ArrowLeft' && step > 0) setStep((s) => s - 1);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [instrument, result, step, choose]);
+  }, [instrument, result, step, item, lastStep, choose]);
 
   const answered = useMemo(() => answers.filter((a) => a !== null).length, [answers]);
   const change = result
@@ -177,8 +248,9 @@ export default function AssessmentRun() {
 
   if (!session) return null;
 
-  const item = instrument?.items[step];
-  const complete = instrument && answered === instrument.items.length;
+  const complete = instrument && answered === itemCount;
+  // The follow-up gets a dot of its own once the form has decided to ask it.
+  const dots = needsFollowUp ? [...answers, followUpAnswer] : answers;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -215,7 +287,7 @@ export default function AssessmentRun() {
             </header>
 
             <div className="mt-6">
-              <Dots answers={answers} current={step} onJump={setStep} />
+              <Dots answers={dots} current={step} onJump={setStep} />
               <p className="mt-3 text-[11px] text-[var(--color-muted)]">
                 {answered} of {instrument.items.length} answered
               </p>
@@ -229,14 +301,24 @@ export default function AssessmentRun() {
 
             {/* keyed on step so the whole block re-enters on each question */}
             <div key={step} className="stack-block flex flex-1 flex-col">
-              {instrument.prompt && (
-                <p className="animate-rise text-xs tracking-wide text-[var(--color-muted)]">
-                  {instrument.prompt}
+              {onFollowUp ? (
+                <p className="animate-rise text-xs tracking-wide text-[var(--sec-tests)]">
+                  One last question — it is not scored
                 </p>
+              ) : (
+                instrument.prompt && (
+                  <p className="animate-rise text-xs tracking-wide text-[var(--color-muted)]">
+                    {instrument.prompt}
+                  </p>
+                )
               )}
 
               <h1
-                className="font-display animate-rise mt-4 text-[1.8rem] leading-[1.22] md:text-[2.25rem]"
+                className={`font-display animate-rise mt-4 leading-[1.22] ${
+                  onFollowUp
+                    ? 'text-[1.4rem] md:text-[1.7rem]'
+                    : 'text-[1.8rem] md:text-[2.25rem]'
+                }`}
                 style={{ animationDelay: '40ms', textWrap: 'pretty' }}
               >
                 {item.text}
@@ -244,7 +326,10 @@ export default function AssessmentRun() {
 
               <div className="mt-8 grid gap-2.5">
                 {item.options.map((option, i) => {
-                  const selected = answers[step] === option.value;
+                  // The follow-up's answer is held apart from `answers`, so
+                  // the tick has to be read from wherever this step stores it.
+                  const chosen = onFollowUp ? followUpAnswer : answers[step];
+                  const selected = chosen === option.value;
                   return (
                     <button
                       key={option.value}
@@ -280,8 +365,8 @@ export default function AssessmentRun() {
 
               {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
-              <p className="mt-6 text-xs text-[var(--color-muted)]">
-                {encouragement(step, instrument.items.length)}
+              <p className="mt-6 text-xs leading-relaxed text-[var(--color-muted)]">
+                {onFollowUp ? followUp.note : encouragement(step, itemCount, needsFollowUp)}
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -290,10 +375,32 @@ export default function AssessmentRun() {
                     Back
                   </Button>
                 )}
-                {complete && (
-                  <Button size="compact" className="w-auto px-6" disabled={submitting} onClick={() => submit(answers)}>
-                    {submitting ? 'Scoring…' : 'See result'}
-                  </Button>
+                {complete &&
+                  (needsFollowUp && !onFollowUp ? (
+                    <Button size="compact" className="w-auto px-6" onClick={() => setStep(itemCount)}>
+                      One last question
+                    </Button>
+                  ) : (
+                    <Button
+                      size="compact"
+                      className="w-auto px-6"
+                      disabled={submitting}
+                      onClick={() => submit(answers, onFollowUp ? followUpAnswer : null)}
+                    >
+                      {submitting ? 'Scoring…' : 'See result'}
+                    </Button>
+                  ))}
+                {/* The form itself makes this one conditional, so leaving it
+                    blank has to stay a real option rather than a dead end. */}
+                {complete && onFollowUp && followUpAnswer === null && (
+                  <button
+                    type="button"
+                    disabled={submitting}
+                    onClick={() => submit(answers, null)}
+                    className="press text-xs text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
+                  >
+                    Skip this one
+                  </button>
                 )}
               </div>
             </div>
@@ -402,6 +509,22 @@ export default function AssessmentRun() {
               </div>
             )}
 
+            {result.followUp && (
+              <div className="card mt-8 p-6">
+                <p className="marginalia">Day-to-day difficulty</p>
+                <p className="mt-4 text-lg leading-snug">{result.followUp.label}</p>
+                <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
+                  {result.followUp.text}
+                </p>
+                <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+                  Printed on the {result.instrumentName} form but kept out of the total on
+                  purpose. Two people can reach the same score with one of them still
+                  working and the other unable to leave a room — this is the part that
+                  tells them apart.
+                </p>
+              </div>
+            )}
+
             <p className="mt-8 text-xs leading-relaxed text-[var(--color-muted)]">
               A score places you in a range that a published questionnaire defines. It is not
               a diagnosis, it describes the last few weeks rather than you, and it can move a
@@ -434,6 +557,7 @@ export default function AssessmentRun() {
                   setPrevious(null);
                   setHelplines(null);
                   setAnswers(new Array(instrument.items.length).fill(null));
+                  setFollowUpAnswer(null);
                   setStep(0);
                 }}
               >
