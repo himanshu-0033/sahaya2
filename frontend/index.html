@@ -4,11 +4,61 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sahay AI — Daily Check-in</title>
+
+    <title>Sahaya — a quiet minute, once a day</title>
+
+    <!-- Everything below this line exists because a single-page app serves an
+         empty <div> to anything that does not run JavaScript. A link preview in
+         WhatsApp, a crawler, a reader-mode extension, an accessibility audit —
+         all of them saw a blank shell and had nothing to report. -->
+    <meta
+      name="description"
+      content="A daily check-in that takes half a minute, grounding practices for a bad moment, and published self-scoring questionnaires. A reflective tool, not a medical device."
+    />
+    <meta name="theme-color" content="#07080a" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sahaya" />
+    <meta property="og:title" content="Sahaya — a quiet minute, once a day" />
+    <meta
+      property="og:description"
+      content="A daily check-in that takes half a minute, grounding practices for a bad moment, and published self-scoring questionnaires."
+    />
+    <meta name="twitter:card" content="summary" />
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Not a fallback page, just an honest sentence. Someone with scripts off
+         should be told why the screen is empty rather than left looking at it. -->
+    <noscript>
+      <div
+        style="
+          min-height: 100vh;
+          display: grid;
+          place-items: center;
+          padding: 2rem;
+          background: #07080a;
+          color: #b7bcc0;
+          font-family: ui-sans-serif, system-ui, sans-serif;
+          line-height: 1.6;
+          text-align: center;
+        "
+      >
+        <div style="max-width: 30rem">
+          <h1 style="color: #f4f2ee; font-weight: 400; font-size: 1.5rem">Sahaya</h1>
+          <p style="margin-top: 0.75rem">
+            This app needs JavaScript to run. If you are in a bad moment right now and cannot get
+            it working, please call KIRAN on 1800-599-0019 — it is free, confidential and open
+            around the clock. In an emergency, call 112.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

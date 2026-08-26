@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { INSTRUMENTS, getInstrument, resolveItems, resolveFollowUp, catalog, instrumentDetail } from '../lib/instruments.js';
+import { INSTRUMENTS, PUBLISHED_INSTRUMENTS, isPublished, getInstrument, resolveItems, resolveFollowUp, catalog, instrumentDetail } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 
 const fill = (id, value) => resolveItems(getInstrument(id)).map(() => value);
@@ -31,8 +31,24 @@ for (const i of INSTRUMENTS) {
   assert.ok(top.band, `${i.id} band found at ceiling`);
   assert.equal(top.score, top.maxScore, `${i.id} ceiling equals declared max`);
 }
-assert.equal(catalog().length, INSTRUMENTS.length);
+// The catalogue is what the app serves, which is not the same as what is
+// defined here. An instrument can be scored correctly, covered by every test
+// above, and still be withheld because we do not have permission to administer
+// it — see licenceCleared in instruments.js.
+assert.equal(catalog().length, PUBLISHED_INSTRUMENTS.length, 'the catalogue is the published set');
+assert.ok(
+  PUBLISHED_INSTRUMENTS.length <= INSTRUMENTS.length,
+  'the published set cannot exceed what is defined',
+);
 assert.ok(!JSON.stringify(catalog()).includes('bands'), 'catalog withholds the scoring key');
+
+// Withheld instruments must be absent from the catalogue and refuse isPublished,
+// while still scoring correctly above — that combination is the whole point.
+for (const i of INSTRUMENTS.filter((x) => x.licenceCleared === false)) {
+  assert.ok(!isPublished(i), `${i.id} is withheld`);
+  assert.ok(!catalog().some((c) => c.id === i.id), `${i.id} is not offered in the catalogue`);
+  assert.ok(getInstrument(i.id), `${i.id} is still defined and scoreable`);
+}
 
 // --- PHQ-9 ----------------------------------------------------------------
 const phqLow = score('phq-9', fill('phq-9', 0));
@@ -277,4 +293,6 @@ assert.match(score('gad-7', [0, 0, 0, 0, 0, 0, 9]).error, /not one of the allowe
 assert.match(score('gad-7', [0, 0, 0, 0, 0, 0, null]).error, /is missing/);
 assert.match(score('gad-7', 'nope').error, /must be an array/);
 
-console.log(`all scoring checks passed — ${INSTRUMENTS.length} instruments`);
+console.log(
+  `all scoring checks passed — ${INSTRUMENTS.length} instruments defined, ${PUBLISHED_INSTRUMENTS.length} served`,
+);

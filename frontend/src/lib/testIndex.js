@@ -17,7 +17,8 @@ export const TEST_INDEX = [
     "domain": "Safety",
     "itemCount": 4,
     "minutes": 1,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   },
   {
     "id": "c-ssrs",
@@ -26,7 +27,8 @@ export const TEST_INDEX = [
     "domain": "Safety",
     "itemCount": 6,
     "minutes": 2,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": false
   },
   {
     "id": "phq-9",
@@ -35,7 +37,8 @@ export const TEST_INDEX = [
     "domain": "Mood",
     "itemCount": 9,
     "minutes": 3,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "gad-7",
@@ -44,7 +47,8 @@ export const TEST_INDEX = [
     "domain": "Anxiety",
     "itemCount": 7,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "k10",
@@ -53,7 +57,8 @@ export const TEST_INDEX = [
     "domain": "General distress",
     "itemCount": 10,
     "minutes": 3,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "who-5",
@@ -62,7 +67,8 @@ export const TEST_INDEX = [
     "domain": "Wellbeing",
     "itemCount": 5,
     "minutes": 1,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "pss-10",
@@ -71,7 +77,8 @@ export const TEST_INDEX = [
     "domain": "Stress",
     "itemCount": 10,
     "minutes": 3,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "ucla-3",
@@ -80,7 +87,8 @@ export const TEST_INDEX = [
     "domain": "Social",
     "itemCount": 3,
     "minutes": 1,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "mspss",
@@ -89,7 +97,8 @@ export const TEST_INDEX = [
     "domain": "Social",
     "itemCount": 12,
     "minutes": 3,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "mini-spin",
@@ -98,7 +107,8 @@ export const TEST_INDEX = [
     "domain": "Social",
     "itemCount": 3,
     "minutes": 1,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "rses",
@@ -107,7 +117,8 @@ export const TEST_INDEX = [
     "domain": "Self",
     "itemCount": 10,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "brs",
@@ -116,7 +127,8 @@ export const TEST_INDEX = [
     "domain": "Strengths",
     "itemCount": 6,
     "minutes": 1,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "gse-10",
@@ -125,7 +137,8 @@ export const TEST_INDEX = [
     "domain": "Strengths",
     "itemCount": 10,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "flourishing",
@@ -134,7 +147,8 @@ export const TEST_INDEX = [
     "domain": "Wellbeing",
     "itemCount": 8,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "cbi-personal",
@@ -143,7 +157,8 @@ export const TEST_INDEX = [
     "domain": "Burnout",
     "itemCount": 6,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "ais-8",
@@ -152,7 +167,8 @@ export const TEST_INDEX = [
     "domain": "Sleep",
     "itemCount": 8,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "sas-sv",
@@ -161,7 +177,8 @@ export const TEST_INDEX = [
     "domain": "Habits",
     "itemCount": 10,
     "minutes": 2,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "audit-c",
@@ -170,7 +187,8 @@ export const TEST_INDEX = [
     "domain": "Habits",
     "itemCount": 3,
     "minutes": 1,
-    "wordingVerified": true
+    "wordingVerified": true,
+    "available": true
   },
   {
     "id": "phq-15",
@@ -179,7 +197,8 @@ export const TEST_INDEX = [
     "domain": "Body",
     "itemCount": 15,
     "minutes": 3,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   },
   {
     "id": "pc-ptsd-5",
@@ -188,7 +207,8 @@ export const TEST_INDEX = [
     "domain": "Trauma",
     "itemCount": 5,
     "minutes": 1,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   },
   {
     "id": "scoff",
@@ -197,7 +217,8 @@ export const TEST_INDEX = [
     "domain": "Eating",
     "itemCount": 5,
     "minutes": 1,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   },
   {
     "id": "bsmas",
@@ -206,7 +227,8 @@ export const TEST_INDEX = [
     "domain": "Habits",
     "itemCount": 6,
     "minutes": 2,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   },
   {
     "id": "scs-sf",
@@ -215,6 +237,7 @@ export const TEST_INDEX = [
     "domain": "Strengths",
     "itemCount": 12,
     "minutes": 3,
-    "wordingVerified": false
+    "wordingVerified": false,
+    "available": true
   }
 ];

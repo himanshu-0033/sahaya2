@@ -22,7 +22,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
     : identifier.trim() && password.length > 0;
 
   const inputClass = dark
-    ? 'mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
+    ? 'mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
     : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const labelClass = `text-[11px] uppercase tracking-wider ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
 
@@ -56,7 +56,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   return (
     <div className="w-full">
       <div
-        className={`mb-3 flex rounded-full p-1 text-sm ${dark ? 'bg-white/5' : 'bg-[var(--color-cream-soft)]'}`}
+        className={`mb-3 flex rounded-full p-1 text-sm ${dark ? 'bg-[var(--surface-2)]' : 'bg-[var(--color-cream-soft)]'}`}
       >
         <button
           type="button"
@@ -64,7 +64,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
           className={`flex-1 rounded-full py-1.5 transition-colors ${
             mode === 'login'
               ? dark
-                ? 'bg-white/15 font-medium text-white'
+                ? 'bg-[var(--surface-5)] font-medium text-white'
                 : 'bg-white shadow-sm font-medium'
               : dark
                 ? 'text-white/40'
@@ -79,7 +79,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
           className={`flex-1 rounded-full py-1.5 transition-colors ${
             mode === 'signup'
               ? dark
-                ? 'bg-white/15 font-medium text-white'
+                ? 'bg-[var(--surface-5)] font-medium text-white'
                 : 'bg-white shadow-sm font-medium'
               : dark
                 ? 'text-white/40'
@@ -117,7 +117,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                     onChange={(e) => setCountryCode(e.target.value)}
                     className={
                       dark
-                        ? 'rounded-xl border border-white/15 bg-white/5 px-2 py-2.5 text-sm text-white outline-none focus:border-white/40'
+                        ? 'rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-2.5 text-sm text-white outline-none focus:border-[var(--line-6)]'
                         : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]'
                     }
                   >

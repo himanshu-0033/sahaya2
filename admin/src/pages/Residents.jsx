@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FlagBadge from '../components/FlagBadge.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
-import { getResidents, inviteResident } from '../lib/api.js';
+import { getResidents, inviteResident, logExport } from '../lib/api.js';
 import { downloadCsv, toCsv } from '../lib/csv.js';
 import { moodLabel, daysSince } from '../lib/moods.js';
 
@@ -123,6 +123,10 @@ export default function Residents() {
 
   function handleExport() {
     const stamp = new Date().toISOString().slice(0, 10);
+    // Logged before the file is built, and deliberately not awaited: a failed
+    // audit write must not stop a counsellor reading their own caseload. A
+    // missing entry is a visible gap; a blocked export is a broken console.
+    logExport({ scope: 'cohort', rowCount: visible.length }).catch(() => {});
     downloadCsv(`sahay-residents-${stamp}.csv`, toCsv(CSV_COLUMNS, visible));
   }
 
@@ -266,6 +270,21 @@ export default function Residents() {
                 <div className="min-w-[180px] flex-1">
                   <p className="font-medium">{r.name}</p>
                   <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
+
+                  {/* The reason, on the row. A risk screen brings its own
+                      wording and outranks a check-in rule, so only one set
+                      shows — a row that lists everything at once is a row
+                      nobody reads. */}
+                  {(r.riskScreen?.recent ? r.riskScreen.reasons : r.checkinFlagReasons)
+                    ?.slice(0, 2)
+                    .map((reason) => (
+                      <p
+                        key={reason}
+                        className="mt-1 text-xs leading-snug text-[var(--color-flag)]"
+                      >
+                        {reason}
+                      </p>
+                    ))}
                 </div>
 
                 <div className="w-28 text-xs text-[var(--color-ink-soft)]">

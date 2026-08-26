@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import MoodSparkline from '../components/MoodSparkline.jsx';
 import StatCard from '../components/StatCard.jsx';
 import FlagBadge from '../components/FlagBadge.jsx';
-import { getResident } from '../lib/api.js';
+import { getResident, logExport } from '../lib/api.js';
 import { downloadCsv, toCsv } from '../lib/csv.js';
 import { formatDate, moodLabel, moodColor, daysSince } from '../lib/moods.js';
 
@@ -113,6 +113,8 @@ export default function ResidentDetail() {
 
   function handleExport() {
     const name = (data.resident.name || 'resident').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    // See the note in Residents.jsx — recorded, never blocking.
+    logExport({ scope: 'resident', residentId, rowCount: data.history.length }).catch(() => {});
     downloadCsv(`sahay-${name}-checkins.csv`, toCsv(CSV_COLUMNS, [...data.history].reverse()));
   }
 
@@ -146,6 +148,19 @@ export default function ResidentDetail() {
               </button>
             </div>
           </div>
+
+          {/* The cohort export has carried a handling warning for a while; this
+              one did not, and it is the more sensitive of the two — one named
+              person's full history, their written words and the reasons they
+              were flagged, in a file that leaves the console and lands in a
+              downloads folder. */}
+          {data.history.length > 0 && (
+            <p className="text-xs leading-relaxed text-[var(--color-muted)]">
+              This file contains {data.resident.name}&apos;s check-in history, the words they wrote
+              and why they were flagged. Store it the way your institution requires, and delete it
+              when you no longer need it.
+            </p>
+          )}
 
           <RiskBanner risk={data.summary.riskScreen} resident={data.resident} />
 

@@ -4,6 +4,7 @@ import Button from '../components/Button.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import LoadError from '../components/LoadError.jsx';
+import { SkeletonPanel } from '../components/Skeleton.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
 import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
@@ -268,7 +269,7 @@ export default function AssessmentRun() {
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
-        {loading && <p className="stack-section text-[var(--color-ink-soft)]">Loading…</p>}
+        {loading && <SkeletonPanel label="Loading this questionnaire…" height="16rem" />}
         {error && !instrument && (
           <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
         )}
@@ -345,7 +346,7 @@ export default function AssessmentRun() {
                       className={`animate-rise press group flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-200 ${
                         selected
                           ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)]/12'
-                          : 'border-white/10 bg-white/[0.03] lift hover:border-[var(--sec-tests)]/45 hover:bg-white/[0.06]'
+                          : 'border-[var(--line-2)] bg-[var(--surface-1)] lift hover:border-[var(--sec-tests)]/45 hover:bg-[var(--surface-2)]'
                       }`}
                     >
                       <span
@@ -528,7 +529,7 @@ export default function AssessmentRun() {
                           <span className="text-xs">/{sub.maxScore}</span>
                         </span>
                       </div>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--surface-4)]">
                         <div
                           className="h-full rounded-full bg-[var(--sec-tests)] transition-[width] duration-700 ease-out"
                           style={{ width: `${Math.round((sub.score / sub.maxScore) * 100)}%` }}

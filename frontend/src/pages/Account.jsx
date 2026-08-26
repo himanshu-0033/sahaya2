@@ -154,7 +154,7 @@ export default function Account() {
             value={email}
             onChange={(ev) => setEmail(ev.target.value)}
             placeholder="counsellor@example.com"
-            className="mt-2 w-full rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 outline-none transition-colors placeholder:text-white/25 focus:border-[var(--color-teal)]/60 focus:bg-white/[0.05]"
+            className="mt-2 w-full rounded-xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3 outline-none transition-colors placeholder:text-[var(--ink-faint)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]"
           />
           <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted)]">
             Use the address they sign in with. They will only see you once they open the counsellor
@@ -166,7 +166,7 @@ export default function Account() {
           <button
             type="submit"
             disabled={saving || !email.trim()}
-            className="press mt-5 rounded-full bg-[var(--color-teal)] px-6 py-3 text-sm font-medium text-[#07080a] transition-colors hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-white/8 disabled:text-white/30"
+            className="press mt-5 rounded-full bg-[var(--color-teal)] px-6 py-3 text-sm font-medium text-[#07080a] transition-colors hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
           >
             {saving ? 'Sharing…' : 'Share with them'}
           </button>

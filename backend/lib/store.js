@@ -122,6 +122,29 @@ export async function saveAssessments(assessments) {
   writeFileDb(db);
 }
 
+// Who looked at what.
+//
+// Append-only, and deliberately separate from everything else: this is the one
+// collection nothing in the app is allowed to edit or delete, because a log a
+// viewer can rewrite is not a log. The counsellor console writes to it when a
+// CSV leaves the building; nothing else writes to it at all.
+export async function getExportLog() {
+  if (MONGO_URI) return readState('exportLog');
+  return readFileDb().exportLog || [];
+}
+
+export async function appendExportLog(entry) {
+  const existing = await getExportLog();
+  // Kept bounded so a busy deployment cannot grow one document without limit.
+  // Oldest first, so the tail is the recent history a person would actually
+  // look at.
+  const next = [...existing, entry].slice(-2000);
+  if (MONGO_URI) return writeState('exportLog', next);
+  const db = readFileDb();
+  db.exportLog = next;
+  writeFileDb(db);
+}
+
 // Grounding practices a resident has run. Not a score and never treated as
 // one — one record per completed (or abandoned) sitting, so the app can show a
 // streak and a counsellor can see that someone reached for a tool.

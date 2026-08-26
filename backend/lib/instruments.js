@@ -368,6 +368,19 @@ export const INSTRUMENTS = [
     license:
       '© Research Foundation for Mental Hygiene, Inc. Free for non-profit, healthcare and research use — but permission must be requested from the Columbia Lighthouse Project (cssrs.columbia.edu) first',
     citation: 'Posner et al. (2011), Am J Psychiatry 168(12):1266-77',
+    // WITHHELD. The note above this instrument has said "do that before this
+    // goes near real students" since it was written; the audience is now people
+    // signing up on their own, and a general consumer app may not qualify for
+    // that licence at all — it covers non-profit, healthcare, education and
+    // research use.
+    //
+    // The definition, the branching and the non-summing triage stay exactly as
+    // they are, because they are correct and were expensive to get right. What
+    // changes is that the app does not serve it. The ASQ is public domain, does
+    // the same screening job, and is what people get instead.
+    //
+    // Flip this to true the day permission comes back from Columbia.
+    licenceCleared: false,
     wordingVerified: false,
     // Its total is not a quantity of anything. Showing "2 / 6" next to a
     // triage level would invite exactly the reading the scale is built to
@@ -1040,6 +1053,22 @@ export const INSTRUMENTS = [
 
 export const INSTRUMENT_IDS = INSTRUMENTS.map((i) => i.id);
 
+// What the app actually serves.
+//
+// An instrument can be defined here, scored correctly and covered by tests, and
+// still not be something we are allowed to hand to a member of the public. The
+// C-SSRS is the case: copyrighted, free for several kinds of use, and requiring
+// written permission first.
+//
+// Withholding rather than deleting keeps the scoring honest — the branching and
+// the non-summing triage are still exercised by the test suite — and makes
+// re-enabling a one-word change once the paperwork exists.
+export const PUBLISHED_INSTRUMENTS = INSTRUMENTS.filter((i) => i.licenceCleared !== false);
+
+export function isPublished(instrument) {
+  return Boolean(instrument) && instrument.licenceCleared !== false;
+}
+
 export function getInstrument(id) {
   return INSTRUMENTS.find((i) => i.id === id) || null;
 }
@@ -1087,7 +1116,7 @@ export function resolveFollowUp(instrument) {
 // The catalog the client renders — everything except the scoring key, which
 // is not something the browser needs.
 export function catalog() {
-  return INSTRUMENTS.map((i) => ({
+  return PUBLISHED_INSTRUMENTS.map((i) => ({
     id: i.id,
     name: i.name,
     fullName: i.fullName,

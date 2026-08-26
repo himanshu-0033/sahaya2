@@ -20,7 +20,7 @@ import { getArticle, TOPICS } from '../lib/articles.js';
 
 function Note({ children }) {
   return (
-    <div className="my-7 border-l-2 border-white/20 pl-5">
+    <div className="my-7 border-l-2 border-[var(--line-4)] pl-5">
       <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">{children}</p>
     </div>
   );
@@ -125,7 +125,7 @@ export default function ReadArticle() {
           </p>
         </header>
 
-        <div className="mt-10 border-t border-white/8 pt-2">
+        <div className="mt-10 border-t border-[var(--line-1)] pt-2">
           {article.sections.map((section) => (
             <section key={section.heading} className="mt-10 first:mt-6">
               <h2 className="font-display text-[1.35rem] leading-snug">{section.heading}</h2>
@@ -137,7 +137,7 @@ export default function ReadArticle() {
         </div>
 
         {article.sources.length > 0 && (
-          <section className="mt-12 border-t border-white/8 pt-6">
+          <section className="mt-12 border-t border-[var(--line-1)] pt-6">
             <p className="marginalia">Where this comes from</p>
             <ul className="mt-4 grid gap-4">
               {article.sources.map((source) => (
@@ -164,7 +164,7 @@ export default function ReadArticle() {
         <div className="mt-10 flex flex-wrap items-center gap-3 pb-2">
           <Link
             to="/read"
-            className="press rounded-full border border-white/12 px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/25"
+            className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
           >
             Read something else
           </Link>

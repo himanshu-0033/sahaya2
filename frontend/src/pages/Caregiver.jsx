@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import { SkeletonCards } from '../components/Skeleton.jsx';
 import { getSession } from '../lib/session.js';
 import { getCaregiverResidents, inviteResident } from '../lib/api.js';
 import { MOOD_OPTIONS } from '../lib/moods.js';
@@ -93,7 +94,7 @@ export default function Caregiver() {
           Flagged residents are surfaced first. This is a heuristic nudge, not a diagnosis.
         </p>
 
-        {loading && <p className="mt-6 text-sm text-[var(--color-muted)]">Loading…</p>}
+        {loading && <SkeletonCards label="Loading residents…" count={4} columns={1} />}
         {error && <p className="mt-6 text-sm text-[var(--color-flag)]">{error}</p>}
 
         {residents && (

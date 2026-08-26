@@ -98,7 +98,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="press -mr-1 -mt-1 shrink-0 rounded-full border border-white/12 p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-white/8"
+                className="press -mr-1 -mt-1 shrink-0 rounded-full border border-[var(--line-2)] p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-3)]"
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M18 6 6 18M6 6l12 12" />
@@ -116,7 +116,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
                   <a
                     key={h.number}
                     href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
-                    className="press flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 transition-colors hover:border-[var(--color-teal)]/40 hover:bg-white/[0.07]"
+                    className="press flex items-center justify-between gap-3 rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] px-4 py-3 transition-colors hover:border-[var(--color-teal)]/40 hover:bg-[var(--surface-3)]"
                   >
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{h.name}</span>
@@ -133,7 +133,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
             <div className="shrink-0 p-6 pt-4">
               <button
                 onClick={() => setOpen(false)}
-                className="press w-full rounded-full border border-white/10 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-white/8"
+                className="press w-full rounded-full border border-[var(--line-2)] py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-3)]"
               >
                 Close
               </button>

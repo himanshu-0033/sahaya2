@@ -87,6 +87,27 @@ assert.equal(checkinFlagged.flaggedRecently, true);
 assert.equal(checkinFlagged.checkinFlaggedRecently, true);
 assert.equal(checkinFlagged.riskScreen, null);
 
+// The counsellor's list shows WHY, not just that. These reasons already
+// existed on the check-in record and reached the CSV and the detail page; the
+// summary is what the triage list reads from, so they have to survive to here.
+assert.deepEqual(checkinFlagged.checkinFlagReasons, ['crisis language'], 'the reason reaches the row');
+
+// The same rule firing three days running is one thing to know, not three.
+const repeated = summarizeResident(resident, [
+  { residentId: 'r1', date: day(3), moodScore: 1, flagged: true, flagReasons: ['Mood has stayed low'] },
+  { residentId: 'r1', date: day(2), moodScore: 1, flagged: true, flagReasons: ['Mood has stayed low'] },
+  { residentId: 'r1', date: day(1), moodScore: 1, flagged: true, flagReasons: ['Mood has stayed low', 'Words lean heavy'] },
+], {});
+assert.deepEqual(
+  repeated.checkinFlagReasons,
+  ['Mood has stayed low', 'Words lean heavy'],
+  'repeated reasons are de-duplicated, distinct ones are kept',
+);
+
+// An unflagged resident carries no reasons rather than undefined — the row
+// maps over this directly.
+assert.deepEqual(summarizeResident(resident, [], {}).checkinFlagReasons, []);
+
 // ------------------------------------------------------------- triage order
 const rows = summarizeResidents([other, resident], [], {
   assessments: [screen({ riskLevel: 'acute' }), screen({ id: 'a4', residentId: 'r2', riskLevel: 'positive' })],

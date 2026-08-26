@@ -126,7 +126,7 @@ export default function ReadTest() {
             would be strange to be careful about that on the questionnaire
             itself and quiet about it on the page explaining the questionnaire. */}
         {meta.wordingVerified === false && (
-          <p className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-xs leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-8 rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] p-5 text-xs leading-relaxed text-[var(--color-muted)]">
             The item wording used in this app has not been checked line by line against the
             original publication. The scale, scoring and thresholds are right; a phrase or two may
             differ from the published version, which is fine for reflection and not good enough for
@@ -134,7 +134,7 @@ export default function ReadTest() {
           </p>
         )}
 
-        <section className="mt-12 border-t border-white/8 pt-6">
+        <section className="mt-12 border-t border-[var(--line-1)] pt-6">
           <p className="marginalia">Where this comes from</p>
           <ul className="mt-4 grid gap-4">
             {note.sources.map((source) => (
@@ -156,17 +156,35 @@ export default function ReadTest() {
           </ul>
         </section>
 
+        {/* An instrument can be documented here and still not be one the app
+            serves. Explaining the Columbia protocol is worth doing; offering a
+            button that 404s is not. See licenceCleared in instruments.js. */}
+        {meta.available === false && (
+          <div className="mt-10 rounded-2xl border border-[var(--color-amber)]/30 bg-[rgba(217,165,92,0.06)] p-5">
+            <p className="marginalia" style={{ color: 'var(--color-amber)' }}>
+              Not available here
+            </p>
+            <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              The {meta.name} is copyrighted, and using it requires written permission from the
+              people who publish it. Until that permission is in place, Sahaya documents it but does
+              not administer it. Everything on this page still describes it accurately.
+            </p>
+          </div>
+        )}
+
         <div className="mt-10 flex flex-wrap items-center gap-3 pb-2">
-          <Link
-            to={`/assessments/${meta.id}`}
-            className="press rounded-full px-5 py-2.5 text-sm text-[#07080a]"
-            style={{ background: HUE }}
-          >
-            Take the {meta.name}
-          </Link>
+          {meta.available !== false && (
+            <Link
+              to={`/assessments/${meta.id}`}
+              className="press rounded-full px-5 py-2.5 text-sm text-[#07080a]"
+              style={{ background: HUE }}
+            >
+              Take the {meta.name}
+            </Link>
+          )}
           <Link
             to="/read"
-            className="press rounded-full border border-white/12 px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/25"
+            className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
           >
             Read something else
           </Link>

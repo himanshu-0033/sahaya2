@@ -180,6 +180,7 @@ const expectedIndex = INSTRUMENTS.map((i) => ({
   itemCount: i.items.length,
   minutes: i.minutes,
   wordingVerified: Boolean(i.wordingVerified),
+  available: i.licenceCleared !== false,
 }));
 
 assert.deepEqual(

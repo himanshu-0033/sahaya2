@@ -64,7 +64,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
 
         <Link
           to={`/grounding/${day.technique}`}
-          className="press mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/12 px-3.5 py-1.5 text-xs transition-colors hover:border-white/25"
+          className="press mt-3 inline-flex items-center gap-1.5 rounded-full border border-[var(--line-2)] px-3.5 py-1.5 text-xs transition-colors hover:border-[var(--line-4)]"
         >
           Open the practice
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -162,7 +162,7 @@ function Bookend({ path, scores, change }) {
 
           {/* Not collapsible, not a tooltip. See lib/paths.js. */}
           {path.closingCaveat && (
-            <p className="mt-5 border-t border-white/8 pt-4 text-xs leading-relaxed text-[var(--color-muted)]">
+            <p className="mt-5 border-t border-[var(--line-1)] pt-4 text-xs leading-relaxed text-[var(--color-muted)]">
               {path.closingCaveat}
             </p>
           )}
@@ -288,7 +288,7 @@ export default function PathRun() {
                 type="button"
                 onClick={() => act('leave')}
                 disabled={busy}
-                className="press rounded-full border border-white/12 px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/25 disabled:opacity-50"
+                className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-50"
               >
                 Leave this path
               </button>

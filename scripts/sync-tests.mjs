@@ -22,6 +22,11 @@ const rows = INSTRUMENTS.map((i) => ({
   itemCount: i.items.length,
   minutes: i.minutes,
   wordingVerified: Boolean(i.wordingVerified),
+  // Whether the app will actually serve it. An instrument can be documented
+  // here and still be withheld — see licenceCleared in instruments.js — and the
+  // reading page needs to know so it does not offer a "take it" link that
+  // leads to a 404.
+  available: i.licenceCleared !== false,
 }));
 
 const header = `// The questionnaire list the reading section renders from.

@@ -4,6 +4,7 @@ import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import LoadError from '../components/LoadError.jsx';
+import { SkeletonCards } from '../components/Skeleton.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getGroundingCatalog } from '../lib/api.js';
 import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../lib/accents.js';
@@ -29,7 +30,7 @@ function MoodPicker({ moods, active, onPick }) {
             className={`press rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${
               selected
                 ? 'border-[var(--sec-calm)] bg-[var(--sec-calm)]/12 text-[var(--color-ink)]'
-                : 'border-white/10 text-[var(--color-ink-soft)] hover:border-white/25'
+                : 'border-[var(--line-2)] text-[var(--color-ink-soft)] hover:border-[var(--line-4)]'
             }`}
           >
             {mood.label}
@@ -160,7 +161,7 @@ export default function Grounding() {
       </div>
 
       {loading && !data && (
-        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+        <SkeletonCards label="Loading the practices…" count={6} />
       )}
       {error && !data && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -169,7 +170,7 @@ export default function Grounding() {
       {data && (
         <>
           {data.streak > 0 && (
-            <p className="mt-6 inline-block rounded-full border border-white/10 px-4 py-2 text-xs text-[var(--color-ink-soft)]">
+            <p className="mt-6 inline-block rounded-full border border-[var(--line-2)] px-4 py-2 text-xs text-[var(--color-ink-soft)]">
               <span className="num">{data.streak}</span> day{data.streak === 1 ? '' : 's'} in a row. Nice.
             </p>
           )}

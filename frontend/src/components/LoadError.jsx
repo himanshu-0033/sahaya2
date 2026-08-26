@@ -82,7 +82,7 @@ export default function LoadError({ error, onRetry, retrying = false }) {
           type="button"
           onClick={onRetry}
           disabled={retrying}
-          className="press mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.05] px-5 py-2.5 text-sm transition-colors hover:bg-white/[0.09] disabled:opacity-50"
+          className="press mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] px-5 py-2.5 text-sm transition-colors hover:bg-[var(--surface-3)] disabled:opacity-50"
         >
           <svg
             viewBox="0 0 24 24"

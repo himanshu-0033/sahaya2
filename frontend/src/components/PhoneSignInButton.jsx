@@ -129,10 +129,10 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
   }
 
   const inputClass = dark
-    ? 'w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
+    ? 'w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
     : 'w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const selectClass = dark
-    ? 'rounded-xl border border-white/15 bg-white/5 px-2 py-2.5 text-sm text-white outline-none focus:border-white/40'
+    ? 'rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-2.5 text-sm text-white outline-none focus:border-[var(--line-6)]'
     : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]';
   const labelClass = `text-[11px] uppercase tracking-wider ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
   const quietClass = dark ? 'text-white/45 hover:text-white/75' : 'text-[var(--color-muted)]';
@@ -145,7 +145,7 @@ export default function PhoneSignInButton({ onSignedIn, dark = false }) {
           onClick={() => setStep('number')}
           className={
             dark
-              ? 'flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10'
+              ? 'flex w-full items-center justify-center gap-2 rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] py-3 text-sm font-medium text-white transition-colors hover:bg-[var(--surface-4)]'
               : 'flex w-full items-center justify-center gap-2 rounded-full border border-[var(--color-ink)]/15 bg-white py-3 text-sm font-medium text-[var(--color-ink)] shadow-sm transition-colors hover:bg-[var(--color-cream-soft)]'
           }
         >

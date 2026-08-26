@@ -106,7 +106,7 @@ export default function TabBar() {
           className="pointer-events-none absolute inset-x-0 bottom-full h-8 bg-gradient-to-t from-[var(--color-cream)] to-transparent"
         />
         <div
-          className="flex items-stretch justify-around border-t border-white/8 px-2"
+          className="flex items-stretch justify-around border-t border-[var(--line-1)] px-2"
           style={{
             height: 'var(--tabbar-h)',
             background: 'rgba(7, 8, 10, 0.86)',
@@ -160,7 +160,7 @@ export default function TabBar() {
         className="sticky top-5 z-40 mx-auto mb-10 hidden w-fit md:block"
       >
         <div
-          className="flex items-center gap-1 rounded-full border border-white/10 p-1.5"
+          className="flex items-center gap-1 rounded-full border border-[var(--line-2)] p-1.5"
           style={{ background: 'rgba(7, 8, 10, 0.7)', backdropFilter: 'blur(18px)' }}
         >
           {TABS.map((tab) => {

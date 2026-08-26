@@ -93,7 +93,20 @@ export function summarizeResident(resident, checkins, { detailed = false, assess
   const last = history[history.length - 1] || null;
   const recent = history.slice(-7);
 
-  const checkinFlagRecently = history.slice(-3).some((c) => c.flagged);
+  const recentThree = history.slice(-3);
+  const checkinFlagRecently = recentThree.some((c) => c.flagged);
+  // WHY someone is flagged, not just that they are.
+  //
+  // logic.js has always written readable reasons onto the check-in — "Mood has
+  // stayed low for 3 check-ins in a row", "Today's words lean heavy" — and they
+  // reached the CSV export and the detail page. They did not reach the list,
+  // which is the screen a counsellor actually triages from: forty rows of an
+  // identical "Needs a conversation" badge, with the reason one click away on
+  // each. De-duplicated, because the same rule firing on three consecutive days
+  // is one thing to know, not three.
+  const checkinFlagReasons = [
+    ...new Set(recentThree.filter((c) => c.flagged).flatMap((c) => c.flagReasons || [])),
+  ];
   const riskScreen = riskScreenFor(assessments, resident.id);
 
   const mine = assessments
@@ -127,6 +140,7 @@ export function summarizeResident(resident, checkins, { detailed = false, assess
     // Deliberately broader than it used to be — see the note at the top.
     flaggedRecently: checkinFlagRecently || Boolean(riskScreen && riskScreen.recent),
     checkinFlaggedRecently: checkinFlagRecently,
+    checkinFlagReasons,
     riskScreen,
     assessmentCount: mine.length,
     lastAssessment,

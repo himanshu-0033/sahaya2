@@ -1,5 +1,5 @@
 import { getAssessments, saveAssessments, getResidents } from '../lib/store.js';
-import { catalog, getInstrument, instrumentDetail } from '../lib/instruments.js';
+import { catalog, getInstrument, instrumentDetail, isPublished } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 import { HELPLINES, ACUTE_MESSAGE } from '../lib/safety.js';
 import { todayISO } from '../lib/logic.js';
@@ -19,7 +19,12 @@ export default async function handler(req, res) {
     // One instrument, with its items — what the runner page needs.
     if (instrumentId) {
       const instrument = getInstrument(instrumentId);
-      if (!instrument) return res.status(404).json({ error: 'Unknown instrument' });
+      // A withheld instrument is treated as absent rather than forbidden: it is
+      // not in the catalogue, so the only way to ask for it is an old bookmark
+      // or a hand-typed URL, and "unknown" is the honest answer to both.
+      if (!instrument || !isPublished(instrument)) {
+        return res.status(404).json({ error: 'Unknown instrument' });
+      }
       return res.status(200).json({ instrument: instrumentDetail(instrument) });
     }
 
@@ -40,7 +45,11 @@ export default async function handler(req, res) {
 
     const { instrumentId, answers, followUp } = req.body || {};
     const instrument = getInstrument(instrumentId);
-    if (!instrument) return res.status(400).json({ error: 'Unknown instrument' });
+    // Same gate on the write path. A GET refusing to serve the questions but a
+    // POST still accepting answers for them would be a hole, not a nicety.
+    if (!instrument || !isPublished(instrument)) {
+      return res.status(400).json({ error: 'Unknown instrument' });
+    }
 
     // `followUp` is the unscored question some forms print after their items —
     // the PHQ-9's "how difficult have these problems made it". It is validated

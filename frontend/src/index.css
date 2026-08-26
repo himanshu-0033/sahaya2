@@ -295,6 +295,46 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   /* Height of the mobile tab bar, so pages can reserve room for it in one
      place rather than each guessing at a padding value. */
   --tabbar-h: 4.75rem;
+
+  /* ---------------------------------------------------------------- */
+  /* Surfaces and hairlines                                            */
+  /*                                                                   */
+  /* Everything raised above the page ground, and every line drawn on  */
+  /* it, comes from here.                                              */
+  /*                                                                   */
+  /* These used to be written inline as `bg-white/5`, `border-white/12` */
+  /* and so on — around a hundred and ten of them, in thirteen         */
+  /* different bg alphas and nine border alphas, scattered across      */
+  /* twenty-five files. Two problems with that. The obvious one: a     */
+  /* light theme means editing every single occurrence, so "should we  */
+  /* go light?" was a rewrite rather than a question. The quieter one:  */
+  /* nobody could tell whether 0.05 and 0.055 were a considered        */
+  /* distinction or a typo, because there was nowhere for the answer   */
+  /* to live.                                                          */
+  /*                                                                   */
+  /* Alphas here are the ones already in use, so this substitution is  */
+  /* visually identical — it buys the indirection without redesigning  */
+  /* anything. Inverting for a light theme is now a matter of          */
+  /* redefining these values in one block.                             */
+  /* ---------------------------------------------------------------- */
+  --surface-1: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.05);
+  --surface-3: rgba(255, 255, 255, 0.08);
+  --surface-4: rgba(255, 255, 255, 0.10);
+  --surface-5: rgba(255, 255, 255, 0.15);
+
+  --line-1: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.11);
+  --line-3: rgba(255, 255, 255, 0.15);
+  --line-4: rgba(255, 255, 255, 0.24);
+  --line-5: rgba(255, 255, 255, 0.30);
+  --line-6: rgba(255, 255, 255, 0.40);
+  --line-7: rgba(255, 255, 255, 0.60);
+
+  /* The faintest readable ink: placeholder text and the label on a disabled
+     button. Below --color-muted, and deliberately the only step down from it —
+     anything fainter than this is decoration that happens to contain words. */
+  --ink-faint: rgba(244, 242, 238, 0.3);
 }
 
 /* Gradient headline text. Falls back to plain ink where background-clip is

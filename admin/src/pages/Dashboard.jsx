@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import StatCard from '../components/StatCard.jsx';
 import TrendChart from '../components/TrendChart.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
-import { getOverview } from '../lib/api.js';
+import { getOverview, getExportLog } from '../lib/api.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  // The export log is supporting information, not the point of the page, so a
+  // failure here is swallowed — it must never take the dashboard down with it.
+  const [exports, setExports] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -17,6 +20,9 @@ export default function Dashboard() {
       .then((res) => !cancelled && setData(res))
       .catch((err) => !cancelled && setError(err.message))
       .finally(() => !cancelled && setLoading(false));
+    getExportLog()
+      .then((res) => !cancelled && setExports(res.entries || []))
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -301,6 +307,53 @@ export default function Dashboard() {
           )}
         </section>
       </div>
+
+      {/* Who took data out of here.
+          
+          The console has warned counsellors to handle exports carefully for a
+          while. A warning is a request; this is a record. It is shown rather
+          than merely written, because an audit log nobody can read protects
+          nobody — and being visible is most of what makes it work. */}
+      <section className="card-soft rounded-2xl p-6">
+        <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
+          Recent exports
+        </h3>
+
+        {exports.length === 0 ? (
+          <p className="mt-4 text-sm text-[var(--color-muted)]">
+            No CSV has been downloaded from this console yet.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {exports.slice(0, 8).map((e) => (
+              <li
+                key={e.id}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-white/6 pt-3 first:border-0 first:pt-0"
+              >
+                <span className="text-sm">
+                  {e.actor}
+                  <span className="text-[var(--color-muted)]">
+                    {' '}
+                    exported{' '}
+                    {e.scope === 'cohort'
+                      ? 'the resident list'
+                      : `${e.subjectName || 'a resident'}'s history`}
+                  </span>
+                </span>
+                <span className="text-xs whitespace-nowrap text-[var(--color-muted)]">
+                  {e.rowCount != null && `${e.rowCount} rows · `}
+                  {new Date(e.at).toLocaleString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+          This log records that an export happened, never what was in it. Entries cannot be edited
+          or deleted from the console.
+        </p>
+      </section>
     </div>
   );
 }

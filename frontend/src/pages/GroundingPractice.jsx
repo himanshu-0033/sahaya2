@@ -157,7 +157,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
           type="button"
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={index === 0}
-          className="press rounded-full border border-white/12 px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-white/25 disabled:opacity-30"
+          className="press rounded-full border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-30"
         >
           Back
         </button>
@@ -166,7 +166,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
           onClick={() =>
             index < steps.length - 1 ? setIndex(index + 1) : finishRef.current?.()
           }
-          className="press rounded-full border border-white/12 px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-white/25"
+          className="press rounded-full border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
         >
           {index < steps.length - 1 ? 'Next' : 'Done'}
         </button>
@@ -305,7 +305,11 @@ export default function GroundingPractice() {
             {technique.aka && (
               <p className="mt-2 text-sm text-[var(--color-muted)]">{technique.aka}</p>
             )}
-            <p className="mt-5 text-xl leading-snug" style={{ color: colors.bright }}>
+            {/* The one place in the app where display-role text sat in the sans
+                face: a coloured tagline at text-xl, directly under a serif
+                headline. Everything else this size and this prominent is set in
+                Cormorant. */}
+            <p className="font-display mt-5 text-xl leading-snug" style={{ color: colors.bright }}>
               {technique.tagline}
             </p>
 

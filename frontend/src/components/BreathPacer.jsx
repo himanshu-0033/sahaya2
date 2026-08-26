@@ -151,7 +151,7 @@ export default function BreathPacer({ pacer, accent: accentName, running, onFini
           }}
         >
           <span
-            className="num select-none text-5xl text-white/90"
+            className="num select-none text-5xl text-[var(--color-ink)]"
             aria-hidden="true"
           >
             {phaseLeft}

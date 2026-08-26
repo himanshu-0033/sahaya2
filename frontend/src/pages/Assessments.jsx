@@ -4,6 +4,7 @@ import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import LoadError from '../components/LoadError.jsx';
+import { SkeletonCards } from '../components/Skeleton.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getAssessmentCatalog } from '../lib/api.js';
 import { bandColor, bandTint } from '../lib/bands.js';
@@ -199,7 +200,7 @@ export default function Assessments() {
       </div>
 
       {loading && instruments.length === 0 && (
-        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
+        <SkeletonCards label="Loading the questionnaires…" count={6} />
       )}
       {error && instruments.length === 0 && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />

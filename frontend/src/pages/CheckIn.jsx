@@ -21,7 +21,7 @@ function Rail({ step, total }) {
       {Array.from({ length: total }).map((_, i) => (
         <span
           key={i}
-          className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/10"
+          className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--surface-4)]"
           aria-hidden="true"
         >
           <span
@@ -129,7 +129,7 @@ export default function CheckIn() {
             onChange={(e) => updateWord(e.target.value)}
             placeholder="one word…"
             aria-label={`Your word for plate ${step + 1}`}
-            className="animate-slide-up font-display mt-4 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-center text-2xl outline-none transition-colors placeholder:text-white/20 focus:border-[var(--color-teal)]/60 focus:bg-white/[0.05]"
+            className="animate-slide-up font-display mt-4 w-full rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] px-5 py-4 text-center text-2xl outline-none transition-colors placeholder:text-[var(--ink-faint)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]"
             style={{ animationDelay: '140ms' }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && words[step].trim()) setStep((s) => s + 1);
@@ -140,7 +140,7 @@ export default function CheckIn() {
             type="button"
             disabled={!words[step].trim()}
             onClick={() => setStep((s) => s + 1)}
-            className="press animate-slide-up mt-6 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-white/8 disabled:text-white/30"
+            className="press animate-slide-up mt-6 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
             style={{ animationDelay: '190ms' }}
           >
             {step === TOTAL_PLATE_STEPS - 1 ? 'Last bit — how you feel' : 'Next plate'}
@@ -165,7 +165,7 @@ export default function CheckIn() {
               updateWord('');
               setStep((s) => s + 1);
             }}
-            className="press animate-slide-up mt-3 w-full rounded-full border border-white/10 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-white/[0.05]"
+            className="press animate-slide-up mt-3 w-full rounded-full border border-[var(--line-2)] py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
             style={{ animationDelay: '220ms' }}
           >
             Nothing comes to mind
@@ -238,7 +238,7 @@ export default function CheckIn() {
               {words.map((w, i) => (
                 <span
                   key={i}
-                  className="font-display rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-lg"
+                  className="font-display rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-1.5 text-lg"
                 >
                   {w || '—'}
                 </span>
@@ -252,7 +252,7 @@ export default function CheckIn() {
             type="button"
             disabled={!mood || submitting}
             onClick={handleFinish}
-            className="press mt-8 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-white/8 disabled:text-white/30"
+            className="press mt-8 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
           >
             {submitting ? 'Saving…' : 'Finish check-in'}
           </button>

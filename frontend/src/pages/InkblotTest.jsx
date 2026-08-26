@@ -6,6 +6,7 @@ import InkblotPlate from '../components/InkblotPlate.jsx';
 import VoiceInputButton from '../components/VoiceInputButton.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import LoadError from '../components/LoadError.jsx';
+import { SkeletonPanel } from '../components/Skeleton.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getInkblotTest, submitInkblotTest } from '../lib/api.js';
 
@@ -20,7 +21,7 @@ import { getInkblotTest, submitInkblotTest } from '../lib/api.js';
 function Rail({ value, total }) {
   const pct = total ? (value / total) * 100 : 0;
   return (
-    <div className="h-[3px] w-full overflow-hidden rounded-full bg-white/10">
+    <div className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--surface-4)]">
       <div
         className="h-full rounded-full transition-[width] duration-700 ease-out"
         style={{ width: `${pct}%`, background: 'var(--sec-inkblot)' }}
@@ -139,7 +140,7 @@ export default function InkblotTest() {
       {phase !== 'test' && <Header eyebrow="Inkblot" />}
 
       {loading && plates.length === 0 && (
-        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Preparing the plates…</p>
+        <SkeletonPanel label="Preparing the plates…" height="20rem" />
       )}
       {error && plates.length === 0 && (
         <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
@@ -166,7 +167,7 @@ export default function InkblotTest() {
             <p>You can skip any plate, and you can say more than one thing about a plate.</p>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div className="mt-6 rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] p-5">
             <p className="marginalia">What this is not</p>
             <p className="mt-2.5 text-xs leading-relaxed text-[var(--color-muted)]">
               Sahaya keeps what you write, alongside your check-ins. Nobody else sees it unless you
@@ -195,7 +196,7 @@ export default function InkblotTest() {
             type="button"
             onClick={() => setPhase('test')}
             disabled={!plates.length}
-            className="press mt-8 w-full rounded-full py-4 font-medium text-[#07080a] transition-all duration-200 disabled:cursor-not-allowed disabled:bg-white/8 disabled:text-white/30"
+            className="press mt-8 w-full rounded-full py-4 font-medium text-[#07080a] transition-all duration-200 disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
             style={plates.length ? { background: 'var(--sec-inkblot)' } : undefined}
           >
             Begin — ten plates
@@ -259,7 +260,7 @@ export default function InkblotTest() {
                 placeholder="What do you see?"
                 maxLength={800}
                 aria-label={`What you see in plate ${step + 1}`}
-                className="min-h-[3.75rem] flex-1 resize-y rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-base outline-none transition-colors placeholder:text-white/25 focus:border-[var(--sec-inkblot)]/60 focus:bg-white/[0.05]"
+                className="min-h-[3.75rem] flex-1 resize-y rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3.5 text-base outline-none transition-colors placeholder:text-[var(--ink-faint)] focus:border-[var(--sec-inkblot)]/60 focus:bg-[var(--surface-2)]"
               />
               <VoiceInputButton onTranscript={appendTranscript} />
             </div>
@@ -341,7 +342,7 @@ export default function InkblotTest() {
                 {result.summary.recurring.map((r) => (
                   <span
                     key={r.word}
-                    className="font-display rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-lg"
+                    className="font-display rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-1.5 text-lg"
                   >
                     {r.word}
                     <span className="tnum ml-2 font-sans text-xs text-[var(--color-muted)]">

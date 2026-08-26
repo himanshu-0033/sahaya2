@@ -20,9 +20,9 @@ export default function Button({
   };
   const variants = {
     primary:
-      'bg-[var(--color-teal)] text-[#07080a] hover:bg-[var(--color-teal-dark)] disabled:bg-white/8 disabled:text-white/30',
+      'bg-[var(--color-teal)] text-[#07080a] hover:bg-[var(--color-teal-dark)] disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]',
     secondary:
-      'border border-white/10 bg-white/[0.04] text-[var(--color-ink)] hover:border-white/20 hover:bg-white/[0.07] disabled:opacity-40',
+      'border border-[var(--line-2)] bg-[var(--surface-1)] text-[var(--color-ink)] hover:border-[var(--line-4)] hover:bg-[var(--surface-3)] disabled:opacity-40',
   };
   return (
     <button className={`${base} ${sizes[size]} ${variants[variant]} ${className}`} {...props}>

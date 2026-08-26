@@ -9,7 +9,7 @@ function Bubble({ role, children }) {
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
           mine
             ? 'bg-[var(--color-teal)] text-white'
-            : 'border border-white/10 bg-white/[0.06] text-[var(--color-ink)]'
+            : 'border border-[var(--line-2)] bg-[var(--surface-2)] text-[var(--color-ink)]'
         }`}
       >
         {children}
@@ -89,7 +89,7 @@ export default function ChatPanel({ checkin, onClose }) {
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
+    <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--surface-2)] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] tracking-[0.22em] text-[var(--color-muted)] uppercase">
@@ -100,7 +100,7 @@ export default function ChatPanel({ checkin, onClose }) {
         <button
           onClick={onClose}
           aria-label="Close chat"
-          className="-mr-1 -mt-1 shrink-0 rounded-full border border-white/10 p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-white/5"
+          className="-mr-1 -mt-1 shrink-0 rounded-full border border-[var(--line-2)] p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
         >
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M18 6 6 18M6 6l12 12" />
@@ -129,7 +129,7 @@ export default function ChatPanel({ checkin, onClose }) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Say as much or as little as you like…"
-          className="min-w-0 flex-1 rounded-full border border-white/12 bg-white/5 px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]"
+          className="min-w-0 flex-1 rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]"
         />
         <button
           type="submit"

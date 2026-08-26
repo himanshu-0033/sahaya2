@@ -29,7 +29,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
   });
 
   const inputClass = dark
-    ? 'input-soft mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
+    ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
     : 'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
   const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/35' : 'text-[var(--color-muted)]'}`;
@@ -53,7 +53,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
 
       <form
         className={`mt-8 space-y-5 rounded-3xl p-6 md:p-8 ${
-          dark ? 'border border-white/10 bg-white/5 backdrop-blur' : 'card-soft'
+          dark ? 'border border-[var(--line-2)] bg-[var(--surface-2)] backdrop-blur' : 'card-soft'
         }`}
         onSubmit={handleSubmit}
       >
@@ -83,7 +83,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
               onChange={(e) => set('countryCode', e.target.value)}
               className={
                 dark
-                  ? 'input-soft rounded-xl border border-white/15 bg-white/5 px-2 py-3 text-sm text-white outline-none focus:border-white/40'
+                  ? 'input-soft rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-3 text-sm text-white outline-none focus:border-[var(--line-6)]'
                   : 'input-soft rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
               }
             >

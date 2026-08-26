@@ -46,10 +46,10 @@ function PrimarySkeleton() {
     <div className="card p-6 sm:p-8" role="status">
       <span className="sr-only">Checking whether you have checked in today…</span>
       <div aria-hidden="true">
-        <div className="h-2.5 w-16 rounded-full bg-white/10" />
-        <div className="mt-5 h-7 w-3/4 rounded-lg bg-white/[0.07]" />
-        <div className="mt-3 h-7 w-1/2 rounded-lg bg-white/[0.07]" />
-        <div className="mt-6 h-9 w-36 rounded-full bg-white/10" />
+        <div className="h-2.5 w-16 rounded-full bg-[var(--surface-4)]" />
+        <div className="mt-5 h-7 w-3/4 rounded-lg bg-[var(--surface-3)]" />
+        <div className="mt-3 h-7 w-1/2 rounded-lg bg-[var(--surface-3)]" />
+        <div className="mt-6 h-9 w-36 rounded-full bg-[var(--surface-4)]" />
       </div>
     </div>
   );
@@ -112,7 +112,7 @@ export default function Landing() {
 
   if (profileLoading) {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#07080a] text-white/60">
+      <div className="grid min-h-screen place-items-center bg-[#07080a] text-[var(--color-muted)]">
         <span className="animate-pulse">Loading your account…</span>
       </div>
     );

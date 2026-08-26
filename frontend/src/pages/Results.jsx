@@ -125,7 +125,7 @@ export default function Results() {
                     A short conversation, not a form.
                   </span>
                 </span>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--line-2)]">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>

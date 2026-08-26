@@ -60,3 +60,20 @@ export function inviteResident({ name, email }) {
     body: JSON.stringify({ name, email }),
   });
 }
+
+// Records that a CSV left the console. Called before the file is built.
+//
+// Deliberately fire-and-forget at the call site: a counsellor should never be
+// blocked from their own caseload because an audit write timed out. A failed
+// write shows up as a gap in the log, which is visible; a blocked export shows
+// up as an app that does not work.
+export function logExport({ scope, residentId = null, rowCount = null }) {
+  return request('/api/admin/audit', {
+    method: 'POST',
+    body: JSON.stringify({ scope, residentId, rowCount }),
+  });
+}
+
+export function getExportLog() {
+  return request('/api/admin/audit');
+}
