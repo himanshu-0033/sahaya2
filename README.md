@@ -21,7 +21,7 @@ frontend/   React + Vite + Tailwind — the resident UI (and a light caregiver v
             vertical rhythm (.stack-*) live in src/index.css.
 admin/      React + Vite + Tailwind — the counsellor/admin console, its own window
 backend/    One Vercel serverless function (/api) — check-ins, residents, storage.
-            api/[...path].js dispatches every route through lib/routes.js; the
+            api/router.js dispatches every route through lib/routes.js; the
             handlers live in handlers/. See "One function, not nineteen" below.
 agent/      Vercel serverless function (/api/chat) — the supportive chat companion
 ```
@@ -229,8 +229,15 @@ a different **Root Directory**.
 ### One function, not nineteen
 
 The backend routes every `/api/*` request through a single serverless
-function, `api/[...path].js`, which looks the path up in `lib/routes.js` and
-calls the matching handler from `handlers/`.
+function, `api/router.js`, which looks the path up in `lib/routes.js` and
+calls the matching handler from `handlers/`. The rewrite in `vercel.json`
+sends everything there and passes the original path in `?path=`.
+
+Not the filesystem catch-all `api/[...path].js`, which is the shape you would
+reach for first. That deployed as though it were a single-segment `[param]`:
+`/api/checkins` resolved and `/api/auth/login` returned the platform's own
+404, so sign-in broke while the pages either side of it looked fine. An
+explicit rewrite has no such ambiguity.
 
 The obvious layout — one file per route under `api/`, which is what Vercel
 turns into one function each — is what this was. It broke twice. Vercel's
