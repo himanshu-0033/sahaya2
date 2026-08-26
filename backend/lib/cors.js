@@ -42,7 +42,10 @@ export function applyCors(req, res) {
   if (origin) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  // DELETE is here because /api/sharing uses it to revoke access. Omitting it
+  // failed only in production: the dev proxy makes the app same-origin, so no
+  // preflight is sent and the gap is invisible until deploy.
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') {
     res.status(204).end();

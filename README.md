@@ -20,7 +20,9 @@ frontend/   React + Vite + Tailwind — the resident UI (and a light caregiver v
             components/PageShell.jsx; one card treatment (.card) and a four-step
             vertical rhythm (.stack-*) live in src/index.css.
 admin/      React + Vite + Tailwind — the counsellor/admin console, its own window
-backend/    Vercel serverless functions (/api) — check-ins, residents, storage
+backend/    One Vercel serverless function (/api) — check-ins, residents, storage.
+            api/[...path].js dispatches every route through lib/routes.js; the
+            handlers live in handlers/. See "One function, not nineteen" below.
 agent/      Vercel serverless function (/api/chat) — the supportive chat companion
 ```
 
@@ -220,7 +222,29 @@ a different **Root Directory**.
 
 4. Go back to the backend project and set `ALLOWED_ORIGIN` to the frontend's
    and admin's URLs, comma-separated, then redeploy the backend so CORS is
-   locked down instead of `*`.
+   locked down instead of `*`. Environment variables only take effect on a
+   deployment made after they are set — a failed deploy leaves the old one
+   serving, and the old one has the old variables.
+
+### One function, not nineteen
+
+The backend routes every `/api/*` request through a single serverless
+function, `api/[...path].js`, which looks the path up in `lib/routes.js` and
+calls the matching handler from `handlers/`.
+
+The obvious layout — one file per route under `api/`, which is what Vercel
+turns into one function each — is what this was. It broke twice. Vercel's
+Hobby plan allows **12 functions per deployment**; at 19 routes every deploy
+built successfully and then failed while shipping, so production silently
+stayed on the last build small enough to deploy while the repo moved on for
+weeks. Routes added in that window returned the platform's own 404, which
+carries no CORS headers, so the browser blocked it and the app reported the
+server as unreachable rather than the route as missing.
+
+Adding a route now means one line in `lib/routes.js` and a file in
+`handlers/`. The function count stays at one, and `dev-server.js` reads the
+same table — so a route cannot exist locally and not in production, which is
+how `/api/health` came to answer on a laptop and 404 in production.
 
 ## Phone sign-in
 
