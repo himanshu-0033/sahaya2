@@ -20,9 +20,6 @@ import groundingHandler from '../handlers/grounding.js';
 import pathsHandler from '../handlers/paths.js';
 import signupHandler from '../handlers/auth/signup.js';
 import loginHandler from '../handlers/auth/login.js';
-import phoneHandler from '../handlers/auth/phone.js';
-import phoneStartHandler from '../handlers/auth/phone-start.js';
-import phoneVerifyHandler from '../handlers/auth/phone-verify.js';
 import caregiverResidentsHandler from '../handlers/caregiver/residents.js';
 import caregiverResidentHandler from '../handlers/caregiver/resident.js';
 import adminMeHandler from '../handlers/admin/me.js';
@@ -49,9 +46,6 @@ export const routes = {
   '/api/paths': pathsHandler,
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
-  '/api/auth/phone': phoneHandler,
-  '/api/auth/phone-start': phoneStartHandler,
-  '/api/auth/phone-verify': phoneVerifyHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
   '/api/admin/me': adminMeHandler,

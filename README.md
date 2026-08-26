@@ -38,15 +38,13 @@ window of the same browser), and it never ships resident-facing code.
 ## How it works
 
 - **Sign-in**: Google (Google Identity Services, ID token verified
-  server-side with `google-auth-library`), phone number (Firebase sends the
-  SMS code, the returned Firebase ID token is verified server-side with
-  `firebase-admin`, and a resident is found-or-created by number), or
-  email/password (bcrypt hash + a self-issued JWT signed with
-  `JWT_SECRET`) — all three produce the same
+  server-side with `google-auth-library`) or email/password (bcrypt hash +
+  a self-issued JWT signed with `JWT_SECRET`) — both produce the same
   `{ sub, email, name }` shape, so the rest of the backend doesn't care
   which one was used. A resident's `sub` is their stable `residentId`. The
   app additionally asks for phone/DOB/address/occupation once via the
-  account form, since auth alone doesn't cover those.
+  account form, since auth alone doesn't cover those. The phone number is
+  contact detail for the console to call on — it is not a way in.
 - **Check-in**: a resident types one word per plate + taps a mood (1–5).
   The backend stores it, returns the resident's check-in streak, and
   picks a short "thought for today" deterministically from the resident's
@@ -164,12 +162,6 @@ JavaScript origins (Google checks the origin, and the two apps run on
 different ports), otherwise the Google button won't render in the console.
 Email/password sign-in works either way.
 
-Phone sign-in needs `DEV_OTP=true` in `backend/.env.local` — the code is then
-printed to the backend terminal instead of being sent by SMS, which costs
-nothing and needs no provider account. Real SMS via Firebase is the
-alternative and needs a paid plan. Both are covered under "Phone sign-in"
-below.
-
 Vite reads `.env.local` once at startup, so restart the dev server after
 creating or editing it.
 
@@ -252,119 +244,6 @@ Adding a route now means one line in `lib/routes.js` and a file in
 `handlers/`. The function count stays at one, and `dev-server.js` reads the
 same table — so a route cannot exist locally and not in production, which is
 how `/api/health` came to answer on a laptop and 404 in production.
-
-## Phone sign-in
-
-Two interchangeable routes, picked by environment. The account side is
-identical either way (`lib/phoneAccount.js`): a verified number matches an
-existing resident or becomes a new one, and both end up issuing the same
-`JWT_SECRET`-signed session as every other sign-in.
-
-| | Backend OTP (default) | Firebase |
-|---|---|---|
-| Real SMS | No — code goes to the backend terminal | Yes |
-| Cost | Free | Needs the Blaze plan (card on file) |
-| Switched on by | `DEV_OTP=true` in `backend/.env.local` | the four `VITE_FIREBASE_*` vars |
-
-The frontend picks Firebase when all four `VITE_FIREBASE_*` vars are set and
-falls back to the backend OTP route otherwise, so commenting those four out
-is the whole switch.
-
-### Backend OTP (no SMS provider)
-
-Set `DEV_OTP=true` in `backend/.env.local`. `POST /api/auth/phone-start`
-generates a 6-digit code, stores **only a bcrypt hash** of it with a 5-minute
-expiry, prints it to the backend terminal and returns it in the response;
-`POST /api/auth/phone-verify` checks it and issues the session. Codes are
-single-use, capped at 5 wrong attempts, rate-limited to one per 30s and five
-per hour per number.
-
-Returning the code to the caller is an open door into any account, so both
-routes **refuse to run at all** unless `DEV_OTP=true` — they cannot ship to
-production by accident. Swapping in Twilio/MSG91 later is a change to those
-two files only: stop returning `devCode`, send it instead.
-
-### Firebase (real SMS)
-
-Firebase does the SMS and the code check; this app only trusts the signed
-token it hands back.
-
-**Phone Auth is not on the Spark free plan** — it is listed as "Not applicable"
-there and needs the pay-as-you-go **Blaze** plan with a billing account. The
-first 10 SMS/day are not billed and test numbers send no SMS at all, so
-development is free, but a card has to be on file. If you go this way, set an
-SMS region allowlist and a budget alert first — a public phone-auth endpoint
-with billing attached is a target for SMS pumping.
-
-1. **Create the Firebase project** — [console.firebase.google.com](https://console.firebase.google.com)
-   → *Add project*. Google Analytics is not needed.
-
-2. **Turn on the provider** — *Build → Authentication → Get started →
-   Sign-in method → Phone → Enable*.
-
-3. **Register a web app** — *Project settings → General → Your apps → Web
-   (`</>`)*. Copy `apiKey`, `authDomain`, `projectId` and `appId` from the
-   config it shows into `frontend/.env.local`:
-
-   ```
-   VITE_FIREBASE_API_KEY=AIza...
-   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your-project
-   VITE_FIREBASE_APP_ID=1:123...:web:abc...
-   ```
-
-   These are public by design — the account is protected by the authorized
-   domains list and reCAPTCHA, not by hiding the key.
-
-4. **Authorize the domains** — *Authentication → Settings → Authorized
-   domains*. `localhost` is there already; add the deployed frontend domain
-   before going live, or sign-in fails with `auth/unauthorized-domain`.
-
-5. **Add the service account to the backend** — *Project settings → Service
-   accounts → Generate new private key* downloads a JSON file. Copy three
-   fields out of it into `backend/.env.local`:
-
-   ```
-   FIREBASE_PROJECT_ID=your-project
-   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com
-   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----\n"
-   ```
-
-   Keep the private key's literal `\n` sequences and the surrounding double
-   quotes — it goes in as one line. **This file is a credential; never commit
-   it.**
-
-6. **Add test numbers while developing** — *Authentication → Sign-in method →
-   Phone → Phone numbers for testing* lets you pair e.g. `+91 98765 43210`
-   with a fixed code like `123456`. No SMS is sent and no quota is spent, so
-   you can demo the flow repeatedly without waiting on a real handset.
-
-7. **Restart both dev servers** — Vite reads `.env.local` only at startup.
-
-On Vercel, set the same `VITE_FIREBASE_*` vars on the frontend project and
-the `FIREBASE_*` vars on the backend project, then redeploy each.
-
-### What happens on sign-in
-
-`PhoneSignInButton` sends the code via Firebase, confirms it in the browser,
-and posts the resulting Firebase ID token to `POST /api/auth/phone`. The
-backend verifies that token with `firebase-admin`, then matches the verified
-number against existing residents with `phonesMatch` — suffix-tolerant, so
-`+919876543210` finds a resident stored as `+91 98765 43210`. A match logs
-in; no match creates a resident with that number and no email yet. Either
-way it returns the same `JWT_SECRET`-signed session token the other sign-in
-paths issue, so nothing downstream changes.
-
-A phone-only account has no email, so it can never be on `CAREGIVER_EMAILS`
-or `ADMIN_EMAILS` — residents only, which is the intended shape.
-
-### Free-tier limits
-
-Firebase phone auth allows a small number of real SMS verifications per day
-on the free Spark plan (Blaze is pay-as-you-go beyond that). Test numbers
-don't count against it. Indian (+91) delivery goes through Firebase's own
-carrier arrangements, so no TRAI DLT template registration is needed — that
-is the main reason to prefer this over a direct SMS gateway here.
 
 ## Before this handles real residents' data
 

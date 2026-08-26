@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
-import PhoneSignInButton from './PhoneSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
 import CrisisContacts from './CrisisContacts.jsx';
 import Inkblot3D from './Inkblot3D.jsx';
@@ -191,7 +190,6 @@ export default function DarkSignInHero({ onSignedIn }) {
                 >
                   <div className="flex flex-col items-stretch gap-2">
                     <GoogleSignInButton dark onSignedIn={onSignedIn} />
-                    <PhoneSignInButton dark onSignedIn={onSignedIn} />
                   </div>
 
                   <div className="my-4 flex items-center gap-3 text-[11px] tracking-wide text-white/25">

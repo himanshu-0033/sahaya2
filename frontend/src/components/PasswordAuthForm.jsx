@@ -150,11 +150,12 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
           </>
         ) : (
           <div>
-            <label className={labelClass}>Email or phone number</label>
+            <label className={labelClass}>Email</label>
             <input
+              type="email"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="you@example.com or 98765 43210"
+              placeholder="you@example.com"
               className={inputClass}
             />
           </div>

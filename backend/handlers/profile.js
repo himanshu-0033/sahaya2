@@ -32,8 +32,9 @@ export default async function handler(req, res) {
       name: (name || '').trim() || googleUser.name,
       email: (email || '').trim() || googleUser.email || '',
       dob: (dob || '').trim(),
-      // For a phone-verified account the number IS the login identity, so a
-      // blank field here means "unchanged", not "delete it".
+      // A blank field here means "unchanged", not "delete it" — the number is
+      // contact detail the console relies on, and it is easy to wipe by
+      // saving a form that never loaded it.
       phone: (phone || '').trim() || existing?.phone || '',
       onboarded: true,
       updatedAt: now,

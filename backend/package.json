@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "firebase-admin": "^13.6.0",
     "google-auth-library": "^11.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.5.0"
