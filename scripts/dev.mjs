@@ -1,13 +1,19 @@
 // Runs the whole app with one command, and keeps it running.
 //
-// Why this exists: the three servers used to be three terminals a person had
-// to remember to open. The two Vite ones are the ones you notice missing —
-// the page simply doesn't load — but the backend is invisible when it's gone.
-// The frontend still serves, every tab still renders, and the only symptom is
-// "Can't reach the server" inside an app that otherwise looks fine. That is a
-// confusing failure to debug and it happened repeatedly.
+// Why this exists: the servers used to be a terminal each, and a person had
+// to remember to open every one. The two Vite ones are the ones you notice
+// missing — the page simply doesn't load — but the backend and the agent are
+// invisible when they're gone. The frontend still serves, every tab still
+// renders, and the only symptom is "Can't reach the server" inside an app
+// that otherwise looks fine. That is a confusing failure to debug and it
+// happened repeatedly.
 //
-// So: one process starts all three, labels their output, restarts anything
+// The agent is the easier of the two to forget, because it fails in one
+// place only: it owns /api/chat and nothing else, so leaving it out gives an
+// app where everything works except the chat, which then reports the same
+// reachability error as a total outage.
+//
+// So: one process starts all of them, labels their output, restarts anything
 // that exits on its own, and shuts the rest down when you Ctrl-C.
 //
 // Deliberately zero-dependency. Reaching for `concurrently` would mean an
@@ -33,6 +39,7 @@ const RED = `${ESC}31m`;
 
 const SERVICES = [
   { name: 'backend', dir: 'backend', script: 'dev:local', color: `${ESC}38;5;114m`, port: 3000 },
+  { name: 'agent', dir: 'agent', script: 'dev:local', color: `${ESC}38;5;79m`, port: 3100 },
   { name: 'frontend', dir: 'frontend', script: 'dev', color: `${ESC}38;5;147m`, port: 5173 },
   { name: 'admin', dir: 'admin', script: 'dev', color: `${ESC}38;5;180m`, port: 5174 },
 ];

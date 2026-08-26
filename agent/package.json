@@ -9,6 +9,7 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.120.0",
     "google-auth-library": "^11.0.2",
     "jsonwebtoken": "^9.0.3"
   }

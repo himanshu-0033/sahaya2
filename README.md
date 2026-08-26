@@ -125,20 +125,22 @@ One command from the repo root, first time and every time:
 
 ```bash
 npm run install:all   # once
-npm run dev           # backend :3000, resident app :5173, console :5174
+npm run dev           # backend :3000, agent :3100, resident app :5173, console :5174
 ```
 
-`npm run dev` runs all three together, prefixes each one's output with its
+`npm run dev` runs all four together, prefixes each one's output with its
 name, and restarts any of them that exits on its own. Ctrl-C stops the lot.
 
-Run them separately if you'd rather — but note that the backend is the one
-whose absence is easy to miss. The Vite apps fail loudly (the page doesn't
-load); a missing backend leaves a perfectly working-looking app where every
-tab reads "Can't reach the server". That's what the root script prevents.
+Run them separately if you'd rather — but note that the two API servers are
+the ones whose absence is easy to miss. The Vite apps fail loudly (the page
+doesn't load); a missing backend leaves a perfectly working-looking app where
+every tab reads "Can't reach the server", and a missing agent leaves one
+where only the chat says it. That's what the root script prevents.
 
 ```bash
 cd backend && npm run dev:local   # plain Node server on :3000, no Vercel login needed
-cd frontend && npm run dev        # Vite on :5173, proxies /api to :3000
+cd agent && npm run dev:local     # plain Node server on :3100, serves /api/chat only
+cd frontend && npm run dev        # Vite on :5173, proxies /api to :3000, /api/chat to :3100
 cd admin && npm run dev           # Vite on :5174, proxies /api to :3000
 ```
 
