@@ -7,6 +7,7 @@ import LoadError from '../components/LoadError.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
 import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
+import { allAnswered, clearOrphans, stepsFor } from '../lib/steps.js';
 
 const draftKey = (id) => `sahay:assessment-draft:${id}`;
 
@@ -22,21 +23,6 @@ function encouragement(step, total, followUpPending) {
   if (left <= 3) return `${left} to go.`;
   if (step / total >= 0.5) return 'Past halfway.';
   return 'No rush. You can stop and come back.';
-}
-
-// The PHQ-9 sheet gates its last question on "If you checked off any problems"
-// — i.e. at least one item answered above the floor of its own options. The
-// same gate lives in backend/lib/scoring.js; this one only decides whether the
-// question is put on screen.
-function asksFollowUp(instrument, answers) {
-  const followUp = instrument?.followUp;
-  if (!followUp) return false;
-  if (followUp.condition !== 'anyEndorsed') return true;
-  return instrument.items.some((item, i) => {
-    const answer = answers[i];
-    if (answer === null || answer === undefined) return false;
-    return answer > Math.min(...item.options.map((o) => o.value));
-  });
 }
 
 function Dots({ answers, current, onJump }) {
@@ -125,8 +111,10 @@ export default function AssessmentRun() {
         setAnswers(next);
         setFollowUpAnswer(restoredFollowUp);
         setResumed(Boolean(restored) && next.some((a) => a !== null));
-        const firstGap = next.findIndex((a) => a === null);
-        setStep(firstGap === -1 ? 0 : firstGap);
+        const openSteps = stepsFor(data.instrument, next).filter(
+          (st) => (st === count ? restoredFollowUp : next[st]) === null,
+        );
+        setStep(openSteps.length > 0 ? openSteps[0] : 0);
         setResult(null);
       })
       .catch(setError)
@@ -180,30 +168,31 @@ export default function AssessmentRun() {
       if (!instrument || result) return;
       setResumed(false);
 
-      // The follow-up lives past the last scored item and ends the sitting.
+      // The follow-up lives past the last question and ends the sitting.
       if (step === instrument.items.length) {
         setFollowUpAnswer(value);
         saveDraft(answers, value);
         clearTimeout(advanceRef.current);
         advanceRef.current = setTimeout(() => {
-          if (answers.every((a) => a !== null)) submit(answers, value);
+          if (allAnswered(instrument, answers)) submit(answers, value);
         }, 240);
         return;
       }
 
       setAnswers((prev) => {
-        const next = [...prev];
-        next[step] = value;
+        const withAnswer = [...prev];
+        withAnswer[step] = value;
+        // Changing this answer may have closed questions that were open, or
+        // opened ones that were not.
+        const next = clearOrphans(instrument, withAnswer);
         saveDraft(next, followUpAnswer);
 
         clearTimeout(advanceRef.current);
         advanceRef.current = setTimeout(() => {
-          if (step < next.length - 1) setStep(step + 1);
-          else if (!next.every((a) => a !== null)) return;
-          // A form that asks its follow-up only of people who endorsed
-          // something must not ask it of someone who endorsed nothing.
-          else if (asksFollowUp(instrument, next)) setStep(next.length);
-          else submit(next, null);
+          const steps = stepsFor(instrument, next);
+          const onward = steps.find((candidate) => candidate > step);
+          if (onward !== undefined) setStep(onward);
+          else if (allAnswered(instrument, next)) submit(next, null);
         }, 240);
 
         return next;
@@ -214,16 +203,23 @@ export default function AssessmentRun() {
 
   const followUp = instrument?.followUp || null;
   const itemCount = instrument ? instrument.items.length : 0;
-  const needsFollowUp = Boolean(instrument) && asksFollowUp(instrument, answers);
-  const lastStep = Math.max(0, itemCount - 1 + (needsFollowUp ? 1 : 0));
-  const onFollowUp = needsFollowUp && step === itemCount;
-  const item = onFollowUp ? followUp : instrument?.items[Math.min(step, itemCount - 1)];
+  const steps = useMemo(() => stepsFor(instrument, answers), [instrument, answers]);
+  const needsFollowUp = steps.includes(itemCount);
+  const position = steps.indexOf(step);
+  const onFollowUp = step === itemCount && needsFollowUp;
+  const item = onFollowUp ? followUp : instrument?.items[step];
 
-  // Going back and zeroing every item retracts the follow-up, so nobody should
-  // be left standing on a step that no longer exists.
+  // An answer can close the very step you are standing on — retracting a "yes"
+  // takes its follow-on questions away. Move to the next one that still
+  // exists rather than rendering a question that is no longer being asked.
+  const stepKey = steps.join(',');
   useEffect(() => {
-    if (instrument && step > lastStep) setStep(lastStep);
-  }, [instrument, step, lastStep]);
+    if (!instrument || steps.includes(step)) return;
+    const onward = steps.find((candidate) => candidate > step);
+    setStep(onward ?? steps[steps.length - 1] ?? 0);
+    // stepKey stands in for `steps`, which is a fresh array every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instrument, step, stepKey]);
 
   // Number keys pick an option, arrows move. Anyone filling in ten of these
   // will want them, and they cost nothing to anyone who does not.
@@ -238,23 +234,29 @@ export default function AssessmentRun() {
         choose(options[digit - 1].value);
         return;
       }
-      if (e.key === 'ArrowRight' && step < lastStep) setStep((s) => s + 1);
-      if (e.key === 'ArrowLeft' && step > 0) setStep((s) => s - 1);
+      if (e.key === 'ArrowRight' && position >= 0 && position < steps.length - 1) {
+        setStep(steps[position + 1]);
+      }
+      if (e.key === 'ArrowLeft' && position > 0) setStep(steps[position - 1]);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [instrument, result, step, item, lastStep, choose]);
+  }, [instrument, result, item, position, steps, choose]);
 
-  const answered = useMemo(() => answers.filter((a) => a !== null).length, [answers]);
-  const change = result
-    ? describeChange(result.score, previous, result.band.higherIsBetter)
-    : null;
+  // Counted over the questions being asked, not over the array: on a form
+  // that skips, "3 of 6" would be a number nobody can ever reach.
+  const askedItemSteps = steps.filter((st) => st !== itemCount);
+  const answered = askedItemSteps.filter((st) => answers[st] !== null).length;
+  const change =
+    result && !result.reportsBandOnly
+      ? describeChange(result.score, previous, result.band.higherIsBetter)
+      : null;
 
   if (!session) return null;
 
-  const complete = instrument && answered === itemCount;
-  // The follow-up gets a dot of its own once the form has decided to ask it.
-  const dots = needsFollowUp ? [...answers, followUpAnswer] : answers;
+  const complete = instrument && allAnswered(instrument, answers);
+  // One dot per step on the board, follow-up included once it is being asked.
+  const dots = steps.map((st) => (st === itemCount ? followUpAnswer : answers[st]));
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -291,9 +293,9 @@ export default function AssessmentRun() {
             </header>
 
             <div className="mt-6">
-              <Dots answers={dots} current={step} onJump={setStep} />
+              <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
               <p className="mt-3 text-[11px] text-[var(--color-muted)]">
-                {answered} of {instrument.items.length} answered
+                {answered} of {askedItemSteps.length} answered
               </p>
             </div>
 
@@ -370,12 +372,19 @@ export default function AssessmentRun() {
               {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
 
               <p className="mt-6 text-xs leading-relaxed text-[var(--color-muted)]">
-                {onFollowUp ? followUp.note : encouragement(step, itemCount, needsFollowUp)}
+                {onFollowUp
+                  ? followUp.note
+                  : encouragement(position, askedItemSteps.length, needsFollowUp)}
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                {step > 0 && (
-                  <Button variant="secondary" size="compact" className="w-auto px-5" onClick={() => setStep((s) => s - 1)}>
+                {position > 0 && (
+                  <Button
+                    variant="secondary"
+                    size="compact"
+                    className="w-auto px-5"
+                    onClick={() => setStep(steps[position - 1])}
+                  >
                     Back
                   </Button>
                 )}
@@ -459,15 +468,23 @@ export default function AssessmentRun() {
             </p>
 
             <div className="mt-6 flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:gap-9">
-              <ScoreRing
-                score={result.score}
-                maxScore={result.maxScore}
-                band={result.band}
-              />
+              {/* Some scales have no total worth showing. On the C-SSRS the
+                  sum genuinely misleads — two yeses at the top of the scale
+                  is a milder pattern than one yes near the bottom — so it
+                  reports the level and nothing that looks like a quantity. */}
+              {!result.reportsBandOnly && (
+                <ScoreRing
+                  score={result.score}
+                  maxScore={result.maxScore}
+                  band={result.band}
+                />
+              )}
 
               <div className="min-w-0 flex-1 text-center sm:text-left">
                 <span
-                  className="inline-block rounded-full px-3.5 py-1.5 text-xs"
+                  className={`inline-block rounded-full ${
+                    result.reportsBandOnly ? 'px-5 py-2.5 text-lg' : 'px-3.5 py-1.5 text-xs'
+                  }`}
                   style={{ background: bandTint(result.band), color: bandColor(result.band) }}
                 >
                   {result.band.label}

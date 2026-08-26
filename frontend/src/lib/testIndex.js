@@ -20,6 +20,15 @@ export const TEST_INDEX = [
     "wordingVerified": false
   },
   {
+    "id": "c-ssrs",
+    "name": "C-SSRS",
+    "fullName": "Columbia-Suicide Severity Rating Scale (Screener)",
+    "domain": "Safety",
+    "itemCount": 6,
+    "minutes": 2,
+    "wordingVerified": false
+  },
+  {
     "id": "phq-9",
     "name": "PHQ-9",
     "fullName": "Patient Health Questionnaire-9",

@@ -62,6 +62,7 @@ export default async function handler(req, res) {
       score: result.score,
       maxScore: result.maxScore,
       band: result.band,
+      reportsBandOnly: result.reportsBandOnly,
       subscales: result.subscales,
       followUp: result.followUp,
       // A crisis item is a flag on its own, independent of the total: someone

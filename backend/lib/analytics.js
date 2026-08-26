@@ -104,6 +104,7 @@ export function summarizeResident(resident, checkins, { detailed = false, assess
         score: mine[0].score,
         maxScore: mine[0].maxScore,
         band: mine[0].band,
+        reportsBandOnly: Boolean(mine[0].reportsBandOnly),
         followUp: mine[0].followUp || null,
         date: mine[0].date,
         createdAt: mine[0].createdAt,

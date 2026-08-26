@@ -68,7 +68,11 @@ function InstrumentCard({ instrument, last, index }) {
             className="shrink-0 rounded-xl px-2.5 py-1.5 text-center"
             style={{ background: bandTint(last.band), color: bandColor(last.band) }}
           >
-            <span className="num block text-lg leading-none">{last.score}</span>
+            {last.reportsBandOnly ? (
+              <span className="block text-xs leading-tight">{last.band.label}</span>
+            ) : (
+              <span className="num block text-lg leading-none">{last.score}</span>
+            )}
             <span className="mt-1 block text-[9px] opacity-80">{formatWhen(last.createdAt)}</span>
           </span>
         )}
@@ -78,7 +82,7 @@ function InstrumentCard({ instrument, last, index }) {
         <span>{instrument.itemCount} questions</span>
         <span aria-hidden="true">·</span>
         <span>~{instrument.minutes} min</span>
-        {last && (
+        {last && !last.reportsBandOnly && (
           <>
             <span aria-hidden="true">·</span>
             <span>last: {last.band.label}</span>

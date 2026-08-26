@@ -197,12 +197,20 @@ export const SCALES = {
       { value: 2, label: 'Bothered a lot' },
     ],
   },
-  // Three separate yes/no scales rather than one shared one: the prompt lives
+  // Four separate yes/no scales rather than one shared one: the prompt lives
   // on the scale, and these instruments ask their yes/no questions about very
   // different things. Sharing the scale would mean sharing the wrong preamble.
   asq: {
     id: 'asq',
     prompt: 'Answer yes or no. Being asked these questions does not plant the idea.',
+    options: [
+      { value: 0, label: 'No' },
+      { value: 1, label: 'Yes' },
+    ],
+  },
+  cssrs: {
+    id: 'cssrs',
+    prompt: 'Answer yes or no. Some of these ask about the past month, one about your whole life.',
     options: [
       { value: 0, label: 'No' },
       { value: 1, label: 'Yes' },
@@ -328,6 +336,90 @@ export const INSTRUMENTS = [
         max: 4,
         label: 'Positive screen',
         note: 'At least one yes. This is not a diagnosis and it is not a verdict on you — it means the right next step is a conversation with a counsellor, soon.',
+      },
+    ],
+  },
+  // The Columbia protocol's screener. Two things about it are unlike anything
+  // else in this file, and both are the instrument's design rather than ours:
+  //
+  //   1. ITS RISK LEVEL IS NOT A SUM. Yes to Q1 and Q2 is LOW risk; yes to Q5
+  //      alone is HIGH. Adding the items up would rank a person who has worked
+  //      out the details below a person who has had two passing thoughts. So
+  //      its bands carry `when` rules instead of a `max`, evaluated most
+  //      severe first — see bandFor() in scoring.js.
+  //   2. IT SKIPS. Q3-Q5 are only asked of someone who said yes to Q2, which
+  //      is why those items carry `dependsOn`. Asking someone who has had no
+  //      thoughts of suicide whether they have worked out the details is not
+  //      thoroughness, it is not listening.
+  //
+  // LICENCE, and it is not the usual one: the C-SSRS is copyrighted by the
+  // Research Foundation for Mental Hygiene. It is free for non-profit,
+  // healthcare, education and research use, but unlike the ASQ that use has
+  // to be REQUESTED from the Columbia Lighthouse Project first. Do that before
+  // this goes near real students.
+  {
+    id: 'c-ssrs',
+    name: 'C-SSRS',
+    fullName: 'Columbia-Suicide Severity Rating Scale (Screener)',
+    domain: 'Safety',
+    blurb: 'The Columbia protocol. Six questions, and it stops early if it can.',
+    minutes: 2,
+    scale: 'cssrs',
+    license:
+      '© Research Foundation for Mental Hygiene, Inc. Free for non-profit, healthcare and research use — but permission must be requested from the Columbia Lighthouse Project (cssrs.columbia.edu) first',
+    citation: 'Posner et al. (2011), Am J Psychiatry 168(12):1266-77',
+    wordingVerified: false,
+    // Its total is not a quantity of anything. Showing "2 / 6" next to a
+    // triage level would invite exactly the reading the scale is built to
+    // prevent, so the app reports the level and nothing else.
+    reportsBandOnly: true,
+    crisisItems: [0, 1, 2, 3, 4, 5],
+    crisisMessage:
+      'You answered yes to at least one of these. Thank you for saying so. Please talk to someone today — a counsellor, someone you trust, or one of these numbers.',
+    items: [
+      { text: 'In the past month, have you wished you were dead or wished you could go to sleep and not wake up?' },
+      { text: 'In the past month, have you actually had any thoughts of killing yourself?' },
+      // The protocol's skip: only asked after a yes to the question above.
+      { text: 'Have you been thinking about how you might do this?', dependsOn: 1 },
+      { text: 'Have you had these thoughts and had some intention of acting on them?', dependsOn: 1 },
+      { text: 'Have you started to work out or worked out the details of how to kill yourself? Do you intend to carry out this plan?', dependsOn: 1 },
+      { text: 'Have you ever done anything, started to do anything, or prepared to do anything to end your life?' },
+    ],
+    // Asked only after a yes to the behaviour question, because it is the
+    // recency of that behaviour that separates moderate risk from high.
+    followUp: {
+      id: 'recency',
+      condition: { afterItem: 5 },
+      text: 'Was this within the past three months?',
+      note: 'Not counted toward anything. It is asked because when something happened changes what should happen next.',
+      options: [
+        { value: 0, label: 'No' },
+        { value: 1, label: 'Yes' },
+      ],
+    },
+    // Mildest first, so band.index keeps the same meaning it has everywhere
+    // else in the app. Matching runs in reverse — most severe wins.
+    bands: [
+      {
+        when: [],
+        label: 'No screen triggered',
+        note: 'You answered no throughout. Nothing here needs acting on today, and this is here any time that changes.',
+      },
+      {
+        when: [{ items: [0, 1] }],
+        label: 'Low risk',
+        note: 'Thoughts, without a plan or intent behind them. That is worth telling a counsellor about — it is also very common and very survivable.',
+      },
+      {
+        when: [{ items: [2] }, { items: [5] }],
+        label: 'Moderate risk',
+        note: 'Either you have thought about how, or something has happened in the past. Please speak to a counsellor about this rather than carrying it alone.',
+      },
+      {
+        when: [{ items: [3, 4] }, { items: [5], followUp: 1 }],
+        crisisLevel: 'acute',
+        label: 'High risk',
+        note: 'This level means intent, a worked-out plan, or something recent. Please do not wait for an appointment — talk to someone today, using the numbers on this screen.',
       },
     ],
   },
@@ -960,6 +1052,9 @@ export function resolveItems(instrument) {
     index,
     text: item.text,
     reverse: Boolean(item.reverse),
+    // Index of the item that has to be endorsed before this one is asked at
+    // all; null for the overwhelming majority that are always asked.
+    dependsOn: item.dependsOn ?? null,
     options: item.options || scale.options,
   }));
 }
@@ -1001,6 +1096,7 @@ export function catalog() {
     minutes: i.minutes,
     itemCount: i.items.length,
     higherIsBetter: Boolean(i.higherIsBetter),
+    reportsBandOnly: Boolean(i.reportsBandOnly),
     license: i.license,
     citation: i.citation,
     wordingVerified: i.wordingVerified,
@@ -1017,6 +1113,7 @@ export function instrumentDetail(instrument) {
     blurb: instrument.blurb,
     minutes: instrument.minutes,
     prompt: scale ? scale.prompt : null,
+    reportsBandOnly: Boolean(instrument.reportsBandOnly),
     higherIsBetter: Boolean(instrument.higherIsBetter),
     license: instrument.license,
     citation: instrument.citation,

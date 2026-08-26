@@ -13,7 +13,7 @@
 //   3. a dossier states a range that the instrument cannot actually produce.
 
 import assert from 'node:assert/strict';
-import { INSTRUMENTS, resolveItems } from '../lib/instruments.js';
+import { INSTRUMENTS, resolveItems, resolveFollowUp } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 import { TEST_NOTES } from '../../frontend/src/lib/testNotes.js';
 import { TEST_INDEX } from '../../frontend/src/lib/testIndex.js';
@@ -90,7 +90,22 @@ function statedRange(text) {
   return match ? [Number(match[1]), Number(match[2])] : null;
 }
 
+// Some instruments are not read by their total at all. The C-SSRS sorts people
+// into triage levels by the PATTERN of answers — two yeses at the top of the
+// scale is low risk, one yes to the plan question is high — so it declares its
+// bands as rules rather than thresholds, and a "0-6" in its dossier would be
+// describing a number nobody should be reading.
+//
+// Probing it the way achievableRange() does cannot work either: that helper
+// moves one item at a time from a floor sheet, and on an instrument with skip
+// logic most of those sheets are not answerable in the first place.
+//
+// So rule-banded instruments get a different, and stronger, check below: every
+// band they declare has to be reachable by some real set of answers.
+const ruleBanded = (instrument) => instrument.bands.some((b) => b.when);
+
 for (const instrument of INSTRUMENTS) {
+  if (ruleBanded(instrument)) continue;
   const note = TEST_NOTES[instrument.id];
   const stated = statedRange(note.range);
   assert.ok(stated, `${instrument.id}: could not read a range out of "${note.range}"`);
@@ -101,6 +116,56 @@ for (const instrument of INSTRUMENTS) {
     [lo, hi],
     `${instrument.id}: dossier says ${note.range} but the instrument scores ${lo}-${hi}`,
   );
+}
+
+// ------------------------------------------------------ every band reachable
+// A band nobody can land in is a bug that no amount of reading catches: the
+// rules are ordered and overlapping, so one clause quietly shadowing another
+// is an easy mistake and an invisible one. These instruments are small enough
+// to answer exhaustively, so answer them exhaustively.
+function everySheet(instrument) {
+  const items = resolveItems(instrument);
+  const sheets = [[]];
+  for (const item of items) {
+    const next = [];
+    for (const partial of sheets) {
+      for (const option of item.options) next.push([...partial, option.value]);
+    }
+    sheets.length = 0;
+    sheets.push(...next);
+  }
+
+  // Blank out anything the instrument would not have asked, so each sheet is
+  // one a real sitting could actually produce.
+  return sheets.map((sheet) =>
+    sheet.map((value, i) => {
+      const dependsOn = items[i].dependsOn;
+      if (dependsOn == null) return value;
+      const parentFloor = Math.min(...items[dependsOn].options.map((o) => o.value));
+      return sheet[dependsOn] > parentFloor ? value : null;
+    }),
+  );
+}
+
+for (const instrument of INSTRUMENTS.filter(ruleBanded)) {
+  const followUp = resolveFollowUp(instrument);
+  const followUpValues = [null, ...(followUp ? followUp.options.map((o) => o.value) : [])];
+  const reached = new Set();
+
+  for (const sheet of everySheet(instrument)) {
+    for (const followUp of followUpValues) {
+      const result = scoreInstrument(instrument, sheet, followUp);
+      if (result.error) continue;
+      reached.add(result.band.label);
+    }
+  }
+
+  for (const band of instrument.bands) {
+    assert.ok(
+      reached.has(band.label),
+      `${instrument.id}: no set of answers produces the "${band.label}" band — a rule above it is shadowing it`,
+    );
+  }
 }
 
 // ---------------------------------------------------- generated index sync

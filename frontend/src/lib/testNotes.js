@@ -47,6 +47,32 @@ export const TEST_NOTES = {
     ],
   },
 
+  'c-ssrs': {
+    range: 'No meaningful total — four triage levels instead',
+    cutoffs:
+      'Yes to Q1 or Q2 is low · Q3 is moderate · Q4 or Q5 is high · past behaviour is moderate, or high if it was within three months',
+    measures:
+      'Six questions covering thoughts of being dead, thoughts of suicide, and then — only if you said yes to that second one — whether you have thought about how, whether there was any intention behind it, and whether you have worked out a plan. The last question asks whether you have ever acted on any of it.',
+    origin:
+      'Developed by Posner and colleagues at Columbia University and published in 2011. It became the standard suicide-risk instrument in clinical trials and emergency departments largely because it separates thinking about suicide from planning it and from acting on it, which earlier scales tended to blur together.',
+    reading:
+      'Read the level, not the number of yeses. This is the one questionnaire in this app where adding the answers up would actively mislead: two yeses at the top of the scale is a low-risk pattern, while a single yes to the plan question is a high-risk one. The scale is built around that distinction and the app scores it that way.',
+    limits:
+      'It sorts people into levels of concern. It does not predict, and cannot: the honest state of the evidence is that no instrument identifies which individual will act, and the C-SSRS is no exception despite how widely it is used. Its real value is that it makes the conversation specific — what kind of thought, how far it went — rather than leaving it at "are you okay".',
+    watch:
+      'The questions narrow deliberately. If you say no to having had thoughts of killing yourself, it does not go on to ask how you would do it — that skip is part of the instrument, not the app cutting things short.',
+    sources: [
+      {
+        label: 'Posner, K. et al. (2011). Am J Psychiatry 168(12), 1266–1277.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/22193671/',
+      },
+      {
+        label: 'The Columbia Lighthouse Project — the official protocol, and where use has to be requested.',
+        url: 'https://cssrs.columbia.edu/',
+      },
+    ],
+  },
+
   // ---------------------------------------------------------- mood/anxiety
   'phq-9': {
     range: '0–27',

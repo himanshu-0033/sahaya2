@@ -336,8 +336,9 @@ export default function ResidentDetail() {
                 Most recent: {data.summary.lastAssessment.instrumentName} —{' '}
                 <span className="text-[var(--color-ink)]">
                   {data.summary.lastAssessment.band.label}
-                </span>{' '}
-                ({data.summary.lastAssessment.score}/{data.summary.lastAssessment.maxScore})
+                </span>
+                {!data.summary.lastAssessment.reportsBandOnly &&
+                  ` (${data.summary.lastAssessment.score}/${data.summary.lastAssessment.maxScore})`}
                 {data.summary.lastAssessment.followUp &&
                   ` · day-to-day ${data.summary.lastAssessment.followUp.label.toLowerCase()}`}
                 {' · '}
@@ -368,8 +369,16 @@ export default function ResidentDetail() {
                           <span className="ml-2 text-xs text-[var(--color-muted)]">{a.domain}</span>
                         </td>
                         <td className="whitespace-nowrap px-5 py-3">
-                          {a.score}
-                          <span className="text-xs text-[var(--color-muted)]">/{a.maxScore}</span>
+                          {/* The C-SSRS has no total worth reading — its level
+                              comes from the pattern of answers, not the sum. */}
+                          {a.reportsBandOnly ? (
+                            <span className="text-xs text-[var(--color-muted)]">Triage only</span>
+                          ) : (
+                            <>
+                              {a.score}
+                              <span className="text-xs text-[var(--color-muted)]">/{a.maxScore}</span>
+                            </>
+                          )}
                         </td>
                         <td className="px-5 py-3">
                           <span className="text-[var(--color-ink-soft)]">{a.band.label}</span>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
+import LoadError from '../components/LoadError.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
 import { getSession } from '../lib/session.js';
@@ -35,6 +36,25 @@ function greeting() {
   return 'Late one';
 }
 
+// The primary card while we do not yet know whether today has been checked in.
+// Rendering the "Start check-in" card during the request and flipping it a
+// moment later is the flicker that reads as a broken screen — and on a slow
+// connection it is long enough to tap the wrong thing. Same footprint as the
+// real card, so nothing moves when the answer arrives.
+function PrimarySkeleton() {
+  return (
+    <div className="card p-6 sm:p-8" role="status">
+      <span className="sr-only">Checking whether you have checked in today…</span>
+      <div aria-hidden="true">
+        <div className="h-2.5 w-16 rounded-full bg-white/10" />
+        <div className="mt-5 h-7 w-3/4 rounded-lg bg-white/[0.07]" />
+        <div className="mt-3 h-7 w-1/2 rounded-lg bg-white/[0.07]" />
+        <div className="mt-6 h-9 w-36 rounded-full bg-white/10" />
+      </div>
+    </div>
+  );
+}
+
 export default function Landing() {
   const navigate = useNavigate();
   const [session, setSession] = useState(() => getSession());
@@ -42,24 +62,36 @@ export default function Landing() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
-  const [status, setStatus] = useState({ loading: false, checkedIn: false, record: null, error: null });
+  // The profile *load* failing and the profile *save* failing are different
+  // things: one is "we could not reach the server", the other is a message the
+  // server sent back about the form. They were sharing one string, which is why
+  // a network drop rendered as raw red text where the account form should be.
+  const [loadError, setLoadError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  // `checkedIn: null` means NOT KNOWN YET — distinct from `false`, which is a
+  // real answer from the server. Collapsing the two is what made a failed
+  // request tell someone who had checked in that they had not.
+  const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, error: null });
   const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     if (!session) return;
     setProfileLoading(true);
+    setLoadError(null);
     getProfile()
       .then((data) => setProfile(data.profile))
-      .catch((err) => setProfileError(err.message))
+      .catch((err) => setLoadError(err))
       .finally(() => setProfileLoading(false));
-  }, [session]);
+  }, [session, reloadKey]);
 
   useEffect(() => {
     if (!session || !profile?.onboarded) return;
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
-      .catch((err) => setStatus({ loading: false, checkedIn: false, record: null, error: err.message }));
+      // Not `checkedIn: false` — we do not know. The card renders an unknown
+      // state rather than asserting something that may be wrong.
+      .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, error: err }));
     // The grounding streak is the one number worth putting on the home screen.
     // A failure here is not worth surfacing — it just means no streak badge.
     getGroundingCatalog()
@@ -86,11 +118,21 @@ export default function Landing() {
     );
   }
 
-  if (profileError && !profile) {
+  // Home is the one screen that used to render a raw error string in bare red
+  // on an otherwise empty page — the app's front door, and the only place not
+  // using the component that every other page uses. LoadError knows the
+  // difference between offline and refused, retries the offline case on its
+  // own, and says so in words a student can act on.
+  if (loadError && !profile) {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#07080a] px-6 text-center text-red-300">
-        Couldn't reach the server: {profileError}
-      </div>
+      <PageShell section="home">
+        <Header eyebrow="Home" />
+        <LoadError
+          error={loadError}
+          retrying={profileLoading}
+          onRetry={() => setReloadKey((k) => k + 1)}
+        />
+      </PageShell>
     );
   }
 
@@ -123,7 +165,9 @@ export default function Landing() {
 
       {/* --------------------------------------------------- primary action */}
       <div className="animate-slide-up stack-block" style={{ animationDelay: '80ms' }}>
-        {status.checkedIn ? (
+        {status.loading ? (
+          <PrimarySkeleton />
+        ) : status.checkedIn ? (
           <Link
             to="/results"
             state={{ record: status.record }}
@@ -174,6 +218,19 @@ export default function Landing() {
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </span>
+
+              {/* The honest version of the unknown case. The offer still
+                  stands — you can always check in — but the card no longer
+                  implies you have not already done it. Starting again costs
+                  nothing: the API returns today's existing record rather than
+                  writing a second one. */}
+              {status.error && (
+                <p className="mt-4 max-w-sm text-xs leading-relaxed text-[var(--color-muted)]">
+                  We couldn&apos;t reach the server, so we can&apos;t tell whether today is already
+                  done. Opening it again is safe — if you have checked in, you&apos;ll just get
+                  today&apos;s pass back.
+                </p>
+              )}
             </div>
           </Link>
         )}
@@ -257,12 +314,6 @@ export default function Landing() {
           </div>
         </Link>
       </div>
-
-      {status.error && (
-        <p className="mt-6 text-sm text-[var(--color-flag)]">
-          Couldn't reach the server — you can still check in, it will save once you're back online.
-        </p>
-      )}
 
       <div className="rule-fade stack-section" />
 

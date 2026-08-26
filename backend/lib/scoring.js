@@ -37,9 +37,47 @@ function maxScore(items, transform) {
   return applyTransform(sum, items.length, transform);
 }
 
-function bandFor(instrument, score) {
-  const index = instrument.bands.findIndex((b) => score <= b.max);
-  return index === -1 ? instrument.bands.length - 1 : index;
+// Whether an item is asked at all. The C-SSRS only asks about method, intent
+// and plan of someone who has said yes to having thoughts of suicide; the
+// rest of the battery asks everything of everyone.
+function isAsked(item, items, answers) {
+  if (item.dependsOn == null) return true;
+  const parent = items[item.dependsOn];
+  return answers[item.dependsOn] > bounds(parent.options).min;
+}
+
+// Does one `when` clause hold? A clause matches if ANY of its items was
+// endorsed, and — where it names one — the follow-up reached its value.
+function clauseHolds(clause, items, answers, followUpValue) {
+  const endorsed = (clause.items || []).some(
+    (i) => isAsked(items[i], items, answers) && answers[i] > bounds(items[i].options).min,
+  );
+  if ((clause.items || []).length > 0 && !endorsed) return false;
+  if (clause.followUp != null && !(followUpValue >= clause.followUp)) return false;
+  return true;
+}
+
+// Two ways to land in a band.
+//
+// The usual one is a threshold on the total, and it is what almost every
+// instrument here uses. The other is a set of rules, because some scales do
+// not rank by sum at all: on the C-SSRS, yes to Q1 and Q2 is low risk while
+// yes to Q5 alone is high, and no arrangement of thresholds expresses that.
+// Rule-based bands are listed mildest first, like every other band table, and
+// matched in reverse so the most severe rule that holds is the one that wins.
+function bandFor(instrument, score, items, answers, followUpValue) {
+  const ruled = instrument.bands.some((b) => b.when);
+  if (!ruled) {
+    const index = instrument.bands.findIndex((b) => score <= b.max);
+    return index === -1 ? instrument.bands.length - 1 : index;
+  }
+
+  for (let i = instrument.bands.length - 1; i >= 0; i -= 1) {
+    const clauses = instrument.bands[i].when;
+    if (clauses.length === 0) return i; // the catch-all
+    if (clauses.some((c) => clauseHolds(c, items, answers, followUpValue))) return i;
+  }
+  return 0;
 }
 
 // Some instruments publish sub-scores as well as a total — the MSPSS splits
@@ -65,6 +103,19 @@ function anyEndorsed(items, answers) {
   return items.some((item, index) => answers[index] > bounds(item.options).min);
 }
 
+// Two gates a form can put on its trailing question: the PHQ-9's "if you
+// checked off any problems", and the C-SSRS's narrower "only if you said yes
+// to that specific one".
+function conditionMet(condition, items, answers) {
+  if (!condition) return true;
+  if (condition === 'anyEndorsed') return anyEndorsed(items, answers);
+  if (condition.afterItem != null) {
+    const i = condition.afterItem;
+    return answers[i] > bounds(items[i].options).min;
+  }
+  return true;
+}
+
 // The unscored trailing question. It is validated like an item and then kept
 // entirely out of the arithmetic — no sum, no band, no transform.
 //
@@ -80,7 +131,7 @@ function resolveFollowUpAnswer(instrument, items, answers, value) {
 
   const option = followUp.options.find((o) => o.value === value);
   if (!option) return { error: 'the follow-up answer is not one of the allowed options' };
-  if (followUp.condition === 'anyEndorsed' && !anyEndorsed(items, answers)) {
+  if (!conditionMet(followUp.condition, items, answers)) {
     // One exception, and it only ever goes one way: never discard a
     // disclosure of imminent risk on the grounds that the gate which would
     // have asked for it was not met.
@@ -103,11 +154,11 @@ function resolveFollowUpAnswer(instrument, items, answers, value) {
 //
 // `itemIndex` and `value` are kept for the first hit so this stays readable
 // to anything written against the single-item shape.
-function crisisFor(instrument, items, answers, followUpValue) {
+function crisisFor(instrument, items, answers, followUpValue, band) {
   const indices = instrument.crisisItems || (instrument.crisisItem != null ? [instrument.crisisItem] : []);
 
   const hits = indices
-    .filter((i) => answers[i] > bounds(items[i].options).min)
+    .filter((i) => isAsked(items[i], items, answers) && answers[i] > bounds(items[i].options).min)
     .map((i) => ({
       index: i,
       value: answers[i],
@@ -116,13 +167,20 @@ function crisisFor(instrument, items, answers, followUpValue) {
     }));
 
   const followUp = followUpDef(instrument);
-  const acute =
+  // Two routes to acute. The ASQ gets there through its "right now" question;
+  // the C-SSRS gets there by landing in a band that says so, because on that
+  // scale the severity is in the pattern of answers rather than any one of
+  // them.
+  const acuteAnswer =
     followUp?.crisisValue != null && followUpValue != null && followUpValue >= followUp.crisisValue;
+  const acuteBand = band?.crisisLevel === 'acute';
+  const acute = acuteAnswer || acuteBand;
 
   if (hits.length === 0 && !acute) return null;
 
   const reasons = hits.map((h) => `Answered "${h.label}" to: ${h.text}`);
-  if (acute) reasons.unshift(`Answered "${followUp.options.find((o) => o.value === followUpValue)?.label}" to: ${followUp.text}`);
+  if (acuteAnswer) reasons.unshift(`Answered "${followUp.options.find((o) => o.value === followUpValue)?.label}" to: ${followUp.text}`);
+  if (acuteBand) reasons.unshift(`${instrument.name} triage: ${band.label}`);
 
   return {
     // 'acute' means right now. Everything downstream — the resident's screen,
@@ -147,6 +205,17 @@ export function scoreInstrument(instrument, answers, followUpValue = null) {
 
   for (const [index, item] of items.entries()) {
     const value = answers[index];
+
+    // An item the form skipped arrives empty, or at worst as its own "no".
+    // The property worth protecting is narrow and specific: nobody can be
+    // recorded as having endorsed a question they were never shown.
+    if (!isAsked(item, items, answers)) {
+      if (value != null && value > bounds(item.options).min) {
+        return { error: `answer ${index + 1} was not asked and cannot be endorsed` };
+      }
+      continue;
+    }
+
     if (typeof value !== 'number' || !Number.isFinite(value)) {
       return { error: `answer ${index + 1} is missing` };
     }
@@ -158,19 +227,25 @@ export function scoreInstrument(instrument, answers, followUpValue = null) {
   const followUp = resolveFollowUpAnswer(instrument, items, answers, followUpValue);
   if (followUp.error) return { error: followUp.error };
 
-  const sum = items.reduce((total, item, index) => total + itemScore(item, answers[index]), 0);
+  const followUpValueUsed = followUp.answer ? followUp.answer.value : null;
+  const sum = items.reduce(
+    (total, item, index) => (isAsked(item, items, answers) ? total + itemScore(item, answers[index]) : total),
+    0,
+  );
   const score = applyTransform(sum, items.length, instrument.transform);
-  const bandIndex = bandFor(instrument, score);
+  const bandIndex = bandFor(instrument, score, items, answers, followUpValueUsed);
   const band = instrument.bands[bandIndex];
 
   // A crisis answer routes into the same path as a free-text disclosure — a
   // number on its own is not something to quietly file.
-  const crisis = crisisFor(instrument, items, answers, followUp.answer ? followUp.answer.value : null);
+  const crisis = crisisFor(instrument, items, answers, followUpValueUsed, band);
 
   return {
     raw: sum,
     score,
     maxScore: maxScore(items, instrument.transform),
+    // True where the total is not a quantity and must not be shown as one.
+    reportsBandOnly: Boolean(instrument.reportsBandOnly),
     band: {
       label: band.label,
       note: band.note,
