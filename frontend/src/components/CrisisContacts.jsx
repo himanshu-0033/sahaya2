@@ -36,15 +36,43 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           Need help right now? Crisis contacts
         </button>
       ) : (
+        /* The most important control in the product, and until now the one with
+           the least weight on the page: a small underlined text link, the same
+           treatment as a footnote.
+
+           It is now a filled pill with an icon and a 44px target. It still sits
+           at the edge of the screen rather than in the tab bar, because it is an
+           interruption and not a destination — but at the edge it has to be
+           unmistakable, or being at the edge just means being missed. Every
+           screen that used variant="link" gets this without changing. */
         <button
           onClick={() => setOpen(true)}
-          className={
+          aria-haspopup="dialog"
+          className={`press inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
             dark
-              ? 'text-sm text-red-300/90 underline underline-offset-4 hover:text-red-300'
-              : 'text-sm text-[var(--color-flag)] underline underline-offset-4 decoration-[var(--color-flag-soft)] hover:text-[var(--color-flag)]/80'
-          }
+              ? 'border border-red-400/45 bg-red-500/15 text-red-200 hover:bg-red-500/25'
+              : 'border border-[var(--color-flag)]/45 bg-[var(--color-flag-soft)] text-[var(--color-flag)] hover:bg-[var(--color-flag)]/22'
+          }`}
         >
-          Need help now?
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="shrink-0"
+          >
+            {/* A lifebuoy: a ring with four spokes. Reads as rescue at 16px,
+                where a telephone reads as "call us about your account". */}
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="3.6" />
+            <path d="m5.6 5.6 3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9" />
+          </svg>
+          Need help now
         </button>
       )}
 

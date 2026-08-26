@@ -69,24 +69,49 @@ export async function requireGoogleUser(req, res) {
   }
 }
 
-export async function requireCaregiverUser(req, res) {
-  const user = await requireGoogleUser(req, res);
-  if (!user) return null;
-
-  const allowlist = (process.env.CAREGIVER_EMAILS || '')
+function parseAllowlist(raw) {
+  return (raw || '')
     .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
+}
+
+// The allowlist answers one question only: may this person open a staff
+// console at all. It does NOT decide whose data they see — that is a separate
+// consent gate on each resident's own record, in lib/sharing.js.
+//
+// An unset allowlist now FAILS CLOSED. It used to return the user, on the
+// reasoning that an unconfigured deployment was a local prototype. That is
+// true right up until it isn't: one missing environment variable on a real
+// deployment silently handed the console, and every resident's mood history
+// and risk screens in it, to anybody who could sign in. A prototype that
+// refuses to open until it is configured costs a developer thirty seconds;
+// the other failure has no floor.
+function requireAllowlisted(user, res, { raw, roleLabel, envLabel }) {
+  const allowlist = parseAllowlist(raw);
 
   if (allowlist.length === 0) {
-    // No allowlist configured — open for local/dev prototyping.
-    return user;
+    res.status(403).json({
+      error: `The ${roleLabel} console is not configured. Set ${envLabel} on the server to the addresses allowed to open it.`,
+    });
+    return null;
   }
   if (allowlist.includes((user.email || '').toLowerCase())) {
     return user;
   }
-  res.status(403).json({ error: `${user.email || 'This account'} is not on the caregiver allowlist` });
+  res.status(403).json({ error: `${user.email || 'This account'} is not on the ${roleLabel} allowlist` });
   return null;
+}
+
+export async function requireCaregiverUser(req, res) {
+  const user = await requireGoogleUser(req, res);
+  if (!user) return null;
+
+  return requireAllowlisted(user, res, {
+    raw: process.env.CAREGIVER_EMAILS,
+    roleLabel: 'caregiver',
+    envLabel: 'CAREGIVER_EMAILS',
+  });
 }
 
 // The counsellor/admin console is a separate app with its own allowlist.
@@ -96,19 +121,9 @@ export async function requireAdminUser(req, res) {
   const user = await requireGoogleUser(req, res);
   if (!user) return null;
 
-  const raw = process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS || '';
-  const allowlist = raw
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (allowlist.length === 0) {
-    // No allowlist configured — open for local/dev prototyping.
-    return user;
-  }
-  if (allowlist.includes((user.email || '').toLowerCase())) {
-    return user;
-  }
-  res.status(403).json({ error: `${user.email || 'This account'} is not on the counsellor allowlist` });
-  return null;
+  return requireAllowlisted(user, res, {
+    raw: process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS,
+    roleLabel: 'counsellor',
+    envLabel: 'ADMIN_EMAILS',
+  });
 }

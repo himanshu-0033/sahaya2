@@ -13,7 +13,7 @@ import CrisisContacts from './CrisisContacts.jsx';
 
 export default function Header({ eyebrow = 'Daily check-in' }) {
   return (
-    <header className="flex items-end justify-between gap-4 pt-2 pb-1">
+    <header className="flex items-center justify-between gap-4 pt-2 pb-1">
       <Link to="/" className="press group block">
         <span className="font-display block text-[1.35rem] leading-none">
           Sahay<span className="text-[var(--color-teal)]">.</span>

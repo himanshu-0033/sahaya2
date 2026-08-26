@@ -186,10 +186,24 @@ export default function Landing() {
                 That's today done.
               </p>
               <p className="mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
-                Your thought and dinner pass are still here whenever you want them.
+                Your thought for the day is still here whenever you want it.
               </p>
+
+              {/* The streak, in the slot the dinner pass used to justify. It
+                  is the reason to come back tomorrow, so it belongs on the
+                  card that says today is finished — not three sections down. */}
+              {status.record?.streak > 0 && (
+                <p className="mt-4 flex items-baseline gap-2">
+                  <span className="num text-2xl text-[var(--color-lavender)]">
+                    {status.record.streak}
+                  </span>
+                  <span className="text-sm text-[var(--color-ink-soft)]">
+                    day{status.record.streak === 1 ? '' : 's'} checked in, in a row
+                  </span>
+                </p>
+              )}
               <span className="mt-5 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
-                View today's pass
+                See today's thought
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -210,7 +224,7 @@ export default function Landing() {
                 three words.
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                Thirty seconds. Then your thought for the day and a dinner pass.
+                Thirty seconds. Then a thought for the day, and one more day on your streak.
               </p>
               <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-[#07080a]">
                 Start check-in
@@ -228,7 +242,7 @@ export default function Landing() {
                 <p className="mt-4 max-w-sm text-xs leading-relaxed text-[var(--color-muted)]">
                   We couldn&apos;t reach the server, so we can&apos;t tell whether today is already
                   done. Opening it again is safe — if you have checked in, you&apos;ll just get
-                  today&apos;s pass back.
+                  today&apos;s thought back.
                 </p>
               )}
             </div>
@@ -238,12 +252,25 @@ export default function Landing() {
 
       {/* --------------------------------------------------------- right now */}
       <section className="animate-slide-up stack-section" style={{ animationDelay: '150ms' }}>
+        {/* This used to be headed "Right now, I feel…", which promised a mood
+            picker and delivered a triage menu — four negative states and no
+            way to say you were fine. Four separate reviewers read it as a
+            broken mood tracker and told us it was harmful; the real mood scale
+            (Heavy → Bright) is in the check-in and always was.
+
+            The fix is the label, not the options. Tapping "Good" here would
+            have to launch a panic practice, which is nonsense. Named for what
+            it does — a shortcut into help — it stops pretending to be a
+            feelings picker and starts reading as an offer. */}
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-xl">Right now, I feel…</h2>
+          <h2 className="font-display text-xl">Need something right now?</h2>
           <Link to="/grounding" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
             all 13
           </Link>
         </div>
+        <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+          Straight into a practice — no list to read first.
+        </p>
         {/* Two columns on a phone, four on a tablet up. Straight into the
             practice — no intermediate list to read while panicking. */}
         <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -251,15 +278,18 @@ export default function Landing() {
             <Link
               key={q.mood}
               to={q.to}
-              className="card press p-4"
+              className="card press relative overflow-hidden p-4 pl-5"
               style={{ animationDelay: `${180 + i * 40}ms` }}
             >
-              <span className="flex items-center gap-2 text-sm font-medium">
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ background: q.hue }}
-                />
+              {/* Was a 6px dot, which reviewers called invisible and were right
+                  about. A full-height edge stripe carries the same colour
+                  coding at a size a thumb can aim at and an eye can catch. */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-y-0 left-0 w-[3px]"
+                style={{ background: q.hue }}
+              />
+              <span className="block text-sm font-medium" style={{ color: q.hue }}>
                 {q.label}
               </span>
               <span className="mt-1 block text-xs text-[var(--color-muted)]">tap to start</span>
@@ -321,9 +351,14 @@ export default function Landing() {
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
           Sahaya is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
-        <Link to="/caregiver" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
-          Caregiver access
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to="/account" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
+            Who can see this
+          </Link>
+          <Link to="/caregiver" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
+            Caregiver access
+          </Link>
+        </div>
       </footer>
     </PageShell>
   );

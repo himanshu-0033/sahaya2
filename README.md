@@ -2,7 +2,7 @@
 
 A wellness check-in prototype: a resident looks at three abstract "plates,"
 types the first word each brings to mind, taps a mood, and gets a short
-affirming thought plus a dinner pass. A separate counsellor console surfaces
+affirming thought and one more day on their streak. A separate counsellor console surfaces
 residents whose recent check-ins look worth a real conversation, using a
 plain rule-based heuristic — not a diagnosis.
 
@@ -15,7 +15,8 @@ Independently deployable modules:
 
 ```
 frontend/   React + Vite + Tailwind — the resident UI (and a light caregiver view)
-            Five tabs: Home, Paths, Calm, Tests, Inkblot. Shared shell in
+            Three tabs: Home, Calm, More — the daily loop gets the bar, and
+            paths/questionnaires/reading/inkblot sit one tap deeper. Shared shell in
             components/PageShell.jsx; one card treatment (.card) and a four-step
             vertical rhythm (.stack-*) live in src/index.css.
 admin/      React + Vite + Tailwind — the counsellor/admin console, its own window
@@ -45,7 +46,7 @@ window of the same browser), and it never ships resident-facing code.
   app additionally asks for phone/DOB/address/occupation once via the
   account form, since auth alone doesn't cover those.
 - **Check-in**: a resident types one word per plate + taps a mood (1–5).
-  The backend stores it, generates a `SH-MMDD-XXXX` dinner-pass code, and
+  The backend stores it, returns the resident's check-in streak, and
   picks a short "thought for today" deterministically from the resident's
   id + date (same thought all day, varies day to day).
 - **Flagging**: a check-in (and the resident) gets flagged if mood has been

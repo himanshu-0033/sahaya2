@@ -148,6 +148,27 @@ export function saveProfile(profile) {
   });
 }
 
+// Sharing. Only the resident's own session can call these — the server writes
+// to the record belonging to the signed-in user and nothing else, so there is
+// no residentId to pass.
+export function getSharing() {
+  return request('/api/sharing');
+}
+
+export function shareWith(email) {
+  return request('/api/sharing', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function stopSharingWith(email) {
+  return request('/api/sharing', {
+    method: 'DELETE',
+    body: JSON.stringify({ email }),
+  });
+}
+
 export function getCaregiverResidents() {
   return request('/api/caregiver/residents');
 }

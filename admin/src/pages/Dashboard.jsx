@@ -30,6 +30,11 @@ export default function Dashboard() {
     data;
   const maxMoodCount = Math.max(1, ...moodDistribution.map((m) => m.count));
 
+  // Every figure below is scoped to the people who have shared with this
+  // counsellor. When that is nobody, a wall of zeros looks like an outage — so
+  // say what it actually means before showing the tiles.
+  const nobodyShared = totals.onboarded === 0 && totals.flaggedResidents === 0;
+
   return (
     <div className="animate-fade-up space-y-8">
       <div>
@@ -39,6 +44,17 @@ export default function Dashboard() {
           checked in.
         </p>
       </div>
+
+      {nobodyShared && (
+        <div className="rounded-2xl border border-[var(--color-lavender)]/30 bg-[var(--color-lavender-soft)] px-6 py-5">
+          <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            These figures cover the people who have shared their account with you, and right now
+            that is nobody — so everything below reads zero. This is not an error. Ask the people
+            you work with to add your address from &ldquo;Who can see this&rdquo; in their own
+            account.
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard

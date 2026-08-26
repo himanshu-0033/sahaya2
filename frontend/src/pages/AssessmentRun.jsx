@@ -458,7 +458,8 @@ export default function AssessmentRun() {
                   ))}
                 </ul>
                 <p className="mt-4 text-xs leading-relaxed text-[var(--color-ink-soft)]">
-                  Your counsellor can see this result.
+                  This result is saved to your account. If you have invited a counsellor to follow
+                  along, they can see it — otherwise nobody can.
                 </p>
               </div>
             )}
@@ -562,7 +563,8 @@ export default function AssessmentRun() {
             <p className="mt-8 text-xs leading-relaxed text-[var(--color-muted)]">
               A score places you in a range that a published questionnaire defines. It is not
               a diagnosis, it describes the last few weeks rather than you, and it can move a
-              lot with sleep, exams and illness. Your counsellor can see this result.
+              lot with sleep, exams and illness. It is saved to your account, and shared with a
+              counsellor only if you have invited one.
             </p>
 
             {/* Placed on the result rather than before the questions. Nobody

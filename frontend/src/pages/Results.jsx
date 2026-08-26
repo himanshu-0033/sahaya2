@@ -12,55 +12,45 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-// The pass is drawn as an actual ticket — two panels with a notched
-// perforation between them — rather than as another rounded card with a code
-// in it. It is the one thing in the app a student physically shows to another
-// person, and looking like a ticket is what makes it read as valid at a
-// counter. The notches are two circles in the page background colour sitting
-// on the left and right edges of the seam.
-function DinnerPass({ record }) {
+// What used to sit here was the dinner pass — a ticket with an SH-MMDD-XXXX
+// code, drawn with a perforation and everything, to be shown at a hostel
+// dining hall.
+//
+// The streak replaces it, and the swap is not cosmetic. A meal attached to a
+// mental-health log makes the log a thing you complete in order to be fed;
+// this is a count of days you chose to come back. One is a receipt, the other
+// is the point.
+//
+// It is written to survive a broken streak without punishing anybody: day one
+// is worth saying out loud, and there is no "you lost it" state, because the
+// people most likely to miss a week are the ones who most need day nine to
+// feel like a fresh start rather than a failure.
+function StreakCard({ streak }) {
+  const days = Number.isFinite(streak) ? streak : 0;
+
   return (
     <div
-      className="relative overflow-hidden rounded-[18px] border border-[var(--color-amber)]/22"
-      style={{ background: 'rgba(217,165,92,0.07)' }}
+      className="relative overflow-hidden rounded-[18px] border border-[var(--color-lavender)]/22 p-6"
+      style={{ background: 'rgba(167,156,240,0.07)' }}
     >
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-4">
-          <span className="marginalia">Dinner pass</span>
-          <span className="rounded-full border border-[var(--color-teal)]/40 bg-[var(--color-teal)]/10 px-2.5 py-1 text-[11px] text-[var(--color-teal-dark)]">
-            Valid
-          </span>
-        </div>
-        <p className="num mt-4 text-[2.1rem] leading-none tracking-wide sm:text-[2.6rem]">
-          {record.dinnerPassCode}
-        </p>
-        <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{formatDate(record.date)}</p>
+      <span className="marginalia">Check-in streak</span>
+
+      <div className="mt-4 flex items-baseline gap-3">
+        <span className="num text-[2.6rem] leading-none text-[var(--color-lavender)]">{days}</span>
+        <span className="font-display text-xl text-[var(--color-ink-soft)]">
+          day{days === 1 ? '' : 's'} in a row
+        </span>
       </div>
 
-      {/* the seam */}
-      <div className="relative h-6">
-        <span
-          aria-hidden="true"
-          className="absolute top-1/2 -left-3 h-6 w-6 -translate-y-1/2 rounded-full bg-[var(--color-cream)]"
-        />
-        <span
-          aria-hidden="true"
-          className="absolute top-1/2 -right-3 h-6 w-6 -translate-y-1/2 rounded-full bg-[var(--color-cream)]"
-        />
-        <span
-          aria-hidden="true"
-          className="absolute top-1/2 right-4 left-4 border-t border-dashed border-white/15"
-        />
-      </div>
-
-      <div className="px-6 pt-1 pb-6">
-        <p className="text-sm text-[var(--color-ink-soft)]">
-          Show this at the dining hall. Today's check-in is complete.
-        </p>
-      </div>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+        {days <= 1
+          ? 'That is the hard one done. Tomorrow is easier.'
+          : 'Nothing is riding on this — it is just a count of the days you came back.'}
+      </p>
     </div>
   );
 }
+
 
 export default function Results() {
   const location = useLocation();
@@ -91,7 +81,7 @@ export default function Results() {
       <Header eyebrow="Today" />
 
       {loading || !record ? (
-        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading today's pass…</p>
+        <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading today's check-in…</p>
       ) : (
         <>
           {/* The thought is the emotional payload, so it gets the largest type
@@ -112,7 +102,7 @@ export default function Results() {
           <div className="rule-fade mt-8" />
 
           <div className="animate-slide-up mt-8" style={{ animationDelay: '90ms' }}>
-            <DinnerPass record={record} />
+            <StreakCard streak={record.streak} />
           </div>
 
           {/* Talking to the companion is a bigger step than tapping a card, so
@@ -172,7 +162,7 @@ export default function Results() {
 
           <p className="mt-6 pb-2 text-[11px] leading-relaxed text-[var(--color-muted)]">
             Sahaya is a reflective prototype, not a medical device. If you feel unsafe, contact a
-            local helpline, your warden or a professional.
+            local helpline or a professional.
           </p>
         </>
       )}

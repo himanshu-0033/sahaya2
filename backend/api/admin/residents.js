@@ -3,6 +3,7 @@ import { getCheckins, getResidents, saveResidents, getAssessments } from '../../
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
+import { normalizeEmail, visibleResidents } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -33,6 +34,12 @@ export default async function handler(req, res) {
       invited: true,
       invitedBy: admin.email,
       onboarded: false,
+      // The placeholder holds only the name and address this counsellor just
+      // typed, so they can see it back. It carries no consent forward: when
+      // the real person signs in, withoutInvitedPlaceholder drops this record
+      // and profile.js writes a fresh one with nothing shared. Being invited
+      // is not the same as having agreed.
+      sharedWith: [normalizeEmail(admin.email)],
       createdAt: now,
       updatedAt: now,
     };
@@ -50,7 +57,10 @@ export default async function handler(req, res) {
     getCheckins(),
     getAssessments(),
   ]);
+  // Being on the allowlist got you through the door. It does not decide who
+  // is in the room — only residents who have shared with this counsellor are.
+  const visible = visibleResidents(residents, admin.email);
   return res.status(200).json({
-    residents: summarizeResidents(residents, checkins, { detailed: true, assessments }),
+    residents: summarizeResidents(visible, checkins, { detailed: true, assessments }),
   });
 }

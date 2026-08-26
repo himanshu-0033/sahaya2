@@ -48,11 +48,17 @@ export function pickThought(residentId, date) {
   return THOUGHTS[idx];
 }
 
-export function generateDinnerPassCode(date, residentId) {
-  const dateDigits = date.replace(/-/g, '').slice(4); // MMDD
-  const suffix = String(hashString(`${residentId}:${date}`)).slice(-4).padStart(4, '0');
-  return `SH-${dateDigits}-${suffix}`;
-}
+// generateDinnerPassCode used to live here. It issued an `SH-MMDD-XXXX` code on
+// every check-in, to be shown at a hostel dining hall.
+//
+// It is gone because the audience changed. For one campus it was the reason
+// anybody opened the app; for people signing up on their own there is no
+// counter to show a code at, so it was a prop. Worse than useless: attaching a
+// meal to a mental-health log made the log something you complete to be fed,
+// which is not a footing you want under a record that a counsellor may read.
+//
+// What replaces it as the reason to come back is the streak — already built,
+// already earned, and about the practice rather than about lunch.
 
 export function wordsFlag(words) {
   const lower = words.map((w) => (w || '').toLowerCase().trim());

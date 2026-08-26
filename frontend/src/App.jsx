@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import Cursor from './components/Cursor.jsx';
 import Landing from './pages/Landing.jsx';
+import Account from './pages/Account.jsx';
+import More from './pages/More.jsx';
 import CheckIn from './pages/CheckIn.jsx';
 import Results from './pages/Results.jsx';
 import InkblotTest from './pages/InkblotTest.jsx';
@@ -24,6 +26,8 @@ export default function App() {
       <Cursor />
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/more" element={<More />} />
         <Route path="/checkin" element={<CheckIn />} />
         <Route path="/results" element={<Results />} />
         <Route path="/inkblot-test" element={<InkblotTest />} />

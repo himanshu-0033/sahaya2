@@ -3,6 +3,7 @@ import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
+import { canView } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -24,7 +25,12 @@ export default async function handler(req, res) {
     getAssessments(),
   ]);
   const resident = residents.find((r) => r.id === residentId);
-  if (!resident) return res.status(404).json({ error: 'Resident not found' });
+  // Deliberately the same 404 either way. Distinguishing "no such person" from
+  // "that person has not shared with you" would turn this endpoint into a way
+  // to test whether a given account uses the app at all.
+  if (!resident || !canView(resident, admin.email)) {
+    return res.status(404).json({ error: 'Resident not found' });
+  }
 
   return res.status(200).json({
     resident: publicResident(resident),

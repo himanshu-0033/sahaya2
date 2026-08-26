@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getCheckins, getResidents, saveResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireCaregiverUser } from '../../lib/auth.js';
+import { normalizeEmail, visibleResidents } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -31,6 +32,9 @@ export default async function handler(req, res) {
       invited: true,
       invitedBy: caregiver.email,
       onboarded: false,
+      // Only the details this caregiver just typed. Replaced by a fresh,
+      // unshared record once the real person signs in — see lib/sharing.js.
+      sharedWith: [normalizeEmail(caregiver.email)],
       createdAt: now,
       updatedAt: now,
     };
@@ -43,7 +47,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
+  const [allResidents, checkins] = await Promise.all([getResidents(), getCheckins()]);
+  // Same rule as the counsellor console: the allowlist opens the door, the
+  // resident decides who is in the room.
+  const residents = visibleResidents(allResidents, caregiver.email);
 
   const summaries = residents.map((resident) => {
     const history = checkins

@@ -18,7 +18,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { name, email, dob, phone, address, occupation } = req.body || {};
+    // address and occupation used to be collected here. They were never read
+    // by anything — only displayed back in the console and the CSV export —
+    // so they are no longer accepted. See components/AccountForm.jsx.
+    const { name, email, dob, phone } = req.body || {};
 
     const residents = await getResidents();
     const idx = residents.findIndex((r) => r.id === residentId);
@@ -32,8 +35,6 @@ export default async function handler(req, res) {
       // For a phone-verified account the number IS the login identity, so a
       // blank field here means "unchanged", not "delete it".
       phone: (phone || '').trim() || existing?.phone || '',
-      address: (address || '').trim(),
-      occupation: (occupation || '').trim(),
       onboarded: true,
       updatedAt: now,
     };

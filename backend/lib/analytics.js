@@ -59,7 +59,10 @@ function riskScreenFor(assessments, residentId) {
   };
 }
 
-function currentStreak(historyDates) {
+// Exported because the check-in endpoint returns it now: the streak is what
+// the resident sees at the end of a check-in, in the place the dinner-pass
+// code used to occupy.
+export function currentStreak(historyDates) {
   const days = new Set(historyDates);
   if (days.size === 0) return 0;
 
@@ -144,8 +147,6 @@ export function summarizeResident(resident, checkins, { detailed = false, assess
     ...base,
     phone: resident.phone || '',
     dob: resident.dob || '',
-    address: resident.address || '',
-    occupation: resident.occupation || '',
     invitedBy: resident.invitedBy || '',
     updatedAt: resident.updatedAt || null,
   };

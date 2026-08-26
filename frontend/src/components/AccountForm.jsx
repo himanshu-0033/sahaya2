@@ -2,6 +2,23 @@ import { useState } from 'react';
 import Button from './Button.jsx';
 import { COUNTRY_CODES } from '../lib/countryCodes.js';
 
+// The account form asks for four things, and each one has to earn its place.
+//
+// It used to ask for six: home address and occupation were in here too. Both
+// were write-only — collected at signup, never used by anything, and shown
+// back only in the counsellor console and the CSV export. Asking a person in
+// a bad week where they live, before they have seen the app do anything, is
+// the kind of thing that gets an app closed and not reopened. They are gone.
+//
+// What survives, and why it is here rather than on the same list:
+//   name  — what the app calls you
+//   email — the account itself
+//   phone — the login identity for a phone-verified account
+//   dob   — age changes what should be shown to someone (a suicide-risk
+//           screen is not the right thing to hand a fourteen-year-old)
+//
+// Every remaining field says why it is being asked, on screen, next to the
+// field. If a field cannot carry that sentence, it should not be here.
 export default function AccountForm({ name, email, onDone, saving, error, dark = false }) {
   const [values, setValues] = useState({
     name,
@@ -9,14 +26,13 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
     countryCode: '+91',
     phoneLocal: '',
     dob: '',
-    address: '',
-    occupation: '',
   });
 
   const inputClass = dark
     ? 'input-soft mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/10'
     : 'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
+  const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/35' : 'text-[var(--color-muted)]'}`;
 
   function set(key, value) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -84,6 +100,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
               className={`${inputClass} mt-0`}
             />
           </div>
+          <p className={hintClass}>
+            Only used to sign you in if you ever lose access to this account.
+          </p>
         </div>
 
         <div>
@@ -94,27 +113,16 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
             onChange={(e) => set('dob', e.target.value)}
             className={`input-soft ${inputClass}`}
           />
+          <p className={hintClass}>
+            So the app knows which questionnaires are appropriate to offer you.
+          </p>
         </div>
 
-        <div>
-          <label className={labelClass}>Address</label>
-          <input
-            value={values.address}
-            onChange={(e) => set('address', e.target.value)}
-            placeholder="City, state"
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className={labelClass}>Occupation</label>
-          <input
-            value={values.occupation}
-            onChange={(e) => set('occupation', e.target.value)}
-            placeholder="e.g. Software engineer"
-            className={inputClass}
-          />
-        </div>
+        <p className={`text-xs leading-relaxed ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`}>
+          Nobody sees your check-ins but you. If you later want a counsellor to
+          follow along, you invite them yourself from your account — and you can
+          stop sharing at any time.
+        </p>
 
         {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
 

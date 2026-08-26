@@ -53,11 +53,19 @@ function InstrumentCard({ instrument, last, index }) {
       className="animate-slide-up card press flex flex-col p-5"
     >
       <div className="flex items-start justify-between gap-4">
+        {/* The acronym used to be the headline and the plain English the
+            footnote, so a shelf of these read as PHQ-9 / GAD-7 / UCLA-3 —
+            a wall of codes to somebody who came here upset.
+
+            Swapped, not renamed. Calling the PHQ-9 a "Depression Screener"
+            would lose the thing that makes this app's questionnaires worth
+            trusting: they are the published instruments, with the citation
+            and the licence attached, and the reading section documents each
+            one by name. So the sentence leads and the name stays underneath
+            it, where it identifies rather than gatekeeps. */}
         <div className="min-w-0">
-          <p className="font-display text-xl leading-snug">{instrument.name}</p>
-          <p className="mt-1.5 text-sm leading-snug text-[var(--color-ink-soft)]">
-            {instrument.blurb}
-          </p>
+          <p className="font-display text-xl leading-snug">{instrument.blurb}</p>
+          <p className="marginalia mt-2">{instrument.name}</p>
         </div>
 
         {/* A previous result is shown as its band colour, not as a bare
@@ -262,8 +270,9 @@ export default function Assessments() {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pb-2">
             <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
-              Your answers and scores are stored and visible to your counsellor alongside your
-              check-ins. If something here worries you, please talk to a person rather than a score.
+              Your answers and scores are saved to your account. Nobody else can see them unless
+              you invite a counsellor to follow along, and you can stop sharing whenever you like.
+              If something here worries you, please talk to a person rather than a score.
             </p>
             <CrisisContacts variant="link" />
           </div>

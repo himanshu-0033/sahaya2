@@ -9,13 +9,26 @@ import { Link, useLocation } from 'react-router-dom';
 //
 // Two presentations of one list: a fixed bottom bar under 768px where a thumb
 // can reach it, and a floating pill at the top on desktop where a bottom bar
-// would look wrong. Both are the same four destinations in the same order, so
+// would look wrong. Both are the same destinations in the same order, so
 // muscle memory survives switching device.
 //
 // Deliberately NOT in here: the caregiver and counsellor views. Those belong
 // to a different person with a different job, and putting them in a resident's
 // tab bar invites a resident to tap into a screen that will refuse them.
 
+// Three tabs, down from six.
+//
+// It carried Home, Paths, Calm, Tests, Read and Inkblot — every section of the
+// app given equal billing, which is the same as saying none of them is the
+// point. Six tabs on a 360px phone is 57px each, and a person opening this at
+// a bad moment had to choose between six things before doing anything.
+//
+// The product's job is one loop: check in, and calm down when you need to.
+// Those get a tab each. Everything else — the seven-day paths, the twenty-one
+// questionnaires, the reading, the ten-plate inkblot — is real work that is
+// worth keeping and is not what someone needs in the first ten seconds, so it
+// lives one tap deeper behind More. Every route still resolves; nothing was
+// deleted, and no existing link breaks.
 const TABS = [
   {
     to: '/',
@@ -30,42 +43,30 @@ const TABS = [
     ),
   },
   {
-    to: '/paths',
-    label: 'Paths',
-    hue: 'var(--sec-paths)',
-    icon: <path d="M6 21c0-4 3-5 6-6s6-2 6-6a3 3 0 0 0-3-3M6 21h12M8.5 6.5h.01M6 3.5h.01M11 4h.01" />,
-  },
-  {
     to: '/grounding',
     label: 'Calm',
     hue: 'var(--sec-calm)',
     icon: <path d="M12 3c2.5 3 4 5.4 4 7.8A4 4 0 0 1 12 15a4 4 0 0 1-4-4.2C8 8.4 9.5 6 12 3ZM5 15.5c2 0 3.5 1 3.5 2.5S7 21 5 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Zm14 0c2 0 3.5 1 3.5 2.5S21 21 19 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Z" />,
   },
   {
-    to: '/assessments',
-    label: 'Tests',
-    hue: 'var(--sec-tests)',
-    icon: <path d="M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm1.5 5h5M9.5 12h5M9.5 16h3" />,
-  },
-  {
-    to: '/read',
-    label: 'Read',
+    to: '/more',
+    label: 'More',
     hue: 'var(--sec-read)',
-    icon: <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 16.5Zm16 0A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h4.5a1.5 1.5 0 0 0 1.5-1.5Z" />,
-  },
-  {
-    to: '/inkblot-test',
-    label: 'Inkblot',
-    hue: 'var(--sec-inkblot)',
-    icon: <path d="M12 3c3 0 5 2.2 5 5 0 1.6-.7 2.6-.7 4 0 1.7 1.7 2.4 1.7 4.2 0 2.2-2 3.8-6 3.8s-6-1.6-6-3.8c0-1.8 1.7-2.5 1.7-4.2 0-1.4-.7-2.4-.7-4 0-2.8 2-5 5-5Z" />,
+    // The sections this tab stands in for, so it lights up while you are
+    // inside any of them rather than going dark the moment you arrive.
+    owns: ['/paths', '/assessments', '/read', '/inkblot-test'],
+    icon: <path d="M4 7h16M4 12h16M4 17h10" />,
   },
 ];
 
 // `/` is only "Home" when it is exactly `/`; every other tab also owns its
-// children, so /grounding/box-breathing keeps the Calm tab lit.
-function isActive(pathname, to) {
+// children, so /grounding/box-breathing keeps the Calm tab lit — and More
+// stays lit across every section it stands in for.
+function isActive(pathname, tab) {
+  const { to, owns = [] } = tab;
   if (to === '/') return pathname === '/';
-  return pathname === to || pathname.startsWith(`${to}/`);
+  const matches = (base) => pathname === base || pathname.startsWith(`${base}/`);
+  return matches(to) || owns.some(matches);
 }
 
 function TabIcon({ tab, active }) {
@@ -113,7 +114,7 @@ export default function TabBar() {
           }}
         >
           {TABS.map((tab) => {
-            const active = isActive(pathname, tab.to);
+            const active = isActive(pathname, tab);
             return (
               <Link
                 key={tab.to}
@@ -163,7 +164,7 @@ export default function TabBar() {
           style={{ background: 'rgba(7, 8, 10, 0.7)', backdropFilter: 'blur(18px)' }}
         >
           {TABS.map((tab) => {
-            const active = isActive(pathname, tab.to);
+            const active = isActive(pathname, tab);
             return (
               <Link
                 key={tab.to}

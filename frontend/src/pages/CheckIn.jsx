@@ -146,8 +146,33 @@ export default function CheckIn() {
             {step === TOTAL_PLATE_STEPS - 1 ? 'Last bit — how you feel' : 'Next plate'}
           </button>
 
-          <p className="mt-4 text-[11px] text-[var(--color-muted)]">
-            No wrong answers. Press Enter to move on.
+          {/* The way past a plate that brought nothing to mind.
+
+              Without this the only exit was to type something, and what people
+              actually type is keyboard mash — which is not a non-answer, it is
+              a fake answer, and it goes into the same field the negative-word
+              rule reads. An explicit blank is better data and a kinder screen:
+              "I have got nothing today" is a real thing to be able to say.
+
+              Deliberately NOT a row of suggested words. Handing someone a list
+              of things they might be seeing decides what they see, and the
+              whole premise of the plate is that the response is theirs. The
+              junk came from a field that would not let you past, not from a
+              shortage of vocabulary — so the fix is the exit, not a prompt. */}
+          <button
+            type="button"
+            onClick={() => {
+              updateWord('');
+              setStep((s) => s + 1);
+            }}
+            className="press animate-slide-up mt-3 w-full rounded-full border border-white/10 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-white/[0.05]"
+            style={{ animationDelay: '220ms' }}
+          >
+            Nothing comes to mind
+          </button>
+
+          <p className="mt-4 text-center text-[11px] leading-relaxed text-[var(--color-muted)]">
+            There is no right answer, and a blank is a real one. Press Enter to move on.
           </p>
         </div>
       ) : (
@@ -231,6 +256,16 @@ export default function CheckIn() {
           >
             {submitting ? 'Saving…' : 'Finish check-in'}
           </button>
+
+          {/* The check-in had no disclosure at all, which made it the only
+              data-collecting flow in the app that did not have one — and the
+              only one that feeds the flagging rule in backend/lib/logic.js.
+              "Nobody is grading this" was true about tone and misleading about
+              mechanism. This says what actually happens. */}
+          <p className="mt-5 text-[11px] leading-relaxed text-[var(--color-muted)]">
+            Saved to your account. Nobody else sees your words or your mood unless you have invited
+            a counsellor to follow along — you can do that, and undo it, from your account.
+          </p>
         </div>
       )}
     </PageShell>

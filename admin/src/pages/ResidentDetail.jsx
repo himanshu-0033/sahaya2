@@ -11,7 +11,7 @@ const CSV_COLUMNS = [
   { label: 'Date', value: (c) => c.date },
   { label: 'Mood', value: (c) => moodLabel(c.mood) },
   { label: 'Mood score', value: (c) => c.moodScore },
-  { label: 'Words', value: (c) => (c.words || []).join(' / ') },
+  { label: 'Words', value: (c) => (c.words || []).filter(Boolean).join(' / ') },
   { label: 'Flagged', value: (c) => (c.flagged ? 'yes' : 'no') },
   { label: 'Flag reasons', value: (c) => (c.flagReasons || []).join('; ') },
   { label: 'Recorded at', value: (c) => c.createdAt || '' },
@@ -181,8 +181,6 @@ export default function ResidentDetail() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Field label="Phone" value={data.resident.phone} />
               <Field label="Date of birth" value={data.resident.dob} />
-              <Field label="Occupation" value={data.resident.occupation} />
-              <Field label="Address" value={data.resident.address} />
               <Field
                 label="Joined"
                 value={data.resident.createdAt ? formatDate(data.resident.createdAt.slice(0, 10)) : ''}
@@ -255,7 +253,7 @@ export default function ResidentDetail() {
                             </span>
                           </td>
                           <td className="px-5 py-3 text-[var(--color-ink-soft)]">
-                            {(c.words || []).join(', ')}
+                            {(c.words || []).filter(Boolean).join(', ') || '—'}
                           </td>
                           <td className="px-5 py-3 text-xs text-[var(--color-flag)]">
                             {c.flagged ? (c.flagReasons || []).join('; ') : ''}

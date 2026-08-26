@@ -2,6 +2,7 @@ import { getCheckins, getResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireCaregiverUser } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
+import { canView } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -17,7 +18,11 @@ export default async function handler(req, res) {
 
   const [residents, checkins] = await Promise.all([getResidents(), getCheckins()]);
   const resident = residents.find((r) => r.id === residentId);
-  if (!resident) return res.status(404).json({ error: 'Resident not found' });
+  // One 404 for both cases, so this cannot be used to probe whether a given
+  // address has an account.
+  if (!resident || !canView(resident, caregiver.email)) {
+    return res.status(404).json({ error: 'Resident not found' });
+  }
 
   const history = checkins
     .filter((c) => c.residentId === residentId)

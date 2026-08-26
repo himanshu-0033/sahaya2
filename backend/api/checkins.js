@@ -1,5 +1,6 @@
 import { getCheckins, saveCheckins, getResidents } from '../lib/store.js';
-import { todayISO, pickThought, generateDinnerPassCode, computeFlag, MOOD_OPTIONS } from '../lib/logic.js';
+import { todayISO, pickThought, computeFlag, MOOD_OPTIONS } from '../lib/logic.js';
+import { currentStreak } from '../lib/analytics.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 
@@ -15,11 +16,18 @@ export default async function handler(req, res) {
   const residentId = googleUser.sub;
 
   if (req.method === 'POST') {
-    const { words, mood } = req.body || {};
+    const { words: rawWords, mood } = req.body || {};
 
-    if (!Array.isArray(words) || words.length !== 3 || words.some((w) => !w || !w.trim())) {
-      return res.status(400).json({ error: 'words must be an array of 3 non-empty strings' });
+    if (!Array.isArray(rawWords) || rawWords.length !== 3) {
+      return res.status(400).json({ error: 'words must be an array of 3 entries' });
     }
+    // A blank is a legitimate answer, and used to be the one answer the form
+    // would not take. Requiring three non-empty strings did not produce three
+    // honest words — it produced two honest words and "ebjkfkej", because
+    // keyboard mash was the only way past a plate that brought nothing to
+    // mind. That junk then fed the negative-word rule in lib/logic.js, so
+    // forcing the field actively degraded the signal it was protecting.
+    const words = rawWords.map((w) => (typeof w === 'string' ? w.trim().slice(0, 60) : ''));
     if (!isValidMood(mood)) {
       return res.status(400).json({ error: 'mood must be one of ' + MOOD_OPTIONS.map((m) => m.value).join(', ') });
     }
@@ -37,7 +45,10 @@ export default async function handler(req, res) {
 
     const existingToday = residentHistory.find((c) => c.date === date);
     if (existingToday) {
-      return res.status(200).json(existingToday);
+      return res.status(200).json({
+        ...existingToday,
+        streak: currentStreak(residentHistory.map((c) => c.date)),
+      });
     }
 
     const { flagged, reasons } = computeFlag(residentHistory, words);
@@ -50,7 +61,6 @@ export default async function handler(req, res) {
       mood,
       moodScore: mood,
       thought: pickThought(residentId, date),
-      dinnerPassCode: generateDinnerPassCode(date, residentId),
       flagged,
       flagReasons: reasons,
       createdAt: new Date().toISOString(),
@@ -58,7 +68,13 @@ export default async function handler(req, res) {
 
     await saveCheckins([...checkins, record]);
 
-    return res.status(201).json(record);
+    // Streak counted with today included — it is the number the resident is
+    // about to be shown, and it should already reflect the check-in they just
+    // finished rather than yesterday's total.
+    return res.status(201).json({
+      ...record,
+      streak: currentStreak([...residentHistory.map((c) => c.date), date]),
+    });
   }
 
   if (req.method === 'GET') {
@@ -72,7 +88,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       checkedIn: Boolean(record),
-      record,
+      record: record ? { ...record, streak: currentStreak(history.map((c) => c.date)) } : null,
       history: history.slice(-14),
     });
   }

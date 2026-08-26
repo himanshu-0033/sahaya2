@@ -25,8 +25,6 @@ const CSV_COLUMNS = [
   { label: 'Email', value: (r) => r.email },
   { label: 'Phone', value: (r) => r.phone },
   { label: 'Date of birth', value: (r) => r.dob },
-  { label: 'Occupation', value: (r) => r.occupation },
-  { label: 'Address', value: (r) => r.address },
   { label: 'Joined', value: (r) => (r.onboarded ? 'yes' : 'invited only') },
   { label: 'Check-ins', value: (r) => r.totalCheckIns },
   { label: 'Streak (days)', value: (r) => r.streak },
@@ -231,9 +229,30 @@ export default function Residents() {
       </div>
 
       {visible.length === 0 ? (
-        <p className="text-sm text-[var(--color-muted)]">
-          {residents.length === 0 ? 'No residents yet.' : 'Nobody matches this filter.'}
-        </p>
+        residents.length === 0 ? (
+          /* An empty console is now the NORMAL first state, not a fault, and it
+             has to say so — otherwise the honest answer ("nobody has shared with
+             you") is indistinguishable from a broken deployment, and every one
+             of those becomes a support conversation. Two things get explained
+             here because both surprise people: that access is granted by the
+             resident rather than by the allowlist, and that inviting someone is
+             not the same as being given access to them. */
+          <div className="card-soft rounded-2xl px-6 py-7">
+            <h3 className="font-display text-xl">Nobody has shared with you yet.</h3>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              Being on the counsellor allowlist lets you open this console. It does not give you
+              access to anyone's check-ins — each person decides that for themselves, from the
+              &ldquo;Who can see this&rdquo; page in their own account.
+            </p>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-muted)]">
+              Ask the people you work with to add your address there. If you invite someone below,
+              they will appear here straight away — but once they sign in and create their real
+              account, they are only visible again if they choose to share.
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--color-muted)]">Nobody matches this filter.</p>
+        )
       ) : (
         <div className="space-y-2">
           {visible.map((r) => {
