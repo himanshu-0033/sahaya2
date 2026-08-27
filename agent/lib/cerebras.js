@@ -14,14 +14,23 @@
 // be installed on every cold start.
 const ENDPOINT = 'https://api.cerebras.ai/v1/chat/completions';
 
-// gpt-oss-120b and gemma-4-31b are the free-tier models. This is an env var
-// because that list is Cerebras's to change, and a model id baked into source
-// becomes a 404 the day they retire one.
-const DEFAULT_MODEL = 'gpt-oss-120b';
+// gemma-4-31b and gpt-oss-120b are the free-tier models. An env var because
+// that list is Cerebras's to change, and a model id baked into source becomes
+// a 404 the day they retire one.
+//
+// Gemma is the default over gpt-oss-120b, which is a reasoning model: this
+// asks for two or three warm sentences, and paying for a chain of thought to
+// produce them is the wrong trade twice over — slower, and the reasoning
+// competes with the answer for the token budget (see below).
+const DEFAULT_MODEL = 'gemma-4-31b';
 
-// Short, warm, two or three sentences — the persona asks for that, and there
-// is no reasoning task here that needs room beyond it.
-const MAX_TOKENS = 512;
+// The budget is deliberately far above the two or three sentences the persona
+// asks for. Cerebras counts reasoning tokens inside this limit — its docs say
+// "the maximum number of tokens that can be generated in the completion,
+// including reasoning tokens" — so on a reasoning model a snug budget is spent
+// thinking and the visible reply comes back empty. Brevity is the system
+// prompt's job; this is only a ceiling.
+const MAX_COMPLETION_TOKENS = 1024;
 
 // How many turns of history to send.
 //
@@ -65,7 +74,11 @@ export async function cerebrasReply({ system, messages }) {
       },
       body: JSON.stringify({
         model: process.env.CEREBRAS_MODEL || DEFAULT_MODEL,
-        max_tokens: MAX_TOKENS,
+        // Not `max_tokens`. That is the OpenAI-compatible spelling and the one
+        // this was first written with; Cerebras's API reference lists only
+        // `max_completion_tokens`, so the old name went through as an unknown
+        // field and bounded nothing at all.
+        max_completion_tokens: MAX_COMPLETION_TOKENS,
         temperature: 0.7,
         messages: [
           { role: 'system', content: system + preamble },
