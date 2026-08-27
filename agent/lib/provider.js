@@ -1,4 +1,5 @@
 import { SYSTEM_PROMPT } from './persona.js';
+import { cerebrasReply } from './cerebras.js';
 
 // ---------------------------------------------------------------------------
 // THE SEAM
@@ -168,6 +169,11 @@ const PROVIDERS = {
 
   // Claude. Needs ANTHROPIC_API_KEY; see agent/.env.example.
   anthropic: anthropicReply,
+
+  // Cerebras, on its free tier. Needs CEREBRAS_API_KEY; see agent/.env.example.
+  // Lives in its own file because, unlike the two above, it carries real
+  // request-shaping logic — history trimming and rate-limit handling.
+  cerebras: cerebrasReply,
 };
 
 export const activeProvider = process.env.AGENT_PROVIDER || 'mock';
