@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
@@ -12,15 +12,18 @@ import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/
 
 // Home.
 //
-// The layout is deliberately asymmetric. An even grid of equal cards is the
-// fastest way to make a product look like it was assembled rather than
-// designed, and it also lies about priority — checking in and reading a
-// footnote are not the same size of decision. So: one full-width primary
-// action, then a 2/1 split, then a quiet row.
+// One thing is bigger than everything else, and everything else lines up.
+//
+// The check-in keeps the full width because it is genuinely the largest
+// decision on the page, and sizing it like the rest would be a lie about
+// priority. Below it, the pieces that really are peers — Tests, Inkblot — are
+// equal columns on one grid. The earlier version graded almost every block by
+// importance, and a page where six things are all slightly different sizes
+// does not read as a hierarchy, it reads as something assembled.
 //
 // The "right now" strip is the part that earns its place. A student in a bad
-// moment should not have to navigate to a section and browse a library; three
-// taps from here go straight into a practice.
+// moment should not have to navigate to a section and browse a library; one
+// tap from here goes straight into a practice.
 
 const QUICK = [
   { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)' },
@@ -28,6 +31,82 @@ const QUICK = [
   { mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)' },
   { mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)' },
 ];
+
+// Three of the ten plates, for the card that says today is done.
+//
+// Seeded from the date rather than picked with Math.random on every render.
+// Truly random would reshuffle on every state change on this page — the
+// profile arriving, the streak arriving, a retry — so the images would swap
+// while someone was reading, and each swap is three fresh network requests
+// for pictures they had already been shown. Seeded by the day it is the same
+// card all day and a different one tomorrow, which is the only sense of
+// "random" that survives contact with a component that re-renders.
+const PLATE_COUNT = 10;
+
+function platesForDay(seedSource) {
+  const seed = String(seedSource || 'today');
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  // xorshift32, and the index comes off the TOP bits. The first version of
+  // this was a textbook LCG indexed with `n % pool.length`, which is the
+  // textbook way to get it wrong: an LCG's low-order bits have a very short
+  // period, and a modulo reads only those. It looked random and wasn't —
+  // plate 1 came out third on six days in seven.
+  let n = hash >>> 0 || 1;
+  const next = () => {
+    n ^= n << 13;
+    n >>>= 0;
+    n ^= n >>> 17;
+    n ^= n << 5;
+    n >>>= 0;
+    return n / 4294967296;
+  };
+
+  const pool = Array.from({ length: PLATE_COUNT }, (_, i) => i + 1);
+  const picked = [];
+  while (picked.length < 3 && pool.length > 0) {
+    picked.push(pool.splice(Math.floor(next() * pool.length), 1)[0]);
+  }
+  return picked.map((i) => `/plates/rorschach-${String(i).padStart(2, '0')}.jpg`);
+}
+
+// The plates are photographs of ink on cream paper, and three of the ten are
+// in colour. Neither survives being dropped straight onto a near-black card:
+// unaltered they are three bright rectangles, and the usual dark-mode trick of
+// inverting them turns plate VIII's pinks and oranges into greens and blues.
+//
+// So each one keeps its own paper. Small light tiles, the way the real cards
+// sit on a table — which is also closer to what they are than a full-bleed
+// graphic would be.
+function PlateStrip({ seed }) {
+  const plates = useMemo(() => platesForDay(seed), [seed]);
+
+  // Decorative. The card already says everything in words, and three
+  // "an inkblot" announcements in a row is noise to a screen reader.
+  return (
+    <div className="mt-5 flex gap-2" aria-hidden="true">
+      {plates.map((src) => (
+        <span
+          key={src}
+          className="block h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--line-1)] sm:h-16 sm:w-16"
+          style={{ background: '#efece5' }}
+        >
+          <img
+            src={src}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-contain"
+          />
+        </span>
+      ))}
+    </div>
+  );
+}
 
 function greeting() {
   const h = new Date().getHours();
@@ -191,6 +270,8 @@ export default function Landing() {
               <p className="mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
                 Your thought for the day is still here whenever you want it.
               </p>
+
+              <PlateStrip seed={status.record?.date} />
 
               {/* The streak, in the slot the dinner pass used to justify. It
                   is the reason to come back tomorrow, so it belongs on the
