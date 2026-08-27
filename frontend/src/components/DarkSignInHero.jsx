@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
 import CrisisContacts from './CrisisContacts.jsx';
+import Logo from './Logo.jsx';
 import Inkblot3D from './Inkblot3D.jsx';
 import Butterflies, { FeatureButterfly } from './Butterflies.jsx';
 
@@ -73,12 +74,9 @@ export default function DarkSignInHero({ onSignedIn }) {
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-6 lg:px-10">
         <header className="flex shrink-0 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <span
-              className="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] border border-[var(--line-4)]"
-              aria-hidden="true"
-            >
-              <span className="h-2.5 w-2.5 rotate-45 border border-[var(--line-7)]" />
-            </span>
+            {/* Was a rotated square in a rounded box — the placeholder mark
+                that ships with every dark landing-page template. */}
+            <Logo size={26} className="shrink-0" />
             <span className="font-eyebrow text-[11px] font-semibold text-white/90">
               Sahay <span className="font-normal text-white/45">AI</span>
             </span>

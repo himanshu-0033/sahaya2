@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import CrisisContacts from './CrisisContacts.jsx';
+import Logo from './Logo.jsx';
 
 // A slim masthead: the wordmark and the one link that has to be reachable from
 // every screen.
@@ -19,12 +20,15 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
   return (
     <header className="flex items-center justify-between gap-3 pt-2 pb-1">
       <div className="flex min-w-0 items-center gap-3">
-        <Link to="/" className="press group block shrink-0">
-          <span className="font-display block text-[1.35rem] leading-none">
-            Sahay<span className="text-[var(--color-teal)]">.</span>
-          </span>
-          <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
-            {eyebrow}
+        <Link to="/" className="press group flex shrink-0 items-center gap-2.5">
+          <Logo size={26} />
+          <span className="block">
+            <span className="font-display block text-[1.35rem] leading-none">
+              Sahay<span className="text-[var(--color-teal)]">.</span>
+            </span>
+            <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
+              {eyebrow}
+            </span>
           </span>
         </Link>
         {leading}

@@ -1,5 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <rect width="48" height="48" rx="12" fill="#15171b"/>
-  <path d="M24 6l13 5v11c0 9.2-5.6 16.4-13 20-7.4-3.6-13-10.8-13-20V11z" fill="none" stroke="#a79cf0" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M18 24l4 4 9-9" fill="none" stroke="#1fae95" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 4 100 100" width="100" height="100" fill="none">
+  <!-- Cropped square to the mark's own bounds. A generous margin is right on a
+       website header and wrong here: padding inside the file only shrinks the
+       drawing inside the 16px a browser gives a tab. Strokes are heavier than
+       the header lockup's for the same reason. -->
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b" />
+      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <linearGradient id="a" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c7f9d8" />
+      <stop offset="100%" stop-color="#5cbe8c" />
+    </linearGradient>
+  </defs>
+  <g stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="10">
+    <path d="M56 70 V44 a22 22 0 0 1 44 0 V86" stroke="url(#a)" filter="url(#g)" />
+    <!-- Lighter than the wave in the full lockup: at 16px on a dark tab the
+         deeper green read as a smudge rather than as a second stroke. -->
+    <path d="M8 70 C16 56, 30 52, 40 63 C47 71, 55 71, 62 61 C70 49, 74 37, 85 41 C97 45, 95 63, 80 60 C72 58, 69 51, 73 46" stroke="#4fa37d" />
+  </g>
 </svg>
