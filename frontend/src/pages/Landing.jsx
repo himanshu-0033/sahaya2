@@ -81,7 +81,7 @@ function platesForDay(seedSource) {
   while (picked.length < 3 && pool.length > 0) {
     picked.push(pool.splice(Math.floor(next() * pool.length), 1)[0]);
   }
-  return picked.map((i) => `/plates/rorschach-${String(i).padStart(2, '0')}.jpg`);
+  return picked.map((i) => `/plates/rorschach-${String(i).padStart(2, '0')}-thumb.jpg`);
 }
 
 // The plates are photographs of ink on cream paper, and three of the ten are
@@ -115,6 +115,51 @@ function PlateStrip({ seed }) {
         </span>
       ))}
     </div>
+  );
+}
+
+// The signpost to the inkblot reflection, on the card that offers it.
+//
+// Fixed plates, not the seeded daily ones. This card is a door, not a moment:
+// it should look the same every time you pass it, the way a sign does. The
+// check-in card above is the opposite — that one marks a particular day, so
+// it changes with the day.
+//
+// I, III and VIII specifically, and in that order. The deck genuinely runs
+// from black ink (I), through black with red (III), to full colour (VIII) —
+// so these three show the range rather than three versions of the same thing.
+// Plate I alone would promise ten monochrome bats.
+//
+// They overlap because the card says "ten plates", and a neatly spaced row of
+// exactly three quietly contradicts it; a stack reads as "more behind these".
+const FAN = ['01', '03', '08'];
+
+function PlateFan() {
+  return (
+    <span className="flex shrink-0 items-center" aria-hidden="true">
+      {FAN.map((n, i) => (
+        <span
+          key={n}
+          className="block h-14 w-14 overflow-hidden rounded-xl border border-[var(--line-2)] sm:h-16 sm:w-16"
+          style={{
+            background: '#efece5',
+            marginLeft: i === 0 ? 0 : '-1.15rem',
+            // Later plates sit on top, so the stack reads front-to-back in
+            // one direction instead of interleaving.
+            zIndex: i,
+            boxShadow: '0 6px 18px -8px rgba(0,0,0,0.9)',
+          }}
+        >
+          <img
+            src={`/plates/rorschach-${n}-thumb.jpg`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-contain"
+          />
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -431,12 +476,25 @@ export default function Landing() {
           </Link>
         )}
 
-        <Link to="/inkblot-test" className="card press flex flex-col p-5">
-          <span className="marginalia">Inkblot</span>
-          <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">Ten plates</p>
-          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-            Longer, in your own words. Typed or spoken.
-          </p>
+        {/* Text and plates side by side while the card is full width; the
+            plates drop below the text once it is sharing the row, where there
+            is no longer room beside it. */}
+        <Link
+          to="/inkblot-test"
+          className={`card press flex gap-4 p-5 ${
+            SHOW_TESTS_CARD ? 'flex-col' : 'flex-row items-center justify-between'
+          }`}
+        >
+          <span className="block min-w-0">
+            <span className="marginalia">Inkblot</span>
+            <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
+              Ten plates
+            </span>
+            <span className="mt-2 block text-sm text-[var(--color-ink-soft)]">
+              Longer, in your own words. Typed or spoken.
+            </span>
+          </span>
+          <PlateFan />
         </Link>
       </div>
 
