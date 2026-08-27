@@ -98,6 +98,18 @@ export async function cerebrasReply({ system, messages }) {
     throw new Error('The chat is busy right now. Give it a moment and try again.');
   }
 
+  // 401 is a bad or revoked key; 402 is a valid key on an account with no
+  // quota left — or none ever granted, which is what a fresh key on an
+  // unactivated free tier returns. Both are ours to fix and neither is
+  // anything the person typing can do something about, so they get one
+  // honest sentence while the detail goes to the server log.
+  if (res.status === 401 || res.status === 402) {
+    console.error(
+      `[cerebras] ${res.status} — ${res.status === 401 ? 'CEREBRAS_API_KEY rejected' : 'no quota on this account; check the billing tab at cloud.cerebras.ai'}`,
+    );
+    throw new Error('The chat is not available right now.');
+  }
+
   if (!res.ok) {
     const detail = await res.text().catch(() => '');
     throw new Error(`Chat service error (${res.status})${detail ? `: ${detail.slice(0, 200)}` : ''}`);
