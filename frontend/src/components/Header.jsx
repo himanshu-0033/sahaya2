@@ -11,17 +11,24 @@ import CrisisContacts from './CrisisContacts.jsx';
 // destination you browse to — it is an interruption, and it belongs at the
 // edge of the page, not in the same row as "Tests".
 
-export default function Header({ eyebrow = 'Daily check-in' }) {
+// `leading` sits in the left corner beside the wordmark, for the one screen
+// that has a shortcut worth putting there. It is a slot rather than a fixed
+// button because this masthead is on every page, and a Tests button on the
+// Tests page would be a link to where you already are.
+export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
   return (
-    <header className="flex items-center justify-between gap-4 pt-2 pb-1">
-      <Link to="/" className="press group block">
-        <span className="font-display block text-[1.35rem] leading-none">
-          Sahay<span className="text-[var(--color-teal)]">.</span>
-        </span>
-        <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
-          {eyebrow}
-        </span>
-      </Link>
+    <header className="flex items-center justify-between gap-3 pt-2 pb-1">
+      <div className="flex min-w-0 items-center gap-3">
+        <Link to="/" className="press group block shrink-0">
+          <span className="font-display block text-[1.35rem] leading-none">
+            Sahay<span className="text-[var(--color-teal)]">.</span>
+          </span>
+          <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
+            {eyebrow}
+          </span>
+        </Link>
+        {leading}
+      </div>
       <CrisisContacts variant="link" />
     </header>
   );

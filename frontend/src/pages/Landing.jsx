@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import LoadError from '../components/LoadError.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
 import HomeAssistant from '../components/HomeAssistant.jsx';
+import TestsPanel from '../components/TestsPanel.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
 
@@ -57,7 +58,6 @@ function PrimarySkeleton() {
 }
 
 export default function Landing() {
-  const navigate = useNavigate();
   const [session, setSession] = useState(() => getSession());
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -153,7 +153,7 @@ export default function Landing() {
 
   return (
     <PageShell section="home">
-      <Header eyebrow="Home" />
+      <Header eyebrow="Home" leading={<TestsPanel />} />
 
       {/* ---------------------------------------------------------- hero */}
       {/* One line, not two. The greeting and the name used to stack into a
