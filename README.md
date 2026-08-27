@@ -212,7 +212,28 @@ a different **Root Directory**.
    values as the frontend), then `vercel --prod`. Add its URL to the Google
    OAuth Client's authorized JavaScript origins too, or sign-in won't render.
 
-4. Go back to the backend project and set `ALLOWED_ORIGIN` to the frontend's
+4. **Chat agent** — its own project again, and the one that is easy to
+   forget because nothing else breaks without it. Only `/api/chat` fails,
+   so the app looks healthy and the chat alone reports an unreachable
+   server.
+   ```bash
+   cd agent
+   vercel link       # e.g. sahay-agent
+   ```
+   In its dashboard set:
+   - `GOOGLE_CLIENT_ID` and `JWT_SECRET` — **the same values as the
+     backend**. This module verifies the same sessions, and a different
+     `JWT_SECRET` rejects every signed-in user with "invalid signature".
+   - `ALLOWED_ORIGIN` — the resident app's URL.
+   - `AGENT_PROVIDER` — `mock` needs nothing else. `cerebras` also needs
+     `CEREBRAS_API_KEY`; `anthropic` needs `ANTHROPIC_API_KEY`.
+
+   Then `vercel --prod`, and set `VITE_AGENT_URL` on the **frontend**
+   project to the agent's URL. Vite inlines that at build time, so the
+   frontend has to be redeployed afterwards or it will keep calling its own
+   origin and the chat will 404.
+
+5. Go back to the backend project and set `ALLOWED_ORIGIN` to the frontend's
    and admin's URLs, comma-separated, then redeploy the backend so CORS is
    locked down instead of `*`. Environment variables only take effect on a
    deployment made after they are set — a failed deploy leaves the old one
