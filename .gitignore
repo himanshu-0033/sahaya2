@@ -38,3 +38,14 @@ serviceAccountKey.json
 # they are published third-party documents rather than part of this codebase —
 # instruments.js carries the wording, its licence and its citation.
 *.pdf
+
+.vercel
+
+# Secrets only. .env.example and .env.production are committed on purpose —
+# the examples document what each module needs, and .env.production carries
+# the public build config (VITE_API_URL, VITE_AGENT_URL) that the Vercel build
+# reads. Without these negations a bare `.env*` swallows both, and the day one
+# is re-added it disappears instead.
+.env*
+!.env.example
+!.env.production
