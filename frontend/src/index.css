@@ -678,3 +678,18 @@ p, li {
   text-transform: uppercase;
   color: var(--color-muted);
 }
+/* A single row that scrolls sideways instead of wrapping.
+   Wrapping is what turns four short pills into three stacked lines on a
+   narrow phone, which is the height the pills were meant to save. The
+   scrollbar is hidden because the row is short enough to read as one and a
+   visible bar under four pills looks like a rendering fault; the row still
+   scrolls by touch, trackpad and shift-wheel. */
+.row-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Room for the focus ring and the press scale, which a tight overflow box
+     would otherwise clip. */
+  padding-bottom: 2px;
+}
+.row-scroll::-webkit-scrollbar { display: none; }

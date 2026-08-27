@@ -5,6 +5,7 @@ import PageShell from '../components/PageShell.jsx';
 import LoadError from '../components/LoadError.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
+import HomeAssistant from '../components/HomeAssistant.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
 
@@ -155,10 +156,12 @@ export default function Landing() {
       <Header eyebrow="Home" />
 
       {/* ---------------------------------------------------------- hero */}
+      {/* One line, not two. The greeting and the name used to stack into a
+          48px eyebrow over a 3.2rem display name, and between them they ate
+          the top third of a phone screen to say "Morning, Ana". */}
       <div className="animate-slide-up stack-block">
-        <p className="marginalia">{greeting()}</p>
-        <h1 className="font-display mt-2 text-[2.2rem] leading-[1.05] sm:text-[3.2rem]">
-          {first}
+        <h1 className="font-display text-[1.75rem] leading-tight sm:text-[2.25rem]">
+          {greeting()}, {first}
           <span className="text-[var(--color-teal)]">.</span>
         </h1>
       </div>
@@ -268,31 +271,28 @@ export default function Landing() {
             all 13
           </Link>
         </div>
-        <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
-          Straight into a practice — no list to read first.
-        </p>
-        {/* Two columns on a phone, four on a tablet up. Straight into the
-            practice — no intermediate list to read while panicking. */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {/* One scrolling row of pills, not a 2x2 grid of cards.
+            Four cards with a title, a colour stripe and a "tap to start"
+            subtitle each occupied about a fifth of a phone screen to offer
+            four one-word choices. The colour is what did the work, so the
+            colour is what was kept: it moves from a stripe to the label and
+            the border, and the row scrolls rather than wraps, which also
+            means a fifth state can be added later without reflowing the
+            page. The whole strip is now shorter than one of the old cards. */}
+        <div className="row-scroll mt-3.5 flex gap-2">
           {QUICK.map((q, i) => (
             <Link
               key={q.mood}
               to={q.to}
-              className="card press relative overflow-hidden p-4 pl-5"
-              style={{ animationDelay: `${180 + i * 40}ms` }}
+              className="press shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-medium transition-colors"
+              style={{
+                animationDelay: `${180 + i * 40}ms`,
+                color: q.hue,
+                borderColor: q.hue,
+                background: 'color-mix(in srgb, currentColor 10%, transparent)',
+              }}
             >
-              {/* Was a 6px dot, which reviewers called invisible and were right
-                  about. A full-height edge stripe carries the same colour
-                  coding at a size a thumb can aim at and an eye can catch. */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 left-0 w-[3px]"
-                style={{ background: q.hue }}
-              />
-              <span className="block text-sm font-medium" style={{ color: q.hue }}>
-                {q.label}
-              </span>
-              <span className="mt-1 block text-xs text-[var(--color-muted)]">tap to start</span>
+              {q.label}
             </Link>
           ))}
         </div>
@@ -313,36 +313,37 @@ export default function Landing() {
         </div>
       )}
 
-      {/* ------------------------------------------------- the 2/1 split row */}
-      <div className="animate-slide-up stack-section grid gap-3 sm:grid-cols-3" style={{ animationDelay: '280ms' }}>
-        <Link
-          to="/assessments"
-          className="card press p-5 sm:col-span-2"
-        >
-          <div>
-            <span className="marginalia">Tests</span>
-            <p className="font-display mt-2.5 text-2xl leading-snug">
-              Twenty-one questionnaires
-              <br className="hidden sm:block" /> that score themselves
-            </p>
-            <p className="mt-2 max-w-sm text-sm text-[var(--color-ink-soft)]">
-              The real ones — PHQ-9, GAD-7, and eighteen more. A range, never a diagnosis.
-            </p>
-          </div>
+      {/* ------------------------------------------------------ the even row */}
+      {/* Two equal columns, matched heights, one grid.
+          This was a 2/1 split on the argument that a 21-questionnaire library
+          is a bigger destination than ten inkblot plates. That is true of the
+          content and false of the decision: from here both are "an exercise I
+          might do next", and sizing one at double the other mostly produced
+          two cards whose text baselines did not line up. Equal cards, equal
+          weight, and the grid finally reads as a grid. */}
+      <div className="animate-slide-up stack-section grid grid-cols-2 gap-3" style={{ animationDelay: '280ms' }}>
+        <Link to="/assessments" className="card press flex flex-col p-5">
+          <span className="marginalia">Tests</span>
+          <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
+            Twenty-one questionnaires
+          </p>
+          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+            PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
+          </p>
         </Link>
 
-        <Link
-          to="/inkblot-test"
-          className="card press p-5"
-        >
-          <div>
-            <span className="marginalia">Inkblot</span>
-            <p className="font-display mt-2.5 text-2xl leading-snug">Ten plates</p>
-            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-              Longer, in your own words. Typed or spoken.
-            </p>
-          </div>
+        <Link to="/inkblot-test" className="card press flex flex-col p-5">
+          <span className="marginalia">Inkblot</span>
+          <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">Ten plates</p>
+          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+            Longer, in your own words. Typed or spoken.
+          </p>
         </Link>
+      </div>
+
+      {/* --------------------------------------------------------- assistant */}
+      <div className="animate-slide-up stack-section" style={{ animationDelay: '330ms' }}>
+        <HomeAssistant checkin={status.record} />
       </div>
 
       <div className="rule-fade stack-section" />

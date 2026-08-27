@@ -37,7 +37,11 @@ function Helplines({ items }) {
   );
 }
 
-export default function ChatPanel({ checkin, onClose }) {
+// `initialQuestion` lets Home hand over a question the person already typed
+// there, so they are not made to type it twice into a second box. It is sent
+// once, and only after the opener has landed — the API requires the first
+// message to be the assistant's, and firing both at once would race.
+export default function ChatPanel({ checkin, onClose, initialQuestion = null }) {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
@@ -45,6 +49,7 @@ export default function ChatPanel({ checkin, onClose }) {
   const [isMock, setIsMock] = useState(false);
   const scrollRef = useRef(null);
   const started = useRef(false);
+  const askedRef = useRef(false);
 
   // Ask the agent for its opening line once, seeded with today's check-in.
   useEffect(() => {
@@ -64,14 +69,12 @@ export default function ChatPanel({ checkin, onClose }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy]);
 
-  async function send(e) {
-    e.preventDefault();
-    const text = draft.trim();
+  async function ask(raw) {
+    const text = (raw || '').trim();
     if (!text || busy) return;
 
     const next = [...messages, { role: 'user', content: text }];
     setMessages(next);
-    setDraft('');
     setBusy(true);
     setError(null);
 
@@ -87,6 +90,32 @@ export default function ChatPanel({ checkin, onClose }) {
       setBusy(false);
     }
   }
+
+  function send(e) {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text || busy) return;
+    setDraft('');
+    void ask(text);
+  }
+
+  // Hand-off from Home. Waits for the opener so the history starts with the
+  // assistant, and runs once even if this re-renders while the reply is in
+  // flight.
+  //
+  // `error` is in the gate as well as the opener, and that is the whole point
+  // of it: if the opener never arrives, waiting for it forever would swallow
+  // the question the person had already typed on the previous screen. It goes
+  // into the transcript either way. Sending it will probably fail too — but
+  // failing visibly, under their own words, beats their words disappearing.
+  useEffect(() => {
+    if (!initialQuestion || askedRef.current) return;
+    if (busy) return;
+    if (messages.length === 0 && !error) return;
+    askedRef.current = true;
+    void ask(initialQuestion);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuestion, busy, messages.length, error]);
 
   return (
     <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--surface-2)] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
