@@ -179,7 +179,7 @@ function greeting() {
 // real card, so nothing moves when the answer arrives.
 function PrimarySkeleton() {
   return (
-    <div className="card p-6 sm:p-8" role="status">
+    <div className="p-6 sm:p-8" role="status">
       <span className="sr-only">Checking whether you have checked in today…</span>
       <div aria-hidden="true">
         <div className="h-2.5 w-16 rounded-full bg-[var(--surface-4)]" />
@@ -300,15 +300,24 @@ export default function Landing() {
         </h1>
       </div>
 
-      {/* --------------------------------------------------- primary action */}
-      <div className="animate-slide-up stack-block" style={{ animationDelay: '80ms' }}>
+      {/* ------------------------------------------------------- today panel */}
+      {/* Check-in, the right-now shortcuts and the inkblot were three separate
+          cards with three separate borders and three gaps between them. They
+          are one thing — what you might do on this screen, today — and reading
+          them as three made the page feel like a list of unrelated products.
+          One panel, hairline rules instead of gaps, ordered by how much of a
+          decision each is: the check-in first, a shortcut out of a bad moment
+          second, the longer exercise last. */}
+      <section className="animate-slide-up card stack-block overflow-hidden p-0">
+        {/* --------------------------------------------------- primary action */}
+        <div style={{ animationDelay: '80ms' }}>
         {status.loading ? (
           <PrimarySkeleton />
         ) : status.checkedIn ? (
           <Link
             to="/results"
             state={{ record: status.record }}
-            className="card press block p-6 sm:p-7"
+            className="press block p-6 sm:p-7"
           >
             <div>
               <div className="flex items-center gap-2.5">
@@ -352,15 +361,20 @@ export default function Landing() {
         ) : (
           <Link
             to="/checkin"
-            className="press block rounded-[18px] border border-[var(--color-teal)]/25 p-6 sm:p-8"
+            className="press block p-6 sm:p-8"
             style={{ background: 'rgba(31,174,149,0.08)' }}
           >
             <div>
               <span className="marginalia">Today</span>
+              {/* Was "Three shapes, three words." — an instruction, and one
+                  that framed the check-in as a task with a correct way to
+                  complete it. It is not a test and there is nothing to get
+                  right. A question in the same voice the companion opens
+                  with asks for the same thing without grading it. */}
               <p className="font-display mt-3 text-[1.9rem] leading-[1.15] sm:text-[2.5rem]">
-                Three shapes,
+                How is today
                 <br />
-                three words.
+                sitting?
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
                 Thirty seconds. Then a thought for the day, and one more day on your streak.
@@ -389,8 +403,8 @@ export default function Landing() {
         )}
       </div>
 
-      {/* --------------------------------------------------------- right now */}
-      <section className="animate-slide-up stack-section" style={{ animationDelay: '150ms' }}>
+        {/* --------------------------------------------------------- right now */}
+        <div className="border-t border-[var(--line-1)] px-6 py-5">
         {/* This used to be headed "Right now, I feel…", which promised a mood
             picker and delivered a triage menu — four negative states and no
             way to say you were fine. Four separate reviewers read it as a
@@ -432,71 +446,60 @@ export default function Landing() {
             </Link>
           ))}
         </div>
-      </section>
-
-      {/* ------------------------------------------------------------ streak */}
-      {streak > 0 && (
-        <div
-          className="animate-slide-up card stack-block px-5 py-4"
-          style={{ animationDelay: '230ms' }}
-        >
-          <p className="text-sm">
-            <span className="num text-2xl text-[var(--color-lavender)]">{streak}</span>
-            <span className="ml-2 text-[var(--color-ink-soft)]">
-              day{streak === 1 ? '' : 's'} of grounding in a row.
-            </span>
-          </p>
         </div>
-      )}
 
-      {/* ------------------------------------------------------ the even row */}
-      {/* Equal columns when there is more than one card, one grid either way.
-          This was a 2/1 split on the argument that a 21-questionnaire library
-          is a bigger destination than ten inkblot plates. That is true of the
-          content and false of the decision: from here both are "an exercise I
-          might do next", and sizing one at double the other mostly produced
-          two cards whose text baselines did not line up.
-
-          With SHOW_TESTS_CARD off, the row collapses to a single full-width
-          card rather than leaving the inkblot in one half of a two-column
-          grid with a hole beside it. */}
-      <div
-        className={`animate-slide-up stack-section grid gap-3 ${SHOW_TESTS_CARD ? 'grid-cols-2' : 'grid-cols-1'}`}
-        style={{ animationDelay: '280ms' }}
-      >
-        {SHOW_TESTS_CARD && (
-          <Link to="/assessments" className="card press flex flex-col p-5">
-            <span className="marginalia">Tests</span>
-            <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
-              Twenty-one questionnaires
+        {/* ------------------------------------------------------------ streak */}
+        {/* Sits with the shortcuts above it rather than in a card of its own —
+            it is a fact about those practices, not a separate feature. */}
+        {streak > 0 && (
+          <div className="border-t border-[var(--line-1)] px-6 py-3.5">
+            <p className="text-sm">
+              <span className="num text-2xl text-[var(--color-lavender)]">{streak}</span>
+              <span className="ml-2 text-[var(--color-ink-soft)]">
+                day{streak === 1 ? '' : 's'} of grounding in a row.
+              </span>
             </p>
-            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-              PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
-            </p>
-          </Link>
+          </div>
         )}
 
-        {/* Text and plates side by side while the card is full width; the
-            plates drop below the text once it is sharing the row, where there
-            is no longer room beside it. */}
-        <Link
-          to="/inkblot-test"
-          className={`card press flex gap-4 p-5 ${
-            SHOW_TESTS_CARD ? 'flex-col' : 'flex-row items-center justify-between'
-          }`}
+        {/* ---------------------------------------------------------- inkblot */}
+        <div
+          className={`border-t border-[var(--line-1)] ${SHOW_TESTS_CARD ? 'grid grid-cols-2 divide-x divide-[var(--line-1)]' : ''}`}
         >
-          <span className="block min-w-0">
-            <span className="marginalia">Inkblot</span>
-            <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
-              Ten plates
+          {SHOW_TESTS_CARD && (
+            <Link to="/assessments" className="press flex flex-col p-6">
+              <span className="marginalia">Tests</span>
+              <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
+                Twenty-one questionnaires
+              </p>
+              <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+                PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
+              </p>
+            </Link>
+          )}
+
+          {/* Text and plates side by side while this row is full width; the
+              plates drop below the text once it is sharing the row, where
+              there is no longer space beside it. */}
+          <Link
+            to="/inkblot-test"
+            className={`press flex gap-4 p-6 ${
+              SHOW_TESTS_CARD ? 'flex-col' : 'flex-row items-center justify-between'
+            }`}
+          >
+            <span className="block min-w-0">
+              <span className="marginalia">Inkblot</span>
+              <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
+                Ten plates
+              </span>
+              <span className="mt-2 block text-sm text-[var(--color-ink-soft)]">
+                Longer, in your own words. Typed or spoken.
+              </span>
             </span>
-            <span className="mt-2 block text-sm text-[var(--color-ink-soft)]">
-              Longer, in your own words. Typed or spoken.
-            </span>
-          </span>
-          <PlateFan />
-        </Link>
-      </div>
+            <PlateFan />
+          </Link>
+        </div>
+      </section>
 
       {/* --------------------------------------------------------- assistant */}
       <div className="animate-slide-up stack-section" style={{ animationDelay: '330ms' }}>
