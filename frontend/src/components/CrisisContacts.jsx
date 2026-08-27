@@ -1,11 +1,37 @@
 import { useEffect, useState } from 'react';
 
+// Two groups, in this order deliberately. The national lines are staffed by
+// people trained for this conversation and answer from anywhere; campus
+// numbers reach someone who can physically walk to you. Both matter, and
+// which one is "first" depends on whether the emergency is in your head or
+// in the corridor — so neither is hidden behind a tab.
 const HELPLINES = [
-  { name: 'Emergency (police / ambulance)', number: '112', note: 'If you or someone else is in immediate danger' },
-  { name: 'KIRAN Mental Health Helpline', number: '1800-599-0019', note: 'Govt. of India, 24/7, toll-free' },
-  { name: 'iCall (TISS)', number: '9152987821', note: 'Mon–Sat, 8am–10pm' },
-  { name: 'Vandrevala Foundation', number: '1860-2662-345', note: '24/7' },
-  { name: 'AASRA', number: '9820466726', note: '24/7' },
+  { id: 'emergency-112', name: 'Emergency (police / ambulance)', number: '112', note: 'If you or someone else is in immediate danger' },
+  { id: 'kiran', name: 'KIRAN Mental Health Helpline', number: '1800-599-0019', note: 'Govt. of India, 24/7, toll-free' },
+  { id: 'icall', name: 'iCall (TISS)', number: '9152987821', note: 'Mon–Sat, 8am–10pm' },
+  { id: 'vandrevala', name: 'Vandrevala Foundation', number: '1860-2662-345', note: '24/7' },
+  { id: 'aasra', name: 'AASRA', number: '9820466726', note: '24/7' },
+];
+
+// IIT Kharagpur. Keyed by id rather than by number: the Security Control Room's
+// second line and the Quick Response Room are published as the same number, so
+// keying on the number would collide and drop one of the two rows.
+const CAMPUS = [
+  { id: 'security-1', name: 'Security Control Room', number: '+91 3222282751', note: 'Campus security' },
+  { id: 'security-2', name: 'Security Control Room (Alt 1)', number: '+91 3222281001', note: 'Campus security' },
+  { id: 'security-3', name: 'Security Control Room (Alt 2)', number: '+91 3222281002', note: 'Campus security' },
+  { id: 'qrr-1', name: 'Quick Response Room', number: '+91 3222281002', note: 'Emergency response' },
+  { id: 'qrr-2', name: 'Quick Response Room (Alt)', number: '+91 3222281003', note: 'Emergency response' },
+  { id: 'fire', name: 'Fire Emergency', number: '+91 3222255709', note: 'Fire safety' },
+  { id: 'security-officer', name: 'IIT KGP Security Officer', number: '+91 9434386647', note: 'Campus security' },
+  { id: 'gsw', name: 'Dnyaneshwari Ghare', number: '7499306778', note: "General Secretary, Students' Welfare" },
+  { id: 'icc-1', name: 'ICC Chairperson', number: '03222-283312', note: 'Internal Complaints Committee' },
+  { id: 'icc-2', name: 'ICC Chairperson (Alt)', number: '03222-281750', note: 'Internal Complaints Committee' },
+];
+
+const GROUPS = [
+  { id: 'helplines', label: null, entries: HELPLINES },
+  { id: 'campus', label: 'On campus — IIT Kharagpur', entries: CAMPUS },
 ];
 
 export default function CrisisContacts({ variant = 'button', dark = false }) {
@@ -111,23 +137,30 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
                 These lines are free and confidential. If you're in immediate danger, call 112.
               </p>
 
-              <div className="mt-4 space-y-2 pb-2">
-                {HELPLINES.map((h) => (
-                  <a
-                    key={h.number}
-                    href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
-                    className="press flex items-center justify-between gap-3 rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] px-4 py-3 transition-colors hover:border-[var(--color-teal)]/40 hover:bg-[var(--surface-3)]"
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-sm font-medium">{h.name}</span>
-                      <span className="block text-xs text-[var(--color-muted)]">{h.note}</span>
-                    </span>
-                    <span className="num shrink-0 text-lg whitespace-nowrap text-[var(--color-teal-dark)]">
-                      {h.number}
-                    </span>
-                  </a>
-                ))}
-              </div>
+              {GROUPS.map((group) => (
+                <div key={group.id} className="mt-4 pb-2">
+                  {group.label && (
+                    <p className="marginalia mb-2">{group.label}</p>
+                  )}
+                  <div className="space-y-2">
+                    {group.entries.map((h) => (
+                      <a
+                        key={h.id}
+                        href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
+                        className="press flex items-center justify-between gap-3 rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] px-4 py-3 transition-colors hover:border-[var(--color-teal)]/40 hover:bg-[var(--surface-3)]"
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-medium">{h.name}</span>
+                          <span className="block text-xs text-[var(--color-muted)]">{h.note}</span>
+                        </span>
+                        <span className="num shrink-0 text-base whitespace-nowrap text-[var(--color-teal-dark)]">
+                          {h.number}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="shrink-0 p-6 pt-4">
