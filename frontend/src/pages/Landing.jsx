@@ -25,6 +25,16 @@ import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/
 // moment should not have to navigate to a section and browse a library; one
 // tap from here goes straight into a practice.
 
+// Hidden for now, not deleted — flip to true to bring it back.
+//
+// The card advertised the size of the library ("Twenty-one questionnaires"),
+// which was its job when it was the only door to the tests. The Tests button
+// in the header now opens straight onto three of them, so the card had become
+// a second, larger, vaguer route to the same place. Nothing else about the
+// feature is switched off: More, Paths and Read all still reach it, and the
+// /assessments route is untouched.
+const SHOW_TESTS_CARD = false;
+
 const QUICK = [
   { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)' },
   { mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)' },
@@ -395,23 +405,31 @@ export default function Landing() {
       )}
 
       {/* ------------------------------------------------------ the even row */}
-      {/* Two equal columns, matched heights, one grid.
+      {/* Equal columns when there is more than one card, one grid either way.
           This was a 2/1 split on the argument that a 21-questionnaire library
           is a bigger destination than ten inkblot plates. That is true of the
           content and false of the decision: from here both are "an exercise I
           might do next", and sizing one at double the other mostly produced
-          two cards whose text baselines did not line up. Equal cards, equal
-          weight, and the grid finally reads as a grid. */}
-      <div className="animate-slide-up stack-section grid grid-cols-2 gap-3" style={{ animationDelay: '280ms' }}>
-        <Link to="/assessments" className="card press flex flex-col p-5">
-          <span className="marginalia">Tests</span>
-          <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
-            Twenty-one questionnaires
-          </p>
-          <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-            PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
-          </p>
-        </Link>
+          two cards whose text baselines did not line up.
+
+          With SHOW_TESTS_CARD off, the row collapses to a single full-width
+          card rather than leaving the inkblot in one half of a two-column
+          grid with a hole beside it. */}
+      <div
+        className={`animate-slide-up stack-section grid gap-3 ${SHOW_TESTS_CARD ? 'grid-cols-2' : 'grid-cols-1'}`}
+        style={{ animationDelay: '280ms' }}
+      >
+        {SHOW_TESTS_CARD && (
+          <Link to="/assessments" className="card press flex flex-col p-5">
+            <span className="marginalia">Tests</span>
+            <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
+              Twenty-one questionnaires
+            </p>
+            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+              PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
+            </p>
+          </Link>
+        )}
 
         <Link to="/inkblot-test" className="card press flex flex-col p-5">
           <span className="marginalia">Inkblot</span>
