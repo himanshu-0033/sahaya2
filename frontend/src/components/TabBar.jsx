@@ -109,7 +109,7 @@ export default function TabBar() {
           className="flex items-stretch justify-around border-t border-[var(--line-1)] px-2"
           style={{
             height: 'var(--tabbar-h)',
-            background: 'rgba(7, 8, 10, 0.86)',
+            background: 'rgba(253, 242, 248, 0.9)',
             backdropFilter: 'blur(18px)',
           }}
         >
@@ -161,7 +161,7 @@ export default function TabBar() {
       >
         <div
           className="flex items-center gap-1 rounded-full border border-[var(--line-2)] p-1.5"
-          style={{ background: 'rgba(7, 8, 10, 0.7)', backdropFilter: 'blur(18px)' }}
+          style={{ background: 'rgba(253, 242, 248, 0.78)', backdropFilter: 'blur(18px)' }}
         >
           {TABS.map((tab) => {
             const active = isActive(pathname, tab);

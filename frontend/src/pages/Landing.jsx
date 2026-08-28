@@ -244,7 +244,7 @@ export default function Landing() {
 
   if (profileLoading) {
     return (
-      <div className="grid min-h-screen place-items-center bg-[#07080a] text-[var(--color-muted)]">
+      <div className="grid min-h-screen place-items-center bg-[var(--color-cream)] text-[var(--color-muted)]">
         <span className="animate-pulse">Loading your account…</span>
       </div>
     );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import DarkSignInHero from '../components/DarkSignInHero.jsx';
+import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
+import PasswordAuthForm from '../components/PasswordAuthForm.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
 import Logo from '../components/Logo.jsx';
 
@@ -178,10 +179,6 @@ function SectionHead({ eyebrow, title, sub }) {
 export default function Welcome({ onSignedIn }) {
   const [signingIn, setSigningIn] = useState(false);
 
-  // The auth screen, whole and unmodified. It carries its own crisis contacts
-  // and its own way back.
-  if (signingIn) return <DarkSignInHero onSignedIn={onSignedIn} />;
-
   const go = () => setSigningIn(true);
 
   return (
@@ -240,6 +237,28 @@ export default function Welcome({ onSignedIn }) {
               you ask them to.
             </p>
 
+            {signingIn ? (
+              <div className="w-card mt-9 max-w-sm p-6">
+                <GoogleSignInButton onSignedIn={onSignedIn} />
+                <div
+                  className="my-4 flex items-center gap-3 text-[11px] tracking-wide"
+                  style={{ color: 'var(--w-ink-soft)' }}
+                >
+                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
+                  or use email
+                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
+                </div>
+                <PasswordAuthForm onSignedIn={onSignedIn} />
+                <button
+                  type="button"
+                  onClick={() => setSigningIn(false)}
+                  className="mt-4 w-full text-center text-[12px] underline underline-offset-4"
+                  style={{ color: 'var(--w-ink-soft)' }}
+                >
+                  Back
+                </button>
+              </div>
+            ) : (
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <button
                 type="button"
@@ -257,6 +276,8 @@ export default function Welcome({ onSignedIn }) {
                 See what is inside
               </a>
             </div>
+
+            )}
 
             <p className="mt-4 text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
               Free. No card. You can delete everything from your account page.

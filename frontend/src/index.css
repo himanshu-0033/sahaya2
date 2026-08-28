@@ -5,14 +5,14 @@
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-cream: #07080a;
-  --color-cream-soft: #15171b;
-  --color-ink: #f4f2ee;
-  --color-ink-soft: #b7bcc0;
-  --color-muted: #99a0aa;
-  --color-teal: #1fae95;
-  --color-teal-dark: #5fd6bf;
-  --color-teal-soft: rgba(31, 174, 149, 0.16);
+  --color-cream: #fdf2f8;
+  --color-cream-soft: #f8eaf2;
+  --color-ink: #831843;
+  --color-ink-soft: #475569;
+  --color-muted: #6b7280;
+  --color-teal: #ec4899;
+  --color-teal-dark: #9d174d;
+  --color-teal-soft: rgba(236, 72, 153, 0.14);
   --color-amber: #d9a55c;
   --color-lavender: #a79cf0;
   --color-lavender-soft: rgba(167, 156, 240, 0.16);
@@ -317,19 +317,19 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   /* anything. Inverting for a light theme is now a matter of          */
   /* redefining these values in one block.                             */
   /* ---------------------------------------------------------------- */
-  --surface-1: rgba(255, 255, 255, 0.03);
-  --surface-2: rgba(255, 255, 255, 0.05);
-  --surface-3: rgba(255, 255, 255, 0.08);
-  --surface-4: rgba(255, 255, 255, 0.10);
-  --surface-5: rgba(255, 255, 255, 0.15);
+  --surface-1: rgba(131, 24, 67, 0.03);
+  --surface-2: rgba(131, 24, 67, 0.05);
+  --surface-3: rgba(131, 24, 67, 0.08);
+  --surface-4: rgba(131, 24, 67, 0.10);
+  --surface-5: rgba(131, 24, 67, 0.15);
 
-  --line-1: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.11);
-  --line-3: rgba(255, 255, 255, 0.15);
-  --line-4: rgba(255, 255, 255, 0.24);
-  --line-5: rgba(255, 255, 255, 0.30);
-  --line-6: rgba(255, 255, 255, 0.40);
-  --line-7: rgba(255, 255, 255, 0.60);
+  --line-1: rgba(131, 24, 67, 0.08);
+  --line-2: rgba(131, 24, 67, 0.11);
+  --line-3: rgba(131, 24, 67, 0.15);
+  --line-4: rgba(131, 24, 67, 0.24);
+  --line-5: rgba(131, 24, 67, 0.30);
+  --line-6: rgba(131, 24, 67, 0.40);
+  --line-7: rgba(131, 24, 67, 0.60);
 
   /* Two steps below --color-muted — and they are NOT the same step, which is
      what a single token used to pretend.
@@ -346,7 +346,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
      over the top of it. 0.5 alpha measures 4.9:1 on the page ground and
      4.9:1 on a card, clearing 4.5:1 on both, and still reads as a hint
      rather than as a value someone has already entered. */
-  --ink-faint: rgba(244, 242, 238, 0.3);
+  --ink-faint: rgba(131, 24, 67, 0.35);
   --ink-placeholder: rgba(244, 242, 238, 0.5);
 }
 
@@ -377,8 +377,8 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
    part. Section colour now appears only in small, deliberate places: the
    active tab, a duration pill, a section marker. */
 .card {
-  background: rgba(255, 255, 255, 0.028);
-  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: #ffffff;
+  border: 1px solid rgba(131, 24, 67, 0.1);
   border-radius: 18px;
   transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
@@ -386,8 +386,8 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 @media (hover: hover) and (pointer: fine) {
   a.card:hover,
   button.card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.16);
+    background: #fffdfe;
+    border-color: rgba(131, 24, 67, 0.18);
   }
 }
 
