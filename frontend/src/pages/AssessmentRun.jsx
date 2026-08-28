@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import ScoreRing from '../components/ScoreRing.jsx';
 import CrisisContacts from '../components/CrisisContacts.jsx';
@@ -9,6 +9,15 @@ import { useSession } from '../lib/useSession.js';
 import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
 import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
 import { allAnswered, clearOrphans, stepsFor } from '../lib/steps.js';
+import {
+  SET_PARAM,
+  clearSetResults,
+  labelFor,
+  parseSet,
+  readSetResults,
+  recordSetResult,
+  setHref,
+} from '../lib/testSet.js';
 
 const draftKey = (id) => `sahay:assessment-draft:${id}`;
 
@@ -24,6 +33,35 @@ function encouragement(step, total, followUpPending) {
   if (left <= 3) return `${left} to go.`;
   if (step / total >= 0.5) return 'Past halfway.';
   return 'No rush. You can stop and come back.';
+}
+
+// Where you are in the three-test sitting. One rail for the set sits above
+// the per-question dots, so the two questions a person has mid-form — "how
+// much of this form is left" and "how much of this is left" — have separate
+// answers instead of one ambiguous bar.
+function SetRail({ names, index }) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-center gap-1.5">
+        {names.map((name, i) => (
+          <span
+            key={name + i}
+            className={`h-[3px] flex-1 rounded-full transition-colors ${
+              i < index
+                ? 'bg-[var(--sec-tests)]'
+                : i === index
+                  ? 'bg-[var(--sec-tests)]/55'
+                  : 'bg-[var(--surface-4)]'
+            }`}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+      <p className="marginalia mt-2.5">
+        Test {index + 1} of {names.length}
+      </p>
+    </div>
+  );
 }
 
 function Dots({ answers, current, onJump }) {
@@ -56,8 +94,27 @@ export default function AssessmentRun() {
   const { instrumentId } = useParams();
   const navigate = useNavigate();
   const session = useSession();
+  const [searchParams] = useSearchParams();
+
+  // The sitting this instrument belongs to, if any. An id that is not in the
+  // list behaves exactly as it did before the set existed.
+  const setParam = searchParams.get(SET_PARAM) || '';
+  const setIds = useMemo(() => parseSet(setParam), [setParam]);
+  const setIndex = setIds.indexOf(instrumentId);
+  const inSet = setIndex >= 0;
+  const nextInSet = inSet ? setIds[setIndex + 1] : undefined;
+
+  // Set to true once the last instrument in the set is scored: the screen
+  // then shows the three results together rather than the last one alone.
+  const [setDone, setSetDone] = useState(false);
+  const [setSummary, setSetSummary] = useState([]);
 
   const [instrument, setInstrument] = useState(null);
+  // Which instrument the result on screen belongs to. Moving to the next test
+  // in a set changes the URL a frame before the load effect can clear state,
+  // and without this the previous questionnaire's score flashes up over the
+  // next one's first question.
+  const [resultFor, setResultFor] = useState(null);
   const [answers, setAnswers] = useState([]);
   // The unscored trailing question, kept out of `answers` so nothing that
   // counts or sums that array can pick it up.
@@ -85,6 +142,9 @@ export default function AssessmentRun() {
     }
     setLoading(true);
     setError(null);
+    // Leaving a finished set by going back into it should put you on the
+    // questionnaire, not on the summary you already dismissed.
+    setSetDone(false);
     getAssessmentInstrument(instrumentId)
       .then((data) => {
         const count = data.instrument.items.length;
@@ -122,6 +182,20 @@ export default function AssessmentRun() {
       .finally(() => setLoading(false));
   }, [instrumentId, session, navigate, reloadKey]);
 
+  // Lay the set's finished scores side by side. Read back out of storage
+  // rather than kept in state because the two earlier results were written by
+  // two earlier mounts of this component.
+  const finishSet = useCallback(() => {
+    const stored = readSetResults(setIds);
+    setSetSummary(setIds.map((id) => stored[id]).filter(Boolean));
+    setSetDone(true);
+  }, [setIds]);
+
+  const advanceSet = useCallback(() => {
+    if (nextInSet) navigate(setHref(setIds, nextInSet));
+    else finishSet();
+  }, [nextInSet, setIds, navigate, finishSet]);
+
   const submit = useCallback(
     async (finalAnswers, finalFollowUp = null) => {
       setSubmitting(true);
@@ -133,6 +207,7 @@ export default function AssessmentRun() {
           followUp: finalFollowUp,
         });
         setResult(data.record);
+        setResultFor(instrumentId);
         setPrevious(data.previous);
         setHelplines(data.helplines);
         setCrisis(data.crisis || null);
@@ -141,13 +216,35 @@ export default function AssessmentRun() {
         } catch {
           // Nothing to clean up if storage is unavailable.
         }
+
+        if (inSet) {
+          recordSetResult(setIds, instrumentId, {
+            id: instrumentId,
+            name: data.record.instrumentName,
+            score: data.record.score,
+            maxScore: data.record.maxScore,
+            band: data.record.band,
+            reportsBandOnly: data.record.reportsBandOnly,
+          });
+          // Straight on to the next questionnaire — the whole point of the
+          // set is that it is one sitting, and a results screen between each
+          // pair would make it three.
+          //
+          // Unless the answers brought back helplines. Then the set stops
+          // here and the crisis screen gets the full attention it is for;
+          // there is a button on it to carry on when the person is ready.
+          if (!data.helplines) {
+            advanceSet();
+            return;
+          }
+        }
       } catch (err) {
         setError(err);
       } finally {
         setSubmitting(false);
       }
     },
-    [instrumentId],
+    [instrumentId, inSet, setIds, advanceSet],
   );
 
   const saveDraft = useCallback(
@@ -256,6 +353,7 @@ export default function AssessmentRun() {
   if (!session) return null;
 
   const complete = instrument && allAnswered(instrument, answers);
+  const liveResult = resultFor === instrumentId ? result : null;
   // One dot per step on the board, follow-up included once it is being asked.
   const dots = steps.map((st) => (st === itemCount ? followUpAnswer : answers[st]));
 
@@ -275,18 +373,21 @@ export default function AssessmentRun() {
         )}
 
         {/* ---------- taking it ---------- */}
-        {!loading && instrument && !result && (
+        {!loading && instrument && !liveResult && !setDone && (
           <>
             <header className="flex items-center justify-between gap-4">
               <button
                 type="button"
-                onClick={() => navigate('/assessments')}
+                onClick={() => {
+                  if (inSet) clearSetResults(setIds);
+                  navigate('/assessments');
+                }}
                 className="press flex items-center gap-2 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M15 18l-6-6 6-6" />
                 </svg>
-                All tests
+                {inSet ? 'Leave the set' : 'All tests'}
               </button>
               <p className="marginalia">
                 {instrument.name}
@@ -294,6 +395,7 @@ export default function AssessmentRun() {
             </header>
 
             <div className="mt-6">
+              {inSet && <SetRail names={setIds.map(labelFor)} index={setIndex} />}
               <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
               <p className="mt-3 text-[11px] text-[var(--color-muted)]">
                 {answered} of {askedItemSteps.length} answered
@@ -429,7 +531,7 @@ export default function AssessmentRun() {
         )}
 
         {/* ---------- result ---------- */}
-        {result && (
+        {liveResult && !setDone && (
           <div className="animate-fade-up">
             {helplines && (
               <div
@@ -582,30 +684,132 @@ export default function AssessmentRun() {
               </svg>
             </Link>
 
+            {/* Only reachable inside a set when the answers brought back
+                helplines — every other result in a set advances on its own.
+                So the way on is offered, never taken automatically: whoever
+                is reading a crisis screen decides when they are done with
+                it. */}
+            {inSet ? (
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button className="w-auto px-6" onClick={advanceSet}>
+                  {nextInSet ? `Continue — ${labelFor(nextInSet)}` : 'See all three'}
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="w-auto px-6"
+                  onClick={() => {
+                    clearSetResults(setIds);
+                    navigate('/');
+                  }}
+                >
+                  Stop here
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button className="w-auto px-6" onClick={() => navigate('/assessments')}>
+                  Back to all tests
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="w-auto px-6"
+                  onClick={() => {
+                    setResult(null);
+                    setPrevious(null);
+                    setHelplines(null);
+                    setCrisis(null);
+                    setAnswers(new Array(instrument.items.length).fill(null));
+                    setFollowUpAnswer(null);
+                    setStep(0);
+                  }}
+                >
+                  Take it again
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ---------- the whole set ---------- */}
+        {setDone && (
+          <div className="animate-fade-up">
+            <p className="marginalia">Three tests, one sitting</p>
+            <h1 className="font-display mt-3 text-[2rem] leading-tight sm:text-4xl">
+              Where you are, roughly
+              <span className="text-[var(--sec-tests)]">.</span>
+            </h1>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              Three ranges, side by side. Low mood, worry and wellbeing move
+              somewhat independently — which is the reason for taking all three
+              rather than reading one of them as the whole picture.
+            </p>
+
+            <div className="mt-7 space-y-3">
+              {setSummary.map((r) => (
+                <div key={r.id} className="card p-5 sm:p-6">
+                  <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <p className="text-sm text-[var(--color-ink-soft)]">{r.name}</p>
+                    {!r.reportsBandOnly && (
+                      <p className="num text-2xl leading-none">
+                        {r.score}
+                        <span className="text-sm text-[var(--color-muted)]">/{r.maxScore}</span>
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className="mt-3 inline-block rounded-full px-3.5 py-1.5 text-xs"
+                    style={{ background: bandTint(r.band), color: bandColor(r.band) }}
+                  >
+                    {r.band.label}
+                  </span>
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                    {r.band.note}
+                  </p>
+                  <Link
+                    to={`/read/tests/${r.id}`}
+                    className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+                  >
+                    What the {r.name} can and cannot tell you
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-7 text-xs leading-relaxed text-[var(--color-muted)]">
+              Each score places you in a range that a published questionnaire defines. None of
+              them is a diagnosis, they describe the last few weeks rather than you, and they can
+              move a lot with sleep, exams and illness. All three are saved to your account, and
+              shared with a counsellor only if you have invited one.
+            </p>
+
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button className="w-auto px-6" onClick={() => navigate('/assessments')}>
-                Back to all tests
+              <Button
+                className="w-auto px-6"
+                onClick={() => {
+                  clearSetResults(setIds);
+                  navigate('/');
+                }}
+              >
+                Done
               </Button>
               <Button
                 variant="secondary"
                 className="w-auto px-6"
                 onClick={() => {
-                  setResult(null);
-                  setPrevious(null);
-                  setHelplines(null);
-                  setCrisis(null);
-                  setAnswers(new Array(instrument.items.length).fill(null));
-                  setFollowUpAnswer(null);
-                  setStep(0);
+                  clearSetResults(setIds);
+                  navigate('/assessments');
                 }}
               >
-                Take it again
+                See all twenty-one
               </Button>
             </div>
           </div>
         )}
 
-        {instrument && (
+        {instrument && !setDone && (
           <p className="stack-section text-[11px] leading-relaxed text-[var(--color-muted)]">
             {instrument.fullName}. {instrument.citation}. Licence: {instrument.license}.
           </p>

@@ -8,6 +8,7 @@ import { SkeletonCards } from '../components/Skeleton.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getAssessmentCatalog } from '../lib/api.js';
 import { bandColor, bandTint } from '../lib/bands.js';
+import { SET_IDS, labelFor, setStartHref } from '../lib/testSet.js';
 
 // Order the domains deliberately rather than however the catalog arrives:
 // safety first, then mood and distress, the social block next, strengths after
@@ -198,6 +199,36 @@ export default function Assessments() {
           </Link>
         </div>
       </div>
+
+      {/* The set, above the shelf of twenty-one.
+
+          A catalogue answers "which one do you want", and most people opening
+          this page cannot answer that — they want to know where they are, and
+          that takes three instruments, not one. So the common case gets a
+          button and the library stays underneath it for everyone who does
+          know what they came for. */}
+      <Link
+        to={setStartHref(SET_IDS)}
+        className="animate-slide-up card press stack-block flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between"
+        style={{ animationDelay: '40ms' }}
+      >
+        <span className="block min-w-0">
+          <span className="marginalia">Start here</span>
+          <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
+            All three, in one sitting
+          </span>
+          <span className="mt-2 block text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            {SET_IDS.map(labelFor).join(', ')} — low mood, worry and wellbeing. About six
+            minutes, one set of results.
+          </span>
+        </span>
+        <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[var(--sec-tests)] px-5 py-2.5 text-sm font-medium text-[#07080a] sm:self-auto">
+          Take all three
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
+      </Link>
 
       {loading && instruments.length === 0 && (
         <SkeletonCards label="Loading the questionnaires…" count={6} />

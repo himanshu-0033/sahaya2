@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { SET_IDS, setHref, setStartHref } from '../lib/testSet.js';
 
 // The Tests door, on Home.
 //
@@ -7,6 +8,14 @@ import { Link, useNavigate } from 'react-router-dom';
 // who has decided to take a test still has to pick one, and picking one means
 // reading a filtered list of instrument acronyms — which is a research task,
 // not a thirty-second decision. So this offers three, and a way past them.
+//
+// And it offers them as a set rather than as a choice of one. The question
+// people actually arrive with is "where am I, roughly", and no single
+// instrument answers it: a flat PHQ-9 with a bad GAD-7 under it is a common
+// and completely different picture from either read alone. Twenty-one minutes
+// of reading to work that out, or six of answering — so the button takes all
+// three in one sitting, and each row is still there for anyone who only
+// wanted the one.
 //
 // The three are the ones a person tends to arrive already half-knowing they
 // want: low mood, anxiety, and — deliberately — one where a high score is the
@@ -46,7 +55,6 @@ const FEATURED = [
 export default function TestsPanel() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [chosen, setChosen] = useState(FEATURED[0].id);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -57,20 +65,20 @@ export default function TestsPanel() {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  function start() {
+  function startSet() {
     setOpen(false);
-    navigate('/assessments/' + chosen);
+    navigate(setStartHref(SET_IDS));
   }
 
-  const cardClass = (active) =>
-    active
-      ? 'press block w-full rounded-2xl border p-4 text-left transition-colors border-[var(--sec-tests)] bg-[var(--sec-tests)]/10'
-      : 'press block w-full rounded-2xl border p-4 text-left transition-colors border-[var(--line-1)] bg-[var(--surface-1)] hover:bg-[var(--surface-3)]';
-
-  const dotClass = (active) =>
-    active
-      ? 'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors border-[var(--sec-tests)]'
-      : 'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors border-[var(--line-3)]';
+  // Jumping into the middle of the set rather than out of it: someone who
+  // taps GAD-7 gets GAD-7 first and is still offered the other two after,
+  // which is what "I mainly want the anxiety one" usually means.
+  function startAt(id) {
+    setOpen(false);
+    // Reordered, not truncated: the chosen one leads and the other two still
+    // follow, so "I mainly want the anxiety one" costs nothing.
+    navigate(setHref([id, ...SET_IDS.filter((other) => other !== id)], id));
+  }
 
   return (
     <>
@@ -103,7 +111,7 @@ export default function TestsPanel() {
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label="Choose a test"
+          aria-label="Take the three-test set"
         >
           {/* Header and the start button stay put; only the choices scroll, so
               the way out and the way on are both always on screen. */}
@@ -114,7 +122,7 @@ export default function TestsPanel() {
             <div className="flex shrink-0 items-start justify-between gap-4 p-6 pb-3">
               <div>
                 <p className="marginalia">Tests</p>
-                <h3 className="font-display mt-2 text-2xl leading-snug">Pick one to start.</h3>
+                <h3 className="font-display mt-2 text-2xl leading-snug">Three, in one sitting.</h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
@@ -129,26 +137,32 @@ export default function TestsPanel() {
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6">
               <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                The same instruments used in clinics and research — PHQ-9, GAD-7 and nineteen
-                more. Each gives a score and the range it falls in. A range is a description of a
-                few weeks, not a diagnosis of you.
+                The same instruments used in clinics and research. These three take about six
+                minutes together and cover low mood, worry and wellbeing — three things that do
+                not move in step, which is why they are asked separately. Each gives a score and
+                the range it falls in. A range is a description of a few weeks, not a diagnosis
+                of you.
               </p>
 
-              <div className="mt-4 space-y-2 pb-2" role="radiogroup" aria-label="Available tests">
-                {FEATURED.map((t) => {
-                  const active = t.id === chosen;
-                  return (
+              <ol className="mt-4 space-y-2 pb-2">
+                {FEATURED.map((t, i) => (
+                  <li key={t.id}>
                     <button
-                      key={t.id}
                       type="button"
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => setChosen(t.id)}
-                      onDoubleClick={start}
-                      className={cardClass(active)}
+                      onClick={() => startAt(t.id)}
+                      className="press block w-full rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] p-4 text-left transition-colors hover:border-[var(--sec-tests)]/45 hover:bg-[var(--surface-3)]"
                     >
-                      <span className="flex items-start justify-between gap-3">
-                        <span className="min-w-0">
+                      <span className="flex items-start gap-3">
+                        {/* A position in a sequence, not a checkbox. This is a
+                            running order now, and a tick or a radio dot would
+                            both claim a choice is being made here. */}
+                        <span
+                          aria-hidden="true"
+                          className="num mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--line-3)] text-[11px] text-[var(--color-muted)]"
+                        >
+                          {i + 1}
+                        </span>
+                        <span className="min-w-0 flex-1">
                           <span className="block text-sm font-medium">
                             {t.domain}
                             <span className="ml-2 text-[var(--color-muted)]">{t.name}</span>
@@ -157,29 +171,23 @@ export default function TestsPanel() {
                             {t.line}
                           </span>
                           <span className="mt-1 block text-[11px] text-[var(--color-muted)]">
-                            {t.meta}
+                            {t.meta} · tap to start here
                           </span>
-                        </span>
-                        {/* A radio dot, not a tick. A tick reads as "already
-                            done", which for a list of questionnaires nobody
-                            has taken yet is exactly the wrong thing to say. */}
-                        <span aria-hidden="true" className={dotClass(active)}>
-                          {active && <span className="h-2.5 w-2.5 rounded-full bg-[var(--sec-tests)]" />}
                         </span>
                       </span>
                     </button>
-                  );
-                })}
-              </div>
+                  </li>
+                ))}
+              </ol>
             </div>
 
             <div className="shrink-0 space-y-3 p-6 pt-3">
               <button
                 type="button"
-                onClick={start}
+                onClick={startSet}
                 className="press w-full rounded-full bg-[var(--sec-tests)] py-3 text-sm font-medium text-[#07080a]"
               >
-                Start
+                Take all three — about 6 minutes
               </button>
               <Link
                 to="/assessments"

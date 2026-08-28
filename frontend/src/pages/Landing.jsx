@@ -377,7 +377,8 @@ export default function Landing() {
                 sitting?
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                Thirty seconds. Then a thought for the day, and one more day on your streak.
+                Thirty seconds, then a thought for the day and one more day on your streak — and
+                the ten inkblot plates after it, if you have the ten minutes.
               </p>
               <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-[#07080a]">
                 Start check-in
@@ -492,8 +493,11 @@ export default function Landing() {
               <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
                 Ten plates
               </span>
+              {/* Still its own door as well as the tail of the check-in: the
+                  plates are worth taking on a day you have already checked
+                  in, and on a day you would rather not answer a mood scale. */}
               <span className="mt-2 block text-sm text-[var(--color-ink-soft)]">
-                Longer, in your own words. Typed or spoken.
+                On its own, without the check-in in front of it.
               </span>
             </span>
             <PlateFan />

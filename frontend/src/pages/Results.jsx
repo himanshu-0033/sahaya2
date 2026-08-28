@@ -57,6 +57,12 @@ export default function Results() {
   const navigate = useNavigate();
   const session = useSession();
   const [record, setRecord] = useState(location.state?.record || null);
+  // Set only when the ten plates were taken as part of this sitting — the
+  // check-in now runs straight on into them. Read once from navigation state
+  // rather than fetched: this screen is about today, and a Rorschach from
+  // last Tuesday is not news.
+  const inkblot = location.state?.inkblot || null;
+  const inkblotHelplines = location.state?.inkblotHelplines || null;
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(!location.state?.record);
 
@@ -134,18 +140,101 @@ export default function Results() {
             )}
           </div>
 
+          {/* What the ten plates came to, when they were part of this
+              sitting. Counts, not conclusions — the same line the inkblot
+              screen holds, and the reason it is a card of tallies rather than
+              a reading. */}
+          {inkblot && (
+            <section className="animate-slide-up stack-block" style={{ animationDelay: '200ms' }}>
+              <p className="marginalia">And the ten plates</p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="card p-5">
+                  <p className="marginalia">Plates answered</p>
+                  <p className="num mt-2.5 text-[2.2rem] leading-none">
+                    {inkblot.summary.respondedCount}
+                    <span className="text-lg text-[var(--color-muted)]">
+                      /{inkblot.summary.plateCount}
+                    </span>
+                  </p>
+                </div>
+                <div className="card p-5">
+                  <p className="marginalia">Words written</p>
+                  <p className="num mt-2.5 text-[2.2rem] leading-none">
+                    {inkblot.summary.wordCount}
+                  </p>
+                </div>
+              </div>
+
+              {inkblot.summary.recurring.length > 0 && (
+                <div className="card mt-3 p-6">
+                  <p className="marginalia">Came up on more than one plate</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {inkblot.summary.recurring.map((r) => (
+                      <span
+                        key={r.word}
+                        className="font-display rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-1.5 text-lg"
+                      >
+                        {r.word}
+                        <span className="tnum ml-2 font-sans text-xs text-[var(--color-muted)]">
+                          ×{r.plates}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
+                    These are your own words, counted — not an interpretation of them.
+                  </p>
+                </div>
+              )}
+
+              {inkblotHelplines && (
+                <div className="mt-3 rounded-3xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] p-6">
+                  <p className="text-sm leading-relaxed">
+                    Something you wrote sounded heavy, and we would rather say so than let it
+                    pass. If any of it is happening right now, please talk to someone who can be
+                    with you.
+                  </p>
+                  <ul className="mt-4 space-y-1.5 text-sm">
+                    {inkblotHelplines.map((h) => (
+                      <li key={h.number} className="flex justify-between gap-4">
+                        <span className="text-[var(--color-ink-soft)]">{h.name}</span>
+                        <a className="text-[var(--color-teal-dark)]" href={`tel:${h.number}`}>
+                          {h.number}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          )}
+
           <section className="animate-slide-up stack-block" style={{ animationDelay: '210ms' }}>
             <p className="marginalia">When you have longer</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Link
-                to="/inkblot-test"
-                className="card press p-5"
-              >
-                <p className="font-display text-xl">The ten-plate inkblot</p>
-                <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
-                  In your own words, typed or spoken. About ten minutes.
-                </p>
-              </Link>
+              {/* The inkblot tile stands down once the plates have been done
+                  today. Offering "the ten-plate inkblot, about ten minutes"
+                  directly under someone's own ten-plate results reads as the
+                  app not having noticed. */}
+              {!inkblot && (
+                <Link
+                  to="/inkblot-test"
+                  className="card press p-5"
+                >
+                  <p className="font-display text-xl">The ten-plate inkblot</p>
+                  <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+                    In your own words, typed or spoken. About ten minutes.
+                  </p>
+                </Link>
+              )}
+              {inkblot && (
+                <Link to="/assessments" className="card press p-5">
+                  <p className="font-display text-xl">The three questionnaires</p>
+                  <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+                    PHQ-9, GAD-7 and WHO-5, in one sitting. About six minutes.
+                  </p>
+                </Link>
+              )}
               <Link
                 to="/grounding"
                 className="card press p-5"
