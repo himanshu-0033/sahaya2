@@ -1,4 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
+import Logo from '../shared/Logo.jsx';
+import CrisisContacts from '../shared/CrisisContacts.jsx';
+import { useSession } from '../features/auth/useSession.js';
 
 // The app's spine.
 //
@@ -90,6 +93,8 @@ function TabIcon({ tab, active }) {
 
 export default function TabBar() {
   const { pathname } = useLocation();
+  const session = useSession();
+  const profile = session?.profile;
 
   return (
     <>
@@ -154,35 +159,74 @@ export default function TabBar() {
         </div>
       </nav>
 
-      {/* ---------------------------- desktop: floating pill -------------- */}
+      {/* ---------------------------- desktop: unified top bar ------------ */}
+      {/* Logo left, nav center, crisis + profile right — all one row.
+          The pill shape is kept for the nav links but the bar itself spans
+          the full width so there is no separate Header row on desktop. */}
       <nav
         aria-label="Main"
-        className="sticky top-5 z-40 mx-auto mb-10 hidden w-fit md:block"
+        className="sticky top-0 z-40 hidden md:block"
+        style={{
+          background: 'rgba(253, 242, 248, 0.85)',
+          backdropFilter: 'blur(18px)',
+          borderBottom: '1px solid var(--line-1)',
+        }}
       >
-        <div
-          className="flex items-center gap-1 rounded-full border border-[var(--line-2)] p-1.5"
-          style={{ background: 'rgba(253, 242, 248, 0.78)', backdropFilter: 'blur(18px)' }}
-        >
-          {TABS.map((tab) => {
-            const active = isActive(pathname, tab);
-            return (
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-2.5">
+          {/* Left: Logo */}
+          <Link to="/" className="press group flex shrink-0 items-center gap-2.5">
+            <Logo size={24} />
+            <span className="font-display text-[1.15rem] leading-none">
+              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal)]">AI</span>
+            </span>
+          </Link>
+
+          {/* Center: Nav tabs */}
+          <div
+            className="flex items-center gap-1 rounded-full border border-[var(--line-2)] p-1.5"
+            style={{ background: 'rgba(253, 242, 248, 0.6)' }}
+          >
+            {TABS.map((tab) => {
+              const active = isActive(pathname, tab);
+              return (
+                <Link
+                  key={tab.to}
+                  to={tab.to}
+                  aria-current={active ? 'page' : undefined}
+                  className="press relative flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors duration-300"
+                  style={{
+                    color: active ? tab.hue : 'var(--color-ink-soft)',
+                    background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
+                  }}
+                >
+                  <TabIcon tab={tab} active={active} />
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right: Crisis + Profile — filled by Header via the desktopRight slot */}
+          <div className="flex shrink-0 items-center gap-3" id="desktop-topbar-right">
+            <CrisisContacts variant="link" />
+            {profile && (
               <Link
-                key={tab.to}
-                to={tab.to}
-                aria-current={active ? 'page' : undefined}
-                className="press relative flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors duration-300"
-                style={{
-                  color: active ? tab.hue : 'var(--color-ink-soft)',
-                  background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
-                }}
+                to="/account"
+                aria-label="Your account"
+                title={profile.name || 'Your account'}
+                className="press flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
               >
-                <TabIcon tab={tab} active={active} />
-                {tab.label}
+                {profile.picture ? (
+                  <img src={profile.picture} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  (profile.name || '?').charAt(0).toUpperCase()
+                )}
               </Link>
-            );
-          })}
+            )}
+          </div>
         </div>
       </nav>
     </>
   );
 }
+

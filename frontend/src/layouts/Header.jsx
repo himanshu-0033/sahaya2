@@ -24,7 +24,7 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
   // with, and sign out. It was only reachable from a footer link called "Who
   // can see this", which nobody reads as "my account".
   return (
-    <header className="flex items-center justify-between gap-3 pt-2 pb-1">
+    <header className="flex items-center justify-between gap-3 pt-2 pb-1 md:hidden">
       <div className="flex min-w-0 items-center gap-3">
         <Link to="/" className="press group flex shrink-0 items-center gap-2.5">
           <Logo size={26} />
