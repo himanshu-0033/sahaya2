@@ -377,8 +377,8 @@ export default function Landing() {
                 sitting?
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                Thirty seconds, then a thought for the day and one more day on your streak — and
-                the ten inkblot plates after it, if you have the ten minutes.
+                One tap saves the day and the streak. Then, if you have the time, the three
+                questionnaires and the ten inkblot plates, straight through.
               </p>
               <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-[#07080a]">
                 Start check-in

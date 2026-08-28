@@ -10,6 +10,8 @@ import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
 import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
 import { allAnswered, clearOrphans, stepsFor } from '../lib/steps.js';
 import {
+  AFTER_CHECKIN,
+  AFTER_PARAM,
   SET_PARAM,
   clearSetResults,
   labelFor,
@@ -39,7 +41,7 @@ function encouragement(step, total, followUpPending) {
 // the per-question dots, so the two questions a person has mid-form — "how
 // much of this form is left" and "how much of this is left" — have separate
 // answers instead of one ambiguous bar.
-function SetRail({ names, index }) {
+function SetRail({ names, index, eyebrow }) {
   return (
     <div className="mb-5">
       <div className="flex items-center gap-1.5">
@@ -58,7 +60,7 @@ function SetRail({ names, index }) {
         ))}
       </div>
       <p className="marginalia mt-2.5">
-        Test {index + 1} of {names.length}
+        {eyebrow ? `${eyebrow} · ` : ''}Test {index + 1} of {names.length}
       </p>
     </div>
   );
@@ -103,6 +105,12 @@ export default function AssessmentRun() {
   const setIndex = setIds.indexOf(instrumentId);
   const inSet = setIndex >= 0;
   const nextInSet = inSet ? setIds[setIndex + 1] : undefined;
+
+  // Set when the three questionnaires are the middle of a check-in rather
+  // than the whole errand. The ten plates come next, and the scores wait for
+  // the one results screen at the end.
+  const afterSet = inSet ? searchParams.get(AFTER_PARAM) : null;
+  const handsOffToCheckin = afterSet === AFTER_CHECKIN;
 
   // Set to true once the last instrument in the set is scored: the screen
   // then shows the three results together rather than the last one alone.
@@ -186,15 +194,23 @@ export default function AssessmentRun() {
   // rather than kept in state because the two earlier results were written by
   // two earlier mounts of this component.
   const finishSet = useCallback(() => {
+    // Mid-check-in the set does not get a screen of its own. Straight on to
+    // the plates: the results are read back out of storage by /results, and
+    // stopping here to congratulate anybody would break the one thing the
+    // sitting is for.
+    if (handsOffToCheckin) {
+      navigate('/checkin?stage=plates');
+      return;
+    }
     const stored = readSetResults(setIds);
     setSetSummary(setIds.map((id) => stored[id]).filter(Boolean));
     setSetDone(true);
-  }, [setIds]);
+  }, [setIds, handsOffToCheckin, navigate]);
 
   const advanceSet = useCallback(() => {
-    if (nextInSet) navigate(setHref(setIds, nextInSet));
+    if (nextInSet) navigate(setHref(setIds, nextInSet, afterSet));
     else finishSet();
-  }, [nextInSet, setIds, navigate, finishSet]);
+  }, [nextInSet, setIds, afterSet, navigate, finishSet]);
 
   const submit = useCallback(
     async (finalAnswers, finalFollowUp = null) => {
@@ -380,14 +396,14 @@ export default function AssessmentRun() {
                 type="button"
                 onClick={() => {
                   if (inSet) clearSetResults(setIds);
-                  navigate('/assessments');
+                  navigate(handsOffToCheckin ? '/checkin?stage=plates' : '/assessments');
                 }}
                 className="press flex items-center gap-2 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M15 18l-6-6 6-6" />
                 </svg>
-                {inSet ? 'Leave the set' : 'All tests'}
+                {handsOffToCheckin ? 'Skip to the plates' : inSet ? 'Leave the set' : 'All tests'}
               </button>
               <p className="marginalia">
                 {instrument.name}
@@ -395,7 +411,13 @@ export default function AssessmentRun() {
             </header>
 
             <div className="mt-6">
-              {inSet && <SetRail names={setIds.map(labelFor)} index={setIndex} />}
+              {inSet && (
+                <SetRail
+                  names={setIds.map(labelFor)}
+                  index={setIndex}
+                  eyebrow={handsOffToCheckin ? 'Check-in' : null}
+                />
+              )}
               <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
               <p className="mt-3 text-[11px] text-[var(--color-muted)]">
                 {answered} of {askedItemSteps.length} answered
@@ -698,8 +720,11 @@ export default function AssessmentRun() {
                   variant="secondary"
                   className="w-auto px-6"
                   onClick={() => {
-                    clearSetResults(setIds);
-                    navigate('/');
+                    // Mid-check-in the scores already earned are kept: they
+                    // are part of the sitting's one results screen, which
+                    // reads them out of storage and clears them there.
+                    if (!handsOffToCheckin) clearSetResults(setIds);
+                    navigate(handsOffToCheckin ? '/results' : '/');
                   }}
                 >
                   Stop here

@@ -1,6 +1,13 @@
-// Abstract symmetric blot shapes for the check-in plates. Each path draws the
-// left half only (viewBox is centered at x=0); the component mirrors it to
-// complete the shape. These are stylised, not clinical Rorschach plates.
+// Abstract symmetric blot shapes, used as page decoration by AmbientBlots.
+// Each path draws the left half only (viewBox is centered at x=0); the
+// component mirrors it to complete the shape.
+//
+// These are stylised, not Rorschach plates. They used to open the check-in as
+// a three-plate word-association step, which put an invented blot in the seat
+// of an exercise the ten real plates now do properly later in the same flow —
+// so the check-in was asking the same question twice, worse the first time.
+// The shapes stayed because they still make good ambient furniture, and
+// because nothing decorative should be a real plate.
 export const INKBLOTS = [
   {
     id: 'plate-1',

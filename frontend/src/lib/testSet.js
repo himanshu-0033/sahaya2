@@ -17,6 +17,13 @@
 export const SET_IDS = ['phq-9', 'gad-7', 'who-5'];
 export const SET_PARAM = 'set';
 
+// Where the set hands off when it finishes, when it is not finishing on its
+// own summary. `after=checkin` means the sitting started in the check-in and
+// has ten plates still to go, so the three scores are held back and shown
+// once at the end with everything else rather than interrupting the run.
+export const AFTER_PARAM = 'after';
+export const AFTER_CHECKIN = 'checkin';
+
 const storeKey = (ids) => `sahay:test-set:${ids.join(',')}`;
 
 // Names for the set rail, which has to label three tests while only one of
@@ -39,12 +46,13 @@ export function parseSet(raw) {
     .filter(Boolean);
 }
 
-export function setHref(ids, instrumentId) {
-  return `/assessments/${instrumentId}?${SET_PARAM}=${encodeURIComponent(ids.join(','))}`;
+export function setHref(ids, instrumentId, after = null) {
+  const tail = after ? `&${AFTER_PARAM}=${encodeURIComponent(after)}` : '';
+  return `/assessments/${instrumentId}?${SET_PARAM}=${encodeURIComponent(ids.join(','))}${tail}`;
 }
 
-export function setStartHref(ids = SET_IDS) {
-  return setHref(ids, ids[0]);
+export function setStartHref(ids = SET_IDS, after = null) {
+  return setHref(ids, ids[0], after);
 }
 
 export function readSetResults(ids) {

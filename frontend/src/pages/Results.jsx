@@ -5,6 +5,8 @@ import PageShell from '../components/PageShell.jsx';
 import ChatPanel from '../components/ChatPanel.jsx';
 import { useSession } from '../lib/useSession.js';
 import { getStatus } from '../lib/api.js';
+import { bandColor, bandTint } from '../lib/bands.js';
+import { SET_IDS, clearSetResults, readSetResults } from '../lib/testSet.js';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -63,6 +65,17 @@ export default function Results() {
   // last Tuesday is not news.
   const inkblot = location.state?.inkblot || null;
   const inkblotHelplines = location.state?.inkblotHelplines || null;
+
+  // The three questionnaires, if they were part of this sitting. Read out of
+  // sessionStorage once on mount and cleared in the same breath: this screen
+  // is the end of the sitting, so the moment it has them nothing else should
+  // be able to find them again and show a stale set tomorrow.
+  const [testSet] = useState(() => {
+    const stored = readSetResults(SET_IDS);
+    const rows = SET_IDS.map((id) => stored[id]).filter(Boolean);
+    if (rows.length > 0) clearSetResults(SET_IDS);
+    return rows;
+  });
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(!location.state?.record);
 
@@ -139,6 +152,54 @@ export default function Results() {
               </button>
             )}
           </div>
+
+          {/* The three ranges, when the questionnaires were part of this
+              sitting. Side by side and never summed: low mood, worry and
+              wellbeing are three separate readings, and an average of them
+              would be a number no instrument defines. */}
+          {testSet.length > 0 && (
+            <section className="animate-slide-up stack-block" style={{ animationDelay: '190ms' }}>
+              <p className="marginalia">And the three questionnaires</p>
+              <div className="mt-4 space-y-3">
+                {testSet.map((r) => (
+                  <div key={r.id} className="card p-5">
+                    <div className="flex flex-wrap items-baseline justify-between gap-3">
+                      <p className="text-sm text-[var(--color-ink-soft)]">{r.name}</p>
+                      {!r.reportsBandOnly && (
+                        <p className="num text-2xl leading-none">
+                          {r.score}
+                          <span className="text-sm text-[var(--color-muted)]">/{r.maxScore}</span>
+                        </p>
+                      )}
+                    </div>
+                    <span
+                      className="mt-3 inline-block rounded-full px-3.5 py-1.5 text-xs"
+                      style={{ background: bandTint(r.band), color: bandColor(r.band) }}
+                    >
+                      {r.band.label}
+                    </span>
+                    <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                      {r.band.note}
+                    </p>
+                    <Link
+                      to={`/read/tests/${r.id}`}
+                      className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+                    >
+                      What the {r.name} can and cannot tell you
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-[11px] leading-relaxed text-[var(--color-muted)]">
+                Each score places you in a range that a published questionnaire defines. None of
+                them is a diagnosis, they describe the last few weeks rather than today, and they
+                can move a lot with sleep, exams and illness.
+              </p>
+            </section>
+          )}
 
           {/* What the ten plates came to, when they were part of this
               sitting. Counts, not conclusions — the same line the inkblot
@@ -227,7 +288,7 @@ export default function Results() {
                   </p>
                 </Link>
               )}
-              {inkblot && (
+              {inkblot && testSet.length === 0 && (
                 <Link to="/assessments" className="card press p-5">
                   <p className="font-display text-xl">The three questionnaires</p>
                   <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
