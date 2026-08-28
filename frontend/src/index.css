@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -771,50 +771,74 @@ p, li {
 /* Every value below is measured against the cream ground: ink 11.1:1,  */
 /* sage 5.8:1, gold 4.8:1. The reference's own gold was 2.7:1 and would */
 /* have failed on the eyebrow it is used for.                           */
+/* Soft UI Evolution, in the soft-pink-and-lavender palette the design system
+   returns for spa and wellness. Every value below was measured, because the
+   palette as published does not pass its own checklist: #ec4899 is 3.2:1 as
+   text and white on it is 3.5:1, so the pink is a FILL and an ornament here,
+   never a letter. Anything that has to be read uses the deep step. */
 .welcome {
-  --w-cream: #fdf8f2;
-  --w-band: #f6f1ea;
+  --w-serif: "Lora", ui-serif, Georgia, serif;
+  --w-sans: "Raleway", ui-sans-serif, system-ui, sans-serif;
+
+  --w-cream: #fdf2f8;
+  --w-band: #f8eaf2;
   --w-card: #ffffff;
-  --w-ink: #33393a;
-  --w-ink-soft: #6e7573;
-  --w-sage: #7fa890;
-  --w-sage-deep: #3e6b54;
-  --w-sage-wash: #eef4ef;
-  /* Rose is a badge tint only, never a fill for a control: at 1.4:1 against
-     the cream it has no visible edge, so a rose button would be a rectangle
-     of nothing. --w-rose-deep is 5.2:1 on it, matching the sage badge's 5.5. */
-  --w-rose: #e8cfc8;
-  --w-rose-deep: #734840;
-  --w-gold: #8a6a21;
-  --w-line: rgba(51, 57, 58, 0.1);
-  --w-line-2: rgba(51, 57, 58, 0.16);
+  --w-ink: #831843;      /* 8.8:1 on cream, 9.7:1 on a card */
+  --w-ink-soft: #475569; /* 6.9:1 on cream                  */
+
+  --w-accent: #ec4899;      /* fills and ornaments only — 3.2:1, never text */
+  --w-accent-deep: #9d174d; /* 7.2:1 as text, 7.9:1 as a fill under white   */
+  --w-accent-wash: #fce7f3;
+
+  /* The second family. Two badge tints do a job here: one marks a tag that
+     names a feeling, the other a tag that names a feature. */
+  --w-lav: #6d28d9;      /* 6.5:1 on cream */
+  --w-lav-wash: #ede9fe;
+
+  --w-line: rgba(131, 24, 67, 0.1);
+  --w-line-2: rgba(131, 24, 67, 0.17);
 
   background: var(--w-cream);
   color: var(--w-ink);
+  font-family: var(--w-sans);
 }
 
+/* Lora carries the headings on this page only. The app behind sign-in keeps
+   Cormorant — it is a different room, and it stays dark. */
+.welcome .font-display {
+  font-family: var(--w-serif);
+}
+
+/* Soft UI Evolution's shadow: softer than a flat card, clearer than
+   neumorphism. Two layers — a 1px contact shadow so the card sits on the page
+   rather than floating off it, and a wide diffused one tinted with the ink
+   rather than black, which is what stops a pink page looking grey underneath. */
 .w-card {
   background: var(--w-card);
   border: 1px solid var(--w-line);
-  border-radius: 16px;
-  box-shadow: 0 18px 40px -30px rgba(51, 57, 58, 0.45);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 2px rgba(131, 24, 67, 0.04),
+    0 12px 32px -12px rgba(131, 24, 67, 0.14);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 @media (hover: hover) {
   a.w-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 26px 50px -30px rgba(51, 57, 58, 0.55);
+    box-shadow:
+      0 1px 2px rgba(131, 24, 67, 0.05),
+      0 22px 44px -14px rgba(131, 24, 67, 0.2);
   }
 }
 
 .w-eyebrow {
-  font-family: var(--font-sans);
+  font-family: var(--w-sans);
   text-transform: uppercase;
   letter-spacing: 0.22em;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--w-gold);
+  color: var(--w-lav);
 }
 
 /* The section ornament: two hairlines with the mark between them. Same

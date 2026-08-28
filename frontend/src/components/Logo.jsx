@@ -24,7 +24,11 @@ import { useId } from 'react';
 // header and the sign-in hero) would otherwise both define `#head`, and the
 // second definition wins in every browser, so one of them silently loses its
 // gradient.
-export default function Logo({ size = 30, glow = true, className }) {
+// `from`/`to` default to the green the mark has always been, so every existing
+// caller is untouched. The landing page overrides them: the mark is otherwise
+// the only green object on a pink page, which reads as a foreign object rather
+// than a logo.
+export default function Logo({ size = 30, glow = true, className, from = '#7df3b4', to = '#2fb87c' }) {
   const uid = useId().replace(/:/g, '');
   const gradientId = `sahay-head-${uid}`;
   const glowId = `sahay-glow-${uid}`;
@@ -41,8 +45,8 @@ export default function Logo({ size = 30, glow = true, className }) {
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0.4" y2="1">
-          <stop offset="0%" stopColor="#7df3b4" />
-          <stop offset="100%" stopColor="#2fb87c" />
+          <stop offset="0%" stopColor={from} />
+          <stop offset="100%" stopColor={to} />
         </linearGradient>
         {glow && (
           <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">

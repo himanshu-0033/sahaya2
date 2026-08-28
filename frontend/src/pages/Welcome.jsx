@@ -124,7 +124,7 @@ const FAN = ['01', '03', '08'];
 function Ornament() {
   return (
     <div className="w-ornament" aria-hidden="true">
-      <svg viewBox="-14 -14 28 28" width="15" height="15" fill="var(--w-sage)">
+      <svg viewBox="-14 -14 28 28" width="15" height="15" fill="var(--w-accent)">
         <path d="M0,-11 C-5,-11 -8,-6 -6,-2 C-4,2 -9,4 -7,8 C-5,11 -2,10 0,12 Z" />
         <path d="M0,-11 C-5,-11 -8,-6 -6,-2 C-4,2 -9,4 -7,8 C-5,11 -2,10 0,12 Z" transform="scale(-1,1)" />
       </svg>
@@ -136,7 +136,7 @@ function Icon({ children }) {
   return (
     <span
       className="flex h-14 w-14 items-center justify-center rounded-full"
-      style={{ background: 'var(--w-sage-wash)', color: 'var(--w-sage-deep)' }}
+      style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
       aria-hidden="true"
     >
       <svg
@@ -189,14 +189,14 @@ export default function Welcome({ onSignedIn }) {
       {/* ------------------------------------------------------------ header */}
       <header
         className="sticky top-0 z-40 border-b backdrop-blur-md"
-        style={{ borderColor: 'var(--w-line)', background: 'rgba(253,248,242,0.88)' }}
+        style={{ borderColor: 'var(--w-line)', background: 'rgba(253,242,248,0.88)' }}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
           <span className="flex items-center gap-2.5">
-            <Logo size={30} glow={false} />
+            <Logo size={30} glow={false} from="#ec4899" to="#9d174d" />
             <span className="font-display text-[1.2rem] leading-none">
               DP Sahay
-              <span className="ml-1.5 text-[0.78em]" style={{ color: 'var(--w-sage-deep)' }}>
+              <span className="ml-1.5 text-[0.78em]" style={{ color: 'var(--w-accent-deep)' }}>
                 AI
               </span>
             </span>
@@ -213,7 +213,7 @@ export default function Welcome({ onSignedIn }) {
             type="button"
             onClick={go}
             className="press shrink-0 rounded-full px-5 py-2.5 text-sm font-medium text-white transition-colors"
-            style={{ background: 'var(--w-sage-deep)' }}
+            style={{ background: 'var(--w-accent-deep)' }}
           >
             Start check-in
           </button>
@@ -245,7 +245,7 @@ export default function Welcome({ onSignedIn }) {
                 type="button"
                 onClick={go}
                 className="press rounded-full px-7 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
-                style={{ background: 'var(--w-sage-deep)' }}
+                style={{ background: 'var(--w-accent-deep)' }}
               >
                 Start a check-in
               </button>
@@ -273,7 +273,7 @@ export default function Welcome({ onSignedIn }) {
                   className="block overflow-hidden rounded-2xl border"
                   style={{
                     borderColor: 'var(--w-line)',
-                    background: '#efece5',
+                    background: '#f7e6ef',
                     height: '14rem',
                     width: '10.5rem',
                     marginLeft: i === 0 ? 0 : '-3rem',
@@ -304,7 +304,7 @@ export default function Welcome({ onSignedIn }) {
         >
           {STATS.map((s) => (
             <div key={s.label} className="text-center">
-              <p className="font-display text-[2.4rem] leading-none" style={{ color: 'var(--w-sage-deep)' }}>
+              <p className="font-display text-[2.4rem] leading-none" style={{ color: 'var(--w-accent-deep)' }}>
                 {s.n}
               </p>
               <p className="mt-2 text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
@@ -332,7 +332,7 @@ export default function Welcome({ onSignedIn }) {
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
                   {s.body}
                 </p>
-                <p className="mt-auto pt-2 text-[13px] font-medium" style={{ color: 'var(--w-gold)' }}>
+                <p className="mt-auto pt-2 text-[13px] font-medium" style={{ color: 'var(--w-lav)' }}>
                   {s.meta}
                 </p>
               </div>
@@ -366,8 +366,8 @@ export default function Welcome({ onSignedIn }) {
                       // property of the product. Two kinds of thing, two tints.
                       style={
                         t.tone === 'rose'
-                          ? { background: 'var(--w-rose)', color: 'var(--w-rose-deep)' }
-                          : { background: 'var(--w-sage-wash)', color: 'var(--w-sage-deep)' }
+                          ? { background: 'var(--w-lav-wash)', color: 'var(--w-lav)' }
+                          : { background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }
                       }
                     >
                       {tag}
@@ -440,7 +440,7 @@ export default function Welcome({ onSignedIn }) {
       <section className="px-5 pb-20 sm:px-8">
         <div
           className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-3xl px-6 py-14 text-center"
-          style={{ background: 'var(--w-sage-wash)', border: '1px solid var(--w-line)' }}
+          style={{ background: 'var(--w-accent-wash)', border: '1px solid var(--w-line)' }}
         >
           <p className="w-eyebrow">Start here</p>
           <h2 className="font-display text-[2rem] leading-tight sm:text-[2.5rem]" style={{ textWrap: 'balance' }}>
@@ -453,7 +453,7 @@ export default function Welcome({ onSignedIn }) {
             type="button"
             onClick={go}
             className="press mt-2 rounded-full px-8 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
-            style={{ background: 'var(--w-sage-deep)' }}
+            style={{ background: 'var(--w-accent-deep)' }}
           >
             Start a check-in
           </button>
@@ -469,7 +469,7 @@ export default function Welcome({ onSignedIn }) {
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex flex-col gap-4">
               <span className="flex items-center gap-2.5">
-                <Logo size={28} glow={false} />
+                <Logo size={28} glow={false} from="#ec4899" to="#9d174d" />
                 <span className="font-display text-[1.15rem] leading-none">DP Sahay AI</span>
               </span>
               <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
