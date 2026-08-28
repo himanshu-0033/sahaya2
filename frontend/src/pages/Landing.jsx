@@ -5,7 +5,6 @@ import PageShell from '../components/PageShell.jsx';
 import LoadError from '../components/LoadError.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
-import HomeAssistant from '../components/HomeAssistant.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
 
@@ -489,11 +488,6 @@ export default function Landing() {
         )}
 
       </section>
-
-      {/* --------------------------------------------------------- assistant */}
-      <div className="animate-slide-up stack-section" style={{ animationDelay: '330ms' }}>
-        <HomeAssistant checkin={status.record} />
-      </div>
 
       <div className="rule-fade stack-section" />
 

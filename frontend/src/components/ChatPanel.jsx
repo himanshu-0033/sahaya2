@@ -41,7 +41,16 @@ function Helplines({ items }) {
 // there, so they are not made to type it twice into a second box. It is sent
 // once, and only after the opener has landed — the API requires the first
 // message to be the assistant's, and firing both at once would race.
-export default function ChatPanel({ checkin, onClose, initialQuestion = null }) {
+// `variant` is 'card' when this sits in a page's scroll and 'overlay' when it
+// is the whole of a modal. The difference is how much room the transcript may
+// take: in a card it must not push the rest of the page down, in a modal it
+// should use the height it has been given.
+export default function ChatPanel({
+  checkin,
+  onClose,
+  initialQuestion = null,
+  variant = 'card',
+}) {
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
@@ -122,9 +131,11 @@ export default function ChatPanel({ checkin, onClose, initialQuestion = null }) 
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] tracking-[0.22em] text-[var(--color-muted)] uppercase">
-            Talk it through
+            {variant === 'overlay' ? 'DP' : 'Talk it through'}
           </p>
-          <h3 className="mt-1 font-display text-xl">A moment to reflect</h3>
+          <h3 className="mt-1 font-display text-xl">
+            {variant === 'overlay' ? 'Say what is going on.' : 'A moment to reflect'}
+          </h3>
         </div>
         <button
           onClick={onClose}
@@ -137,7 +148,12 @@ export default function ChatPanel({ checkin, onClose, initialQuestion = null }) 
         </button>
       </div>
 
-      <div ref={scrollRef} className="mt-4 max-h-72 space-y-2.5 overflow-y-auto pr-1">
+      <div
+        ref={scrollRef}
+        className={`mt-4 space-y-2.5 overflow-y-auto pr-1 ${
+          variant === 'overlay' ? 'max-h-[52vh] min-h-[9rem]' : 'max-h-72'
+        }`}
+      >
         {messages.map((m, i) => (
           <div key={i}>
             <Bubble role={m.role}>{m.content}</Bubble>

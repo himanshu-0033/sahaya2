@@ -450,6 +450,17 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   .pad-tabbar { padding-bottom: 3rem; }
 }
 
+/* The DP button sits above the mobile tab bar, and on desktop — where the
+   navigation is a floating pill at the top — it drops to the bottom corner.
+   A class rather than a Tailwind arbitrary value because the calc carries an
+   env() with a fallback, and the comma inside it does not survive the
+   bracket syntax. */
+.fab-anchor { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1rem); }
+
+@media (min-width: 768px) {
+  .fab-anchor { bottom: 1.75rem; }
+}
+
 /* ------------------------------------------------------------------ */
 /* Butterflies (sign-in)                                               */
 /*                                                                     */

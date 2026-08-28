@@ -1,3 +1,4 @@
+import AskDP from './AskDP.jsx';
 import TabBar from './TabBar.jsx';
 
 // The frame every signed-in page sits in.
@@ -51,6 +52,9 @@ export default function PageShell({
       </div>
 
       {tabs && <TabBar />}
+      {/* Same signal as the tab bar: shown where someone is browsing, hidden
+          inside a flow they are partway through. */}
+      {tabs && <AskDP />}
 
       <div
         className={`mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 md:pt-0`}
