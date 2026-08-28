@@ -1,7 +1,7 @@
 // The grounding library.
 //
 // Thirteen practices a resident can run in the app, plus links out to guided
-// videos for each. This is the one part of Sahaya that tries to *do* something
+// videos for each. This is the one part of DP Sahay AI that tries to *do* something
 // in the moment rather than record something — so the rules here are different
 // from instruments.js:
 //

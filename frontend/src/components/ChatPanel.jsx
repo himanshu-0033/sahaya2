@@ -172,7 +172,7 @@ export default function ChatPanel({ checkin, onClose, initialQuestion = null }) 
       <p className="mt-3 text-[11px] leading-relaxed text-[var(--color-muted)]">
         {isMock
           ? 'Scripted preview — no AI model is connected yet. Not a therapist, and not a crisis service.'
-          : 'Sahay is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above.'}
+          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above.'}
       </p>
     </div>
   );

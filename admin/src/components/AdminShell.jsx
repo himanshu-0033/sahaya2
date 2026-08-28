@@ -12,7 +12,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4">
           <div className="mr-auto">
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-xl">Sahay</h1>
+              <h1 className="font-display text-xl">DP Sahay AI</h1>
               <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)]">
                 Counsellor
               </span>

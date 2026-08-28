@@ -78,7 +78,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                 that ships with every dark landing-page template. */}
             <Logo size={26} className="shrink-0" />
             <span className="font-eyebrow text-[11px] font-semibold text-white/90">
-              Sahay <span className="font-normal text-white/45">AI</span>
+              DP Sahay <span className="font-normal text-white/45">AI</span>
             </span>
           </Link>
 
@@ -132,7 +132,7 @@ export default function DarkSignInHero({ onSignedIn }) {
               className="animate-fade-up font-eyebrow rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-3.5 py-1 text-[11px] text-white/55 backdrop-blur"
               style={{ animationDelay: '0.08s' }}
             >
-              A quiet minute, once a day
+              You matter to us
             </span>
 
             <h1
@@ -148,8 +148,9 @@ export default function DarkSignInHero({ onSignedIn }) {
               className="animate-fade-up mt-4 max-w-sm text-[15px] leading-relaxed text-white/45"
               style={{ animationDelay: '0.28s' }}
             >
-              Three plates, one word each, one mood. A guided check-in that takes
-              a minute and asks nothing more of you.
+              One tap says how today feels, and that is the whole obligation. Behind it,
+              if you want them: three published questionnaires and the ten inkblot plates,
+              straight through.
             </p>
 
             {/* Call to action, and the form it opens onto. */}
@@ -216,7 +217,7 @@ export default function DarkSignInHero({ onSignedIn }) {
         </main>
 
         <footer className="shrink-0 pt-4 text-center text-[11px] text-white/20 lg:text-left">
-          Sahay AI is a reflective prototype, not a medical device.
+          DP Sahay AI is a reflective prototype, not a medical device.
         </footer>
       </div>
     </div>

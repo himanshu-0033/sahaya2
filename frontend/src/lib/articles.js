@@ -525,7 +525,7 @@ export const ARTICLES = [
     id: 'where-your-answers-go',
     title: 'Where your answers go',
     standfirst:
-      'What Sahaya stores when you finish a questionnaire, who can read it, and what happens if you answer one particular question.',
+      'What DP Sahay AI stores when you finish a questionnaire, who can read it, and what happens if you answer one particular question.',
     topic: 'tests',
     minutes: 4,
     sections: [
@@ -533,7 +533,7 @@ export const ARTICLES = [
         heading: 'What is kept',
         blocks: [
           {
-            p: 'When you submit a questionnaire, Sahaya stores your individual answers — not only the total. It also keeps the score, the band, the date, and which questionnaire it was.',
+            p: 'When you submit a questionnaire, DP Sahay AI stores your individual answers — not only the total. It also keeps the score, the band, the date, and which questionnaire it was.',
           },
           {
             p: 'That is more than the result screen needs, and it is the kind of thing worth knowing before you answer rather than after.',
@@ -547,7 +547,7 @@ export const ARTICLES = [
             p: 'Your counsellor. The console shows the people assigned to it, and for each person their check-ins, their inkblot sittings and their questionnaire results, newest first.',
           },
           {
-            p: 'That is the design of the app rather than an unfortunate side effect. Sahaya was built for a hostel where somebody is responsible for the students in it, and a screening result nobody ever reads is not much use to anyone. But it does mean this is not a private diary and should not be treated as one.',
+            p: 'That is the design of the app rather than an unfortunate side effect. DP Sahay AI was built for a hostel where somebody is responsible for the students in it, and a screening result nobody ever reads is not much use to anyone. But it does mean this is not a private diary and should not be treated as one.',
           },
           {
             note: 'If what you want is somewhere to think without it being read, the grounding practices record only that you practised — never what you were feeling, and never anything you wrote.',

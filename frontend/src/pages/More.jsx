@@ -100,7 +100,7 @@ export default function More() {
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pb-2">
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
-          Sahaya is a reflective prototype, not a medical device. Nothing here is a diagnosis.
+          DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
         <Link
           to="/account"

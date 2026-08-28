@@ -28,7 +28,7 @@ export default function SignIn({ onSignedIn, notice }) {
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="card-soft animate-fade-up w-full max-w-md rounded-3xl p-8">
         <div className="flex items-center gap-2">
-          <h1 className="font-display text-2xl">Sahay</h1>
+          <h1 className="font-display text-2xl">DP Sahay AI</h1>
           <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)]">
             Counsellor
           </span>

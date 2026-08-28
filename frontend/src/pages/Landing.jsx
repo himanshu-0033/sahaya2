@@ -499,7 +499,7 @@ export default function Landing() {
 
       <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 pb-4">
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
-          Sahaya is a reflective prototype, not a medical device. Nothing here is a diagnosis.
+          DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
         <div className="flex items-center gap-4">
           <Link to="/account" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">

@@ -241,7 +241,7 @@ export default function Grounding() {
               randomised trial exists;{' '}
               <span className="text-[var(--color-ink-soft)]">{EVIDENCE_LABEL.clinical}</span>{' '}
               means clinicians teach it but the single skill has not been trialled on its own.
-              Sahaya records that you practised, never how you did.
+              DP Sahay AI records that you practised, never how you did.
             </p>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               <Link

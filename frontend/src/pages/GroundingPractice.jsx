@@ -518,7 +518,7 @@ export default function GroundingPractice() {
 
             <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
               <p className="text-[11px] leading-relaxed text-[var(--color-muted)]">
-                Sahaya records that you practised and how settled you said you felt — never a score.
+                DP Sahay AI records that you practised and how settled you said you felt — never a score.
               </p>
               <CrisisContacts variant="link" />
             </footer>

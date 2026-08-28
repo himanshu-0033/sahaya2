@@ -311,7 +311,7 @@ export default function Results() {
           <div className="rule-fade stack-section" />
 
           <p className="mt-6 pb-2 text-[11px] leading-relaxed text-[var(--color-muted)]">
-            Sahaya is a reflective prototype, not a medical device. If you feel unsafe, contact a
+            DP Sahay AI is a reflective prototype, not a medical device. If you feel unsafe, contact a
             local helpline or a professional.
           </p>
         </>

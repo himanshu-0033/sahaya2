@@ -166,7 +166,7 @@ export default function ReadTest() {
             </p>
             <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
               The {meta.name} is copyrighted, and using it requires written permission from the
-              people who publish it. Until that permission is in place, Sahaya documents it but does
+              people who publish it. Until that permission is in place, DP Sahay AI documents it but does
               not administer it. Everything on this page still describes it accurately.
             </p>
           </div>
