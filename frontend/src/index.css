@@ -704,3 +704,86 @@ p, li {
   padding-bottom: 2px;
 }
 .row-scroll::-webkit-scrollbar { display: none; }
+
+/* ------------------------------------------------------------------ */
+/* The signed-out landing page                                         */
+/*                                                                     */
+/* A warm, light world, scoped to `.welcome` and nothing else. The app  */
+/* behind sign-in stays dark: it is used at 1 a.m. and the dark theme   */
+/* is right for it. This is the shop window, and a shop window that     */
+/* opens on near-black asks a stranger to trust it before it has said   */
+/* anything.                                                           */
+/*                                                                     */
+/* Modelled on the wedding-planner reference — cream ground, white      */
+/* cards, centred section headers, a gold eyebrow over a serif          */
+/* headline. Two deliberate departures. The accent is sage rather than  */
+/* blush, because the DP mark is green and a pink page under a green    */
+/* logo reads as two brands. And the ornament under each header is the  */
+/* app's own mirrored blot rather than a heart — a heart sitting above  */
+/* a suicide-severity scale is the wrong symbol by some distance.       */
+/*                                                                     */
+/* Every value below is measured against the cream ground: ink 11.1:1,  */
+/* sage 5.8:1, gold 4.8:1. The reference's own gold was 2.7:1 and would */
+/* have failed on the eyebrow it is used for.                           */
+.welcome {
+  --w-cream: #fdf8f2;
+  --w-band: #f6f1ea;
+  --w-card: #ffffff;
+  --w-ink: #33393a;
+  --w-ink-soft: #6e7573;
+  --w-sage: #7fa890;
+  --w-sage-deep: #3e6b54;
+  --w-sage-wash: #eef4ef;
+  --w-gold: #8a6a21;
+  --w-line: rgba(51, 57, 58, 0.1);
+  --w-line-2: rgba(51, 57, 58, 0.16);
+
+  background: var(--w-cream);
+  color: var(--w-ink);
+}
+
+.w-card {
+  background: var(--w-card);
+  border: 1px solid var(--w-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px -30px rgba(51, 57, 58, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (hover: hover) {
+  a.w-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 26px 50px -30px rgba(51, 57, 58, 0.55);
+  }
+}
+
+.w-eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--w-gold);
+}
+
+/* The section ornament: two hairlines with the mark between them. Same
+   device as the reference's heart, in this product's own vocabulary. */
+.w-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.w-ornament::before,
+.w-ornament::after {
+  content: "";
+  height: 1px;
+  width: 3rem;
+  background: var(--w-line-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .w-card { transition: none; }
+  a.w-card:hover { transform: none; }
+}

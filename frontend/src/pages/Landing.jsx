@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import PageShell from '../components/PageShell.jsx';
 import LoadError from '../components/LoadError.jsx';
-import DarkSignInHero from '../components/DarkSignInHero.jsx';
+import Welcome from './Welcome.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
@@ -237,7 +237,10 @@ export default function Landing() {
       .finally(() => setSavingProfile(false));
   }
 
-  if (!session) return <DarkSignInHero onSignedIn={setSession} />;
+  // A stranger gets the landing page, not the login. Welcome stands in front
+  // of DarkSignInHero and hands over to it on any call to action — the auth
+  // flow itself is untouched.
+  if (!session) return <Welcome onSignedIn={setSession} />;
 
   if (profileLoading) {
     return (
