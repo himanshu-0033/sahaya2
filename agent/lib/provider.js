@@ -1,5 +1,6 @@
 import { SYSTEM_PROMPT } from './persona.js';
 import { cerebrasReply } from './cerebras.js';
+import { geminiReply } from './gemini.js';
 
 // ---------------------------------------------------------------------------
 // THE SEAM
@@ -174,6 +175,10 @@ const PROVIDERS = {
   // Lives in its own file because, unlike the two above, it carries real
   // request-shaping logic — history trimming and rate-limit handling.
   cerebras: cerebrasReply,
+
+  // Google Gemini, via its OpenAI-compatible endpoint. Needs GEMINI_API_KEY
+  // from aistudio.google.com. Free tier: 15 RPM, 1500 requests/day.
+  gemini: geminiReply,
 };
 
 export const activeProvider = process.env.AGENT_PROVIDER || 'mock';

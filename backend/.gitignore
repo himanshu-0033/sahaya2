@@ -1,0 +1,8 @@
+.vercel
+
+# Secrets only. .env.example is committed on purpose — it documents what this
+# module needs. Without the negation a bare `.env*` swallows it too, silently:
+# the file stays visible while it is already tracked, and disappears the day
+# anybody re-adds it. Same reasoning as the root .gitignore.
+.env*
+!.env.example
