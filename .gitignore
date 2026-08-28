@@ -51,37 +51,38 @@ serviceAccountKey.json
 !.env.production
 
 # ------------------------------------------------------------------
-# AI assistant and editor config
+# The repository root is an allowlist.
 #
-# Every tool that has been pointed at this repo drops a directory in the
-# root — nineteen of them at last count. None is part of the app: they are
-# local prompt libraries, agent definitions and editor state, they differ
-# per machine and per person, and a diff full of them buries the diff of
-# the actual change.
+# Nineteen AI assistants and editors have each dropped a config directory
+# beside the app — .cursor, .windsurf, .kiro, .roo, .trae and the rest.
+# Enumerating them was a losing game: the list was already nineteen long
+# and the twentieth tool arrives next week, unlisted and committed.
 #
-# Listed one per line rather than caught by a glob. A pattern loose enough
-# to match all of these would also match .github and .gitignore, and the
-# day someone adds a real dotfile it would vanish without a word.
-.agents/
-.augment/
-.claude/
-.codebuddy/
-.codewhale/
-.continue/
-.cursor/
-.factory/
-.gemini/
-.kilocode/
-.kiro/
-.opencode/
-.qoder/
-.roo/
-.trae/
-.warp/
-.windsurf/
+# So the root ignores everything and names the exceptions. Five source
+# modules, three files, and the GitHub directory. Anything else that
+# appears up here is somebody's tool, and it stays out on its own.
+#
+# `/*` matches only root-level entries, so nothing inside the modules is
+# affected — the .env.example negations further up still work, and every
+# node_modules and dist is still caught by its own rule.
+#
+# To add a real root file later, negate it here. That is the cost of the
+# allowlist and the whole reason it is written down.
+/*
 
-# .github holds only a prompt library here, but it is also where GitHub
-# workflows, issue templates and CODEOWNERS belong. Ignoring the whole
-# directory would swallow the first workflow anybody adds, silently — so
-# only the prompts are ignored, and real GitHub config still commits.
+!/admin/
+!/agent/
+!/backend/
+!/frontend/
+!/scripts/
+
+!/.gitignore
+!/README.md
+!/package.json
+
+# Allowed as a directory, empty in practice. It holds only a prompt
+# library today, which the rule below ignores — but .github is also where
+# workflows, issue templates and CODEOWNERS belong, and ignoring it
+# outright would swallow the first workflow anybody adds, without a word.
+!/.github/
 .github/prompts/
