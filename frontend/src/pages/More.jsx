@@ -102,11 +102,16 @@ export default function More() {
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
           DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
+        {/* Was "Who can see this" at 11px in the muted ink — accurate when this
+            page was only about sharing, but it is now also where the profile
+            and the sign-out live, and "sign out" is not something anyone should
+            have to guess is hiding behind a privacy footnote. Named for the
+            destination, at the size of a link someone is meant to find. */}
         <Link
           to="/account"
-          className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]"
+          className="press text-xs text-[var(--color-ink-soft)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
         >
-          Who can see this
+          Your account
         </Link>
       </div>
     </PageShell>

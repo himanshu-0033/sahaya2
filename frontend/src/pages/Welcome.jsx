@@ -215,7 +215,7 @@ export default function Welcome({ onSignedIn }) {
             className="press shrink-0 rounded-full px-5 py-2.5 text-sm font-medium text-white transition-colors"
             style={{ background: 'var(--w-accent-deep)' }}
           >
-            Start check-in
+            Sign in
           </button>
         </div>
       </header>
@@ -247,7 +247,7 @@ export default function Welcome({ onSignedIn }) {
                 className="press rounded-full px-7 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
                 style={{ background: 'var(--w-accent-deep)' }}
               >
-                Start a check-in
+                Sign in to start
               </button>
               <a
                 href="#inside"
@@ -455,7 +455,7 @@ export default function Welcome({ onSignedIn }) {
             className="press mt-2 rounded-full px-8 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
             style={{ background: 'var(--w-accent-deep)' }}
           >
-            Start a check-in
+            Sign in to start
           </button>
           <div className="mt-1">
             <CrisisContacts variant="link" />
