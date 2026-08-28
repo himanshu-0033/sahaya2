@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import ChatPanel from '../components/ChatPanel.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getStatus } from '../lib/api.js';
-import { bandColor, bandTint } from '../lib/bands.js';
-import { SET_IDS, clearSetResults, readSetResults } from '../lib/testSet.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import ChatPanel from '../companion/ChatPanel.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getStatus } from '../../shared/api.js';
+import { bandColor, bandTint } from '../assessments/bands.js';
+import { SET_IDS, clearSetResults, readSetResults } from '../assessments/testSet.js';
 
 function formatDate(iso) {
   if (!iso) return '';

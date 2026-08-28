@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Button from '../components/Button.jsx';
-import BreathPacer from '../components/BreathPacer.jsx';
-import VideoShelf from '../components/VideoShelf.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getGroundingTechnique, logGroundingPractice } from '../lib/api.js';
-import { accent, alpha, EVIDENCE_LABEL, formatDuration } from '../lib/accents.js';
+import Button from '../../shared/Button.jsx';
+import BreathPacer from './BreathPacer.jsx';
+import VideoShelf from '../../shared/VideoShelf.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getGroundingTechnique, logGroundingPractice } from '../../shared/api.js';
+import { accent, alpha, EVIDENCE_LABEL, formatDuration } from '../../shared/accents.js';
 
 // One practice, start to finish.
 //

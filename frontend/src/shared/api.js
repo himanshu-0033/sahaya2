@@ -1,4 +1,4 @@
-import { getSession } from './session.js';
+import { getSession } from '../features/auth/session.js';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 // The agent is its own deployable module, so it gets its own base URL.

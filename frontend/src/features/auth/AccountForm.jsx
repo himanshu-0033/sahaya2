@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Button from './Button.jsx';
-import { COUNTRY_CODES } from '../lib/countryCodes.js';
+import Button from '../../shared/Button.jsx';
+import { COUNTRY_CODES } from '../../shared/countryCodes.js';
 
 // The account form asks for four things, and each one has to earn its place.
 //

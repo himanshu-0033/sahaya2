@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import CrisisContacts from './CrisisContacts.jsx';
-import Logo from './Logo.jsx';
-import { useSession } from '../lib/useSession.js';
+import CrisisContacts from '../shared/CrisisContacts.jsx';
+import Logo from '../shared/Logo.jsx';
+import { useSession } from '../features/auth/useSession.js';
 
 // A slim masthead: the wordmark and the one link that has to be reachable from
 // every screen.

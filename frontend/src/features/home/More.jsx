@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
 
 // Everything the app does that is not the daily loop.
 //

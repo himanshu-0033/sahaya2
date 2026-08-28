@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
+import Header from '../layouts/Header.jsx';
+import PageShell from '../layouts/PageShell.jsx';
 
 // What an address that does not resolve used to show: nothing at all. The
 // router had no `path="*"`, so an unmatched URL rendered an empty <Routes>

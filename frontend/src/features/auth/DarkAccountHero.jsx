@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import CrisisContacts from './CrisisContacts.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import AccountForm from './AccountForm.jsx';
 
 export default function DarkAccountHero({ name, email, onDone, saving, error }) {

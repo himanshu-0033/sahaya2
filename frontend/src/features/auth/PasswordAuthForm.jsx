@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Button from './Button.jsx';
-import { signup, login } from '../lib/api.js';
-import { decodeJwt, saveSession } from '../lib/session.js';
-import { COUNTRY_CODES } from '../lib/countryCodes.js';
+import Button from '../../shared/Button.jsx';
+import { signup, login } from '../../shared/api.js';
+import { decodeJwt, saveSession } from './session.js';
+import { COUNTRY_CODES } from '../../shared/countryCodes.js';
 
 export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   const [mode, setMode] = useState('login'); // 'login' | 'signup'

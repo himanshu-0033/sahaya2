@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import InkblotPlate from '../components/InkblotPlate.jsx';
-import VoiceInputButton from '../components/VoiceInputButton.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { SkeletonPanel } from '../components/Skeleton.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getInkblotTest, submitInkblotTest } from '../lib/api.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import InkblotPlate from '../../shared/InkblotPlate.jsx';
+import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { SkeletonPanel } from '../../shared/Skeleton.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getInkblotTest, submitInkblotTest } from '../../shared/api.js';
 
 // Ten plates of free text.
 //

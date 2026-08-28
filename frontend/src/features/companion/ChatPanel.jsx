@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { sendChat } from '../lib/api.js';
+import { sendChat } from '../../shared/api.js';
 
 function Bubble({ role, children }) {
   const mine = role === 'user';

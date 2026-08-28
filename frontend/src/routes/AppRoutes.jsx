@@ -1,23 +1,23 @@
 import { Routes, Route } from 'react-router-dom';
-import RouteChrome from './components/RouteChrome.jsx';
-import Landing from './pages/Landing.jsx';
-import Account from './pages/Account.jsx';
-import More from './pages/More.jsx';
-import CheckIn from './pages/CheckIn.jsx';
-import Results from './pages/Results.jsx';
-import InkblotTest from './pages/InkblotTest.jsx';
-import Assessments from './pages/Assessments.jsx';
-import AssessmentRun from './pages/AssessmentRun.jsx';
-import Paths from './pages/Paths.jsx';
-import PathRun from './pages/PathRun.jsx';
-import Grounding from './pages/Grounding.jsx';
-import Read from './pages/Read.jsx';
-import ReadArticle from './pages/ReadArticle.jsx';
-import ReadTest from './pages/ReadTest.jsx';
-import GroundingPractice from './pages/GroundingPractice.jsx';
-import Caregiver from './pages/Caregiver.jsx';
-import CaregiverResident from './pages/CaregiverResident.jsx';
-import NotFound from './pages/NotFound.jsx';
+import RouteChrome from '../layouts/RouteChrome.jsx';
+import Landing from '../features/home/Landing.jsx';
+import Account from '../features/profile/Account.jsx';
+import More from '../features/home/More.jsx';
+import CheckIn from '../features/checkin/CheckIn.jsx';
+import Results from '../features/checkin/Results.jsx';
+import InkblotTest from '../features/inkblot/InkblotTest.jsx';
+import Assessments from '../features/assessments/Assessments.jsx';
+import AssessmentRun from '../features/assessments/AssessmentRun.jsx';
+import Paths from '../features/paths/Paths.jsx';
+import PathRun from '../features/paths/PathRun.jsx';
+import Grounding from '../features/grounding/Grounding.jsx';
+import Read from '../features/read/Read.jsx';
+import ReadArticle from '../features/read/ReadArticle.jsx';
+import ReadTest from '../features/read/ReadTest.jsx';
+import GroundingPractice from '../features/grounding/GroundingPractice.jsx';
+import Caregiver from '../features/caregiver/Caregiver.jsx';
+import CaregiverResident from '../features/caregiver/CaregiverResident.jsx';
+import NotFound from '../shared/NotFound.jsx';
 
 export default function App() {
   return (

@@ -1,4 +1,4 @@
-import { bandColor } from '../lib/bands.js';
+import { bandColor } from './bands.js';
 
 // The score as a drawn arc. The ring is the instrument's own range, so a 12
 // on the GAD-7 (of 21) and a 12 on the AUDIT-C (of 12) read differently at a

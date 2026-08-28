@@ -1,10 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getTestNote } from '../lib/testNotes.js';
-import { TEST_INDEX } from '../lib/testIndex.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getTestNote } from './testNotes.js';
+import { TEST_INDEX } from './testIndex.js';
 
 // The dossier for one questionnaire.
 //

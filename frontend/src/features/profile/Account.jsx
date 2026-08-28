@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { useSession } from '../lib/useSession.js';
-import { clearSession } from '../lib/session.js';
-import { getProfile, getSharing, shareWith, stopSharingWith } from '../lib/api.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { useSession } from '../auth/useSession.js';
+import { clearSession } from '../auth/session.js';
+import { getProfile, getSharing, shareWith, stopSharingWith } from '../../shared/api.js';
 
 // Account — which is, for now, entirely about who can see you.
 //

@@ -1,4 +1,4 @@
-import { INKBLOTS } from '../lib/inkblots.js';
+import { INKBLOTS } from '../features/inkblot/inkblots.js';
 
 export default function AmbientBlots() {
   return (

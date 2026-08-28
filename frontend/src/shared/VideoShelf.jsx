@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { accent, alpha } from '../lib/accents.js';
+import { accent, alpha } from './accents.js';
 
 // Guided videos for a practice.
 //

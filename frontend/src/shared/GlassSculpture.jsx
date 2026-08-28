@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { CORE_PARTS, RIBBONS } from '../lib/sculpturePaths.js';
-import Inkblot3D from './Inkblot3D.jsx';
+import { CORE_PARTS, RIBBONS } from './sculpturePaths.js';
+import Inkblot3D from '../features/inkblot/Inkblot3D.jsx';
 
 // The hero sculpture as real geometry: the ink-blot paths in
 // lib/sculpturePaths.js get extruded and given a transmissive, iridescent

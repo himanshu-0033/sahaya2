@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import InkblotPlate from '../components/InkblotPlate.jsx';
-import PageShell from '../components/PageShell.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import VoiceInputButton from '../components/VoiceInputButton.jsx';
-import { SkeletonPanel } from '../components/Skeleton.jsx';
-import { MOOD_OPTIONS } from '../lib/moods.js';
-import { useSession } from '../lib/useSession.js';
-import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../lib/api.js';
-import { AFTER_CHECKIN, SET_IDS, setStartHref } from '../lib/testSet.js';
+import InkblotPlate from '../../shared/InkblotPlate.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
+import { SkeletonPanel } from '../../shared/Skeleton.jsx';
+import { MOOD_OPTIONS } from '../../shared/moods.js';
+import { useSession } from '../auth/useSession.js';
+import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../../shared/api.js';
+import { AFTER_CHECKIN, SET_IDS, setStartHref } from '../assessments/testSet.js';
 
 // The check-in, end to end.
 //

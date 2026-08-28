@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import MoodSparkline from '../components/MoodSparkline.jsx';
-import { getCaregiverResident } from '../lib/api.js';
-import { getSession } from '../lib/session.js';
-import { MOOD_OPTIONS } from '../lib/moods.js';
+import Header from '../../layouts/Header.jsx';
+import MoodSparkline from '../../shared/MoodSparkline.jsx';
+import { getCaregiverResident } from '../../shared/api.js';
+import { getSession } from '../auth/session.js';
+import { MOOD_OPTIONS } from '../../shared/moods.js';
 
 const moodLabel = (score) => MOOD_OPTIONS.find((m) => m.value === score)?.label || score;
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { decodeJwt, saveSession } from '../lib/session.js';
+import { decodeJwt, saveSession } from './session.js';
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 

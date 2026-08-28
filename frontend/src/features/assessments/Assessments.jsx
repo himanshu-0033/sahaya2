@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { SkeletonCards } from '../components/Skeleton.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getAssessmentCatalog } from '../lib/api.js';
-import { bandColor, bandTint } from '../lib/bands.js';
-import { SET_IDS, labelFor, setStartHref } from '../lib/testSet.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { SkeletonCards } from '../../shared/Skeleton.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getAssessmentCatalog } from '../../shared/api.js';
+import { bandColor, bandTint } from './bands.js';
+import { SET_IDS, labelFor, setStartHref } from './testSet.js';
 
 // Order the domains deliberately rather than however the catalog arrives:
 // safety first, then mood and distress, the social block next, strengths after

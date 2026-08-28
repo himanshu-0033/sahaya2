@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import LoadError from '../components/LoadError.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getPath, updatePath } from '../lib/api.js';
-import { accent, alpha } from '../lib/accents.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getPath, updatePath } from '../../shared/api.js';
+import { accent, alpha } from '../../shared/accents.js';
 
 // One path, day by day.
 //

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BOUNDS, CORE, RIBBONS, TAIL } from '../lib/sculpturePaths.js';
+import { BOUNDS, CORE, RIBBONS, TAIL } from '../../shared/sculpturePaths.js';
 
 // The SVG rendering of the sculpture: flat, but crisp at any size and free
 // of a WebGL context. GlassSculpture uses it as its fallback, and the paths

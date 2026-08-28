@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { accent, alpha } from '../lib/accents.js';
+import { accent, alpha } from '../../shared/accents.js';
 
 // The animated orb that paces a breath (or a tap) cycle.
 //

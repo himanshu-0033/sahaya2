@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import Button from '../components/Button.jsx';
-import ScoreRing from '../components/ScoreRing.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { SkeletonPanel } from '../components/Skeleton.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getAssessmentInstrument, submitAssessment } from '../lib/api.js';
-import { bandColor, bandTint, describeChange, formatWhen } from '../lib/bands.js';
-import { allAnswered, clearOrphans, stepsFor } from '../lib/steps.js';
+import Button from '../../shared/Button.jsx';
+import ScoreRing from './ScoreRing.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { SkeletonPanel } from '../../shared/Skeleton.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getAssessmentInstrument, submitAssessment } from '../../shared/api.js';
+import { bandColor, bandTint, describeChange, formatWhen } from './bands.js';
+import { allAnswered, clearOrphans, stepsFor } from './steps.js';
 import {
   AFTER_CHECKIN,
   AFTER_PARAM,
@@ -19,7 +19,7 @@ import {
   readSetResults,
   recordSetResult,
   setHref,
-} from '../lib/testSet.js';
+} from './testSet.js';
 
 const draftKey = (id) => `sahay:assessment-draft:${id}`;
 

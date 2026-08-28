@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import LoadError from '../components/LoadError.jsx';
-import { SkeletonCards } from '../components/Skeleton.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getGroundingCatalog } from '../lib/api.js';
-import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../lib/accents.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import { SkeletonCards } from '../../shared/Skeleton.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getGroundingCatalog } from '../../shared/api.js';
+import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../../shared/accents.js';
 
 // The grounding index.
 //

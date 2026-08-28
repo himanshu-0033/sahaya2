@@ -1,4 +1,4 @@
-import { MOOD_OPTIONS } from '../lib/moods.js';
+import { MOOD_OPTIONS } from './moods.js';
 
 const moodLabel = (score) => MOOD_OPTIONS.find((m) => m.value === score)?.label || score;
 

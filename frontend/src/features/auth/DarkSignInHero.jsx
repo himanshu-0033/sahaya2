@@ -2,10 +2,10 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
-import CrisisContacts from './CrisisContacts.jsx';
-import Logo from './Logo.jsx';
-import Inkblot3D from './Inkblot3D.jsx';
-import Butterflies, { FeatureButterfly } from './Butterflies.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import Logo from '../../shared/Logo.jsx';
+import Inkblot3D from '../inkblot/Inkblot3D.jsx';
+import Butterflies, { FeatureButterfly } from '../../shared/Butterflies.jsx';
 
 // three.js is most of the bundle and nothing above the fold needs it, so the
 // WebGL sculpture loads on its own. The SVG version stands in meanwhile —

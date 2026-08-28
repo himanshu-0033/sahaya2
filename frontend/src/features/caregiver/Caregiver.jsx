@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
-import { SkeletonCards } from '../components/Skeleton.jsx';
-import { getSession } from '../lib/session.js';
-import { getCaregiverResidents, inviteResident } from '../lib/api.js';
-import { MOOD_OPTIONS } from '../lib/moods.js';
+import Header from '../../layouts/Header.jsx';
+import GoogleSignInButton from '../auth/GoogleSignInButton.jsx';
+import { SkeletonCards } from '../../shared/Skeleton.jsx';
+import { getSession } from '../auth/session.js';
+import { getCaregiverResidents, inviteResident } from '../../shared/api.js';
+import { MOOD_OPTIONS } from '../../shared/moods.js';
 
 const moodLabel = (score) => MOOD_OPTIONS.find((m) => m.value === score)?.label || score;
 

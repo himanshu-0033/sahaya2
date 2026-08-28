@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import GoogleSignInButton from '../components/GoogleSignInButton.jsx';
-import PasswordAuthForm from '../components/PasswordAuthForm.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import Logo from '../components/Logo.jsx';
+import GoogleSignInButton from './GoogleSignInButton.jsx';
+import PasswordAuthForm from './PasswordAuthForm.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import Logo from '../../shared/Logo.jsx';
 
 // The page a stranger lands on.
 //

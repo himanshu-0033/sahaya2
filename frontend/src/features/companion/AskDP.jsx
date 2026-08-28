@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ChatPanel from './ChatPanel.jsx';
-import Logo from './Logo.jsx';
-import { getStatus } from '../lib/api.js';
+import Logo from '../../shared/Logo.jsx';
+import { getStatus } from '../../shared/api.js';
 
 // DP — the companion, behind the app's own mark.
 //

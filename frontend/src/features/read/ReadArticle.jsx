@@ -1,9 +1,9 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import CrisisContacts from '../components/CrisisContacts.jsx';
-import { useSession } from '../lib/useSession.js';
-import { getArticle, TOPICS } from '../lib/articles.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
+import { useSession } from '../auth/useSession.js';
+import { getArticle, TOPICS } from './articles.js';
 
 // One article.
 //

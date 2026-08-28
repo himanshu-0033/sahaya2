@@ -1,4 +1,4 @@
-import AskDP from './AskDP.jsx';
+import AskDP from '../features/companion/AskDP.jsx';
 import TabBar from './TabBar.jsx';
 
 // The frame every signed-in page sits in.
