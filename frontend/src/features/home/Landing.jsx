@@ -17,10 +17,22 @@ import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../../s
 
 // ─── Quick shortcuts for a bad moment ───────────────────────────────────────
 const QUICK = [
-  { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)', emoji: '🔥' },
-  { mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)', emoji: '💨' },
-  { mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)', emoji: '🌀' },
-  { mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)', emoji: '🌧️' },
+  {
+    mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)',
+    icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c-2-2.67-4-5.33-4-8 4-5.33 8 0 4 8m0 0c2 2.67 4 5.33 4 8-4 5.33-8 0-4-8Z" /><path d="M12 12c-2.67 2-5.33 4-8 4-5.33-4 0-8 8-4m0 0c2.67-2 5.33-4 8-4 5.33 4 0 8-8 4Z" /></svg>,
+  },
+  {
+    mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)',
+    icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7A7.1 7.1 0 0 0 6.3 7.7" /><path d="M9.9 12.6a2.8 2.8 0 0 1 4.2 0" /><path d="M2 12h2M20 12h2M12 2v2M12 20v2" /></svg>,
+  },
+  {
+    mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)',
+    icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0" /><path d="M12 8a4 4 0 0 1 4 4" /><path d="M12 4a8 8 0 0 1 8 8" /><path d="M12 16a4 4 0 0 1-4-4" /><path d="M12 20a8 8 0 0 1-8-8" /></svg>,
+  },
+  {
+    mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)',
+    icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v6M8 4v4M16 4v4" /><path d="M4 10a16 16 0 0 0 16 0" /><path d="M12 14v4M8 16v2M16 16v2" /></svg>,
+  },
 ];
 
 // ─── Quick-action destinations (GPay-style grid) ────────────────────────────
@@ -82,28 +94,28 @@ const EXPLORE = [
     title: 'Guided paths',
     sub: '5 paths · 5 min/day',
     hue: 'var(--sec-paths)',
-    emoji: '🛤️',
+    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z" /><path d="M16.2 7.8l-2 6.3-6.3 2 2-6.3z" /><circle cx="12" cy="12" r="1.5" /></svg>,
   },
   {
     to: '/assessments',
     title: 'Questionnaires',
     sub: '21 clinical tools',
     hue: 'var(--sec-tests)',
-    emoji: '📋',
+    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /><path d="M9 12l2 2 4-4" /></svg>,
   },
   {
     to: '/read',
     title: 'Reading',
     sub: 'Essays & research',
     hue: 'var(--sec-read)',
-    emoji: '📖',
+    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>,
   },
   {
     to: '/inkblot-test',
     title: 'Inkblot test',
     sub: '10 plates · ~10 min',
     hue: 'var(--sec-inkblot)',
-    emoji: '🎨',
+    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 2-1 3-2 4l-1 2h-4l-1-2c-1-1-2-2-2-4a5 5 0 0 1 5-5Z" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /><path d="M10 13h4" /></svg>,
   },
 ];
 
@@ -196,13 +208,20 @@ function StreakRing({ count, max = 7 }) {
 }
 
 // ─── Time of day helpers ────────────────────────────────────────────────────
+const GREET_ICONS = {
+  moon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-lavender)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>,
+  sunrise: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-amber)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><path d="M12 9V2M4.22 10.22l1.42 1.42M1 18h2M21 18h2M18.36 11.64l1.42-1.42" /><path d="M12 2l3 5H9l3-5Z" /></svg>,
+  sun: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-amber)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>,
+  sunset: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-flag)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><path d="M12 2v7M4.22 10.22l1.42 1.42M1 18h2M21 18h2M18.36 11.64l1.42-1.42" /></svg>,
+};
+
 function greeting() {
   const h = new Date().getHours();
-  if (h < 5) return { text: 'Still up', emoji: '🌙' };
-  if (h < 12) return { text: 'Morning', emoji: '🌅' };
-  if (h < 17) return { text: 'Afternoon', emoji: '☀️' };
-  if (h < 21) return { text: 'Evening', emoji: '🌇' };
-  return { text: 'Late one', emoji: '🌙' };
+  if (h < 5) return { text: 'Still up', icon: GREET_ICONS.moon };
+  if (h < 12) return { text: 'Morning', icon: GREET_ICONS.sunrise };
+  if (h < 17) return { text: 'Afternoon', icon: GREET_ICONS.sun };
+  if (h < 21) return { text: 'Evening', icon: GREET_ICONS.sunset };
+  return { text: 'Late one', icon: GREET_ICONS.moon };
 }
 
 function todayDate() {
@@ -320,7 +339,7 @@ export default function Landing() {
         </p>
         <h1 className="font-display mt-1.5 text-[1.85rem] leading-tight sm:text-[2.4rem]">
           {greet.text}, {first}
-          <span className="ml-2 inline-block" aria-hidden="true">{greet.emoji}</span>
+          <span className="ml-2 inline-block align-middle" aria-hidden="true">{greet.icon}</span>
         </h1>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
           {sub}
@@ -440,7 +459,7 @@ export default function Landing() {
                 '--fc-hue': q.hue,
               }}
             >
-              <span className="text-xl" aria-hidden="true">{q.emoji}</span>
+              <span aria-hidden="true">{q.icon}</span>
               <span className="text-sm font-medium" style={{ color: q.hue }}>
                 {q.label}
               </span>
@@ -485,7 +504,7 @@ export default function Landing() {
             <Link key={e.to} to={e.to} className="explore-card">
               <div className="explore-bar" style={{ background: e.hue }} />
               <div className="explore-body">
-                <span className="text-2xl" aria-hidden="true">{e.emoji}</span>
+                <span aria-hidden="true" style={{ color: e.hue }}>{e.icon}</span>
                 <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{e.title}</p>
                 <p className="mt-1 text-[11px] text-[var(--color-muted)]">{e.sub}</p>
               </div>
