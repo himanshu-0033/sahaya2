@@ -35,6 +35,21 @@ const SCULPTURE_BOX = 'h-[38vh] w-full min-h-[240px] sm:h-[46vh] lg:h-[76vh] lg:
 // The sculpture leads and the copy sits beside it, so the first thing on
 // screen is the object rather than a form. Sign-in stays one tap away
 // behind the call to action instead of competing with it.
+// A note on the white alphas below, because they were all raised at once and
+// the numbers now look arbitrary without it.
+//
+// Every piece of text on this screen is small — 11 to 15px — so all of it owes
+// 4.5:1, and against this ground (#05060a) almost none of it was paying.
+// The footer disclaimer sat at 1.7:1, the "or use email" divider at 2.1:1, the
+// field labels at 3.7:1, the body copy at 4.5:1 by a whisker on the wrong side.
+// This is the first screen anyone sees and the one screen a person signs up
+// from, and the least readable string on it was the sentence saying this is
+// not a medical device.
+//
+// Everything moved up to the first step that clears 4.5:1 while keeping the
+// order it had — hints quieter than labels, labels quieter than body — so the
+// hierarchy is unchanged and only the floor moved. 50 is the lowest alpha that
+// passes here; nothing below it is text any more.
 export default function DarkSignInHero({ onSignedIn }) {
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
@@ -78,7 +93,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                 that ships with every dark landing-page template. */}
             <Logo size={26} className="shrink-0" />
             <span className="font-eyebrow text-[11px] font-semibold text-white/90">
-              DP Sahay <span className="font-normal text-white/45">AI</span>
+              DP Sahay <span className="font-normal text-white/60">AI</span>
             </span>
           </Link>
 
@@ -145,7 +160,7 @@ export default function DarkSignInHero({ onSignedIn }) {
             </h1>
 
             <p
-              className="animate-fade-up mt-4 max-w-sm text-[15px] leading-relaxed text-white/45"
+              className="animate-fade-up mt-4 max-w-sm text-[15px] leading-relaxed text-white/60"
               style={{ animationDelay: '0.28s' }}
             >
               One tap says how today feels, and that is the whole obligation. Behind it,
@@ -165,7 +180,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                     Begin check-in
                   </button>
 
-                  <p className="mt-4 text-[13px] text-white/35">
+                  <p className="mt-4 text-[13px] text-white/50">
                     <button
                       type="button"
                       onClick={() => setOpen(true)}
@@ -173,7 +188,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                     >
                       Sign in
                     </button>
-                    <span className="mx-2.5 text-white/15">·</span>
+                    <span className="mx-2.5 text-white/50">·</span>
                     <Link
                       to="/caregiver"
                       className="underline underline-offset-4 transition-colors hover:text-white/75"
@@ -191,7 +206,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                     <GoogleSignInButton dark onSignedIn={onSignedIn} />
                   </div>
 
-                  <div className="my-4 flex items-center gap-3 text-[11px] tracking-wide text-white/25">
+                  <div className="my-4 flex items-center gap-3 text-[11px] tracking-wide text-white/50">
                     <span className="h-px flex-1 bg-[var(--surface-4)]" />
                     or use email
                     <span className="h-px flex-1 bg-[var(--surface-4)]" />
@@ -202,7 +217,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="mt-4 w-full text-center text-[12px] text-white/30 transition-colors hover:text-white/60"
+                    className="mt-4 w-full text-center text-[12px] text-white/55 transition-colors hover:text-white/85"
                   >
                     Back
                   </button>
@@ -216,7 +231,7 @@ export default function DarkSignInHero({ onSignedIn }) {
           </div>
         </main>
 
-        <footer className="shrink-0 pt-4 text-center text-[11px] text-white/20 lg:text-left">
+        <footer className="shrink-0 pt-4 text-center text-[11px] text-white/50 lg:text-left">
           DP Sahay AI is a reflective prototype, not a medical device.
         </footer>
       </div>

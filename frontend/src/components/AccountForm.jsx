@@ -29,10 +29,10 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
   });
 
   const inputClass = dark
-    ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-white/30 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
+    ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-[var(--ink-placeholder)] focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
     : 'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-  const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`;
-  const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/35' : 'text-[var(--color-muted)]'}`;
+  const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
+  const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/50' : 'text-[var(--color-muted)]'}`;
 
   function set(key, value) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -118,7 +118,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
           </p>
         </div>
 
-        <p className={`text-xs leading-relaxed ${dark ? 'text-white/40' : 'text-[var(--color-muted)]'}`}>
+        <p className={`text-xs leading-relaxed ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`}>
           Nobody sees your check-ins but you. If you later want a counsellor to
           follow along, you invite them yourself from your account — and you can
           stop sharing at any time.

@@ -50,13 +50,69 @@ body {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* 0.5, not 0.3. At 0.3 this measured 2.5:1 against the console ground —
+   below the 4.5:1 that body text needs, and a placeholder is body text: it is
+   the example that tells you what the field wants. "Search by name or email"
+   was the least readable string on the residents page. 0.5 measures 5.3:1 and
+   still reads as a hint rather than as a value already typed. */
 .input-soft::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .input-soft:focus {
   border-color: var(--color-lavender);
   box-shadow: 0 0 0 3px var(--color-lavender-soft);
+}
+
+/* Keyboard focus. The console had no focus styling of its own at all: every
+   button, every NavLink and every row link fell back to the browser's default
+   ring, which on this near-black ground is a dark outline on a dark surface in
+   several browsers. A counsellor tabbing through a resident list could not see
+   where they were. Lavender because that is the console's accent, and it
+   measures 8.3:1 against the ground.
+
+   Inputs are excluded: .input-soft already draws its own focus treatment — the
+   border goes lavender and a soft ring appears — and stacking this on top drew
+   two concentric outlines around every field. */
+:focus-visible {
+  outline: 2px solid var(--color-lavender);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+/* The skip link. Off-screen until focused — hidden elements cannot be focused,
+   so display:none would make it decoration. Past the masthead and straight
+   into the table, which on the residents page is the whole point of the page. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  margin: 0.75rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 999px;
+  background: var(--color-lavender);
+  color: #14121f;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-160%);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
 }
 
 @keyframes fade-in-up {

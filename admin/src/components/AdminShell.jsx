@@ -8,6 +8,13 @@ const navItems = [
 export default function AdminShell({ admin, onSignOut, children }) {
   return (
     <div className="min-h-screen">
+      {/* First stop for the keyboard, so a counsellor is not walked through
+          the wordmark, both nav links and the sign-out button on every page
+          before reaching the thing they came to read. */}
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+
       <header className="sticky top-0 z-10 border-b border-white/8 bg-[var(--color-cream)]/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4">
           <div className="mr-auto">
@@ -53,7 +60,11 @@ export default function AdminShell({ admin, onSignOut, children }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      {/* tabIndex={-1} so the skip link's hash can put focus here without
+          adding another stop to the tab order. */}
+      <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-6 py-8 focus:outline-none">
+        {children}
+      </main>
 
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-[var(--color-muted)]">
         Flags are a rule-based nudge to start a conversation — not a diagnosis, and not a

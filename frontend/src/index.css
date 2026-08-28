@@ -331,10 +331,23 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   --line-6: rgba(255, 255, 255, 0.40);
   --line-7: rgba(255, 255, 255, 0.60);
 
-  /* The faintest readable ink: placeholder text and the label on a disabled
-     button. Below --color-muted, and deliberately the only step down from it —
-     anything fainter than this is decoration that happens to contain words. */
+  /* Two steps below --color-muted — and they are NOT the same step, which is
+     what a single token used to pretend.
+
+     One value at 0.3 alpha was doing both jobs, at 2.4:1 against this ground:
+     the worst contrast left anywhere in the app. For a disabled button label
+     that is correct and deliberate. WCAG exempts disabled controls precisely
+     so they can look unavailable, and a disabled button whose label reads as
+     crisply as an enabled one is the worse bug of the two.
+
+     For placeholder text it was simply wrong. A placeholder is content — it
+     is the example telling you what kind of answer this is — and at 2.4:1
+     the hint "What do you see?" was harder to read than the sentence typed
+     over the top of it. 0.5 alpha measures 4.9:1 on the page ground and
+     4.9:1 on a card, clearing 4.5:1 on both, and still reads as a hint
+     rather than as a value someone has already entered. */
   --ink-faint: rgba(244, 242, 238, 0.3);
+  --ink-placeholder: rgba(244, 242, 238, 0.5);
 }
 
 /* Gradient headline text. Falls back to plain ink where background-clip is
@@ -620,6 +633,39 @@ body::after {
   border-radius: 6px;
 }
 
+/* The skip link, parked off the top of the viewport until it is focused.
+
+   Off-screen rather than `display: none`, because a hidden element cannot be
+   focused and a skip link nobody can reach is worse than not having one — it
+   looks like the box was ticked. Fixed rather than absolute so it arrives at
+   the top of the window wherever the page has been scrolled to, and above the
+   grain and the tab bar so nothing overlaps it while the keyboard is on it. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  margin: 0.75rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 999px;
+  background: var(--color-teal);
+  color: #07080a;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transform: translateY(-160%);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
+}
+
 /* Text fields style their own focus (border goes teal, background lifts), so
    the global ring on top of that was drawing two concentric outlines around
    every input. Their own treatment is a sufficient focus indicator, so the
@@ -734,6 +780,11 @@ p, li {
   --w-sage: #7fa890;
   --w-sage-deep: #3e6b54;
   --w-sage-wash: #eef4ef;
+  /* Rose is a badge tint only, never a fill for a control: at 1.4:1 against
+     the cream it has no visible edge, so a rose button would be a rectangle
+     of nothing. --w-rose-deep is 5.2:1 on it, matching the sage badge's 5.5. */
+  --w-rose: #e8cfc8;
+  --w-rose-deep: #734840;
   --w-gold: #8a6a21;
   --w-line: rgba(51, 57, 58, 0.1);
   --w-line-2: rgba(51, 57, 58, 0.16);

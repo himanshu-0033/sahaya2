@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AdminShell from './components/AdminShell.jsx';
+import RouteChrome from './components/RouteChrome.jsx';
 import SignIn from './pages/SignIn.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Residents from './pages/Residents.jsx';
@@ -75,7 +76,11 @@ export default function App() {
 
   if (checking || !admin) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      // role="status" so this is announced rather than sitting there silently.
+      // It is the only thing on screen while the allowlist check is in flight,
+      // and on a slow connection a screen reader otherwise reports an empty
+      // page — indistinguishable from access having been refused.
+      <div className="flex min-h-screen items-center justify-center" role="status">
         <p className="text-sm text-[var(--color-muted)]">Checking counsellor access…</p>
       </div>
     );
@@ -83,6 +88,10 @@ export default function App() {
 
   return (
     <AdminShell admin={admin} onSignOut={handleSignOut}>
+      {/* Title, scroll and focus on navigation. Mounted in this branch only —
+          the sign-in and access-check screens are not routed, and they keep
+          the document title set in index.html. */}
+      <RouteChrome />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/residents" element={<Residents />} />

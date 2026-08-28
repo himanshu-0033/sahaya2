@@ -62,6 +62,7 @@ const TOOLS = [
     title: 'Grounding, not meditation',
     body: 'Thirteen practices for a bad ten minutes — cyclic sighing, temperature, body scan. Most are under three minutes.',
     tags: ['Panicking', 'Anxious', 'Spiralling', 'Low'],
+    tone: 'rose',
   },
   {
     title: 'DP, the companion',
@@ -72,6 +73,7 @@ const TOOLS = [
     title: 'Seven-day paths',
     body: 'A small thing to do each day for a week, when one exercise is not the shape of the problem.',
     tags: ['Sleep', 'Worry', 'Low mood'],
+    tone: 'rose',
   },
   {
     title: 'A counsellor, if you want one',
@@ -314,7 +316,7 @@ export default function Welcome({ onSignedIn }) {
       </section>
 
       {/* ------------------------------------------------------------ inside */}
-      <section id="inside" className="scroll-mt-20 py-20" style={{ background: 'var(--w-band)' }}>
+      <section id="inside" className="scroll-mt-20 py-20 sm:py-25" style={{ background: 'var(--w-band)' }}>
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <SectionHead
             eyebrow="What's inside"
@@ -340,7 +342,7 @@ export default function Welcome({ onSignedIn }) {
       </section>
 
       {/* ------------------------------------------------------------- tools */}
-      <section id="tools" className="scroll-mt-20 py-20">
+      <section id="tools" className="scroll-mt-20 py-20 sm:py-25">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <SectionHead
             eyebrow="Everything else"
@@ -360,7 +362,13 @@ export default function Welcome({ onSignedIn }) {
                     <span
                       key={tag}
                       className="rounded-full px-3 py-1 text-[12px]"
-                      style={{ background: 'var(--w-sage-wash)', color: 'var(--w-sage-deep)' }}
+                      // Warm where the tag is a feeling, cool where it is a
+                      // property of the product. Two kinds of thing, two tints.
+                      style={
+                        t.tone === 'rose'
+                          ? { background: 'var(--w-rose)', color: 'var(--w-rose-deep)' }
+                          : { background: 'var(--w-sage-wash)', color: 'var(--w-sage-deep)' }
+                      }
                     >
                       {tag}
                     </span>
@@ -377,7 +385,7 @@ export default function Welcome({ onSignedIn }) {
           press, and inventing testimonials for a mental-health tool is not a
           thing worth doing — so the social proof is the provenance of the
           instruments, which is a stronger claim and needs nobody's consent. */}
-      <section id="trust" className="scroll-mt-20 py-20" style={{ background: 'var(--w-band)' }}>
+      <section id="trust" className="scroll-mt-20 py-20 sm:py-25" style={{ background: 'var(--w-band)' }}>
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <SectionHead
             eyebrow="Why trust the numbers"
@@ -407,7 +415,7 @@ export default function Welcome({ onSignedIn }) {
       {/* ----------------------------------------------------------- privacy */}
       {/* Answering the objection that actually stops sign-ups, before the ask
           rather than after it. */}
-      <section id="privacy" className="scroll-mt-20 py-20">
+      <section id="privacy" className="scroll-mt-20 py-20 sm:py-25">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <SectionHead eyebrow="Privacy" title="Who can see this." />
 

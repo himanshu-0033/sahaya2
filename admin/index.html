@@ -5,6 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
+    <!-- Without this the browser assumes a light document and renders its own
+         chrome to match: scrollbars, the select dropdown on the range filter
+         and the date picker all came up white-on-white inside a black app. -->
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#07080a" />
     <title>DP Sahay AI Admin — Counsellor Console</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>

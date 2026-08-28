@@ -41,6 +41,20 @@ export default function PageShell({
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      {/* First thing in the document, so it is the first thing Tab reaches.
+          Without it, a keyboard or switch user arriving on any page had to
+          walk the masthead, the crisis button and every tab before reaching
+          the content — on every navigation, on every screen. Invisible until
+          focused, which is the whole trick: it costs a sighted user nothing.
+
+          It lives here rather than in App because this is where there is
+          something to skip. The five full-bleed flows that do not use this
+          shell — a running practice, a questionnaire — have no navigation
+          above their content, so a skip link on them would jump over nothing. */}
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
         {/* Wide and shallow, fading out well above the fold. An ellipse rather
             than a circle so it reads as ambient light from off-screen instead
@@ -56,11 +70,17 @@ export default function PageShell({
           inside a flow they are partway through. */}
       {tabs && <AskDP />}
 
-      <div
-        className={`mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 md:pt-0`}
+      {/* `main` is a landmark as well as the skip target — a screen reader's
+          "jump to main content" command is looking for exactly this element,
+          and until now the app had none on any page. tabIndex={-1} lets the
+          hash move focus here without adding a stop to the tab order. */}
+      <main
+        id="main"
+        tabIndex={-1}
+        className={`mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 focus:outline-none md:pt-0`}
       >
         {children}
-      </div>
+      </main>
     </div>
   );
 }

@@ -309,7 +309,7 @@ export default function CheckIn() {
                     placeholder="What do you see?"
                     maxLength={800}
                     aria-label={`What you see in plate ${plateStep + 1}`}
-                    className="min-h-[3.75rem] flex-1 resize-y rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3.5 text-base outline-none transition-colors placeholder:text-[var(--ink-faint)] focus:border-[var(--sec-inkblot)]/60 focus:bg-[var(--surface-2)]"
+                    className="min-h-[3.75rem] flex-1 resize-y rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3.5 text-base outline-none transition-colors placeholder:text-[var(--ink-placeholder)] focus:border-[var(--sec-inkblot)]/60 focus:bg-[var(--surface-2)]"
                   />
                   <VoiceInputButton onTranscript={appendTranscript} />
                 </div>

@@ -154,7 +154,7 @@ export default function Account() {
             value={email}
             onChange={(ev) => setEmail(ev.target.value)}
             placeholder="counsellor@example.com"
-            className="mt-2 w-full rounded-xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3 outline-none transition-colors placeholder:text-[var(--ink-faint)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]"
+            className="mt-2 w-full rounded-xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3 outline-none transition-colors placeholder:text-[var(--ink-placeholder)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]"
           />
           <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted)]">
             Use the address they sign in with. They will only see you once they open the counsellor
