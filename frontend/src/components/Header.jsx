@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import CrisisContacts from './CrisisContacts.jsx';
 import Logo from './Logo.jsx';
+import { useSession } from '../lib/useSession.js';
 
 // A slim masthead: the wordmark and the one link that has to be reachable from
 // every screen.
@@ -17,6 +18,11 @@ import Logo from './Logo.jsx';
 // button because this masthead is on every page, and a Tests button on the
 // Tests page would be a link to where you already are.
 export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
+  const session = useSession();
+  const profile = session?.profile;
+  // /account already holds the whole profile — name, email, who it is shared
+  // with, and sign out. It was only reachable from a footer link called "Who
+  // can see this", which nobody reads as "my account".
   return (
     <header className="flex items-center justify-between gap-3 pt-2 pb-1">
       <div className="flex min-w-0 items-center gap-3">
@@ -37,7 +43,23 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
         </Link>
         {leading}
       </div>
-      <CrisisContacts variant="link" />
+      <div className="flex shrink-0 items-center gap-3">
+        <CrisisContacts variant="link" />
+        {profile && (
+          <Link
+            to="/account"
+            aria-label="Your account"
+            title={profile.name || 'Your account'}
+            className="press flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
+          >
+            {profile.picture ? (
+              <img src={profile.picture} alt="" className="h-full w-full object-cover" />
+            ) : (
+              (profile.name || '?').charAt(0).toUpperCase()
+            )}
+          </Link>
+        )}
+      </div>
     </header>
   );
 }
