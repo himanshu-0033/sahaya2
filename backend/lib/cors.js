@@ -23,12 +23,21 @@ function matches(pattern, origin) {
   return !origin.slice(prefix.length, origin.length - suffix.length).includes('/');
 }
 
+// Built-in patterns that are always allowed regardless of ALLOWED_ORIGIN.
+// This covers Vercel preview deployments (new URL on every push) and local dev
+// without requiring env var updates each time.
+const BUILTIN_PATTERNS = [
+  'https://*.vercel.app',
+  'http://localhost:*',
+];
+
 function resolveOrigin(req) {
-  const allowed = allowedOrigins();
-  if (allowed.length === 0) return '*';
+  const explicit = allowedOrigins();
+  const all = [...explicit, ...BUILTIN_PATTERNS];
+  if (explicit.length === 0 && BUILTIN_PATTERNS.length === 0) return '*';
 
   const origin = req.headers.origin;
-  if (origin && allowed.some((a) => matches(a, origin))) return origin;
+  if (origin && all.some((a) => matches(a, origin))) return origin;
   // Not on the list: send no Access-Control-Allow-Origin at all. Echoing a
   // *different* allowed origin (what this used to do) makes the browser
   // block the response with an opaque "Failed to fetch", which reads like
