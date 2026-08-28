@@ -49,3 +49,39 @@ serviceAccountKey.json
 .env*
 !.env.example
 !.env.production
+
+# ------------------------------------------------------------------
+# AI assistant and editor config
+#
+# Every tool that has been pointed at this repo drops a directory in the
+# root — nineteen of them at last count. None is part of the app: they are
+# local prompt libraries, agent definitions and editor state, they differ
+# per machine and per person, and a diff full of them buries the diff of
+# the actual change.
+#
+# Listed one per line rather than caught by a glob. A pattern loose enough
+# to match all of these would also match .github and .gitignore, and the
+# day someone adds a real dotfile it would vanish without a word.
+.agents/
+.augment/
+.claude/
+.codebuddy/
+.codewhale/
+.continue/
+.cursor/
+.factory/
+.gemini/
+.kilocode/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.trae/
+.warp/
+.windsurf/
+
+# .github holds only a prompt library here, but it is also where GitHub
+# workflows, issue templates and CODEOWNERS belong. Ignoring the whole
+# directory would swallow the first workflow anybody adds, silently — so
+# only the prompts are ignored, and real GitHub config still commits.
+.github/prompts/
