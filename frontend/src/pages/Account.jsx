@@ -175,15 +175,16 @@ export default function Account() {
       <Header eyebrow="Account" />
 
       <div className="animate-slide-up stack-block">
-        <p className="marginalia">Who can see your check-ins</p>
+        <p className="marginalia">Your profile</p>
         <h1 className="font-display mt-2 text-[2rem] leading-tight sm:text-[2.6rem]">
-          Nobody, unless
+          You, and who
           <br />
-          you say so.
+          can see you.
         </h1>
         <p className="stack-item max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          Your check-ins, questionnaire scores and inkblot notes are yours. Invite a counsellor here
-          and they will be able to follow along; remove them and they stop, straight away.
+          Your details, your totals, and the one setting that matters: your check-ins,
+          questionnaire scores and inkblot notes are yours. Invite a counsellor here and they can
+          follow along; remove them and they stop, straight away.
         </p>
       </div>
 

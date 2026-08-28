@@ -572,23 +572,6 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* reads as a surface instead of an empty div.                        */
 /* ================================================================== */
 
-/* Custom cursor. The class is added by Cursor.jsx only once it is actually
-   drawing, so a JS failure leaves the normal arrow in place. Text fields keep
-   their caret — swapping an I-beam for a dot makes a form feel broken. */
-.has-custom-cursor,
-.has-custom-cursor a,
-.has-custom-cursor button,
-.has-custom-cursor [role='button'],
-.has-custom-cursor label,
-.has-custom-cursor select {
-  cursor: none;
-}
-
-.has-custom-cursor input:not([type='checkbox']):not([type='radio']):not([type='range']),
-.has-custom-cursor textarea {
-  cursor: text;
-}
-
 /* Film grain. A single inline SVG turbulence tile, fixed over the viewport at
    very low opacity. This is the cheapest way to stop a large flat dark area
    looking like an empty canvas, and it costs no network request. */

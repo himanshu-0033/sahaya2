@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import Cursor from './components/Cursor.jsx';
 import RouteChrome from './components/RouteChrome.jsx';
 import Landing from './pages/Landing.jsx';
 import Account from './pages/Account.jsx';
@@ -23,15 +22,14 @@ import NotFound from './pages/NotFound.jsx';
 export default function App() {
   return (
     <>
-      {/* Mounted once, above the router, so the ring keeps its momentum
-          across a navigation instead of snapping back on every route. */}
-      <Cursor />
       {/* Title, scroll position and focus — the three things the browser
           stops doing for you once the address bar is yours. */}
       <RouteChrome />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/account" element={<Account />} />
+        {/* The URL people actually type for this page. */}
+        <Route path="/profile" element={<Account />} />
         <Route path="/more" element={<More />} />
         <Route path="/checkin" element={<CheckIn />} />
         <Route path="/results" element={<Results />} />
