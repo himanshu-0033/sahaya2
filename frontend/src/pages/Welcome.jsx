@@ -179,7 +179,14 @@ function SectionHead({ eyebrow, title, sub }) {
 export default function Welcome({ onSignedIn }) {
   const [signingIn, setSigningIn] = useState(false);
 
-  const go = () => setSigningIn(true);
+  // The panel replaces the hero's button row, which is near the top of a long
+  // page — and two of the three buttons that open it are the sticky header and
+  // the closing CTA at the very bottom. Without this, signing in from either
+  // one swaps in a form a full screen away and looks like nothing happened.
+  const go = () => {
+    setSigningIn(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="welcome min-h-screen">
