@@ -6,7 +6,6 @@ import LoadError from '../components/LoadError.jsx';
 import DarkSignInHero from '../components/DarkSignInHero.jsx';
 import DarkAccountHero from '../components/DarkAccountHero.jsx';
 import HomeAssistant from '../components/HomeAssistant.jsx';
-import TestsPanel from '../components/TestsPanel.jsx';
 import { getSession } from '../lib/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
 
@@ -24,16 +23,6 @@ import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/
 // The "right now" strip is the part that earns its place. A student in a bad
 // moment should not have to navigate to a section and browse a library; one
 // tap from here goes straight into a practice.
-
-// Hidden for now, not deleted — flip to true to bring it back.
-//
-// The card advertised the size of the library ("Twenty-one questionnaires"),
-// which was its job when it was the only door to the tests. The Tests button
-// in the header now opens straight onto three of them, so the card had become
-// a second, larger, vaguer route to the same place. Nothing else about the
-// feature is switched off: More, Paths and Read all still reach it, and the
-// /assessments route is untouched.
-const SHOW_TESTS_CARD = false;
 
 const QUICK = [
   { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)' },
@@ -130,8 +119,14 @@ function PlateStrip({ seed }) {
 // so these three show the range rather than three versions of the same thing.
 // Plate I alone would promise ten monochrome bats.
 //
-// They overlap because the card says "ten plates", and a neatly spaced row of
-// exactly three quietly contradicts it; a stack reads as "more behind these".
+// They overlap because the flow contains ten of them, and a neatly spaced row
+// of exactly three quietly contradicts that; a stack reads as "more behind
+// these".
+//
+// It used to sit on an inkblot card of its own, beside the check-in. The
+// plates are the last stage of the check-in now, so the fan moved onto that
+// card: same picture, doing the honest job of showing what is inside the one
+// door rather than advertising a second one.
 const FAN = ['01', '03', '08'];
 
 function PlateFan() {
@@ -287,7 +282,7 @@ export default function Landing() {
 
   return (
     <PageShell section="home">
-      <Header eyebrow="Home" leading={<TestsPanel />} />
+      <Header eyebrow="Home" />
 
       {/* ---------------------------------------------------------- hero */}
       {/* One line, not two. The greeting and the name used to stack into a
@@ -377,9 +372,39 @@ export default function Landing() {
                 sitting?
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                One tap saves the day and the streak. Then, if you have the time, the three
-                questionnaires and the ten inkblot plates, straight through.
+                One tap saves the day and the streak. Everything after it is optional and runs
+                straight through, without coming back here.
               </p>
+
+              {/* The whole sitting, on the one card that starts it.
+
+                  The tests and the plates used to be two more doors on this
+                  screen — a Tests button in the header and an inkblot card
+                  below — which made three separate offers out of what is
+                  actually one flow, and left a person choosing between them
+                  before doing any of it. There is one door now, and it says
+                  what is behind it: the stages, their real cost in minutes,
+                  and the plates themselves, so nothing is hidden by being
+                  merged. Both sections are still reachable on their own under
+                  More, for a day when only one of them is wanted. */}
+              <div className="mt-5 flex items-end justify-between gap-4">
+                <ul className="min-w-0 space-y-1.5 text-xs text-[var(--color-ink-soft)]">
+                  <li className="flex gap-2.5">
+                    <span className="num shrink-0 text-[var(--color-muted)]">1</span>
+                    <span>How today feels — one tap</span>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <span className="num shrink-0 text-[var(--color-muted)]">2</span>
+                    <span>PHQ-9, GAD-7, WHO-5 — about 6 min</span>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <span className="num shrink-0 text-[var(--color-muted)]">3</span>
+                    <span>Ten Rorschach plates — about 10 min</span>
+                  </li>
+                </ul>
+                <PlateFan />
+              </div>
+
               <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-[#07080a]">
                 Start check-in
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -463,46 +488,6 @@ export default function Landing() {
           </div>
         )}
 
-        {/* ---------------------------------------------------------- inkblot */}
-        <div
-          className={`border-t border-[var(--line-1)] ${SHOW_TESTS_CARD ? 'grid grid-cols-2 divide-x divide-[var(--line-1)]' : ''}`}
-        >
-          {SHOW_TESTS_CARD && (
-            <Link to="/assessments" className="press flex flex-col p-6">
-              <span className="marginalia">Tests</span>
-              <p className="font-display mt-2.5 text-xl leading-snug sm:text-2xl">
-                Twenty-one questionnaires
-              </p>
-              <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-                PHQ-9, GAD-7 and eighteen more. A range, never a diagnosis.
-              </p>
-            </Link>
-          )}
-
-          {/* Text and plates side by side while this row is full width; the
-              plates drop below the text once it is sharing the row, where
-              there is no longer space beside it. */}
-          <Link
-            to="/inkblot-test"
-            className={`press flex gap-4 p-6 ${
-              SHOW_TESTS_CARD ? 'flex-col' : 'flex-row items-center justify-between'
-            }`}
-          >
-            <span className="block min-w-0">
-              <span className="marginalia">Inkblot</span>
-              <span className="font-display mt-2.5 block text-xl leading-snug sm:text-2xl">
-                Ten plates
-              </span>
-              {/* Still its own door as well as the tail of the check-in: the
-                  plates are worth taking on a day you have already checked
-                  in, and on a day you would rather not answer a mood scale. */}
-              <span className="mt-2 block text-sm text-[var(--color-ink-soft)]">
-                On its own, without the check-in in front of it.
-              </span>
-            </span>
-            <PlateFan />
-          </Link>
-        </div>
       </section>
 
       {/* --------------------------------------------------------- assistant */}
