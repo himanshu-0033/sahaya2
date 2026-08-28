@@ -1,44 +1,130 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header.jsx';
-import PageShell from '../components/PageShell.jsx';
-import LoadError from '../components/LoadError.jsx';
-import Welcome from './Welcome.jsx';
-import DarkAccountHero from '../components/DarkAccountHero.jsx';
-import { getSession } from '../lib/session.js';
-import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../lib/api.js';
+import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
+import LoadError from '../../shared/LoadError.jsx';
+import Welcome from '../auth/Welcome.jsx';
+import DarkAccountHero from '../auth/DarkAccountHero.jsx';
+import { getSession } from '../auth/session.js';
+import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../../shared/api.js';
 
-// Home.
+// Home — redesigned with richer visual hierarchy.
 //
-// One thing is bigger than everything else, and everything else lines up.
-//
-// The check-in keeps the full width because it is genuinely the largest
-// decision on the page, and sizing it like the rest would be a lie about
-// priority. Below it, the pieces that really are peers — Tests, Inkblot — are
-// equal columns on one grid. The earlier version graded almost every block by
-// importance, and a page where six things are all slightly different sizes
-// does not read as a hierarchy, it reads as something assembled.
-//
-// The "right now" strip is the part that earns its place. A student in a bad
-// moment should not have to navigate to a section and browse a library; one
-// tap from here goes straight into a practice.
+// Inspired by Instagram (horizontal scrollers, visual cards, strong hierarchy)
+// and Google Pay (quick-action icon grid, organized sections). The page now
+// surfaces features that were buried in "More" and gives the daily check-in
+// a more celebratory presence when completed.
 
+// ─── Quick shortcuts for a bad moment ───────────────────────────────────────
 const QUICK = [
-  { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)' },
-  { mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)' },
-  { mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)' },
-  { mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)' },
+  { mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)', emoji: '🔥' },
+  { mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)', emoji: '💨' },
+  { mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)', emoji: '🌀' },
+  { mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)', emoji: '🌧️' },
 ];
 
-// Three of the ten plates, for the card that says today is done.
-//
-// Seeded from the date rather than picked with Math.random on every render.
-// Truly random would reshuffle on every state change on this page — the
-// profile arriving, the streak arriving, a retry — so the images would swap
-// while someone was reading, and each swap is three fresh network requests
-// for pictures they had already been shown. Seeded by the day it is the same
-// card all day and a different one tomorrow, which is the only sense of
-// "random" that survives contact with a component that re-renders.
+// ─── Quick-action destinations (GPay-style grid) ────────────────────────────
+const ACTIONS = [
+  {
+    to: '/grounding',
+    label: 'Calm',
+    hue: 'var(--sec-calm)',
+    bg: 'rgba(167, 156, 240, 0.14)',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3c2.5 3 4 5.4 4 7.8A4 4 0 0 1 12 15a4 4 0 0 1-4-4.2C8 8.4 9.5 6 12 3Z" />
+        <path d="M5 15.5c2 0 3.5 1 3.5 2.5S7 21 5 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Zm14 0c2 0 3.5 1 3.5 2.5S21 21 19 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Z" />
+      </svg>
+    ),
+  },
+  {
+    to: '/assessments',
+    label: 'Tests',
+    hue: 'var(--sec-tests)',
+    bg: 'rgba(88, 182, 245, 0.14)',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 11l3 3L22 4" />
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+      </svg>
+    ),
+  },
+  {
+    to: '/paths',
+    label: 'Paths',
+    hue: 'var(--sec-paths)',
+    bg: 'rgba(224, 163, 213, 0.14)',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 6l-6 6-6-6" />
+        <path d="M18 18l-6-6-6 6" />
+      </svg>
+    ),
+  },
+  {
+    to: '/read',
+    label: 'Read',
+    hue: 'var(--sec-read)',
+    bg: 'rgba(143, 214, 180, 0.14)',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      </svg>
+    ),
+  },
+];
+
+// ─── Explore section — feature previews ──────────────────────────────────────
+const EXPLORE = [
+  {
+    to: '/paths',
+    title: 'Guided paths',
+    sub: '5 paths · 5 min/day',
+    hue: 'var(--sec-paths)',
+    emoji: '🛤️',
+  },
+  {
+    to: '/assessments',
+    title: 'Questionnaires',
+    sub: '21 clinical tools',
+    hue: 'var(--sec-tests)',
+    emoji: '📋',
+  },
+  {
+    to: '/read',
+    title: 'Reading',
+    sub: 'Essays & research',
+    hue: 'var(--sec-read)',
+    emoji: '📖',
+  },
+  {
+    to: '/inkblot-test',
+    title: 'Inkblot test',
+    sub: '10 plates · ~10 min',
+    hue: 'var(--sec-inkblot)',
+    emoji: '🎨',
+  },
+];
+
+// ─── Daily sublines (rotated by date, like the plate picker) ────────────────
+const SUBLINES = [
+  'One quiet minute can shift the whole day.',
+  "Checking in takes thirty seconds. That's it.",
+  'You showed up. That matters.',
+  'Small steps, steady ground.',
+  'Today is its own thing.',
+  'Nothing here is a test. Nothing is graded.',
+  'The streak is yours. No one else sees it.',
+];
+
+function dailySubline() {
+  const d = new Date();
+  const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+  return SUBLINES[dayOfYear % SUBLINES.length];
+}
+
+// ─── Plate thumbnails ────────────────────────────────────────────────────────
 const PLATE_COUNT = 10;
 
 function platesForDay(seedSource) {
@@ -48,22 +134,13 @@ function platesForDay(seedSource) {
     hash ^= seed.charCodeAt(i);
     hash = Math.imul(hash, 16777619);
   }
-
-  // xorshift32, and the index comes off the TOP bits. The first version of
-  // this was a textbook LCG indexed with `n % pool.length`, which is the
-  // textbook way to get it wrong: an LCG's low-order bits have a very short
-  // period, and a modulo reads only those. It looked random and wasn't —
-  // plate 1 came out third on six days in seven.
   let n = hash >>> 0 || 1;
   const next = () => {
-    n ^= n << 13;
-    n >>>= 0;
+    n ^= n << 13; n >>>= 0;
     n ^= n >>> 17;
-    n ^= n << 5;
-    n >>>= 0;
+    n ^= n << 5; n >>>= 0;
     return n / 4294967296;
   };
-
   const pool = Array.from({ length: PLATE_COUNT }, (_, i) => i + 1);
   const picked = [];
   while (picked.length < 3 && pool.length > 0) {
@@ -72,105 +149,71 @@ function platesForDay(seedSource) {
   return picked.map((i) => `/plates/rorschach-${String(i).padStart(2, '0')}-thumb.jpg`);
 }
 
-// The plates are photographs of ink on cream paper, and three of the ten are
-// in colour. Neither survives being dropped straight onto a near-black card:
-// unaltered they are three bright rectangles, and the usual dark-mode trick of
-// inverting them turns plate VIII's pinks and oranges into greens and blues.
-//
-// So each one keeps its own paper. Small light tiles, the way the real cards
-// sit on a table — which is also closer to what they are than a full-bleed
-// graphic would be.
 function PlateStrip({ seed }) {
   const plates = useMemo(() => platesForDay(seed), [seed]);
-
-  // Decorative. The card already says everything in words, and three
-  // "an inkblot" announcements in a row is noise to a screen reader.
   return (
-    <div className="mt-5 flex gap-2" aria-hidden="true">
+    <div className="mt-4 flex gap-2" aria-hidden="true">
       {plates.map((src) => (
         <span
           key={src}
-          className="block h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--line-1)] sm:h-16 sm:w-16"
+          className="block h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[var(--line-1)]"
           style={{ background: '#efece5' }}
         >
-          <img
-            src={src}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-contain"
-          />
+          <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain" />
         </span>
       ))}
     </div>
   );
 }
 
-// The signpost to the inkblot reflection, on the card that offers it.
-//
-// Fixed plates, not the seeded daily ones. This card is a door, not a moment:
-// it should look the same every time you pass it, the way a sign does. The
-// check-in card above is the opposite — that one marks a particular day, so
-// it changes with the day.
-//
-// I, III and VIII specifically, and in that order. The deck genuinely runs
-// from black ink (I), through black with red (III), to full colour (VIII) —
-// so these three show the range rather than three versions of the same thing.
-// Plate I alone would promise ten monochrome bats.
-//
-// They overlap because the flow contains ten of them, and a neatly spaced row
-// of exactly three quietly contradicts that; a stack reads as "more behind
-// these".
-//
-// It used to sit on an inkblot card of its own, beside the check-in. The
-// plates are the last stage of the check-in now, so the fan moved onto that
-// card: same picture, doing the honest job of showing what is inside the one
-// door rather than advertising a second one.
-const FAN = ['01', '03', '08'];
+// ─── Streak ring (SVG circular progress) ────────────────────────────────────
+function StreakRing({ count, max = 7 }) {
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  const pct = Math.min(count / max, 1);
+  const offset = circ * (1 - pct);
 
-function PlateFan() {
   return (
-    <span className="flex shrink-0 items-center" aria-hidden="true">
-      {FAN.map((n, i) => (
-        <span
-          key={n}
-          className="block h-14 w-14 overflow-hidden rounded-xl border border-[var(--line-2)] sm:h-16 sm:w-16"
+    <div className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center">
+      <svg viewBox="0 0 64 64" width="72" height="72" className="absolute inset-0">
+        <circle cx="32" cy="32" r={r} className="streak-ring-track" />
+        <circle
+          cx="32" cy="32" r={r}
+          className="streak-ring-fill"
+          stroke="var(--color-lavender)"
+          strokeDasharray={circ}
           style={{
-            background: '#efece5',
-            marginLeft: i === 0 ? 0 : '-1.15rem',
-            // Later plates sit on top, so the stack reads front-to-back in
-            // one direction instead of interleaving.
-            zIndex: i,
-            boxShadow: '0 6px 18px -8px rgba(0,0,0,0.9)',
+            '--ring-circ': circ,
+            '--ring-offset': offset,
           }}
-        >
-          <img
-            src={`/plates/rorschach-${n}-thumb.jpg`}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-contain"
-          />
-        </span>
-      ))}
-    </span>
+        />
+      </svg>
+      <span className="num relative text-xl font-semibold text-[var(--color-lavender)]">
+        {count}
+      </span>
+    </div>
   );
 }
 
+// ─── Time of day helpers ────────────────────────────────────────────────────
 function greeting() {
   const h = new Date().getHours();
-  if (h < 5) return 'Still up';
-  if (h < 12) return 'Morning';
-  if (h < 17) return 'Afternoon';
-  if (h < 21) return 'Evening';
-  return 'Late one';
+  if (h < 5) return { text: 'Still up', emoji: '🌙' };
+  if (h < 12) return { text: 'Morning', emoji: '🌅' };
+  if (h < 17) return { text: 'Afternoon', emoji: '☀️' };
+  if (h < 21) return { text: 'Evening', emoji: '🌇' };
+  return { text: 'Late one', emoji: '🌙' };
 }
 
-// The primary card while we do not yet know whether today has been checked in.
-// Rendering the "Start check-in" card during the request and flipping it a
-// moment later is the flicker that reads as a broken screen — and on a slow
-// connection it is long enough to tap the wrong thing. Same footprint as the
-// real card, so nothing moves when the answer arrives.
+function todayDate() {
+  return new Date().toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+}
+
+// ─── Skeleton while loading ─────────────────────────────────────────────────
 function PrimarySkeleton() {
   return (
     <div className="p-6 sm:p-8" role="status">
@@ -185,21 +228,15 @@ function PrimarySkeleton() {
   );
 }
 
+// ─── Landing page ───────────────────────────────────────────────────────────
 export default function Landing() {
   const [session, setSession] = useState(() => getSession());
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
-  // The profile *load* failing and the profile *save* failing are different
-  // things: one is "we could not reach the server", the other is a message the
-  // server sent back about the form. They were sharing one string, which is why
-  // a network drop rendered as raw red text where the account form should be.
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
-  // `checkedIn: null` means NOT KNOWN YET — distinct from `false`, which is a
-  // real answer from the server. Collapsing the two is what made a failed
-  // request tell someone who had checked in that they had not.
   const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, error: null });
   const [streak, setStreak] = useState(0);
 
@@ -218,11 +255,7 @@ export default function Landing() {
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
-      // Not `checkedIn: false` — we do not know. The card renders an unknown
-      // state rather than asserting something that may be wrong.
       .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, error: err }));
-    // The grounding streak is the one number worth putting on the home screen.
-    // A failure here is not worth surfacing — it just means no streak badge.
     getGroundingCatalog()
       .then((data) => setStreak(data.streak || 0))
       .catch(() => {});
@@ -237,9 +270,6 @@ export default function Landing() {
       .finally(() => setSavingProfile(false));
   }
 
-  // A stranger gets the landing page, not the login. Welcome stands in front
-  // of DarkSignInHero and hands over to it on any call to action — the auth
-  // flow itself is untouched.
   if (!session) return <Welcome onSignedIn={setSession} />;
 
   if (profileLoading) {
@@ -250,11 +280,6 @@ export default function Landing() {
     );
   }
 
-  // Home is the one screen that used to render a raw error string in bare red
-  // on an otherwise empty page — the app's front door, and the only place not
-  // using the component that every other page uses. LoadError knows the
-  // difference between offline and refused, retries the offline case on its
-  // own, and says so in words a student can act on.
   if (loadError && !profile) {
     return (
       <PageShell section="home">
@@ -281,220 +306,198 @@ export default function Landing() {
   }
 
   const first = profile.name.split(' ')[0];
+  const greet = greeting();
+  const sub = dailySubline();
 
   return (
     <PageShell section="home">
       <Header eyebrow="Home" />
 
-      {/* ---------------------------------------------------------- hero */}
-      {/* One line, not two. The greeting and the name used to stack into a
-          48px eyebrow over a 3.2rem display name, and between them they ate
-          the top third of a phone screen to say "Morning, Ana". */}
+      {/* ═══════════════════════════════════════════ Hero greeting */}
       <div className="animate-slide-up stack-block">
-        <h1 className="font-display text-[1.75rem] leading-tight sm:text-[2.25rem]">
-          {greeting()}, {first}
-          <span className="text-[var(--color-teal)]">.</span>
+        <p className="text-xs tracking-wide text-[var(--color-muted)]">
+          {todayDate()}
+        </p>
+        <h1 className="font-display mt-1.5 text-[1.85rem] leading-tight sm:text-[2.4rem]">
+          {greet.text}, {first}
+          <span className="ml-2 inline-block" aria-hidden="true">{greet.emoji}</span>
         </h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          {sub}
+        </p>
       </div>
 
-      {/* ------------------------------------------------------- today panel */}
-      {/* Check-in, the right-now shortcuts and the inkblot were three separate
-          cards with three separate borders and three gaps between them. They
-          are one thing — what you might do on this screen, today — and reading
-          them as three made the page feel like a list of unrelated products.
-          One panel, hairline rules instead of gaps, ordered by how much of a
-          decision each is: the check-in first, a shortcut out of a bad moment
-          second, the longer exercise last. */}
-      <section className="animate-slide-up card stack-block overflow-hidden p-0">
-        {/* --------------------------------------------------- primary action */}
-        <div style={{ animationDelay: '80ms' }}>
+      {/* ═══════════════════════════════════════════ Check-in card */}
+      <section className="animate-slide-up card stack-block overflow-hidden p-0" style={{ animationDelay: '60ms' }}>
         {status.loading ? (
           <PrimarySkeleton />
         ) : status.checkedIn ? (
+          /* ─── Done state ─── */
           <Link
             to="/results"
             state={{ record: status.record }}
-            className="press block p-6 sm:p-7"
+            className="press block p-6 sm:p-7 checkin-card-done"
           >
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#07080a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5" />
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </span>
+                  <span className="marginalia">Checked in today</span>
+                </div>
+                <p className="font-display mt-3 text-[1.6rem] leading-tight sm:text-[1.9rem]">
+                  That's today done.
+                </p>
+                <p className="mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
+                  Your thought for the day is still here whenever you want it.
+                </p>
+                <PlateStrip seed={status.record?.date} />
+                <span className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
+                  See today's thought
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </span>
-                <span className="marginalia">Checked in today</span>
               </div>
-              <p className="font-display mt-4 text-[1.7rem] leading-tight sm:text-3xl">
-                That's today done.
-              </p>
-              <p className="mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
-                Your thought for the day is still here whenever you want it.
-              </p>
 
-              <PlateStrip seed={status.record?.date} />
-
-              {/* The streak, in the slot the dinner pass used to justify. It
-                  is the reason to come back tomorrow, so it belongs on the
-                  card that says today is finished — not three sections down. */}
+              {/* Streak ring */}
               {status.record?.streak > 0 && (
-                <p className="mt-4 flex items-baseline gap-2">
-                  <span className="num text-2xl text-[var(--color-lavender)]">
-                    {status.record.streak}
-                  </span>
-                  <span className="text-sm text-[var(--color-ink-soft)]">
-                    day{status.record.streak === 1 ? '' : 's'} checked in, in a row
-                  </span>
-                </p>
+                <StreakRing count={status.record.streak} />
               )}
-              <span className="mt-5 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
-                See today's thought
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
             </div>
           </Link>
         ) : (
+          /* ─── Not checked in ─── */
           <Link
             to="/checkin"
-            className="press block p-6 sm:p-8"
-            style={{ background: 'rgba(31,174,149,0.08)' }}
+            className="press block p-6 sm:p-8 checkin-card-active"
           >
-            <div>
-              <span className="marginalia">Today</span>
-              {/* Was "Three shapes, three words." — an instruction, and one
-                  that framed the check-in as a task with a correct way to
-                  complete it. It is not a test and there is nothing to get
-                  right. A question in the same voice the companion opens
-                  with asks for the same thing without grading it. */}
-              <p className="font-display mt-3 text-[1.9rem] leading-[1.15] sm:text-[2.5rem]">
-                How is today
-                <br />
-                sitting?
+            <span className="marginalia">Today</span>
+            <p className="font-display mt-3 text-[1.9rem] leading-[1.15] sm:text-[2.5rem]">
+              How is today
+              <br />
+              sitting?
+            </p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              One tap saves the day and the streak. Everything after it is optional.
+            </p>
+
+            <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-white">
+              Start check-in
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </span>
+
+            {status.error && (
+              <p className="mt-4 max-w-sm text-xs leading-relaxed text-[var(--color-muted)]">
+                We couldn&apos;t reach the server, so we can&apos;t tell whether today is already
+                done. Opening it again is safe.
               </p>
-              <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                One tap saves the day and the streak. Everything after it is optional and runs
-                straight through, without coming back here.
-              </p>
-
-              {/* The whole sitting, on the one card that starts it.
-
-                  The tests and the plates used to be two more doors on this
-                  screen — a Tests button in the header and an inkblot card
-                  below — which made three separate offers out of what is
-                  actually one flow, and left a person choosing between them
-                  before doing any of it. There is one door now, and it says
-                  what is behind it: the stages, their real cost in minutes,
-                  and the plates themselves, so nothing is hidden by being
-                  merged. Both sections are still reachable on their own under
-                  More, for a day when only one of them is wanted. */}
-              <div className="mt-5 flex items-end justify-between gap-4">
-                <ul className="min-w-0 space-y-1.5 text-xs text-[var(--color-ink-soft)]">
-                  <li className="flex gap-2.5">
-                    <span className="num shrink-0 text-[var(--color-muted)]">1</span>
-                    <span>How today feels — one tap</span>
-                  </li>
-                  <li className="flex gap-2.5">
-                    <span className="num shrink-0 text-[var(--color-muted)]">2</span>
-                    <span>PHQ-9, GAD-7, WHO-5 — about 6 min</span>
-                  </li>
-                  <li className="flex gap-2.5">
-                    <span className="num shrink-0 text-[var(--color-muted)]">3</span>
-                    <span>Ten Rorschach plates — about 10 min</span>
-                  </li>
-                </ul>
-                <PlateFan />
-              </div>
-
-              <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-[#07080a]">
-                Start check-in
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
-
-              {/* The honest version of the unknown case. The offer still
-                  stands — you can always check in — but the card no longer
-                  implies you have not already done it. Starting again costs
-                  nothing: the API returns today's existing record rather than
-                  writing a second one. */}
-              {status.error && (
-                <p className="mt-4 max-w-sm text-xs leading-relaxed text-[var(--color-muted)]">
-                  We couldn&apos;t reach the server, so we can&apos;t tell whether today is already
-                  done. Opening it again is safe — if you have checked in, you&apos;ll just get
-                  today&apos;s thought back.
-                </p>
-              )}
-            </div>
+            )}
           </Link>
         )}
-      </div>
+      </section>
 
-        {/* --------------------------------------------------------- right now */}
-        <div className="border-t border-[var(--line-1)] px-6 py-5">
-        {/* This used to be headed "Right now, I feel…", which promised a mood
-            picker and delivered a triage menu — four negative states and no
-            way to say you were fine. Four separate reviewers read it as a
-            broken mood tracker and told us it was harmful; the real mood scale
-            (Heavy → Bright) is in the check-in and always was.
-
-            The fix is the label, not the options. Tapping "Good" here would
-            have to launch a panic practice, which is nonsense. Named for what
-            it does — a shortcut into help — it stops pretending to be a
-            feelings picker and starts reading as an offer. */}
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-xl">Need something right now?</h2>
-          <Link to="/grounding" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
-            all 13
-          </Link>
-        </div>
-        {/* One scrolling row of pills, not a 2x2 grid of cards.
-            Four cards with a title, a colour stripe and a "tap to start"
-            subtitle each occupied about a fifth of a phone screen to offer
-            four one-word choices. The colour is what did the work, so the
-            colour is what was kept: it moves from a stripe to the label and
-            the border, and the row scrolls rather than wraps, which also
-            means a fifth state can be added later without reflowing the
-            page. The whole strip is now shorter than one of the old cards. */}
-        <div className="row-scroll mt-3.5 flex gap-2">
-          {QUICK.map((q, i) => (
-            <Link
-              key={q.mood}
-              to={q.to}
-              className="press shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm font-medium transition-colors"
-              style={{
-                animationDelay: `${180 + i * 40}ms`,
-                color: q.hue,
-                borderColor: q.hue,
-                background: 'color-mix(in srgb, currentColor 10%, transparent)',
-              }}
-            >
-              {q.label}
+      {/* ═══════════════════════════════════════════ Quick Actions Grid */}
+      <section className="animate-slide-up stack-block" style={{ animationDelay: '120ms' }}>
+        <div className="quick-grid stagger">
+          {ACTIONS.map((a) => (
+            <Link key={a.to} to={a.to}>
+              <span
+                className="quick-icon"
+                style={{ background: a.bg, color: a.hue }}
+              >
+                {a.icon}
+              </span>
+              <span className="text-[11px] font-medium text-[var(--color-ink-soft)]">
+                {a.label}
+              </span>
             </Link>
           ))}
         </div>
-        </div>
+      </section>
 
-        {/* ------------------------------------------------------------ streak */}
-        {/* Sits with the shortcuts above it rather than in a card of its own —
-            it is a fact about those practices, not a separate feature. */}
-        {streak > 0 && (
-          <div className="border-t border-[var(--line-1)] px-6 py-3.5">
-            <p className="text-sm">
-              <span className="num text-2xl text-[var(--color-lavender)]">{streak}</span>
+      {/* ═══════════════════════════════════════════ Right Now — Feelings Row */}
+      <section className="animate-slide-up stack-block" style={{ animationDelay: '180ms' }}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="home-section-title">How are you feeling?</h2>
+          <Link to="/grounding" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
+            See all
+          </Link>
+        </div>
+        <div className="hscroll mt-3 flex gap-2.5 pb-1">
+          {QUICK.map((q) => (
+            <Link
+              key={q.mood}
+              to={q.to}
+              className="feeling-card"
+              style={{
+                background: `color-mix(in srgb, ${q.hue} 8%, white)`,
+                '--fc-hue': q.hue,
+              }}
+            >
+              <span className="text-xl" aria-hidden="true">{q.emoji}</span>
+              <span className="text-sm font-medium" style={{ color: q.hue }}>
+                {q.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ Grounding streak badge */}
+      {streak > 0 && (
+        <div
+          className="animate-slide-up card stack-block flex items-center gap-4 px-5 py-4"
+          style={{ animationDelay: '240ms' }}
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-lavender-soft)]">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--color-lavender)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          </span>
+          <div>
+            <p className="text-sm font-medium">
+              <span className="num text-xl text-[var(--color-lavender)]">{streak}</span>
               <span className="ml-2 text-[var(--color-ink-soft)]">
-                day{streak === 1 ? '' : 's'} of grounding in a row.
+                day{streak === 1 ? '' : 's'} of grounding
               </span>
             </p>
+            <p className="mt-0.5 text-xs text-[var(--color-muted)]">Keep it going — consistency matters most.</p>
           </div>
-        )}
+        </div>
+      )}
 
+      {/* ═══════════════════════════════════════════ Explore — Feature Cards */}
+      <section className="animate-slide-up stack-section" style={{ animationDelay: '300ms' }}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="home-section-title">Explore</h2>
+          <Link to="/more" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
+            More
+          </Link>
+        </div>
+        <div className="hscroll mt-3 flex gap-3 pb-1">
+          {EXPLORE.map((e) => (
+            <Link key={e.to} to={e.to} className="explore-card">
+              <div className="explore-bar" style={{ background: e.hue }} />
+              <div className="explore-body">
+                <span className="text-2xl" aria-hidden="true">{e.emoji}</span>
+                <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{e.title}</p>
+                <p className="mt-1 text-[11px] text-[var(--color-muted)]">{e.sub}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <div className="rule-fade stack-section" />
 
-      <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 pb-4">
+      {/* ═══════════════════════════════════════════ Footer */}
+      <footer className="mt-4 flex flex-wrap items-center justify-between gap-3 pb-4">
         <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
           DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
