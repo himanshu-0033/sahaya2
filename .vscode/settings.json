@@ -1,0 +1,43 @@
+{
+  // Eighteen AI assistants and editors have each dropped a config directory
+  // beside the app. None of them is tracked — .gitignore already treats the
+  // root as an allowlist — but they still fill the explorer, which is the
+  // only place anybody actually looks for the five modules.
+  //
+  // Hidden here rather than deleted: they are each some tool's working state,
+  // and the tool will recreate them anyway.
+  "files.exclude": {
+    "**/.agents": true,
+    "**/.augment": true,
+    "**/.claude": true,
+    "**/.codebuddy": true,
+    "**/.codewhale": true,
+    "**/.continue": true,
+    "**/.cursor": true,
+    "**/.factory": true,
+    "**/.gemini": true,
+    "**/.kilocode": true,
+    "**/.kiro": true,
+    "**/.opencode": true,
+    "**/.qoder": true,
+    "**/.roo": true,
+    "**/.trae": true,
+    "**/.vercel": true,
+    "**/.warp": true,
+    "**/.windsurf": true
+  },
+
+  // Keep them out of search and file-watching too, or Ctrl+P and a
+  // project-wide find still rake through eighteen prompt libraries.
+  "search.exclude": {
+    "**/.agents": true, "**/.augment": true, "**/.claude": true,
+    "**/.codebuddy": true, "**/.codewhale": true, "**/.continue": true,
+    "**/.cursor": true, "**/.factory": true, "**/.gemini": true,
+    "**/.kilocode": true, "**/.kiro": true, "**/.opencode": true,
+    "**/.qoder": true, "**/.roo": true, "**/.trae": true,
+    "**/.vercel": true, "**/.warp": true, "**/.windsurf": true,
+    "**/node_modules": true, "**/dist": true
+  },
+
+  "files.eol": "\n"
+}

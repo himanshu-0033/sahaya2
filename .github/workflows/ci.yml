@@ -1,0 +1,59 @@
+# The check that would have caught the thing this file was added alongside.
+#
+# backend/test imports four modules across the module boundary, out of the
+# frontend. The frontend was reorganised into src/features/ and those four
+# imports were never updated, so `npm test` had been failing with
+# ERR_MODULE_NOT_FOUND — on every branch, for however long, with nothing
+# anywhere to say so.
+#
+# Two jobs rather than one, because they fail for different reasons and it
+# is worth knowing which: the suite is logic, the build is the bundle.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push to a branch makes the first one's run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # The suite reaches into frontend/src for the four shared modules, so
+      # both module's dependencies have to be present for it to resolve.
+      - name: Install
+        run: |
+          npm --prefix backend install
+          npm --prefix frontend install
+
+      - name: Test
+        run: npm test
+
+  build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install
+        run: npm --prefix frontend install
+
+      - name: Build
+        run: npm --prefix frontend run build

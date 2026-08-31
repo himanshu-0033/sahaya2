@@ -79,6 +79,19 @@ serviceAccountKey.json
 !/.gitignore
 !/README.md
 !/package.json
+!/.editorconfig
+!/.nvmrc
+
+# Reference material and the notes that explain it. The PDFs inside stay
+# ignored by the *.pdf rule above — what is committed is the README saying
+# which instrument each one is and where to get it.
+!/docs/
+
+# Shared editor config. `.vscode/*` further up hides the personal files in
+# here; settings.json is the one that belongs to the project, because it is
+# what hides the eighteen assistant directories from the explorer.
+!/.vscode/
+!/.vscode/settings.json
 
 # Allowed as a directory, empty in practice. It holds only a prompt
 # library today, which the rule below ignores — but .github is also where

@@ -8,8 +8,8 @@
 // offered.
 
 import assert from 'node:assert/strict';
-import { ARTICLES } from '../../frontend/src/lib/articles.js';
-import { TOPICS } from '../../frontend/src/lib/articles.js';
+import { ARTICLES } from '../../frontend/src/features/read/articles.js';
+import { TOPICS } from '../../frontend/src/features/read/articles.js';
 import { TECHNIQUE_IDS } from '../lib/grounding.js';
 
 const ids = ARTICLES.map((a) => a.id);

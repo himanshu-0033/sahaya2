@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Runs the backend, chat agent, resident app and counsellor console together. See scripts/dev.mjs.",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "install:all": "npm --prefix backend install && npm --prefix agent install && npm --prefix frontend install && npm --prefix admin install",

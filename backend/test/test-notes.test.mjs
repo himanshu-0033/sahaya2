@@ -15,8 +15,8 @@
 import assert from 'node:assert/strict';
 import { INSTRUMENTS, resolveItems, resolveFollowUp } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
-import { TEST_NOTES } from '../../frontend/src/lib/testNotes.js';
-import { TEST_INDEX } from '../../frontend/src/lib/testIndex.js';
+import { TEST_NOTES } from '../../frontend/src/features/read/testNotes.js';
+import { TEST_INDEX } from '../../frontend/src/features/read/testIndex.js';
 
 const instrumentIds = INSTRUMENTS.map((i) => i.id);
 const noteIds = Object.keys(TEST_NOTES);
@@ -26,7 +26,7 @@ const missing = instrumentIds.filter((id) => !noteIds.includes(id));
 assert.deepEqual(
   missing,
   [],
-  `every questionnaire needs a dossier in frontend/src/lib/testNotes.js — missing: ${missing.join(', ')}`,
+  `every questionnaire needs a dossier in frontend/src/features/read/testNotes.js — missing: ${missing.join(', ')}`,
 );
 
 const orphaned = noteIds.filter((id) => !instrumentIds.includes(id));
@@ -186,7 +186,7 @@ const expectedIndex = INSTRUMENTS.map((i) => ({
 assert.deepEqual(
   TEST_INDEX,
   expectedIndex,
-  'frontend/src/lib/testIndex.js is out of date - run: npm run sync:tests',
+  'frontend/src/features/read/testIndex.js is out of date - run: npm run sync:tests',
 );
 
 // ------------------------------------------------------------ prose present

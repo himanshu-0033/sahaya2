@@ -1,0 +1,21 @@
+# One answer to line endings and indentation, so the editor settles it and
+# nobody has to. Added because every commit from Windows was printing
+# "LF will be replaced by CRLF" warnings — the files are LF in the repo and
+# were being rewritten on checkout.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+# Two trailing spaces is a hard line break in Markdown.
+trim_trailing_whitespace = false
+
+[*.{svg,png,jpg,jpeg,ico,pdf}]
+insert_final_newline = false
+trim_trailing_whitespace = false

@@ -1,4 +1,4 @@
-// Regenerates frontend/src/lib/testIndex.js from the instrument definitions.
+// Regenerates frontend/src/features/read/testIndex.js from the instrument definitions.
 //
 // The reading section renders questionnaire names, domains and item counts
 // without touching the API, so it needs its own copy of that list. This is the
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { INSTRUMENTS } from '../backend/lib/instruments.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(ROOT, 'frontend/src/lib/testIndex.js');
+const OUT = path.join(ROOT, 'frontend/src/features/read/testIndex.js');
 
 const rows = INSTRUMENTS.map((i) => ({
   id: i.id,

@@ -1,6 +1,6 @@
 // Guards the runner's branching against the scorer's.
 //
-// frontend/src/lib/steps.js decides which questions go on screen. This file
+// frontend/src/features/assessments/steps.js decides which questions go on screen. This file
 // decides which answers count. They are separate on purpose — the browser is
 // not trusted — but if they disagree the resident gets a form they cannot
 // submit, or one that submits with a question missing.
@@ -11,7 +11,7 @@
 import assert from 'node:assert/strict';
 import { getInstrument, instrumentDetail } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
-import { allAnswered, asksFollowUp, clearOrphans, isAsked, stepsFor } from '../../frontend/src/lib/steps.js';
+import { allAnswered, asksFollowUp, clearOrphans, isAsked, stepsFor } from '../../frontend/src/features/assessments/steps.js';
 
 // steps.js is written against what the API actually sends the runner, not
 // against the raw definitions, so drive it with exactly that.
