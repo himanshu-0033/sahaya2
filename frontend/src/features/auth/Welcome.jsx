@@ -230,7 +230,13 @@ export default function Welcome({ onSignedIn }) {
 
       {/* -------------------------------------------------------------- hero */}
       <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-20">
-        <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:gap-16">
+        {/* Plates on the left, words and the sign-in on the right.
+            `flex-row-reverse` rather than swapping the two blocks in the
+            markup: the heading has to stay first in the document, so it is
+            still what a screen reader meets first and what stacks on top on a
+            phone, where there is only one column and the picture belongs
+            under the sentence that explains it. */}
+        <div className="flex flex-col items-center gap-12 lg:flex-row-reverse lg:items-center lg:gap-16">
           <div className="w-full lg:w-[56%]">
             <p className="w-eyebrow">You matter to us</p>
             <h1
