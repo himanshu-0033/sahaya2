@@ -8,6 +8,7 @@ import { SkeletonCards } from '../../shared/Skeleton.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getGroundingCatalog } from '../../shared/api.js';
 import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../../shared/accents.js';
+import { familyPhoto } from '../../shared/photos.js';
 
 // The grounding index.
 //
@@ -149,14 +150,11 @@ export default function Grounding() {
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
-          Thirteen things for when
-          <br className="hidden sm:block" /> your head is loud
+          Calm down
           <span className="text-[var(--sec-calm)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          Short practices you run right here — the app counts, paces and prompts. Each says what
-          it is for, how strong the evidence actually is, and links a guided video if you would
-          rather be talked through it.
+          Thirteen short practices for a bad ten minutes.
         </p>
       </div>
 
@@ -211,9 +209,14 @@ export default function Grounding() {
 
             {grouped.map(([family, list]) => (
               <section key={family.id} className="stack-group">
-                <div className="flex items-baseline gap-3">
-                  <h2 className="font-display text-xl">{family.label}</h2>
-                  <p className="text-xs text-[var(--color-muted)]">{family.note}</p>
+                <div className="flex items-center gap-3.5">
+                  <span className="family-thumb shrink-0">
+                    <img src={familyPhoto(family.id)} alt="" loading="lazy" decoding="async" />
+                  </span>
+                  <div className="min-w-0">
+                    <h2 className="font-display text-xl leading-tight">{family.label}</h2>
+                    <p className="mt-0.5 text-xs text-[var(--color-muted)]">{family.note}</p>
+                  </div>
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {list.map((technique, i) => (
@@ -230,9 +233,8 @@ export default function Grounding() {
           </div>
 
           <div className="card stack-section p-6">
-            <p className="marginalia">
-              What these are and are not
-            </p>
+            <details className="note-fold">
+              <summary>What these are, and what they are not</summary>
             <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
               Grounding techniques help you get through a bad hour. They do not treat anxiety,
               depression or trauma, and they are not a substitute for talking to someone. Each
@@ -243,6 +245,7 @@ export default function Grounding() {
               means clinicians teach it but the single skill has not been trialled on its own.
               DP Sahay AI records that you practised, never how you did.
             </p>
+            </details>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               <Link
                 to="/read/why-a-long-exhale-works"

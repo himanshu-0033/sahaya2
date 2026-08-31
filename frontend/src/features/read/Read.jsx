@@ -81,15 +81,11 @@ export default function Read() {
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
-          The reasoning behind
-          <br />
-          everything else here
+          Reading
           <span className="text-[var(--sec-read)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          What the inkblots actually measure, why a long exhale calms you down in seconds, and what
-          a score out of twenty-one does and does not mean. Where the evidence is thin, these say
-          so.
+          Why any of this works, and where it doesn&apos;t.
         </p>
       </div>
 
@@ -107,8 +103,7 @@ export default function Read() {
       <section className="stack-section">
         <p className="marginalia">The questionnaires, one by one</p>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          What each one was built to detect, who built it, how to read the score, and — the part
-          that usually goes unsaid — what it is known to be bad at.
+          What each one measures — and what it is bad at.
         </p>
 
         <div className="mt-5 grid gap-6">
@@ -141,12 +136,14 @@ export default function Read() {
       </section>
 
       <div className="card stack-section p-6">
-        <p className="marginalia">One caveat for all of it</p>
-        <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
-          These are written to explain what this app does and why, not to give you medical advice
-          or to stand in for talking to someone. Where a claim comes from a particular study, the
-          study is named at the end of the piece so you can go and disagree with it.
-        </p>
+        <details className="note-fold">
+          <summary>One caveat for all of it</summary>
+          <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+            These are written to explain what this app does and why, not to give you medical
+            advice or to stand in for talking to someone. Where a claim comes from a particular
+            study, the study is named at the end of the piece so you can go and disagree with it.
+          </p>
+        </details>
         <div className="mt-5">
           <CrisisContacts variant="button" />
         </div>

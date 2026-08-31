@@ -158,13 +158,11 @@ export default function Assessments() {
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
-          The real questionnaires
+          Questionnaires
           <span className="text-[var(--sec-tests)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          The same instruments used in clinics and research — PHQ-9, GAD-7 and nineteen more.
-          Each gives a score and the range it falls in. A range is a description of a few weeks,
-          not a diagnosis of you.
+          The same ones a clinic uses. A score is not a diagnosis.
         </p>
 
         {/* Two links rather than three paragraphs of caveat here. Someone who

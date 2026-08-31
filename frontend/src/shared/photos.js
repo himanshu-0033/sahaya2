@@ -50,3 +50,20 @@ const TOPIC_PHOTO = {
 export function topicPhoto(topic) {
   return TOPIC_PHOTO[topic] || PHOTO.stillness;
 }
+
+// The six grounding families. Reuses the set above rather than adding six more
+// files: these are 56px thumbnails beside a heading, not hero images, and a
+// dedicated photograph per family would be 400KB spent on something the eye
+// reads as a colour swatch.
+const FAMILY_PHOTO = {
+  breath: PHOTO.water,
+  senses: PHOTO.forest,
+  body: PHOTO.paths,
+  mind: PHOTO.stillness,
+  kindness: PHOTO.calm,
+  rest: PHOTO.night,
+};
+
+export function familyPhoto(id) {
+  return FAMILY_PHOTO[id] || PHOTO.stillness;
+}

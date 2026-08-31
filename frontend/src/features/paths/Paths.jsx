@@ -126,13 +126,11 @@ export default function Paths() {
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
-          Something to follow for a few days
+          7-day paths
           <span className="text-[var(--sec-paths)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          Each path puts one short practice in front of you a day, in an order that builds. They
-          are a way to practise, not a course of treatment — and nothing here is locked, so a
-          missed day costs you nothing.
+          One small thing a day. Miss a day and nothing is lost.
         </p>
       </div>
 
@@ -166,14 +164,16 @@ export default function Paths() {
           </section>
 
           <div className="card stack-section p-6">
-            <p className="marginalia">About the questionnaires</p>
-            <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
-              Some paths suggest taking a questionnaire at the start and again at the end. That is
-              there to give you a before and after to look at — not to score the path or to score
-              you. A week is a short time and these scales move several points on their own, so a
-              change is a snapshot of two particular days rather than evidence that anything
-              worked.
-            </p>
+            <details className="note-fold">
+              <summary>Why a path asks you to take a questionnaire twice</summary>
+              <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+                Some paths suggest taking a questionnaire at the start and again at the end. That
+                is there to give you a before and after to look at — not to score the path or to
+                score you. A week is a short time and these scales move several points on their
+                own, so a change is a snapshot of two particular days rather than evidence that
+                anything worked.
+              </p>
+            </details>
             <div className="mt-5">
               <CrisisContacts variant="button" />
             </div>

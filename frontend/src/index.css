@@ -1145,3 +1145,94 @@ p, li {
   .lap-type .text-xs { font-size: 0.815rem; }
   .lap-type .home-section-title { font-size: 1.4rem; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Folded caveats                                                       */
+/*                                                                      */
+/* Three pages ended with 40-50 words of grey type explaining what a     */
+/* score is not, or what the evidence does and does not say. The words   */
+/* are worth keeping and are sometimes the most honest thing on the      */
+/* page — but the foot of a page set in the muted ink is where text goes */
+/* to be scrolled past, so nobody was reading them anyway.               */
+/*                                                                      */
+/* Folded: the claim is one tappable line, the detail is one tap away.   */
+/* <details> rather than a state hook because the element already does   */
+/* all of this — keyboard, ARIA, and find-in-page opening the panel to   */
+/* reveal a match, which a div with an onClick does not.                 */
+
+.note-fold > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  padding: 0.15rem 0;
+}
+
+.note-fold > summary::-webkit-details-marker { display: none; }
+
+/* The chevron, drawn in CSS so it needs no icon and can rotate. */
+.note-fold > summary::after {
+  content: '';
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translate(-1px, -1px);
+  opacity: 0.65;
+  transition: transform 0.22s ease;
+}
+
+.note-fold[open] > summary::after {
+  transform: rotate(-135deg) translate(-1px, -1px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .note-fold > summary:hover { color: var(--color-ink); }
+}
+
+.note-fold > summary:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-fold > summary::after { transition: none; }
+}
+
+/* The thumbnail beside a grounding family heading. Small on purpose: six
+   full-width banners down one page would be a photo gallery with some
+   exercises in it. */
+.family-thumb {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-3);
+}
+
+.family-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.85);
+}
+
+/* An icon that overlaps the bottom edge of a photograph.
+   The icon's own ground is a translucent wash, which is right on a flat card
+   and wrong over a picture — it showed the photo through and read as a notch
+   cut out of the image. This puts an opaque collar behind it so it reads as a
+   badge sitting on the seam. */
+.icon-ring {
+  display: inline-flex;
+  border-radius: 50%;
+  padding: 5px;
+  background: var(--w-card);
+  position: relative;
+  z-index: 1;
+}

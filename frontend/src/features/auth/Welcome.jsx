@@ -4,6 +4,7 @@ import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import Logo from '../../shared/Logo.jsx';
+import { PHOTO } from '../../shared/photos.js';
 
 // The page a stranger lands on.
 //
@@ -26,6 +27,7 @@ import Logo from '../../shared/Logo.jsx';
 const SERVICES = [
   {
     title: 'The daily check-in',
+    photo: PHOTO.stillness,
     body: 'One tap says how today feels, and that is the whole obligation. It takes about thirty seconds and it keeps your streak.',
     meta: 'About 30 seconds',
     icon: (
@@ -37,6 +39,7 @@ const SERVICES = [
   },
   {
     title: 'The real questionnaires',
+    photo: PHOTO.tests,
     body: 'PHQ-9, GAD-7, WHO-5 and eighteen more — the published instruments a clinic uses, each with its citation and licence on the page.',
     meta: 'Twenty-one, about 6 minutes for the core three',
     icon: (
@@ -48,6 +51,7 @@ const SERVICES = [
   },
   {
     title: 'The ten plates',
+    photo: PHOTO.inkblot,
     body: 'The original Rorschach plates, in your own words, typed or spoken. Nothing is scored — you get your own words counted back, never interpreted.',
     meta: 'About 10 minutes',
     icon: (
@@ -354,8 +358,16 @@ export default function Welcome({ onSignedIn }) {
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {SERVICES.map((s) => (
-              <div key={s.title} className="w-card flex flex-col items-center gap-4 p-8 text-center">
-                <Icon>{s.icon}</Icon>
+              <div key={s.title} className="w-card flex flex-col items-center overflow-hidden text-center">
+                {/* The picture runs to the card's own edge and the icon rides
+                    up over its lower rim — so the page keeps the icon
+                    vocabulary it uses everywhere without stacking a glyph and
+                    a photograph as two separate things. */}
+                <span className="photo-head">
+                  <img src={s.photo} alt="" loading="lazy" decoding="async" />
+                </span>
+                <div className="-mt-7 flex flex-col items-center gap-4 px-8 pb-8">
+                <span className="icon-ring"><Icon>{s.icon}</Icon></span>
                 <h3 className="font-display text-[1.4rem] leading-snug">{s.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
                   {s.body}
@@ -363,6 +375,7 @@ export default function Welcome({ onSignedIn }) {
                 <p className="mt-auto pt-2 text-[13px] font-medium" style={{ color: 'var(--w-lav)' }}>
                   {s.meta}
                 </p>
+                </div>
               </div>
             ))}
           </div>

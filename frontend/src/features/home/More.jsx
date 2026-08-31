@@ -26,7 +26,7 @@ const SECTIONS = [
     photo: PHOTO.paths,
     eyebrow: 'Over days',
     title: 'Guided paths',
-    body: 'A practice a day for a week, in an order that builds. For when the same thing keeps coming back rather than one bad evening.',
+    body: 'One practice a day, in an order that builds.',
     meta: '5 paths · about 5 minutes a day',
     hue: 'var(--sec-paths)',
   },
@@ -35,7 +35,7 @@ const SECTIONS = [
     photo: PHOTO.tests,
     eyebrow: 'Where you are',
     title: 'Questionnaires',
-    body: 'Published, self-scoring questionnaires — the same ones a clinic uses, scored the same way, with the citation and licence for each. A score is not a diagnosis.',
+    body: 'The same ones a clinic uses, scored the same way.',
     meta: '21 questionnaires · 1 to 3 minutes each',
     hue: 'var(--sec-tests)',
   },
@@ -44,7 +44,7 @@ const SECTIONS = [
     photo: PHOTO.read,
     eyebrow: 'Background',
     title: 'Reading',
-    body: 'What the questionnaires actually measure, what the numbers can and cannot tell you, and what the research says underneath the practices.',
+    body: 'What the numbers can and cannot tell you.',
     meta: 'Essays and per-questionnaire notes',
     hue: 'var(--sec-read)',
   },
@@ -53,7 +53,7 @@ const SECTIONS = [
     photo: PHOTO.inkblot,
     eyebrow: 'Longer',
     title: 'The ten-plate inkblot',
-    body: 'Ten plates, in your own words, typed or spoken. A reflective exercise — it is not scored and it is not a clinical assessment.',
+    body: 'Ten plates, in your own words. Nothing is scored.',
     hue: 'var(--sec-inkblot)',
     meta: '10 plates · about 10 minutes',
   },
@@ -66,13 +66,10 @@ export default function More() {
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[2rem] leading-tight sm:text-[2.6rem]">
-          When you have
-          <br />
-          more than a minute.
+          More.
         </h1>
         <p className="stack-item max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          The daily check-in and the calm practices live a tap away on the bar below. Everything
-          else is here.
+          Everything that is not the daily check-in.
         </p>
       </div>
 
