@@ -236,7 +236,7 @@ export default function Welcome({ onSignedIn }) {
             still what a screen reader meets first and what stacks on top on a
             phone, where there is only one column and the picture belongs
             under the sentence that explains it. */}
-        <div className="flex flex-col items-center gap-12 lg:flex-row-reverse lg:items-center lg:gap-16">
+        <div className="flex flex-col items-center gap-12 lg:flex-row-reverse lg:items-start lg:gap-16">
           <div className="w-full lg:w-[56%]">
             <p className="w-eyebrow">You matter to us</p>
             <h1
@@ -255,7 +255,7 @@ export default function Welcome({ onSignedIn }) {
             </p>
 
             {signingIn ? (
-              <div className="w-card mt-9 max-w-sm p-6">
+              <div className="w-card mt-9 max-w-md p-6 sm:p-7">
                 <GoogleSignInButton onSignedIn={onSignedIn} />
                 <div
                   className="my-4 flex items-center gap-3 text-[11px] tracking-wide"
@@ -303,18 +303,20 @@ export default function Welcome({ onSignedIn }) {
 
           {/* The plates themselves, because they are the most distinctive thing
               the product owns and they photograph well on a warm ground. */}
-          <div className="flex w-full justify-center lg:w-[44%]">
-            <div className="flex items-center">
+          <div className="flex w-full justify-center lg:mt-14 lg:w-[44%]">
+            <div className="plate-fan flex items-center">
               {FAN.map((n, i) => (
                 <span
                   key={n}
                   className="block overflow-hidden rounded-2xl border"
+                  // Size and overlap live in CSS. At a fixed 10.5rem each the
+                  // three plates came to 408px against ~350px of content box
+                  // on a 390px phone, with no overflow:hidden anywhere above
+                  // them to catch it. Rotation, stacking and shadow stay here
+                  // — they are the parts that differ per plate.
                   style={{
                     borderColor: 'var(--w-line)',
                     background: '#f7e6ef',
-                    height: '14rem',
-                    width: '10.5rem',
-                    marginLeft: i === 0 ? 0 : '-3rem',
                     zIndex: i,
                     transform: `rotate(${(i - 1) * 5}deg)`,
                     boxShadow: '0 26px 50px -28px rgba(51,57,58,0.6)',

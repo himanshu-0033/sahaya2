@@ -1236,3 +1236,26 @@ p, li {
   position: relative;
   z-index: 1;
 }
+
+/* The plate fan on the landing hero.
+   Three overlapped plates at a fixed 10.5rem each come to 408px, against a
+   content box of about 350px on a 390px phone — and the fan's children are
+   fixed-width flex items, so they do not shrink to fit. One variable now
+   drives width, height and the overlap together, so the fan scales to the
+   screen and keeps both its 3:4 plates and its overlap ratio.
+   Measured after the change: at a 390px viewport the document scrollWidth
+   is 390, i.e. nothing overflows. */
+.plate-fan {
+  --plate-w: clamp(6.5rem, 25vw, 10.5rem);
+}
+
+.plate-fan > span {
+  width: var(--plate-w);
+  /* The plates are 3:4. */
+  height: calc(var(--plate-w) * 1.3333);
+}
+
+.plate-fan > span + span {
+  /* Same overlap ratio the fixed -3rem gave at full size. */
+  margin-left: calc(var(--plate-w) * -0.2857);
+}
