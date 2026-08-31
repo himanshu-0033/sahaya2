@@ -230,14 +230,17 @@ export default function Welcome({ onSignedIn }) {
 
       {/* -------------------------------------------------------------- hero */}
       <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-20">
-        {/* Plates on the left, words and the sign-in on the right.
-            `flex-row-reverse` rather than swapping the two blocks in the
-            markup: the heading has to stay first in the document, so it is
-            still what a screen reader meets first and what stacks on top on a
-            phone, where there is only one column and the picture belongs
-            under the sentence that explains it. */}
-        <div className="flex flex-col items-center gap-12 lg:flex-row-reverse lg:items-start lg:gap-16">
-          <div className="w-full lg:w-[56%]">
+        {/* Two columns: everything that says what this is on the left — the
+            headline, the sentence under it and the plates — and the one thing
+            you can act on, the sign-in, alone on the right.
+
+            Natural DOM order, so it needs no row-reverse: the left column is
+            first in the markup, which is also the order it stacks in on a
+            phone and the order a screen reader meets it in. The picture ends
+            the left column rather than opening it, so the sentence that
+            explains the plates is read before the plates. */}
+        <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-14">
+          <div className="w-full lg:w-[55%]">
             <p className="w-eyebrow">You matter to us</p>
             <h1
               className="font-display mt-5 text-[2.6rem] leading-[1.08] sm:text-[3.6rem]"
@@ -254,56 +257,9 @@ export default function Welcome({ onSignedIn }) {
               you ask them to.
             </p>
 
-            {signingIn ? (
-              <div className="w-card mt-9 max-w-md p-6 sm:p-7">
-                <GoogleSignInButton onSignedIn={onSignedIn} />
-                <div
-                  className="my-4 flex items-center gap-3 text-[11px] tracking-wide"
-                  style={{ color: 'var(--w-ink-soft)' }}
-                >
-                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
-                  or use email
-                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
-                </div>
-                <PasswordAuthForm onSignedIn={onSignedIn} />
-                <button
-                  type="button"
-                  onClick={() => setSigningIn(false)}
-                  className="mt-4 w-full text-center text-[12px] underline underline-offset-4"
-                  style={{ color: 'var(--w-ink-soft)' }}
-                >
-                  Back
-                </button>
-              </div>
-            ) : (
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={go}
-                className="press rounded-full px-7 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
-                style={{ background: 'var(--w-accent-deep)' }}
-              >
-                Sign in to start
-              </button>
-              <a
-                href="#inside"
-                className="press rounded-full border px-7 py-3.5 text-[15px] font-medium transition-colors"
-                style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
-              >
-                See what is inside
-              </a>
-            </div>
-
-            )}
-
-            <p className="mt-4 text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
-              Free. No card. You can delete everything from your account page.
-            </p>
-          </div>
-
-          {/* The plates themselves, because they are the most distinctive thing
-              the product owns and they photograph well on a warm ground. */}
-          <div className="flex w-full justify-center lg:mt-14 lg:w-[44%]">
+            {/* The plates close the left column: the most distinctive thing
+                the product owns, under the sentence that explains them. */}
+            <div className="mt-10 flex w-full justify-center lg:mt-12 lg:justify-start">
             <div className="plate-fan flex items-center">
               {FAN.map((n, i) => (
                 <span
@@ -332,6 +288,60 @@ export default function Welcome({ onSignedIn }) {
                 </span>
               ))}
             </div>
+            </div>
+          </div>
+
+          {/* The right column: the only thing on this screen you can act on. */}
+          <div className="w-full lg:w-[45%]">
+            {signingIn ? (
+              <div className="w-card mx-auto max-w-md p-6 sm:p-7">
+                <GoogleSignInButton onSignedIn={onSignedIn} />
+                <div
+                  className="my-4 flex items-center gap-3 text-[11px] tracking-wide"
+                  style={{ color: 'var(--w-ink-soft)' }}
+                >
+                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
+                  or use email
+                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
+                </div>
+                <PasswordAuthForm onSignedIn={onSignedIn} />
+                <button
+                  type="button"
+                  onClick={() => setSigningIn(false)}
+                  className="mt-4 w-full text-center text-[12px] underline underline-offset-4"
+                  style={{ color: 'var(--w-ink-soft)' }}
+                >
+                  Back
+                </button>
+              </div>
+            ) : (
+              /* Before the form is opened this column holds the two calls to
+                 action. A card, so that the column reads as the place where
+                 something happens rather than as two buttons adrift in it —
+                 and so the swap to the form below changes the contents of a
+                 panel that was already there, not the shape of the page. */
+              <div className="w-card mx-auto max-w-md p-6 text-center sm:p-7">
+                <button
+                  type="button"
+                  onClick={go}
+                  className="press w-full rounded-full px-7 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ background: 'var(--w-accent-deep)' }}
+                >
+                  Sign in to start
+                </button>
+                <a
+                  href="#inside"
+                  className="press mt-3 block w-full rounded-full border px-7 py-3.5 text-[15px] font-medium transition-colors"
+                  style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
+                >
+                  See what is inside
+                </a>
+              </div>
+            )}
+
+            <p className="mx-auto mt-4 max-w-md text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
+              Free. No card. You can delete everything from your account page.
+            </p>
           </div>
         </div>
 
