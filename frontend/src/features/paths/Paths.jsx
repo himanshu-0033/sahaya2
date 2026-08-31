@@ -7,6 +7,7 @@ import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getPaths } from '../../shared/api.js';
 import { accent, alpha } from '../../shared/accents.js';
+import { pathPhoto } from '../../shared/photos.js';
 
 // The paths index.
 //
@@ -40,9 +41,13 @@ function PathCard({ path, progress, index }) {
   return (
     <Link
       to={`/paths/${path.id}`}
-      style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
-      className="animate-slide-up card press flex flex-col p-5"
+      style={{ animationDelay: `${Math.min(index, 8) * 40}ms`, '--ph-hue': bright }}
+      className="animate-slide-up card card-photo press flex flex-col"
     >
+      <span className="photo-head">
+        <img src={pathPhoto(path.id)} alt="" loading="lazy" decoding="async" />
+      </span>
+      <div className="card-photo-body flex flex-1 flex-col">
       <div className="flex items-start justify-between gap-3">
         <p className="font-display text-xl leading-snug">{path.name}</p>
         <span
@@ -68,6 +73,7 @@ function PathCard({ path, progress, index }) {
         ) : (
           <p className="text-xs text-[var(--color-muted)]">{path.forWhom}</p>
         )}
+      </div>
       </div>
     </Link>
   );

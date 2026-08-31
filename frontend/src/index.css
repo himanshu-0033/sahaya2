@@ -944,11 +944,6 @@ p, li {
   }
 }
 
-.explore-bar {
-  height: 4px;
-  width: 100%;
-}
-
 .explore-body {
   padding: 1rem 1.1rem 1.2rem;
 }
@@ -1019,3 +1014,134 @@ p, li {
 .stagger > *:nth-child(4) { animation-delay: 240ms; }
 .stagger > *:nth-child(5) { animation-delay: 300ms; }
 .stagger > *:nth-child(6) { animation-delay: 360ms; }
+
+/* ------------------------------------------------------------------ */
+/* Photography                                                          */
+/*                                                                      */
+/* Until now the only bitmap in the signed-in app was a Rorschach plate. */
+/* Every card was an SVG glyph over white, which is why the app read as  */
+/* a well-set document rather than something you use.                   */
+/*                                                                      */
+/* The photograph sits in the card's own corner radius, never in a       */
+/* floating box of its own, and it always carries the section hue as a   */
+/* wash. Ten unrelated stock photos at full saturation would pull the    */
+/* palette apart; tinted, they read as one set.                          */
+
+.photo-head {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: var(--surface-3);
+}
+
+.photo-head img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Slightly desaturated so a vivid photo cannot out-shout the ink it
+     sits above. The hover lift is on the card, not here. */
+  filter: saturate(0.88);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The tint. `--ph-hue` is set per card from the section colour it already
+   had, so the photo inherits the colour system rather than adding to it. */
+.photo-head::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(131, 24, 67, 0.32), transparent 62%),
+    linear-gradient(135deg, color-mix(in srgb, var(--ph-hue, var(--color-teal)) 30%, transparent), transparent 70%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover > .photo-head img,
+  a:hover .photo-head img {
+    transform: scale(1.045);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-head img { transition: none; }
+  a:hover > .photo-head img,
+  a:hover .photo-head img { transform: none; }
+}
+
+/* A card whose picture is the top edge: kill the top padding the card had
+   and let the image bleed to the border. */
+.card-photo { padding: 0; overflow: hidden; }
+.card-photo .card-photo-body { padding: 1.25rem 1.25rem 1.4rem; }
+
+@media (min-width: 640px) {
+  .card-photo .card-photo-body { padding: 1.4rem 1.5rem 1.6rem; }
+
+  /* The wide variant: picture on the left, text on the right, for the lists
+     that are one full-width card per row. Four 16:7 bands stacked down a page
+     is a column of postcards nobody scrolls to the end of.
+
+     This is a real rule and not `sm:aspect-auto` in the markup because
+     `.photo-head`'s aspect-ratio is unlayered CSS and Tailwind's utilities
+     live in @layer utilities — the utility would have lost, silently, and the
+     image would have kept its 16:7 band inside a flex row. */
+  .card-photo-side { display: flex; align-items: stretch; }
+
+  .card-photo-side > .photo-head {
+    aspect-ratio: auto;
+    width: 34%;
+    max-width: 15rem;
+    flex-shrink: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Laptop                                                               */
+/*                                                                      */
+/* The app was drawn for a 390px phone and then shown on a 1440px        */
+/* laptop inside a 672px column, which left a third of the screen empty  */
+/* on each side and turned one screen of content into three of scroll.   */
+/* Nothing below changes the phone layout: every rule is behind a        */
+/* min-width, and the mobile-first values above still win under it.      */
+
+/* The horizontal scrollers are a thumb gesture. On a mouse they hide
+   content behind an invisible scrollbar, so above the tablet breakpoint
+   the same markup lays out as a grid and shows everything at once. */
+@media (min-width: 768px) {
+  .hscroll {
+    overflow-x: visible;
+    scroll-snap-type: none;
+    display: grid;
+    /* auto-fit, not a fixed four, because these rows live in two different
+       containers now: the explore row spans the page, while the feelings row
+       sits in the ~320px right-hand column of the home grid. A hard
+       `repeat(4)` would squeeze that one to 72px a card. This gives four
+       across the page and two-by-two in the column, from one rule. */
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.75rem;
+  }
+
+  .hscroll > * {
+    width: auto;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+}
+
+/* Body copy set at phone sizes is a genuinely harder read at laptop
+   distance: 14px held at arm's length on a 15" screen is not the same read
+   as 14px held at 30cm.
+   One step up, applied once at the shell.
+   ponytail: this raises Tailwind's own `text-sm`/`text-xs` from a descendant
+   selector rather than adding `lg:text-base` to ~200 elements across 25
+   files. It wins on specificity (0,2,0 over 0,1,0) and it is confined to
+   .lap-type, so it cannot leak into the sign-in hero or a running practice.
+   If a page ever needs a genuinely small caption on desktop, give that one
+   element an explicit lg: size and delete it from here. */
+@media (min-width: 1024px) {
+  .lap-type .text-sm { font-size: 0.95rem; line-height: 1.6; }
+  .lap-type .text-xs { font-size: 0.815rem; }
+  .lap-type .home-section-title { font-size: 1.4rem; }
+}

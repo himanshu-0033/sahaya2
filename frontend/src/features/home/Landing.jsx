@@ -7,6 +7,7 @@ import Welcome from '../auth/Welcome.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { getSession } from '../auth/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../../shared/api.js';
+import { PHOTO } from '../../shared/photos.js';
 
 // Home — redesigned with richer visual hierarchy.
 //
@@ -91,6 +92,7 @@ const ACTIONS = [
 const EXPLORE = [
   {
     to: '/paths',
+    photo: PHOTO.paths,
     title: 'Guided paths',
     sub: '5 paths · 5 min/day',
     hue: 'var(--sec-paths)',
@@ -98,6 +100,7 @@ const EXPLORE = [
   },
   {
     to: '/assessments',
+    photo: PHOTO.tests,
     title: 'Questionnaires',
     sub: '21 clinical tools',
     hue: 'var(--sec-tests)',
@@ -105,6 +108,7 @@ const EXPLORE = [
   },
   {
     to: '/read',
+    photo: PHOTO.read,
     title: 'Reading',
     sub: 'Essays & research',
     hue: 'var(--sec-read)',
@@ -112,6 +116,7 @@ const EXPLORE = [
   },
   {
     to: '/inkblot-test',
+    photo: PHOTO.inkblot,
     title: 'Inkblot test',
     sub: '10 plates · ~10 min',
     hue: 'var(--sec-inkblot)',
@@ -346,7 +351,14 @@ export default function Landing() {
         </p>
       </div>
 
-      {/* ═══════════════════════════════════════════ Check-in card */}
+      {/* ═══════════════════════════════════════════ Today
+          Two columns from the laptop breakpoint up. The check-in is the one
+          thing this page exists to get someone to do, so it keeps the larger
+          column; the shortcuts that used to push it half a screen down now sit
+          beside it. Under `lg` this wrapper does nothing — no grid, no gap —
+          and the children keep the single-column order and the stack-block
+          rhythm they already had. */}
+      <div className="lg:grid lg:grid-cols-[1.55fr_1fr] lg:items-start lg:gap-6">
       <section className="animate-slide-up card stack-block overflow-hidden p-0" style={{ animationDelay: '60ms' }}>
         {status.loading ? (
           <PrimarySkeleton />
@@ -421,8 +433,13 @@ export default function Landing() {
         )}
       </section>
 
+      {/* The right-hand column on a laptop; the next three blocks in the
+          scroll on a phone. `lg:mt-6` matches the check-in card's own
+          stack-block so the two columns start on the same line. */}
+      <div className="lg:mt-6">
+
       {/* ═══════════════════════════════════════════ Quick Actions Grid */}
-      <section className="animate-slide-up stack-block" style={{ animationDelay: '120ms' }}>
+      <section className="animate-slide-up stack-block lg:mt-0" style={{ animationDelay: '120ms' }}>
         <div className="quick-grid stagger">
           {ACTIONS.map((a) => (
             <Link key={a.to} to={a.to}>
@@ -491,6 +508,9 @@ export default function Landing() {
         </div>
       )}
 
+      </div>{/* /right column */}
+      </div>{/* /two-column wrapper */}
+
       {/* ═══════════════════════════════════════════ Explore — Feature Cards */}
       <section className="animate-slide-up stack-section" style={{ animationDelay: '300ms' }}>
         <div className="flex items-baseline justify-between gap-4">
@@ -501,8 +521,14 @@ export default function Landing() {
         </div>
         <div className="hscroll mt-3 flex gap-3 pb-1">
           {EXPLORE.map((e) => (
-            <Link key={e.to} to={e.to} className="explore-card">
-              <div className="explore-bar" style={{ background: e.hue }} />
+            <Link key={e.to} to={e.to} className="explore-card" style={{ '--ph-hue': e.hue }}>
+              {/* alt="" on purpose: the picture is decoration for a link whose
+                  own text already says where it goes, and describing a stock
+                  photograph out loud would only put a second, vaguer label in
+                  front of the one that matters. */}
+              <span className="photo-head">
+                <img src={e.photo} alt="" loading="lazy" decoding="async" />
+              </span>
               <div className="explore-body">
                 <span aria-hidden="true" style={{ color: e.hue }}>{e.icon}</span>
                 <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{e.title}</p>

@@ -25,9 +25,19 @@ const WASH = {
   read: 'rgba(143, 214, 180, 0.12)',
 };
 
+// Every page used to be capped at one phone-shaped column — 672px, on any
+// screen. That is the right measure for a paragraph and the wrong one for a
+// page: on a 1440px laptop it left ~380px of empty ground down each side and
+// turned a grid of four cards into a scroller of four cards.
+//
+// So the cap now grows once, at the laptop breakpoint, and only for the
+// layouts that have something to put there. `narrow` deliberately does not
+// grow: it is what the articles and the running check-in use, and a line of
+// body text stops being readable somewhere around 75 characters no matter how
+// much room is going spare.
 const WIDTH = {
-  default: 'max-w-2xl',
-  wide: 'max-w-3xl',
+  default: 'max-w-2xl lg:max-w-4xl',
+  wide: 'max-w-3xl lg:max-w-5xl',
   narrow: 'max-w-xl',
 };
 
@@ -77,7 +87,7 @@ export default function PageShell({
       <main
         id="main"
         tabIndex={-1}
-        className={`mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 focus:outline-none md:pt-0`}
+        className={`lap-type mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 focus:outline-none md:pt-2`}
       >
         {children}
       </main>

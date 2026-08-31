@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
+import { PHOTO } from '../../shared/photos.js';
 
 // Everything the app does that is not the daily loop.
 //
@@ -22,6 +23,7 @@ import PageShell from '../../layouts/PageShell.jsx';
 const SECTIONS = [
   {
     to: '/paths',
+    photo: PHOTO.paths,
     eyebrow: 'Over days',
     title: 'Guided paths',
     body: 'A practice a day for a week, in an order that builds. For when the same thing keeps coming back rather than one bad evening.',
@@ -30,6 +32,7 @@ const SECTIONS = [
   },
   {
     to: '/assessments',
+    photo: PHOTO.tests,
     eyebrow: 'Where you are',
     title: 'Questionnaires',
     body: 'Published, self-scoring questionnaires — the same ones a clinic uses, scored the same way, with the citation and licence for each. A score is not a diagnosis.',
@@ -38,6 +41,7 @@ const SECTIONS = [
   },
   {
     to: '/read',
+    photo: PHOTO.read,
     eyebrow: 'Background',
     title: 'Reading',
     body: 'What the questionnaires actually measure, what the numbers can and cannot tell you, and what the research says underneath the practices.',
@@ -46,6 +50,7 @@ const SECTIONS = [
   },
   {
     to: '/inkblot-test',
+    photo: PHOTO.inkblot,
     eyebrow: 'Longer',
     title: 'The ten-plate inkblot',
     body: 'Ten plates, in your own words, typed or spoken. A reflective exercise — it is not scored and it is not a clinical assessment.',
@@ -76,22 +81,25 @@ export default function More() {
           <Link
             key={section.to}
             to={section.to}
-            className="card press animate-slide-up relative overflow-hidden p-5 sm:p-6"
-            style={{ animationDelay: `${60 + i * 55}ms` }}
+            className="card card-photo card-photo-side press animate-slide-up relative"
+            style={{ animationDelay: `${60 + i * 55}ms`, '--ph-hue': section.hue }}
           >
-            <span
-              aria-hidden="true"
-              className="absolute inset-y-0 left-0 w-[3px]"
-              style={{ background: section.hue }}
-            />
-            <span className="marginalia" style={{ color: section.hue }}>
-              {section.eyebrow}
+            {/* On a phone the picture is a band across the top; from `sm` up it
+                becomes the left third, so four of these stacked do not turn the
+                page into a column of postcards you have to scroll past. */}
+            <span className="photo-head">
+              <img src={section.photo} alt="" loading="lazy" decoding="async" />
             </span>
-            <p className="font-display mt-2 text-[1.45rem] leading-snug">{section.title}</p>
-            <p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              {section.body}
-            </p>
-            <p className="mt-3 text-xs text-[var(--color-muted)]">{section.meta}</p>
+            <div className="card-photo-body min-w-0 flex-1">
+              <span className="marginalia" style={{ color: section.hue }}>
+                {section.eyebrow}
+              </span>
+              <p className="font-display mt-2 text-[1.45rem] leading-snug">{section.title}</p>
+              <p className="mt-2 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                {section.body}
+              </p>
+              <p className="mt-3 text-xs text-[var(--color-muted)]">{section.meta}</p>
+            </div>
           </Link>
         ))}
       </div>

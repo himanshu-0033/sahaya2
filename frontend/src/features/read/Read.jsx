@@ -5,6 +5,7 @@ import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { ARTICLES, TOPICS } from './articles.js';
 import { TEST_INDEX } from './testIndex.js';
+import { topicPhoto } from '../../shared/photos.js';
 
 // The reading index.
 //
@@ -30,9 +31,13 @@ function ArticleCard({ article, index }) {
   return (
     <Link
       to={`/read/${article.id}`}
-      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
-      className="animate-slide-up card press flex flex-col p-6"
+      className="animate-slide-up card card-photo press flex flex-col"
+      style={{ animationDelay: `${Math.min(index, 8) * 45}ms`, '--ph-hue': topic.hue }}
     >
+      <span className="photo-head">
+        <img src={topicPhoto(article.topic)} alt="" loading="lazy" decoding="async" />
+      </span>
+      <div className="card-photo-body flex flex-1 flex-col">
       <div className="flex items-center gap-2.5">
         <span
           className="rounded-full px-2.5 py-1 text-[11px]"
@@ -56,6 +61,7 @@ function ArticleCard({ article, index }) {
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
       </span>
+      </div>
     </Link>
   );
 }
