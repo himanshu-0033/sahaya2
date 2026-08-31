@@ -63,7 +63,7 @@ function TechniqueCard({ technique, last, index }) {
           )}
         </div>
         <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-[11px] whitespace-nowrap"
+          className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
           style={{ background: alpha(base, 0.14), color: bright }}
         >
           {formatDuration(technique.seconds)}

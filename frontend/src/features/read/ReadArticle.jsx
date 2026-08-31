@@ -107,7 +107,7 @@ export default function ReadArticle() {
         <header className="mt-5">
           <div className="flex items-center gap-2.5">
             <span
-              className="rounded-full px-2.5 py-1 text-[11px]"
+              className="rounded-full px-2.5 py-1 text-[0.6875rem]"
               style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.hue }}
             >
               {topic.label}

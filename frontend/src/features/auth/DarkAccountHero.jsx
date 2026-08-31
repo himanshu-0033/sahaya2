@@ -18,7 +18,7 @@ export default function DarkAccountHero({ name, email, onDone, saving, error }) 
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl text-white">DP Sahay AI</h1>
-            <p className="font-eyebrow mt-1 text-[10px] tracking-[0.22em] text-white/55">
+            <p className="font-eyebrow mt-1 text-[0.625rem] tracking-[0.22em] text-white/55">
               YOU MATTER TO US
             </p>
             <p className="mt-1 text-xs tracking-[0.2em] text-white/55 uppercase">Daily Check-in</p>

@@ -55,7 +55,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
             {day.title}
           </p>
           {isNext && !done && (
-            <span className="text-[11px]" style={{ color: bright }}>
+            <span className="text-[0.6875rem]" style={{ color: bright }}>
               next
             </span>
           )}

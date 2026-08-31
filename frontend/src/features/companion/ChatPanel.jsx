@@ -130,7 +130,7 @@ export default function ChatPanel({
     <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--surface-2)] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] tracking-[0.22em] text-[var(--color-muted)] uppercase">
+          <p className="text-[0.6875rem] tracking-[0.22em] text-[var(--color-muted)] uppercase">
             {variant === 'overlay' ? 'DP' : 'Talk it through'}
           </p>
           <h3 className="mt-1 font-display text-xl">
@@ -185,7 +185,7 @@ export default function ChatPanel({
         </button>
       </form>
 
-      <p className="mt-3 text-[11px] leading-relaxed text-[var(--color-muted)]">
+      <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
         {isMock
           ? 'Scripted preview — no AI model is connected yet. Not a therapist, and not a crisis service.'
           : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above.'}

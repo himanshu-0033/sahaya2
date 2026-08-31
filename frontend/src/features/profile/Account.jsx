@@ -74,7 +74,7 @@ function ShareRow({ email, onRemove, removing }) {
     <li className="card flex flex-wrap items-center justify-between gap-3 px-5 py-4">
       <div className="min-w-0">
         <p className="truncate text-sm">{email}</p>
-        <p className="mt-0.5 text-[11px] text-[var(--color-muted)]">
+        <p className="mt-0.5 text-[0.6875rem] text-[var(--color-muted)]">
           Can see your check-ins, questionnaire results and inkblot notes
         </p>
       </div>
@@ -290,7 +290,7 @@ export default function Account() {
 
       <div className="rule-fade stack-section" />
 
-      <p className="mt-6 max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
+      <p className="mt-6 max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
         Sharing is per person and works one way: they can read what you have written, they cannot
         write anything into your account, and they cannot invite anyone else to see it.
       </p>
@@ -315,7 +315,7 @@ export default function Account() {
         </button>
       </div>
 
-      <p className="mt-6 max-w-md pb-2 text-[11px] leading-relaxed text-[var(--color-muted)]">
+      <p className="mt-6 max-w-md pb-2 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
         On a shared or borrowed device, signing out is the safe way to leave — it empties this tab
         as well as forgetting you.
       </p>

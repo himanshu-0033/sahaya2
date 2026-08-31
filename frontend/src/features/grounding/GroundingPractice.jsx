@@ -120,7 +120,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
           {step.label}
         </p>
         {step.count ? (
-          <p className="mt-2 text-[11px] tracking-wide text-[var(--color-muted)]">
+          <p className="mt-2 text-[0.6875rem] tracking-wide text-[var(--color-muted)]">
             {step.count} {step.count === 1 ? 'thing' : 'things'}
           </p>
         ) : null}
@@ -369,7 +369,7 @@ export default function GroundingPractice() {
                 style={{ borderColor: alpha(colors.base, 0.2) }}
               >
                 <span
-                  className="inline-block rounded-full px-3 py-1 text-[11px]"
+                  className="inline-block rounded-full px-3 py-1 text-[0.6875rem]"
                   style={{ background: alpha(colors.base, 0.18), color: colors.bright }}
                 >
                   {EVIDENCE_LABEL[technique.evidence.strength]}
@@ -377,7 +377,7 @@ export default function GroundingPractice() {
                 <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
                   {technique.evidence.claim}
                 </p>
-                <p className="mt-3 text-[11px] leading-relaxed text-[var(--color-muted)]">
+                <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
                   {technique.evidence.citation}
                   {' · '}
                   <a
@@ -398,7 +398,7 @@ export default function GroundingPractice() {
             </div>
 
             <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="text-[11px] text-[var(--color-muted)]">
+              <p className="text-[0.6875rem] text-[var(--color-muted)]">
                 A practice, not a treatment.
               </p>
               <CrisisContacts variant="link" />
@@ -517,7 +517,7 @@ export default function GroundingPractice() {
             </div>
 
             <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="text-[11px] leading-relaxed text-[var(--color-muted)]">
+              <p className="text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
                 DP Sahay AI records that you practised and how settled you said you felt — never a score.
               </p>
               <CrisisContacts variant="link" />

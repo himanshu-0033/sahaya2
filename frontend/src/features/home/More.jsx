@@ -104,7 +104,7 @@ export default function More() {
       <div className="rule-fade stack-section" />
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pb-2">
-        <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
+        <p className="max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
           DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
         {/* Was "Who can see this" at 11px in the muted ink — accurate when this

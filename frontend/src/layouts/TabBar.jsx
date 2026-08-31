@@ -141,7 +141,7 @@ export default function TabBar() {
                   <TabIcon tab={tab} active={active} />
                 </span>
                 <span
-                  className="relative text-[10px] tracking-wide transition-opacity duration-300"
+                  className="relative text-[0.625rem] tracking-wide transition-opacity duration-300"
                   style={{ opacity: active ? 1 : 0.75 }}
                 >
                   {tab.label}

@@ -419,7 +419,7 @@ export default function AssessmentRun() {
                 />
               )}
               <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
-              <p className="mt-3 text-[11px] text-[var(--color-muted)]">
+              <p className="mt-3 text-[0.6875rem] text-[var(--color-muted)]">
                 {answered} of {askedItemSteps.length} answered
               </p>
             </div>
@@ -474,7 +474,7 @@ export default function AssessmentRun() {
                       }`}
                     >
                       <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] transition-colors ${
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[0.6875rem] transition-colors ${
                           selected
                             ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)] text-[#07080a]'
                             : 'border-[var(--color-ink)]/15 text-[var(--color-muted)] group-hover:border-[var(--color-teal)]/40'
@@ -544,7 +544,7 @@ export default function AssessmentRun() {
             </div>
 
             <footer className="stack-block flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
-              <p className="hidden text-[11px] text-[var(--color-muted)] sm:block">
+              <p className="hidden text-[0.6875rem] text-[var(--color-muted)] sm:block">
                 Press 1–{item.options.length} to answer · ← → to move
               </p>
               <CrisisContacts variant="link" />
@@ -835,7 +835,7 @@ export default function AssessmentRun() {
         )}
 
         {instrument && !setDone && (
-          <p className="stack-section text-[11px] leading-relaxed text-[var(--color-muted)]">
+          <p className="stack-section text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
             {instrument.fullName}. {instrument.citation}. Licence: {instrument.license}.
           </p>
         )}

@@ -193,7 +193,7 @@ export default function Results() {
                   </div>
                 ))}
               </div>
-              <p className="mt-4 text-[11px] leading-relaxed text-[var(--color-muted)]">
+              <p className="mt-4 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
                 Each score places you in a range that a published questionnaire defines. None of
                 them is a diagnosis, they describe the last few weeks rather than today, and they
                 can move a lot with sleep, exams and illness.
@@ -310,7 +310,7 @@ export default function Results() {
 
           <div className="rule-fade stack-section" />
 
-          <p className="mt-6 pb-2 text-[11px] leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-6 pb-2 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
             DP Sahay AI is a reflective prototype, not a medical device. If you feel unsafe, contact a
             local helpline or a professional.
           </p>

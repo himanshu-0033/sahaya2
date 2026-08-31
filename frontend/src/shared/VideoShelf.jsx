@@ -92,17 +92,17 @@ function VideoCard({ video, accentName }) {
 
         <span className="absolute right-3 bottom-3 left-3">
           <span className="block text-sm leading-snug text-white drop-shadow">{video.title}</span>
-          <span className="mt-0.5 block text-[11px] text-white/70">{video.channel}</span>
+          <span className="mt-0.5 block text-[0.6875rem] text-white/70">{video.channel}</span>
         </span>
       </button>
 
       <div className="flex items-center justify-between gap-3 px-4 py-2.5">
-        <span className="text-[11px] text-[var(--color-muted)]">Plays here, on YouTube</span>
+        <span className="text-[0.6875rem] text-[var(--color-muted)]">Plays here, on YouTube</span>
         <a
           href={`https://www.youtube.com/watch?v=${video.id}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[11px] underline underline-offset-4"
+          className="text-[0.6875rem] underline underline-offset-4"
           style={{ color: bright }}
         >
           Open on YouTube

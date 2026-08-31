@@ -416,7 +416,7 @@ export default function CheckIn() {
                     }}
                   />
                   <span
-                    className="text-[11px] transition-colors duration-300"
+                    className="text-[0.6875rem] transition-colors duration-300"
                     style={{ color: selected ? hue : 'var(--color-muted)' }}
                   >
                     {m.label}
@@ -450,7 +450,7 @@ export default function CheckIn() {
                 </span>
               </li>
             </ul>
-            <p className="mt-3.5 text-[11px] leading-relaxed text-[var(--color-muted)]">
+            <p className="mt-3.5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
               Today is saved and your streak counted the moment you tap below. Everything after
               that is optional, can be skipped a question or a plate at a time, and lands on the
               same screen either way.
@@ -473,7 +473,7 @@ export default function CheckIn() {
               only one that feeds the flagging rule in backend/lib/logic.js.
               "Nobody is grading this" was true about tone and misleading about
               mechanism. This says what actually happens. */}
-          <p className="mt-5 text-[11px] leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
             Saved to your account. Nobody else sees your mood, your answers or your words unless
             you have invited a counsellor to follow along — you can do that, and undo it, from
             your account.

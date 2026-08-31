@@ -66,7 +66,7 @@ export default class ErrorBoundary extends Component {
             This screen stopped working.
           </h1>
 
-          <p className="stack-block text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+          <p className="stack-block text-[0.9375rem] leading-relaxed text-[var(--color-ink-soft)]">
             That is a fault on our side, not anything you did. Your check-ins are saved on the
             server as you make them, so nothing you have already written is lost.
           </p>

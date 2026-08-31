@@ -6,8 +6,9 @@ import LoadError from '../../shared/LoadError.jsx';
 import Welcome from '../auth/Welcome.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { getSession } from '../auth/session.js';
-import { getStatus, getProfile, saveProfile, getGroundingCatalog } from '../../shared/api.js';
-import { PHOTO } from '../../shared/photos.js';
+import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
+import { PHOTO, pathPhoto } from '../../shared/photos.js';
+import { accent } from '../../shared/accents.js';
 
 // Home — redesigned with richer visual hierarchy.
 //
@@ -237,6 +238,64 @@ function todayDate() {
   });
 }
 
+// ─── Carry on: the path already in progress ─────────────────────────────────
+//
+// A path is the only thing in this app that knows Tuesday followed Monday,
+// and until now the only place that showed it was the Paths tab. Someone
+// three days into a seven-day path had no reminder of it on the screen they
+// open first — which is most of why a seven-day anything gets abandoned on
+// day three.
+//
+// Only ever one card: the least-recently-started unfinished path. A list of
+// half-finished things on the home screen is a list of ways you have already
+// let yourself down.
+function CarryOn({ path, progress }) {
+  const { bright } = accent(path.accent);
+  const total = path.dayCount;
+  const done = progress.completedDays.length;
+
+  return (
+    <Link
+      to={`/paths/${path.id}`}
+      // card-photo-side, the same shape the More page uses: this is a
+      // secondary card in a wide column, and a full-width band put a 165px
+      // photograph above three lines of text.
+      className="press card card-photo card-photo-side mt-4 block overflow-hidden"
+      style={{ '--ph-hue': bright }}
+    >
+      <span className="photo-head">
+        <img src={pathPhoto(path.id)} alt="" loading="lazy" decoding="async" />
+      </span>
+      <div className="card-photo-body min-w-0 flex-1">
+        <span className="marginalia" style={{ color: bright }}>Carry on</span>
+        <p className="font-display mt-1.5 text-lg leading-snug">{path.name}</p>
+
+        {/* The same pip row the Paths tab uses, so the two screens agree on
+            what progress looks like. */}
+        <div className="mt-3 flex flex-wrap items-center gap-1" aria-hidden="true">
+          {Array.from({ length: total }, (_, i) => i + 1).map((day) => (
+            <span
+              key={day}
+              className="h-1.5 rounded-full"
+              style={{
+                width: progress.completedDays.includes(day) ? 18 : 8,
+                background: progress.completedDays.includes(day) ? bright : 'var(--surface-3)',
+              }}
+            />
+          ))}
+        </div>
+
+        <p className="mt-2.5 text-xs" style={{ color: bright }}>
+          Day <span className="num">{progress.nextDay}</span> next
+          <span className="text-[var(--color-muted)]">
+            {' '}· <span className="num">{done}</span> of <span className="num">{total}</span> done
+          </span>
+        </p>
+      </div>
+    </Link>
+  );
+}
+
 // ─── Skeleton while loading ─────────────────────────────────────────────────
 function PrimarySkeleton() {
   return (
@@ -263,6 +322,9 @@ export default function Landing() {
   const [reloadKey, setReloadKey] = useState(0);
   const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, error: null });
   const [streak, setStreak] = useState(0);
+  // The one unfinished path, or null. Its own state rather than the whole
+  // catalogue, so nothing else on this page has to know the paths exist.
+  const [carryOn, setCarryOn] = useState(null);
 
   useEffect(() => {
     if (!session) return;
@@ -282,6 +344,19 @@ export default function Landing() {
       .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, error: err }));
     getGroundingCatalog()
       .then((data) => setStreak(data.streak || 0))
+      .catch(() => {});
+    // A fourth request on the home screen, for one card. It is deliberately
+    // the last one fired and it fails silently: if it never lands, the page
+    // is exactly what it was before, minus a nudge.
+    getPaths()
+      .then((data) => {
+        const started = (data.progress || [])
+          .filter((p) => p.startedAt && !p.finished && p.nextDay)
+          .sort((a, b) => new Date(a.startedAt) - new Date(b.startedAt));
+        const first = started[0];
+        const path = first && (data.paths || []).find((p) => p.id === first.pathId);
+        setCarryOn(path ? { path, progress: first } : null);
+      })
       .catch(() => {});
   }, [session, profile]);
 
@@ -359,6 +434,9 @@ export default function Landing() {
           and the children keep the single-column order and the stack-block
           rhythm they already had. */}
       <div className="lg:grid lg:grid-cols-[1.55fr_1fr] lg:items-start lg:gap-6">
+
+      {/* Left column: the two things that are yours to do today. */}
+      <div>
       <section className="animate-slide-up card stack-block overflow-hidden p-0" style={{ animationDelay: '60ms' }}>
         {status.loading ? (
           <PrimarySkeleton />
@@ -433,9 +511,22 @@ export default function Landing() {
         )}
       </section>
 
-      {/* The right-hand column on a laptop; the next three blocks in the
-          scroll on a phone. `lg:mt-6` matches the check-in card's own
-          stack-block so the two columns start on the same line. */}
+      {/* ═══════════════════════════════════════════ Carry on
+          Under the check-in rather than in the right-hand column: these two
+          are the same kind of thing — the day's work, and the week's — while
+          the right column is shortcuts. It also evens the two columns out,
+          which putting it on the right did not. */}
+      {carryOn && (
+        <section className="animate-slide-up stack-block" style={{ animationDelay: '210ms' }}>
+          <h2 className="home-section-title">Where you left off</h2>
+          <CarryOn path={carryOn.path} progress={carryOn.progress} />
+        </section>
+      )}
+      </div>{/* /left column */}
+
+      {/* The right-hand column on a laptop; the next blocks in the scroll on
+          a phone. `lg:mt-6` matches the check-in card's own stack-block so
+          the two columns start on the same line. */}
       <div className="lg:mt-6">
 
       {/* ═══════════════════════════════════════════ Quick Actions Grid */}
@@ -449,7 +540,7 @@ export default function Landing() {
               >
                 {a.icon}
               </span>
-              <span className="text-[11px] font-medium text-[var(--color-ink-soft)]">
+              <span className="text-[0.6875rem] font-medium text-[var(--color-ink-soft)]">
                 {a.label}
               </span>
             </Link>
@@ -532,7 +623,7 @@ export default function Landing() {
               <div className="explore-body">
                 <span aria-hidden="true" style={{ color: e.hue }}>{e.icon}</span>
                 <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{e.title}</p>
-                <p className="mt-1 text-[11px] text-[var(--color-muted)]">{e.sub}</p>
+                <p className="mt-1 text-[0.6875rem] text-[var(--color-muted)]">{e.sub}</p>
               </div>
             </Link>
           ))}
@@ -543,14 +634,14 @@ export default function Landing() {
 
       {/* ═══════════════════════════════════════════ Footer */}
       <footer className="mt-4 flex flex-wrap items-center justify-between gap-3 pb-4">
-        <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
+        <p className="max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
           DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
         <div className="flex items-center gap-4">
-          <Link to="/account" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
+          <Link to="/account" className="text-[0.6875rem] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
             Who can see this
           </Link>
-          <Link to="/caregiver" className="text-[11px] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
+          <Link to="/caregiver" className="text-[0.6875rem] text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-ink-soft)]">
             Caregiver access
           </Link>
         </div>

@@ -107,7 +107,7 @@ export default function VoiceInputButton({ onTranscript, disabled = false }) {
         </svg>
       </button>
       {(listening || error) && (
-        <p className="mt-2 max-w-[10rem] text-center text-[11px] leading-tight text-[var(--color-muted)]">
+        <p className="mt-2 max-w-[10rem] text-center text-[0.6875rem] leading-tight text-[var(--color-muted)]">
           {error || 'Listening…'}
         </p>
       )}

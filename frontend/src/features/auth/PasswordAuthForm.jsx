@@ -24,7 +24,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   const inputClass = dark
     ? 'mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-[var(--ink-placeholder)] focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
     : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-  const labelClass = `text-[11px] uppercase tracking-wider ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
+  const labelClass = `text-[0.6875rem] uppercase tracking-wider ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
 
   function switchMode(next) {
     setMode(next);

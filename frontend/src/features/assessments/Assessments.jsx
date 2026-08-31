@@ -83,7 +83,7 @@ function InstrumentCard({ instrument, last, index }) {
             ) : (
               <span className="num block text-lg leading-none">{last.score}</span>
             )}
-            <span className="mt-1 block text-[9px] opacity-80">{formatWhen(last.createdAt)}</span>
+            <span className="mt-1 block text-[0.5625rem] opacity-80">{formatWhen(last.createdAt)}</span>
           </span>
         )}
       </div>
@@ -299,7 +299,7 @@ export default function Assessments() {
           <div className="rule-fade stack-section" />
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pb-2">
-            <p className="max-w-md text-[11px] leading-relaxed text-[var(--color-muted)]">
+            <p className="max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
               Your answers and scores are saved to your account. Nobody else can see them unless
               you invite a counsellor to follow along, and you can stop sharing whenever you like.
               If something here worries you, please talk to a person rather than a score.

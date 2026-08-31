@@ -172,7 +172,7 @@ function SectionHead({ eyebrow, title, sub }) {
       </h2>
       <Ornament />
       {sub && (
-        <p className="max-w-xl text-[15px] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
+        <p className="max-w-xl text-[0.9375rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
           {sub}
         </p>
       )}
@@ -249,7 +249,7 @@ export default function Welcome({ onSignedIn }) {
               A minute a day, and a real look at how you are.
             </h1>
             <p
-              className="mt-6 max-w-lg text-[17px] leading-relaxed"
+              className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed"
               style={{ color: 'var(--w-ink-soft)' }}
             >
               A daily check-in that takes thirty seconds, the same questionnaires a clinic uses,
@@ -297,7 +297,7 @@ export default function Welcome({ onSignedIn }) {
               <div className="w-card mx-auto max-w-md p-6 sm:p-7">
                 <GoogleSignInButton onSignedIn={onSignedIn} />
                 <div
-                  className="my-4 flex items-center gap-3 text-[11px] tracking-wide"
+                  className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide"
                   style={{ color: 'var(--w-ink-soft)' }}
                 >
                   <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
@@ -308,7 +308,7 @@ export default function Welcome({ onSignedIn }) {
                 <button
                   type="button"
                   onClick={() => setSigningIn(false)}
-                  className="mt-4 w-full text-center text-[12px] underline underline-offset-4"
+                  className="mt-4 w-full text-center text-[0.75rem] underline underline-offset-4"
                   style={{ color: 'var(--w-ink-soft)' }}
                 >
                   Back
@@ -324,14 +324,14 @@ export default function Welcome({ onSignedIn }) {
                 <button
                   type="button"
                   onClick={go}
-                  className="press w-full rounded-full px-7 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
+                  className="press w-full rounded-full px-7 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
                   style={{ background: 'var(--w-accent-deep)' }}
                 >
                   Sign in to start
                 </button>
                 <a
                   href="#inside"
-                  className="press mt-3 block w-full rounded-full border px-7 py-3.5 text-[15px] font-medium transition-colors"
+                  className="press mt-3 block w-full rounded-full border px-7 py-3.5 text-[0.9375rem] font-medium transition-colors"
                   style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
                 >
                   See what is inside
@@ -339,7 +339,7 @@ export default function Welcome({ onSignedIn }) {
               </div>
             )}
 
-            <p className="mx-auto mt-4 max-w-md text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
+            <p className="mx-auto mt-4 max-w-md text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
               Free. No card. You can delete everything from your account page.
             </p>
           </div>
@@ -357,7 +357,7 @@ export default function Welcome({ onSignedIn }) {
               <p className="font-display text-[2.4rem] leading-none" style={{ color: 'var(--w-accent-deep)' }}>
                 {s.n}
               </p>
-              <p className="mt-2 text-[13px]" style={{ color: 'var(--w-ink-soft)' }}>
+              <p className="mt-2 text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
                 {s.label}
               </p>
             </div>
@@ -390,7 +390,7 @@ export default function Welcome({ onSignedIn }) {
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
                   {s.body}
                 </p>
-                <p className="mt-auto pt-2 text-[13px] font-medium" style={{ color: 'var(--w-lav)' }}>
+                <p className="mt-auto pt-2 text-[0.8125rem] font-medium" style={{ color: 'var(--w-lav)' }}>
                   {s.meta}
                 </p>
                 </div>
@@ -420,7 +420,7 @@ export default function Welcome({ onSignedIn }) {
                   {t.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full px-3 py-1 text-[12px]"
+                      className="rounded-full px-3 py-1 text-[0.75rem]"
                       // Warm where the tag is a feeling, cool where it is a
                       // property of the product. Two kinds of thing, two tints.
                       style={
@@ -461,7 +461,7 @@ export default function Welcome({ onSignedIn }) {
           </div>
 
           <p
-            className="mx-auto mt-10 max-w-2xl text-center text-[13px] leading-relaxed"
+            className="mx-auto mt-10 max-w-2xl text-center text-[0.8125rem] leading-relaxed"
             style={{ color: 'var(--w-ink-soft)' }}
           >
             DP Sahay AI is a reflective prototype, not a medical device, and nothing in it is a
@@ -505,13 +505,13 @@ export default function Welcome({ onSignedIn }) {
           <h2 className="font-display text-[2rem] leading-tight sm:text-[2.5rem]" style={{ textWrap: 'balance' }}>
             How is today sitting?
           </h2>
-          <p className="max-w-md text-[15px] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
+          <p className="max-w-md text-[0.9375rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
             Thirty seconds, and you will have a thought for the day and one day on your streak.
           </p>
           <button
             type="button"
             onClick={go}
-            className="press mt-2 rounded-full px-8 py-3.5 text-[15px] font-medium text-white transition-opacity hover:opacity-90"
+            className="press mt-2 rounded-full px-8 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
             style={{ background: 'var(--w-accent-deep)' }}
           >
             Sign in to start
@@ -558,7 +558,7 @@ export default function Welcome({ onSignedIn }) {
           </div>
 
           <div
-            className="mt-12 flex flex-col gap-3 border-t pt-7 text-[12px] sm:flex-row sm:items-center sm:justify-between"
+            className="mt-12 flex flex-col gap-3 border-t pt-7 text-[0.75rem] sm:flex-row sm:items-center sm:justify-between"
             style={{ borderColor: 'var(--w-line)', color: 'var(--w-ink-soft)' }}
           >
             <p>DP Sahay AI — a reflective prototype, not a medical device.</p>

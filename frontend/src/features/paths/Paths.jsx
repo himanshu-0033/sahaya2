@@ -51,7 +51,7 @@ function PathCard({ path, progress, index }) {
       <div className="flex items-start justify-between gap-3">
         <p className="font-display text-xl leading-snug">{path.name}</p>
         <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-[11px] whitespace-nowrap"
+          className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
           style={{ background: alpha(base, 0.14), color: bright }}
         >
           {path.dayCount} days

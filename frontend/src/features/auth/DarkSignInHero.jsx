@@ -92,7 +92,7 @@ export default function DarkSignInHero({ onSignedIn }) {
             {/* Was a rotated square in a rounded box — the placeholder mark
                 that ships with every dark landing-page template. */}
             <Logo size={26} className="shrink-0" />
-            <span className="font-eyebrow text-[11px] font-semibold text-white/90">
+            <span className="font-eyebrow text-[0.6875rem] font-semibold text-white/90">
               DP Sahay <span className="font-normal text-white/60">AI</span>
             </span>
           </Link>
@@ -144,7 +144,7 @@ export default function DarkSignInHero({ onSignedIn }) {
           {/* The copy. */}
           <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left">
             <span
-              className="animate-fade-up font-eyebrow rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-3.5 py-1 text-[11px] text-white/55 backdrop-blur"
+              className="animate-fade-up font-eyebrow rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-3.5 py-1 text-[0.6875rem] text-white/55 backdrop-blur"
               style={{ animationDelay: '0.08s' }}
             >
               You matter to us
@@ -160,7 +160,7 @@ export default function DarkSignInHero({ onSignedIn }) {
             </h1>
 
             <p
-              className="animate-fade-up mt-4 max-w-sm text-[15px] leading-relaxed text-white/60"
+              className="animate-fade-up mt-4 max-w-sm text-[0.9375rem] leading-relaxed text-white/60"
               style={{ animationDelay: '0.28s' }}
             >
               One tap says how today feels, and that is the whole obligation. Behind it,
@@ -175,12 +175,12 @@ export default function DarkSignInHero({ onSignedIn }) {
                   <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    className="font-eyebrow w-full rounded-full border border-[var(--line-5)] bg-[var(--surface-1)] px-8 py-3.5 text-[11px] font-semibold text-white/90 backdrop-blur transition-all hover:border-[var(--line-7)] hover:bg-[var(--surface-4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                    className="font-eyebrow w-full rounded-full border border-[var(--line-5)] bg-[var(--surface-1)] px-8 py-3.5 text-[0.6875rem] font-semibold text-white/90 backdrop-blur transition-all hover:border-[var(--line-7)] hover:bg-[var(--surface-4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                   >
                     Begin check-in
                   </button>
 
-                  <p className="mt-4 text-[13px] text-white/50">
+                  <p className="mt-4 text-[0.8125rem] text-white/50">
                     <button
                       type="button"
                       onClick={() => setOpen(true)}
@@ -206,7 +206,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                     <GoogleSignInButton dark onSignedIn={onSignedIn} />
                   </div>
 
-                  <div className="my-4 flex items-center gap-3 text-[11px] tracking-wide text-white/50">
+                  <div className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide text-white/50">
                     <span className="h-px flex-1 bg-[var(--surface-4)]" />
                     or use email
                     <span className="h-px flex-1 bg-[var(--surface-4)]" />
@@ -217,7 +217,7 @@ export default function DarkSignInHero({ onSignedIn }) {
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="mt-4 w-full text-center text-[12px] text-white/55 transition-colors hover:text-white/85"
+                    className="mt-4 w-full text-center text-[0.75rem] text-white/55 transition-colors hover:text-white/85"
                   >
                     Back
                   </button>
@@ -231,7 +231,7 @@ export default function DarkSignInHero({ onSignedIn }) {
           </div>
         </main>
 
-        <footer className="shrink-0 pt-4 text-center text-[11px] text-white/50 lg:text-left">
+        <footer className="shrink-0 pt-4 text-center text-[0.6875rem] text-white/50 lg:text-left">
           DP Sahay AI is a reflective prototype, not a medical device.
         </footer>
       </div>
