@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
+    "test": "node test/chat.test.mjs",
     "dev:local": "node --env-file=.env.local dev-server.js",
     "deploy": "vercel --prod"
   },
