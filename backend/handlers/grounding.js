@@ -1,4 +1,4 @@
-import { getGroundingSessions, saveGroundingSessions } from '../lib/store.js';
+import { getGroundingSessions, appendRecord } from '../lib/store.js';
 import { catalog, getTechnique, techniqueDetail, FAMILIES, MOODS } from '../lib/grounding.js';
 import { todayISO } from '../lib/logic.js';
 import { applyCors } from '../lib/cors.js';
@@ -104,8 +104,8 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString(),
     };
 
+    await appendRecord('groundingSessions', record);
     const next = [...sessions, record];
-    await saveGroundingSessions(next);
 
     const mine = next.filter((s) => s.residentId === residentId);
     return res.status(201).json({

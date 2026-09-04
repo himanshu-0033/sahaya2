@@ -1,4 +1,4 @@
-import { getResidents, saveResidents } from '../lib/store.js';
+import { getResidents, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 import { addShare, normalizeEmail, removeShare, sharedWithList } from '../lib/sharing.js';
@@ -45,9 +45,11 @@ export default async function handler(req, res) {
     const sharedWith =
       req.method === 'POST' ? addShare(residents[idx], email) : removeShare(residents[idx], email);
 
-    const updated = [...residents];
-    updated[idx] = { ...updated[idx], sharedWith, updatedAt: new Date().toISOString() };
-    await saveResidents(updated);
+    await upsertRecord('residents', { id: residents[idx].id }, {
+      ...residents[idx],
+      sharedWith,
+      updatedAt: new Date().toISOString(),
+    });
 
     return res.status(200).json({ sharedWith });
   }

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { getCheckins, getResidents, saveResidents } from '../../lib/store.js';
+import { getCheckins, getResidents, appendRecord } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireCaregiverUser } from '../../lib/auth.js';
 import { normalizeEmail, visibleResidents } from '../../lib/sharing.js';
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
       createdAt: now,
       updatedAt: now,
     };
-    await saveResidents([...residents, resident]);
+    await appendRecord('residents', resident);
     return res.status(201).json({ resident });
   }
 

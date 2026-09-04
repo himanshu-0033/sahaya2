@@ -1,4 +1,4 @@
-import { getCheckins, saveCheckins, getResidents } from '../lib/store.js';
+import { getCheckins, getResidents, appendRecord } from '../lib/store.js';
 import { todayISO, pickThought, computeFlag, MOOD_OPTIONS } from '../lib/logic.js';
 import { currentStreak } from '../lib/analytics.js';
 import { applyCors } from '../lib/cors.js';
@@ -66,7 +66,23 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString(),
     };
 
-    await saveCheckins([...checkins, record]);
+    try {
+      await appendRecord('checkins', record);
+    } catch (err) {
+      // The unique index rejected it: another request created today's check-in
+      // between our read and our write. That is not an error to show anybody —
+      // the check-in they asked for exists. Return it, exactly as the branch
+      // above would have.
+      if (err?.code !== 11000) throw err;
+      const latest = (await getCheckins())
+        .filter((c) => c.residentId === residentId)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      const today = latest.find((c) => c.date === date);
+      if (today) {
+        return res.status(200).json({ ...today, streak: currentStreak(latest.map((c) => c.date)) });
+      }
+      throw err;
+    }
 
     // Streak counted with today included — it is the number the resident is
     // about to be shown, and it should already reflect the check-in they just

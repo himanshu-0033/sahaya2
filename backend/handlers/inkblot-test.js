@@ -1,4 +1,4 @@
-import { getInkblotSessions, saveInkblotSessions, getResidents } from '../lib/store.js';
+import { getInkblotSessions, getResidents, appendRecord } from '../lib/store.js';
 import { PLATES, isPlateId } from '../lib/plates.js';
 import { summarizeSession } from '../lib/reflection.js';
 import { HELPLINES } from '../lib/safety.js';
@@ -91,7 +91,7 @@ export default async function handler(req, res) {
       createdAt: new Date().toISOString(),
     };
 
-    await saveInkblotSessions([...sessions, record]);
+    await appendRecord('inkblotSessions', record);
 
     // A crisis match is the one case where the response carries something
     // back to the resident immediately rather than just filing it.

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { getCheckins, getResidents, saveResidents, getAssessments } from '../../lib/store.js';
+import { getCheckins, getResidents, getAssessments, appendRecord } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
@@ -36,14 +36,14 @@ export default async function handler(req, res) {
       onboarded: false,
       // The placeholder holds only the name and address this counsellor just
       // typed, so they can see it back. It carries no consent forward: when
-      // the real person signs in, withoutInvitedPlaceholder drops this record
+      // the real person signs in, invitedPlaceholders marks this record
       // and profile.js writes a fresh one with nothing shared. Being invited
       // is not the same as having agreed.
       sharedWith: [normalizeEmail(admin.email)],
       createdAt: now,
       updatedAt: now,
     };
-    await saveResidents([...residents, resident]);
+    await appendRecord('residents', resident);
     return res.status(201).json({ resident });
   }
 

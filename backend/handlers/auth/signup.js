@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
-import { getResidents, saveResidents } from '../../lib/store.js';
+import { getResidents, appendRecord, removeRecords } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { signSessionToken } from '../../lib/auth.js';
 import { phonesMatch } from '../../lib/phone.js';
-import { withoutInvitedPlaceholder } from '../../lib/residents.js';
+import { invitedPlaceholders } from '../../lib/residents.js';
 
 function makeId() {
   return 'local_' + randomUUID();
@@ -58,7 +58,10 @@ export default async function handler(req, res) {
     createdAt: now,
     updatedAt: now,
   };
-  await saveResidents([...withoutInvitedPlaceholder(residents, normalizedEmail), resident]);
+  for (const stale of invitedPlaceholders(residents, normalizedEmail)) {
+    await removeRecords('residents', { id: stale.id });
+  }
+  await appendRecord('residents', resident);
 
   const token = signSessionToken({ sub: id, email: normalizedEmail, name: name.trim() });
   return res.status(201).json({ token });

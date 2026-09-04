@@ -1,4 +1,4 @@
-import { getPathProgress, savePathProgress, getAssessments } from '../lib/store.js';
+import { getPathProgress, getAssessments, upsertRecord, removeRecords } from '../lib/store.js';
 import { catalog, getPath, pathDetail, progressFor } from '../lib/paths.js';
 import { getInstrument } from '../lib/instruments.js';
 import { todayISO } from '../lib/logic.js';
@@ -101,14 +101,13 @@ export default async function handler(req, res) {
     if (!path) return res.status(400).json({ error: 'Unknown path' });
 
     const existing = recordFor(pathId);
-    const others = all.filter((p) => !(p.residentId === residentId && p.pathId === pathId));
     const now = new Date().toISOString();
 
     // Leaving a path deletes its progress rather than flagging it abandoned.
     // Half-finished attempts are not something a resident should have to look
     // at every time they open the page, and nothing downstream reads them.
     if (action === 'leave') {
-      await savePathProgress(others);
+      await removeRecords('pathProgress', { residentId, pathId });
       return res.status(200).json({ progress: progressFor(path, null) });
     }
 
@@ -124,7 +123,7 @@ export default async function handler(req, res) {
         completedDays: [],
         updatedAt: now,
       };
-      await savePathProgress([...others, record]);
+      await upsertRecord('pathProgress', { residentId, pathId }, record);
       return res.status(201).json({ progress: progressFor(path, record) });
     }
 
@@ -155,7 +154,7 @@ export default async function handler(req, res) {
         completedDays: [...set].sort((a, b) => a - b),
         updatedAt: now,
       };
-      await savePathProgress([...others, record]);
+      await upsertRecord('pathProgress', { residentId, pathId }, record);
 
       const progress = progressFor(path, record);
       const assessments = await getAssessments();

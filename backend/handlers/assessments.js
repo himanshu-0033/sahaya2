@@ -1,4 +1,4 @@
-import { getAssessments, saveAssessments, getResidents } from '../lib/store.js';
+import { getAssessments, getResidents, appendRecord } from '../lib/store.js';
 import { catalog, getInstrument, instrumentDetail, isPublished } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 import { HELPLINES, ACUTE_MESSAGE } from '../lib/safety.js';
@@ -90,7 +90,7 @@ export default async function handler(req, res) {
       .filter((a) => a.residentId === residentId && a.instrumentId === instrument.id)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] || null;
 
-    await saveAssessments([...assessments, record]);
+    await appendRecord('assessments', record);
 
     return res.status(201).json({
       record,
