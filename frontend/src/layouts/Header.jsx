@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import CrisisContacts from '../shared/CrisisContacts.jsx';
+import StreakBadge from '../shared/StreakBadge.jsx';
 import Logo from '../shared/Logo.jsx';
 import { useSession } from '../features/auth/useSession.js';
 
@@ -44,6 +45,7 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
         {leading}
       </div>
       <div className="flex shrink-0 items-center gap-3">
+        <StreakBadge />
         <CrisisContacts variant="link" />
         {profile && (
           <Link

@@ -8,6 +8,7 @@ import { SkeletonPanel } from '../../shared/Skeleton.jsx';
 import { MOOD_OPTIONS } from '../../shared/moods.js';
 import { useSession } from '../auth/useSession.js';
 import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../../shared/api.js';
+import { CHECKIN_EVENT } from '../../shared/StreakBadge.jsx';
 import { AFTER_CHECKIN, SET_IDS, setStartHref } from '../assessments/testSet.js';
 
 // The check-in, end to end.
@@ -175,6 +176,9 @@ export default function CheckIn() {
     setError(null);
     try {
       const saved = await submitCheckin({ words: NO_WORDS, mood });
+      // The streak in the top bar is the only thing outside this screen that
+      // this changes, and it is mounted on every route.
+      window.dispatchEvent(new Event(CHECKIN_EVENT));
       setRecord(saved);
       // Straight into the questionnaires. The day is already saved, so what
       // follows is time someone is spending, not a form they are completing.

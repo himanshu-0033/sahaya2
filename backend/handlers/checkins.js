@@ -102,9 +102,18 @@ export default async function handler(req, res) {
       .sort((a, b) => a.date.localeCompare(b.date));
     const record = history.find((c) => c.date === targetDate) || null;
 
+    // The streak is a property of the person, not of today's record, so it is
+    // reported whether or not they have checked in yet. Nested inside `record`
+    // it vanished every morning until the day's check-in was done — which is
+    // exactly when a streak is worth seeing, because it is the thing about to
+    // be broken. It stays on the record too: the home screen's ring reads it
+    // from there.
+    const streak = currentStreak(history.map((c) => c.date));
+
     return res.status(200).json({
       checkedIn: Boolean(record),
-      record: record ? { ...record, streak: currentStreak(history.map((c) => c.date)) } : null,
+      streak,
+      record: record ? { ...record, streak } : null,
       history: history.slice(-14),
     });
   }

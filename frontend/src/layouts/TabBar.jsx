@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../shared/Logo.jsx';
 import CrisisContacts from '../shared/CrisisContacts.jsx';
+import StreakBadge from '../shared/StreakBadge.jsx';
 import { useSession } from '../features/auth/useSession.js';
 
 // The app's spine.
@@ -208,6 +209,7 @@ export default function TabBar() {
 
           {/* Right: Crisis + Profile — filled by Header via the desktopRight slot */}
           <div className="flex shrink-0 items-center gap-3" id="desktop-topbar-right">
+            <StreakBadge />
             <CrisisContacts variant="link" />
             {profile && (
               <Link
