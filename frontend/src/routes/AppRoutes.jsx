@@ -17,6 +17,7 @@ import ReadTest from '../features/read/ReadTest.jsx';
 import GroundingPractice from '../features/grounding/GroundingPractice.jsx';
 import Caregiver from '../features/caregiver/Caregiver.jsx';
 import CaregiverResident from '../features/caregiver/CaregiverResident.jsx';
+import ResetPassword from '../features/auth/ResetPassword.jsx';
 import NotFound from '../shared/NotFound.jsx';
 
 export default function App() {
@@ -27,6 +28,8 @@ export default function App() {
       <RouteChrome />
       <Routes>
         <Route path="/" element={<Landing />} />
+        {/* Reached from a link in an email, so it must work signed out. */}
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account />} />
         {/* The URL people actually type for this page. */}
         <Route path="/profile" element={<Account />} />
