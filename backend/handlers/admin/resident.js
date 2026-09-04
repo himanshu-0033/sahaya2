@@ -1,4 +1,10 @@
-import { getCheckins, getResidents, getInkblotSessions, getAssessments } from '../../lib/store.js';
+import {
+  getCheckins,
+  getResidents,
+  getInkblotSessions,
+  getAssessments,
+  getChatSessions,
+} from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
@@ -18,11 +24,12 @@ export default async function handler(req, res) {
   const { residentId } = req.query;
   if (!residentId) return res.status(400).json({ error: 'residentId is required' });
 
-  const [residents, checkins, inkblotSessions, assessments] = await Promise.all([
+  const [residents, checkins, inkblotSessions, assessments, chatSessions] = await Promise.all([
     getResidents(),
     getCheckins(),
     getInkblotSessions(),
     getAssessments(),
+    getChatSessions(),
   ]);
   const resident = residents.find((r) => r.id === residentId);
   // Deliberately the same 404 either way. Distinguishing "no such person" from
@@ -42,5 +49,12 @@ export default async function handler(req, res) {
     assessments: assessments
       .filter((a) => a.residentId === residentId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    // Newest conversation first, which is the one a counsellor opening this
+    // page is looking for. Reached through the same canView() check above as
+    // everything else here: a resident who has not shared with this counsellor
+    // is a 404 before any of this is read.
+    chatSessions: chatSessions
+      .filter((c) => c.residentId === residentId)
+      .sort((a, b) => b.startedAt.localeCompare(a.startedAt)),
   });
 }

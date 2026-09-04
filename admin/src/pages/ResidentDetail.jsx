@@ -425,6 +425,61 @@ export default function ResidentDetail() {
               screening measures, not diagnoses.
             </p>
           </section>
+
+          {/* Collapsed by default, like the inkblot sittings above it. A page
+              that opens with somebody's conversations already unrolled invites
+              reading them because they are there, rather than because there is
+              a reason to. */}
+          <section>
+            <h3 className="font-display text-xl">Companion conversations</h3>
+            {!data.chatSessions || data.chatSessions.length === 0 ? (
+              <p className="mt-3 text-sm text-[var(--color-muted)]">
+                No conversations recorded yet.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {data.chatSessions.map((c) => (
+                  <details key={c.id} className="card-soft rounded-2xl px-5 py-4">
+                    <summary className="flex cursor-pointer flex-wrap items-center gap-3 text-sm">
+                      <span>{formatDate(c.startedAt.slice(0, 10))}</span>
+                      <span className="text-[var(--color-muted)]">
+                        {c.turns.length} {c.turns.length === 1 ? 'message' : 'messages'}
+                      </span>
+                      {c.flagged && (
+                        <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
+                          Safety screen fired
+                        </span>
+                      )}
+                    </summary>
+
+                    <div className="mt-4 space-y-2.5">
+                      {c.turns.map((t, i) => (
+                        <div
+                          key={i}
+                          className={`flex ${t.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                              t.role === 'user'
+                                ? 'bg-[var(--color-teal-soft)] text-[var(--color-ink)]'
+                                : 'border border-[var(--color-ink)]/12 text-[var(--color-ink-soft)]'
+                            }`}
+                          >
+                            {t.content}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-[10px] leading-relaxed text-[var(--color-muted)]">
+              These are the resident&apos;s own words to the companion, and they were told the
+              conversation is saved and readable by anyone they share their account with. It is a
+              record of what they chose to say, not an assessment of them.
+            </p>
+          </section>
         </>
       )}
     </div>

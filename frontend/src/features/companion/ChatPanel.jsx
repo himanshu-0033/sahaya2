@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { sendChat } from '../../shared/api.js';
+import { sendChat, saveChatLog } from '../../shared/api.js';
 import Logo from '../../shared/Logo.jsx';
 
 function Bubble({ role, children }) {
@@ -60,6 +60,10 @@ export default function ChatPanel({
   const scrollRef = useRef(null);
   const started = useRef(false);
   const askedRef = useRef(false);
+  // Stamped once, when this panel opens. It is what makes every save of this
+  // conversation an update of one record rather than a new one.
+  const startedAt = useRef(new Date().toISOString());
+  const flaggedRef = useRef(false);
 
   // Ask the agent for its opening line, seeded with today's check-in.
   //
@@ -102,10 +106,18 @@ export default function ChatPanel({
 
     try {
       const data = await sendChat({ messages: next, checkin });
-      setMessages([
-        ...next,
-        { role: 'assistant', content: data.reply, helplines: data.helplines },
-      ]);
+      const full = [...next, { role: 'assistant', content: data.reply, helplines: data.helplines }];
+      setMessages(full);
+      if (data.flagged) flaggedRef.current = true;
+
+      // Filed after the reply is on screen, and never awaited: this is a
+      // record of the conversation, not part of it, and a storage problem must
+      // not become the person's problem mid-sentence.
+      saveChatLog({
+        startedAt: startedAt.current,
+        messages: full.map((m) => ({ role: m.role, content: m.content })),
+        flagged: flaggedRef.current,
+      }).catch(() => {});
     } catch (err) {
       setError(err.message);
     } finally {
@@ -235,7 +247,7 @@ export default function ChatPanel({
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
           ? 'Scripted preview — no AI model is connected yet. Not a therapist, and not a crisis service.'
-          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above.'}
+          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above. This conversation is saved to your account, and anyone you have shared your account with can read it.'}
       </p>
     </div>
   );

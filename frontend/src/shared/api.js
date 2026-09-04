@@ -171,6 +171,28 @@ export function sendChat({ messages, checkin }) {
   );
 }
 
+// Files the conversation with the backend, which is a different service from
+// the agent that answered it — the agent stays stateless and holds no database
+// credentials, and the store, the auth and the sharing consent all already
+// live on the backend. Best effort by design: a transcript that fails to save
+// must never interrupt the conversation it is a record of.
+// Always resolves the same way whether or not the address has an account —
+// the server refuses to say, so there is nothing here to branch on.
+export function requestPasswordReset({ email }) {
+  return request('/api/auth/forgot', { method: 'POST', body: JSON.stringify({ email }) });
+}
+
+export function resetPassword({ token, password }) {
+  return request('/api/auth/reset', { method: 'POST', body: JSON.stringify({ token, password }) });
+}
+
+export function saveChatLog({ startedAt, messages, flagged }) {
+  return request('/api/chat-log', {
+    method: 'POST',
+    body: JSON.stringify({ startedAt, messages, flagged }),
+  });
+}
+
 export function getInkblotTest() {
   return request('/api/inkblot-test');
 }

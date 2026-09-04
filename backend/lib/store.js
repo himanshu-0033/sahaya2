@@ -61,6 +61,8 @@ function getClient() {
 // must not refuse to start. Runs once per process, on the first connection.
 const INDEXED = [
   'checkins',
+  'chatSessions',
+  'passwordResets',
   'residents',
   'assessments',
   'inkblotSessions',
@@ -259,6 +261,11 @@ export const getInkblotSessions = () => readAll('inkblotSessions');
 export const getAssessments = () => readAll('assessments');
 export const getGroundingSessions = () => readAll('groundingSessions');
 export const getPathProgress = () => readAll('pathProgress');
+
+// Companion transcripts. One document per conversation, bounded by the agent's
+// own 24-turn limit, and readable only through the consent gate every other
+// record goes through — see handlers/chat-log.js.
+export const getChatSessions = () => readAll('chatSessions');
 
 // Who looked at what.
 //

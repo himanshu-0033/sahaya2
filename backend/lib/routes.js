@@ -17,9 +17,12 @@ import sharingHandler from '../handlers/sharing.js';
 import inkblotTestHandler from '../handlers/inkblot-test.js';
 import assessmentsHandler from '../handlers/assessments.js';
 import groundingHandler from '../handlers/grounding.js';
+import chatLogHandler from '../handlers/chat-log.js';
 import pathsHandler from '../handlers/paths.js';
 import signupHandler from '../handlers/auth/signup.js';
 import loginHandler from '../handlers/auth/login.js';
+import forgotHandler from '../handlers/auth/forgot.js';
+import resetHandler from '../handlers/auth/reset.js';
 import caregiverResidentsHandler from '../handlers/caregiver/residents.js';
 import caregiverResidentHandler from '../handlers/caregiver/resident.js';
 import adminMeHandler from '../handlers/admin/me.js';
@@ -43,9 +46,12 @@ export const routes = {
   '/api/inkblot-test': inkblotTestHandler,
   '/api/assessments': assessmentsHandler,
   '/api/grounding': groundingHandler,
+  '/api/chat-log': chatLogHandler,
   '/api/paths': pathsHandler,
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
+  '/api/auth/forgot': forgotHandler,
+  '/api/auth/reset': resetHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
   '/api/admin/me': adminMeHandler,

@@ -8,7 +8,7 @@
     "dev:local": "node --env-file=.env.local dev-server.js",
     "deploy": "vercel --prod",
     "backfill:sharing": "node --env-file=.env.local scripts/backfill-sharing.mjs",
-    "test": "node test/store.test.mjs && node test/scoring.test.mjs && node test/analytics.test.mjs && node test/sharing.test.mjs && node test/steps.test.mjs && node test/reflection.test.mjs && node test/grounding.test.mjs && node test/paths.test.mjs && node test/test-notes.test.mjs && node test/articles.test.mjs"
+    "test": "node test/store.test.mjs && node test/chat-log.test.mjs && node test/password-reset.test.mjs && node test/scoring.test.mjs && node test/analytics.test.mjs && node test/sharing.test.mjs && node test/steps.test.mjs && node test/reflection.test.mjs && node test/grounding.test.mjs && node test/paths.test.mjs && node test/test-notes.test.mjs && node test/articles.test.mjs"
   },
   "devDependencies": {
     "vercel": "^37.0.0"
