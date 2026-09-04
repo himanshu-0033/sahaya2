@@ -1,15 +1,15 @@
 // Moves a database from the old single-document layout to one document per
-// record. Run once per database, before deploying the code that reads the new
-// shape.
+// record.
+//
+// The app no longer needs this run first — lib/store.js moves each collection
+// itself the first time it is read, keyed and resumable, so a deploy is not an
+// outage waiting for an operator. This script remains for the two jobs that
+// are better done deliberately: seeing what is there before anything touches
+// it, and clearing the legacy documents away afterwards.
 //
 //   node scripts/migrate-store.mjs            # dry run — reports, changes nothing
-//   node scripts/migrate-store.mjs --run      # performs the migration
+//   node scripts/migrate-store.mjs --run      # performs the migration up front
 //   node scripts/migrate-store.mjs --run --drop-legacy   # and removes the old documents
-//
-// Deliberately a script you run, not something the server does on boot. This
-// touches live records, several serverless instances start at once, and a
-// migration that races with itself on a mental-health app's history is not a
-// thing to find out about afterwards. One operator, one run, one report.
 //
 // Idempotent: records already present in the new collections are not inserted
 // twice, so re-running after an interruption resumes rather than duplicates.
@@ -64,7 +64,12 @@ for (const kind of KINDS) {
   const alreadyThere = await db.collection(kind).countDocuments();
 
   if (records.length === 0) {
-    console.log(`${kind.padEnd(18)} legacy: 0        new: ${alreadyThere} — nothing to move`);
+    // `migratedData` is what the app renames `data` to once it has moved a
+    // collection itself, so this distinguishes "never had anything" from
+    // "already done" rather than reporting both as nothing.
+    const done = Array.isArray(legacy?.migratedData) ? legacy.migratedData.length : 0;
+    const note = done ? `already migrated (${done} legacy rows retained)` : 'nothing to move';
+    console.log(`${kind.padEnd(18)} legacy: 0        new: ${alreadyThere} — ${note}`);
     continue;
   }
 

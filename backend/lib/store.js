@@ -27,8 +27,8 @@ const MONGO_URI =
 
 const DB_NAME = 'sahay';
 
-// Where the old single-document layout lives. Read only, and only to notice
-// that a deployment has not been migrated yet.
+// Where the old single-document layout lives. Read to notice records that
+// have not moved yet, and written only to mark them as moved.
 const LEGACY_COLLECTION = 'state';
 
 let clientPromise = null;
@@ -42,20 +42,44 @@ function getClient() {
   return clientPromise;
 }
 
-// "One check-in per resident per day" was enforced by reading the list and
-// looking for today first, which two simultaneous requests can both pass. A
-// check-in's id is `${residentId}:${date}`, so a unique index on it states the
-// same rule somewhere that concurrency cannot argue with.
+// Every record in every collection carries its own `id`, and two records with
+// the same id are the same record. Saying so with a unique index buys two
+// things that application code cannot.
 //
-// Failure here is logged, never thrown: an existing database with duplicates
-// would otherwise refuse to start, and a missing index is a weaker guarantee,
-// not a broken app. Runs once per process, on the first connection.
+// It settles "one check-in per resident per day", which a check-in's id
+// (`${residentId}:${date}`) already encodes, and which was previously enforced
+// by reading the list and looking for today — something two simultaneous
+// requests can both pass.
+//
+// And it makes upsert atomic. MongoDB only guarantees that an upsert will not
+// insert a second document when a unique index covers the filter; without one,
+// two upserts racing on the same key can both insert. The migration below
+// upserts by id from however many instances happen to be running, so this is
+// the thing standing between a concurrent migration and duplicated history.
+//
+// Failure is logged, never thrown: a database that already contains duplicates
+// must not refuse to start. Runs once per process, on the first connection.
+const INDEXED = [
+  'checkins',
+  'residents',
+  'assessments',
+  'inkblotSessions',
+  'groundingSessions',
+  'pathProgress',
+  'exportLog',
+];
+
 async function ensureIndexes(client) {
-  try {
-    await client.db(DB_NAME).collection('checkins').createIndex({ id: 1 }, { unique: true });
-  } catch (err) {
-    console.error('[store] unique check-in index not created:', err.message);
-  }
+  const db = client.db(DB_NAME);
+  await Promise.all(
+    INDEXED.map(async (name) => {
+      try {
+        await db.collection(name).createIndex({ id: 1 }, { unique: true });
+      } catch (err) {
+        console.error(`[store] unique id index on ${name} not created:`, err.message);
+      }
+    }),
+  );
 }
 
 async function collection(name) {
@@ -91,40 +115,99 @@ function matchesFilter(record, filter) {
   return Object.entries(filter).every(([key, value]) => record[key] === value);
 }
 
-// An empty collection is ambiguous: either this is a fresh deployment, or it
-// is an existing one whose records are still in the old layout. Answering []
-// in the second case would show every resident an empty app, and let new
-// writes accumulate alongside data that is still sitting there untouched.
+// Moving a deployment off the old layout.
 //
-// So: an empty read checks for legacy data once, and refuses loudly if it
-// finds any. A deployment that stops with a clear instruction is recoverable;
-// one that quietly serves nothing invites someone to "fix" it by writing over
-// the top.
-const migrationChecked = new Set();
+// This used to refuse to serve and tell an operator to run a migration script
+// first. That is a defensible thing to ask of a database, and an indefensible
+// thing to ask of the people using the app: the deploy and the migration are
+// separate events, and everything between them was an outage.
+//
+// So the records move themselves, the first time a collection that still has
+// legacy rows is read. Three properties make that safe to do on live data
+// rather than under supervision:
+//
+//   It is keyed. Every record in every collection carries its own `id`, so
+//   each row is upserted at its own identity rather than appended. Two
+//   instances doing this at the same moment write the same rows to the same
+//   keys and the result is identical either way — there is no interleaving
+//   that produces a duplicate.
+//
+//   It is resumable. A function that dies halfway leaves `data` in place, so
+//   the next read picks the whole set up again and the rows already moved are
+//   simply rewritten. Completion is recorded by renaming `data`, not by
+//   trusting the destination to look finished — a half-filled collection is
+//   indistinguishable from a finished one, which is exactly how a partial
+//   migration becomes permanent silent data loss.
+//
+//   It is reversible. The legacy records are renamed, never deleted, so the
+//   old documents are still there to rename back. scripts/migrate-store.mjs
+//   --drop-legacy removes them once you are satisfied.
+const MIGRATION_BATCH = 500;
 
-async function assertMigrated(name) {
-  if (migrationChecked.has(name)) return;
-  const legacy = await (await collection(LEGACY_COLLECTION)).findOne({ _id: name });
-  if (legacy?.data?.length) {
-    throw new Error(
-      `Storage for "${name}" has not been migrated: ${legacy.data.length} records are still in the ` +
-        'old single-document layout. Run `node scripts/migrate-store.mjs --run` against this database ' +
-        'before serving traffic.',
+// Which kinds still hold legacy rows, in one query per process rather than one
+// per collection per read.
+let pendingPromise = null;
+
+function pendingKinds() {
+  if (!pendingPromise) {
+    pendingPromise = (async () => {
+      const col = await collection(LEGACY_COLLECTION);
+      const docs = await col
+        .find({ data: { $exists: true, $ne: [] } }, { projection: { _id: 1 } })
+        .toArray();
+      return new Set(docs.map((d) => d._id));
+    })();
+    // A failed lookup must not be cached as "nothing pending" — that would
+    // serve an empty app. Clear it so the next request tries again, and let
+    // this one surface the error.
+    pendingPromise.catch(() => {
+      pendingPromise = null;
+    });
+  }
+  return pendingPromise;
+}
+
+async function migrateLegacy(name) {
+  const legacyCol = await collection(LEGACY_COLLECTION);
+  const legacy = await legacyCol.findOne({ _id: name });
+  const rows = Array.isArray(legacy?.data) ? legacy.data : [];
+  if (rows.length === 0) return;
+
+  const col = await collection(name);
+  for (let i = 0; i < rows.length; i += MIGRATION_BATCH) {
+    await col.bulkWrite(
+      rows.slice(i, i + MIGRATION_BATCH).map((record) => ({
+        replaceOne: {
+          // A row without an id cannot be keyed, so it is matched whole. Only
+          // malformed rows reach this, and matching whole is still idempotent.
+          filter: record?.id ? { id: record.id } : record,
+          replacement: { ...record },
+          upsert: true,
+        },
+      })),
+      { ordered: false },
     );
   }
-  migrationChecked.add(name);
+
+  await legacyCol.updateOne({ _id: name }, { $rename: { data: 'migratedData' } });
+  console.log(`[store] migrated ${rows.length} legacy ${name} records`);
 }
 
 // --- the four operations every handler needs -------------------------------
 
 export async function readAll(name) {
   if (!MONGO_URI) return readFileDb()[name] || [];
+
+  const pending = await pendingKinds();
+  if (pending.has(name)) {
+    await migrateLegacy(name);
+    pending.delete(name);
+  }
+
   const col = await collection(name);
   // _id is the database's business, never the app's — projected away so
   // records round-trip exactly as they were written.
-  const rows = await col.find({}, { projection: { _id: 0 } }).toArray();
-  if (rows.length === 0) await assertMigrated(name);
-  return rows;
+  return col.find({}, { projection: { _id: 0 } }).toArray();
 }
 
 export async function appendRecord(name, record) {
