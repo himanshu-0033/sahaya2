@@ -170,7 +170,7 @@ function platesForDay(seedSource) {
 function PlateStrip({ seed }) {
   const plates = useMemo(() => platesForDay(seed), [seed]);
   return (
-    <div className="mt-4 flex gap-2" aria-hidden="true">
+    <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
       {plates.map((src) => (
         <span
           key={src}
@@ -180,35 +180,6 @@ function PlateStrip({ seed }) {
           <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain" />
         </span>
       ))}
-    </div>
-  );
-}
-
-// ─── Streak ring (SVG circular progress) ────────────────────────────────────
-function StreakRing({ count, max = 7 }) {
-  const r = 28;
-  const circ = 2 * Math.PI * r;
-  const pct = Math.min(count / max, 1);
-  const offset = circ * (1 - pct);
-
-  return (
-    <div className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center">
-      <svg viewBox="0 0 64 64" width="72" height="72" className="absolute inset-0">
-        <circle cx="32" cy="32" r={r} className="streak-ring-track" />
-        <circle
-          cx="32" cy="32" r={r}
-          className="streak-ring-fill"
-          stroke="var(--color-lavender)"
-          strokeDasharray={circ}
-          style={{
-            '--ring-circ': circ,
-            '--ring-offset': offset,
-          }}
-        />
-      </svg>
-      <span className="num relative text-xl font-semibold text-[var(--color-lavender)]">
-        {count}
-      </span>
     </div>
   );
 }
@@ -447,35 +418,31 @@ export default function Landing() {
             state={{ record: status.record }}
             className="press block p-6 sm:p-7 checkin-card-done"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                  </span>
-                  <span className="marginalia">Checked in today</span>
-                </div>
-                <p className="font-display mt-3 text-[1.6rem] leading-tight sm:text-[1.9rem]">
-                  That's today done.
-                </p>
-                <p className="mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
-                  Your thought for the day is still here whenever you want it.
-                </p>
-                <PlateStrip seed={status.record?.date} />
-                <span className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
-                  See today's thought
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
+            {/* The streak used to sit here as a ring. It lives in the top bar
+                now, on every screen rather than only this one, so the card is
+                a single column and centres on its own axis. */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5" />
                   </svg>
                 </span>
+                <span className="marginalia">Checked in today</span>
               </div>
-
-              {/* Streak ring */}
-              {status.record?.streak > 0 && (
-                <StreakRing count={status.record.streak} />
-              )}
+              <p className="font-display mt-3 text-[1.6rem] leading-tight sm:text-[1.9rem]">
+                That's today done.
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
+                Your thought for the day is still here whenever you want it.
+              </p>
+              <PlateStrip seed={status.record?.date} />
+              <span className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
+                See today's thought
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
             </div>
           </Link>
         ) : (

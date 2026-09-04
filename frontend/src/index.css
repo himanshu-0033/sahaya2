@@ -970,27 +970,6 @@ p, li {
   padding: 1rem 1.1rem 1.2rem;
 }
 
-/* Streak ring — SVG circular progress */
-@keyframes streak-draw {
-  from { stroke-dashoffset: var(--ring-circ, 188.5); }
-  to { stroke-dashoffset: var(--ring-offset, 188.5); }
-}
-
-.streak-ring-track {
-  fill: none;
-  stroke: rgba(131, 24, 67, 0.07);
-  stroke-width: 4;
-}
-
-.streak-ring-fill {
-  fill: none;
-  stroke-width: 4.5;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: center;
-  animation: streak-draw 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
-}
-
 /* Horizontal scroll container — hide scrollbar */
 .hscroll {
   overflow-x: auto;
