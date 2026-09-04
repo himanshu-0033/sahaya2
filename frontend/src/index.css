@@ -1,31 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600&family=Lora:wght@400;500;600;700&family=Raleway:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
+@import "./styles/design-tokens.css";
 
+/* Tailwind's utility theme. The colours moved to tokens.json: they are
+   consumed through var() everywhere in this app, never as colour utilities,
+   so they no longer need to be declared here. The two font families stay —
+   `font-sans` is a real utility in use, and @theme is the only place that
+   can generate it. */
 @theme {
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-
-  --color-cream: #fdf2f8;
-  --color-cream-soft: #f8eaf2;
-  --color-ink: #831843;
-  --color-ink-soft: #475569;
-  --color-muted: #6b7280;
-  --color-teal: #ec4899;
-  --color-teal-dark: #9d174d;
-  --color-teal-soft: rgba(236, 72, 153, 0.14);
-  --color-amber: #d9a55c;
-  --color-lavender: #a79cf0;
-  --color-lavender-soft: rgba(167, 156, 240, 0.16);
-  --color-flag: #ef8064;
-  --color-flag-soft: rgba(239, 128, 100, 0.14);
-
-  /* Two more accents, added for the grounding room. Each practice family
-     carries one, so a breath exercise and a kindness exercise never look
-     like the same screen. */
-  --color-sky: #58b6f5;
-  --color-sky-soft: rgba(88, 182, 245, 0.16);
-  --color-rose: #f2789f;
-  --color-rose-soft: rgba(242, 120, 159, 0.16);
 }
 
 body {
@@ -313,74 +297,42 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /*      gets bolder; the headline face does not change.               */
 /* ================================================================== */
 
-/* Section hues, used by the tab bar and the page shells. Kept as raw
-   channels as well as hex so they can be dropped into rgba() without a
-   colour-mix() call, which is still uneven on older mobile Safari. */
-:root {
-  --sec-home: #1fae95;
-  --sec-paths: #e0a3d5;
-  --sec-calm: #a79cf0;
-  --sec-tests: #58b6f5;
-  --sec-inkblot: #d9a55c;
-  --sec-read: #8fd6b4;
-
-  /* Height of the mobile tab bar, so pages can reserve room for it in one
-     place rather than each guessing at a padding value. */
-  --tabbar-h: 4.75rem;
-
-  /* ---------------------------------------------------------------- */
-  /* Surfaces and hairlines                                            */
-  /*                                                                   */
-  /* Everything raised above the page ground, and every line drawn on  */
-  /* it, comes from here.                                              */
-  /*                                                                   */
-  /* These used to be written inline as `bg-white/5`, `border-white/12` */
-  /* and so on — around a hundred and ten of them, in thirteen         */
-  /* different bg alphas and nine border alphas, scattered across      */
-  /* twenty-five files. Two problems with that. The obvious one: a     */
-  /* light theme means editing every single occurrence, so "should we  */
-  /* go light?" was a rewrite rather than a question. The quieter one:  */
-  /* nobody could tell whether 0.05 and 0.055 were a considered        */
-  /* distinction or a typo, because there was nowhere for the answer   */
-  /* to live.                                                          */
-  /*                                                                   */
-  /* Alphas here are the ones already in use, so this substitution is  */
-  /* visually identical — it buys the indirection without redesigning  */
-  /* anything. Inverting for a light theme is now a matter of          */
-  /* redefining these values in one block.                             */
-  /* ---------------------------------------------------------------- */
-  --surface-1: rgba(131, 24, 67, 0.03);
-  --surface-2: rgba(131, 24, 67, 0.05);
-  --surface-3: rgba(131, 24, 67, 0.08);
-  --surface-4: rgba(131, 24, 67, 0.10);
-  --surface-5: rgba(131, 24, 67, 0.15);
-
-  --line-1: rgba(131, 24, 67, 0.08);
-  --line-2: rgba(131, 24, 67, 0.11);
-  --line-3: rgba(131, 24, 67, 0.15);
-  --line-4: rgba(131, 24, 67, 0.24);
-  --line-5: rgba(131, 24, 67, 0.30);
-  --line-6: rgba(131, 24, 67, 0.40);
-  --line-7: rgba(131, 24, 67, 0.60);
-
-  /* Two steps below --color-muted — and they are NOT the same step, which is
-     what a single token used to pretend.
-
-     One value at 0.3 alpha was doing both jobs, at 2.4:1 against this ground:
-     the worst contrast left anywhere in the app. For a disabled button label
-     that is correct and deliberate. WCAG exempts disabled controls precisely
-     so they can look unavailable, and a disabled button whose label reads as
-     crisply as an enabled one is the worse bug of the two.
-
-     For placeholder text it was simply wrong. A placeholder is content — it
-     is the example telling you what kind of answer this is — and at 2.4:1
-     the hint "What do you see?" was harder to read than the sentence typed
-     over the top of it. 0.5 alpha measures 4.9:1 on the page ground and
-     4.9:1 on a card, clearing 4.5:1 on both, and still reads as a hint
-     rather than as a value someone has already entered. */
-  --ink-faint: rgba(131, 24, 67, 0.35);
-  --ink-placeholder: rgba(244, 242, 238, 0.5);
-}
+/* ------------------------------------------------------------------ */
+/* Token values live in tokens.json and are generated into             */
+/* src/styles/design-tokens.css, imported at the top of this file.     */
+/* Regenerate after editing tokens.json:                               */
+/*                                                                     */
+/*   node ../.claude/skills/design-system/scripts/generate-tokens.cjs  */
+/*        --config tokens.json -o src/styles/design-tokens.css         */
+/*                                                                     */
+/* The reasoning behind the values is kept here, because JSON has      */
+/* nowhere to put it.                                                  */
+/*                                                                     */
+/* SECTION HUES (--sec-*) are used by the tab bar and the page shells, */
+/* so a breath exercise and a kindness exercise never look like the    */
+/* same screen.                                                        */
+/*                                                                     */
+/* SURFACES AND HAIRLINES (--surface-*, --line-*) cover everything     */
+/* raised above the page ground and every line drawn on it. These used */
+/* to be written inline as `bg-white/5`, `border-white/12` and so on — */
+/* around a hundred and ten of them, in thirteen different bg alphas   */
+/* and nine border alphas, scattered across twenty-five files. Two     */
+/* problems with that. The obvious one: a light theme meant editing    */
+/* every occurrence, so "should we go light?" was a rewrite rather     */
+/* than a question. The quieter one: nobody could tell whether 0.05    */
+/* and 0.055 were a considered distinction or a typo. The alphas are   */
+/* the ones already in use, so the move was visually identical.        */
+/*                                                                     */
+/* INK STEPS are two steps below --color-muted — and they are NOT the  */
+/* same step, which is what a single token used to pretend. One value  */
+/* at 0.3 alpha did both jobs, at 2.4:1 against this ground. For a     */
+/* disabled button label that is correct and deliberate: WCAG exempts  */
+/* disabled controls precisely so they can look unavailable. For       */
+/* placeholder text it was simply wrong — a placeholder is content,    */
+/* and at 2.4:1 the hint "What do you see?" was harder to read than    */
+/* the sentence typed over the top of it. 0.5 alpha measures 4.9:1 on  */
+/* the page ground and 4.9:1 on a card, clearing 4.5:1 on both.        */
+/* ------------------------------------------------------------------ */
 
 /* Gradient headline text. Falls back to plain ink where background-clip is
    unsupported, so a headline is never invisible. */

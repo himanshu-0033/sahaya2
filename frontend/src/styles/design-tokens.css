@@ -1,0 +1,75 @@
+/* Design Tokens - Auto-generated */
+/* Do not edit directly - modify tokens.json instead */
+
+/* === PRIMITIVES === */
+:root {
+  --primitive-color-pink-50: #fdf2f8;
+  --primitive-color-pink-100: #f8eaf2;
+  --primitive-color-pink-300: #f2789f;
+  --primitive-color-pink-500: #ec4899;
+  --primitive-color-pink-700: #9d174d;
+  --primitive-color-pink-900: #831843;
+  --primitive-color-slate-600: #475569;
+  --primitive-color-gray-500: #6b7280;
+  --primitive-color-amber-400: #d9a55c;
+  --primitive-color-violet-400: #a79cf0;
+  --primitive-color-coral-400: #ef8064;
+  --primitive-color-sky-400: #58b6f5;
+  --primitive-color-teal-500: #1fae95;
+  --primitive-color-orchid-300: #e0a3d5;
+  --primitive-color-mint-300: #8fd6b4;
+  --primitive-color-paper-100: #f4f2ee;
+  --primitive-channel-ink: 131 24 67;
+  --primitive-channel-paper: 244 242 238;
+  --primitive-channel-pink: 236 72 153;
+  --primitive-channel-violet: 167 156 240;
+  --primitive-channel-coral: 239 128 100;
+  --primitive-channel-sky: 88 182 245;
+  --primitive-channel-rose: 242 120 159;
+}
+
+/* === SEMANTIC === */
+:root {
+  --color-cream: #fdf2f8;
+  --color-cream-soft: #f8eaf2;
+  --color-ink: #831843;
+  --color-ink-soft: #475569;
+  --color-muted: #6b7280;
+  --color-teal: #ec4899;
+  --color-teal-dark: #9d174d;
+  --color-teal-soft: rgb(var(--primitive-channel-pink) / 0.14);
+  --color-amber: #d9a55c;
+  --color-lavender: #a79cf0;
+  --color-lavender-soft: rgb(var(--primitive-channel-violet) / 0.16);
+  --color-flag: #ef8064;
+  --color-flag-soft: rgb(var(--primitive-channel-coral) / 0.14);
+  --color-sky: #58b6f5;
+  --color-sky-soft: rgb(var(--primitive-channel-sky) / 0.16);
+  --color-rose: #f2789f;
+  --color-rose-soft: rgb(var(--primitive-channel-rose) / 0.16);
+  --sec-home: #1fae95;
+  --sec-paths: #e0a3d5;
+  --sec-calm: #a79cf0;
+  --sec-tests: #58b6f5;
+  --sec-inkblot: #d9a55c;
+  --sec-read: #8fd6b4;
+  --surface-1: rgb(var(--primitive-channel-ink) / 0.03);
+  --surface-2: rgb(var(--primitive-channel-ink) / 0.05);
+  --surface-3: rgb(var(--primitive-channel-ink) / 0.08);
+  --surface-4: rgb(var(--primitive-channel-ink) / 0.10);
+  --surface-5: rgb(var(--primitive-channel-ink) / 0.15);
+  --line-1: rgb(var(--primitive-channel-ink) / 0.08);
+  --line-2: rgb(var(--primitive-channel-ink) / 0.11);
+  --line-3: rgb(var(--primitive-channel-ink) / 0.15);
+  --line-4: rgb(var(--primitive-channel-ink) / 0.24);
+  --line-5: rgb(var(--primitive-channel-ink) / 0.30);
+  --line-6: rgb(var(--primitive-channel-ink) / 0.40);
+  --line-7: rgb(var(--primitive-channel-ink) / 0.60);
+  --ink-faint: rgb(var(--primitive-channel-ink) / 0.35);
+  --ink-placeholder: rgb(var(--primitive-channel-paper) / 0.5);
+}
+
+/* === COMPONENTS === */
+:root {
+  --tabbar-h: 4.75rem;
+}
