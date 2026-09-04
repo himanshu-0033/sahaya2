@@ -302,8 +302,10 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* src/styles/design-tokens.css, imported at the top of this file.     */
 /* Regenerate after editing tokens.json:                               */
 /*                                                                     */
-/*   node ../.claude/skills/design-system/scripts/generate-tokens.cjs  */
-/*        --config tokens.json -o src/styles/design-tokens.css         */
+/*   npm run tokens                                                    */
+/*                                                                     */
+/* CI regenerates and fails if the result differs from what is         */
+/* committed, so the two cannot drift apart unnoticed.                 */
 /*                                                                     */
 /* The reasoning behind the values is kept here, because JSON has      */
 /* nowhere to put it.                                                  */

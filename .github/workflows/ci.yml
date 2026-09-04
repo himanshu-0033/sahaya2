@@ -6,8 +6,14 @@
 # ERR_MODULE_NOT_FOUND — on every branch, for however long, with nothing
 # anywhere to say so.
 #
-# Two jobs rather than one, because they fail for different reasons and it
-# is worth knowing which: the suite is logic, the build is the bundle.
+# A job per module rather than one job for everything, because they fail for
+# different reasons and it is worth knowing which from the job name alone,
+# without opening a log.
+#
+# The agent and the console used to have no job at all. The agent is the module
+# that talks to a paid API on behalf of signed-in people, and its chat endpoint
+# had never been exercised by anything; the console is where resident data is
+# read. Both are covered now.
 
 name: CI
 
@@ -22,7 +28,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  backend:
     name: Backend tests
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +48,24 @@ jobs:
       - name: Test
         run: npm test
 
-  build:
+  agent:
+    name: Agent tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install
+        run: npm --prefix agent install
+
+      # Runs against the mock provider: no key, no network, no spend.
+      - name: Test
+        run: npm --prefix agent test
+
+  frontend:
     name: Frontend build
     runs-on: ubuntu-latest
     steps:
@@ -57,3 +80,29 @@ jobs:
 
       - name: Build
         run: npm --prefix frontend run build
+
+      # src/styles/design-tokens.css is generated from tokens.json. Editing the
+      # generated file by hand works right up until the next regeneration
+      # silently reverts it, so the two are checked against each other here
+      # rather than discovered months later by whoever changes a colour.
+      - name: Design tokens are in sync with tokens.json
+        run: |
+          npm --prefix frontend run tokens
+          git diff --exit-code -- frontend/src/styles/design-tokens.css \
+            || { echo "::error::design-tokens.css is out of date. Run 'npm run tokens' in frontend/ and commit the result."; exit 1; }
+
+  admin:
+    name: Console build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install
+        run: npm --prefix admin install
+
+      - name: Build
+        run: npm --prefix admin run build

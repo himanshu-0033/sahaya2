@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "tokens": "node scripts/generate-tokens.cjs --config tokens.json -o src/styles/design-tokens.css",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
