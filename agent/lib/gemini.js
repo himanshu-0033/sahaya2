@@ -7,9 +7,9 @@
 // Plain fetch, same as cerebras.js — one POST, one JSON body.
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
 
-// gemini-2.0-flash is the recommended free-tier model — fast, capable,
+// gemini-3.6-flash is the current free-tier model — fast, capable,
 // and generous on context.
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+const DEFAULT_MODEL = 'gemini-3.6-flash';
 
 const MAX_COMPLETION_TOKENS = 1024;
 
