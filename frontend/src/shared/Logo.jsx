@@ -61,7 +61,17 @@ const NODES = [
   [70, 87, 2.8],
 ];
 
-export default function Logo({ size = 30, glow = true, className, from = '#7df3b4', to = '#2fb87c' }) {
+// `thinking` animates the mark in place: a signal travelling the lines and the
+// nodes waking in sequence. Used as the companion's typing indicator, where a
+// picture of the thing working beats three dots.
+export default function Logo({
+  size = 30,
+  glow = true,
+  className,
+  from = '#7df3b4',
+  to = '#2fb87c',
+  thinking = false,
+}) {
   const uid = useId().replace(/:/g, '');
   const gradientId = `sahay-head-${uid}`;
   const glowId = `sahay-glow-${uid}`;
@@ -72,7 +82,7 @@ export default function Logo({ size = 30, glow = true, className, from = '#7df3b
       width={size}
       height={size}
       fill="none"
-      className={className}
+      className={[thinking ? 'logo-thinking' : null, className].filter(Boolean).join(' ') || undefined}
       role="img"
       aria-label="DP Sahay AI"
     >
@@ -108,8 +118,16 @@ export default function Logo({ size = 30, glow = true, className, from = '#7df3b
         {/* Nodes filled rather than stroked: a ring this small closes into a
             blob anyway, and a filled dot is the same shape done deliberately. */}
         <g fill={`url(#${gradientId})`}>
-          {NODES.map(([cx, cy, r]) => (
-            <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} />
+          {NODES.map(([cx, cy, r], i) => (
+            <circle
+              key={`${cx}-${cy}`}
+              cx={cx}
+              cy={cy}
+              r={r}
+              // Staggered here rather than in nine CSS rules: the delay is a
+              // property of the node's position in the list.
+              style={thinking ? { animationDelay: `${i * 0.13}s` } : undefined}
+            />
           ))}
         </g>
       </g>

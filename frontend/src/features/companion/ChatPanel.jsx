@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { sendChat } from '../../shared/api.js';
+import Logo from '../../shared/Logo.jsx';
 
 function Bubble({ role, children }) {
   const mine = role === 'user';
@@ -8,7 +9,7 @@ function Bubble({ role, children }) {
       <div
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
           mine
-            ? 'bg-[var(--color-teal)] text-white'
+            ? 'bg-[var(--color-teal-dark)] text-white'
             : 'border border-[var(--line-2)] bg-[var(--surface-2)] text-[var(--color-ink)]'
         }`}
       >
@@ -139,7 +140,19 @@ export default function ChatPanel({
   }, [initialQuestion, busy, messages.length, error]);
 
   return (
-    <div className="rounded-3xl border border-[var(--line-2)] bg-[var(--surface-2)] p-5 shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl">
+    // --surface-2 is a five-percent ink tint: a faint lift when this sits on the
+    // page's cream ground, and nearly transparent when it does not. As a modal
+    // it sits on a dimmed backdrop instead, so the same tint rendered the whole
+    // conversation dark — the one place in the app where the ground was not the
+    // colour every token in it was measured against. The overlay gets an opaque
+    // ground of its own, and the tokens land where they were meant to.
+    <div
+      className={`rounded-3xl border border-[var(--line-2)] p-5 ${
+        variant === 'overlay'
+          ? 'bg-[var(--color-cream)] shadow-[0_30px_80px_-32px_rgba(0,0,0,0.45)]'
+          : 'bg-[var(--surface-2)] shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl'
+      }`}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[0.6875rem] tracking-[0.22em] text-[var(--color-muted)] uppercase">
@@ -174,7 +187,12 @@ export default function ChatPanel({
         ))}
         {busy && (
           <Bubble role="assistant">
-            <span className="text-[var(--color-muted)]">…</span>
+            <span className="flex items-center gap-2">
+              <Logo size={24} thinking />
+              {/* The animation is the whole message for anyone who can see it,
+                  and no message at all for anyone who cannot. */}
+              <span className="sr-only">DP is thinking</span>
+            </span>
           </Bubble>
         )}
       </div>
@@ -208,13 +226,13 @@ export default function ChatPanel({
         <button
           type="submit"
           disabled={!draft.trim() || busy}
-          className="shrink-0 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-teal-dark)] disabled:opacity-40"
+          className="shrink-0 rounded-full bg-[var(--color-teal-dark)] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-ink)] disabled:opacity-40"
         >
           Send
         </button>
       </form>
 
-      <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
+      <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
           ? 'Scripted preview — no AI model is connected yet. Not a therapist, and not a crisis service.'
           : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above.'}

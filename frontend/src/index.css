@@ -192,6 +192,38 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   animation: draw-ring 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* The companion thinking.
+   
+   Three dots say "a thing is loading" and belong to any app ever made. The
+   mark already draws a head as a circuit, so the wait shows a signal running
+   along those lines and the nodes waking in turn — the picture of the product
+   doing the one thing it does. The dash pattern is what makes the stroke read
+   as a signal rather than a line that happens to move. */
+@keyframes vein-travel {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes node-wake {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.logo-thinking path {
+  stroke-dasharray: 9 15;
+  animation: vein-travel 1.1s linear infinite;
+}
+
+.logo-thinking circle {
+  animation: node-wake 1.8s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
   .animate-rise,
@@ -202,7 +234,9 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   .animate-soft-pulse,
   .animate-spin-3d,
   .animate-spin-3d-full,
-  .animate-glow-pulse {
+  .animate-glow-pulse,
+  .logo-thinking path,
+  .logo-thinking circle {
     animation: none;
   }
 }
