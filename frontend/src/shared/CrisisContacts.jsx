@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useDialogFocus from './useDialogFocus.js';
 
 // Two groups, in this order deliberately. The national lines are staffed by
 // people trained for this conversation and answer from anywhere; campus
@@ -36,6 +37,7 @@ const GROUPS = [
 
 export default function CrisisContacts({ variant = 'button', dark = false }) {
   const [open, setOpen] = useState(false);
+  const { dialogRef, triggerRef } = useDialogFocus(open);
 
   // Escape must always get you out — this dialog can appear at a bad moment and
   // must never feel like a trap.
@@ -52,6 +54,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
     <>
       {variant === 'button' ? (
         <button
+          ref={triggerRef}
           onClick={() => setOpen(true)}
           className={
             dark
@@ -72,6 +75,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
            unmistakable, or being at the edge just means being missed. Every
            screen that used variant="link" gets this without changing. */
         <button
+          ref={triggerRef}
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
           className={`press inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
@@ -113,6 +117,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           {/* Column layout: header and footer stay put, only the list scrolls,
               so a way out is always on screen. */}
           <div
+            ref={dialogRef}
             className="glass flex max-h-[88vh] w-full max-w-md flex-col rounded-[28px]"
             onClick={(e) => e.stopPropagation()}
           >

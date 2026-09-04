@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import ChatPanel from './ChatPanel.jsx';
 import Logo from '../../shared/Logo.jsx';
 import { getStatus } from '../../shared/api.js';
+import useDialogFocus from '../../shared/useDialogFocus.js';
 
 // DP — the companion, behind the app's own mark.
 //
@@ -22,6 +23,7 @@ import { getStatus } from '../../shared/api.js';
 export default function AskDP() {
   const [open, setOpen] = useState(false);
   const [checkin, setCheckin] = useState(null);
+  const { dialogRef, triggerRef } = useDialogFocus(open);
 
   // Today's check-in, so the opener can be about today rather than generic.
   // Fetched on first open rather than on mount: every page carries this
@@ -49,6 +51,7 @@ export default function AskDP() {
     <>
       {!open && (
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
@@ -75,7 +78,7 @@ export default function AskDP() {
           aria-modal="true"
           aria-label="Chat with DP"
         >
-          <div className="w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+          <div ref={dialogRef} className="w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
             <ChatPanel variant="overlay" checkin={checkin} onClose={() => setOpen(false)} />
           </div>
         </div>
