@@ -32,7 +32,7 @@ export default function CaregiverResident() {
           ← All residents
         </Link>
 
-        {error && <p className="mt-6 text-sm text-[var(--color-flag)]">{error}</p>}
+        {error && <p className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
         {data && (
           <>
@@ -87,7 +87,7 @@ export default function CaregiverResident() {
                       <td className="py-2 pr-4 whitespace-nowrap">{c.date}</td>
                       <td className="py-2 pr-4 whitespace-nowrap">{moodLabel(c.mood)}</td>
                       <td className="py-2 pr-4">{(c.words || []).filter(Boolean).join(', ') || '—'}</td>
-                      <td className="py-2 text-[var(--color-flag)]">
+                      <td className="py-2 text-[var(--color-flag-deep)]">
                         {c.flagged ? c.flagReasons.join('; ') : ''}
                       </td>
                     </tr>

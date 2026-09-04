@@ -28,7 +28,7 @@ function Helplines({ items }) {
           className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] px-3 py-2 text-xs"
         >
           <span className="min-w-0 text-[var(--color-ink-soft)]">{h.name}</span>
-          <span className="shrink-0 font-display text-sm whitespace-nowrap text-[var(--color-flag)]">
+          <span className="shrink-0 font-display text-sm whitespace-nowrap text-[var(--color-flag-deep)]">
             {h.number}
           </span>
         </a>
@@ -60,11 +60,16 @@ export default function ChatPanel({
   const started = useRef(false);
   const askedRef = useRef(false);
 
-  // Ask the agent for its opening line once, seeded with today's check-in.
-  useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+  // Ask the agent for its opening line, seeded with today's check-in.
+  //
+  // Extracted from the effect so it can be run again. It used to live inside
+  // one, guarded by a ref that was set before the request went out — so when
+  // the opener failed there was no way back: an empty panel, an error line,
+  // and a person left looking at a dead box until they thought to close the
+  // dialog and open it again.
+  function openConversation() {
     setBusy(true);
+    setError(null);
     sendChat({ messages: [], checkin })
       .then((data) => {
         setIsMock(Boolean(data.isMock));
@@ -72,6 +77,13 @@ export default function ChatPanel({
       })
       .catch((err) => setError(err.message))
       .finally(() => setBusy(false));
+  }
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    openConversation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkin]);
 
   useEffect(() => {
@@ -167,10 +179,27 @@ export default function ChatPanel({
         )}
       </div>
 
-      {error && <p className="mt-3 text-xs text-[var(--color-flag)]">{error}</p>}
+      {error && (
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <p className="text-xs text-[var(--color-flag-deep)]" role="alert">
+            {error}
+          </p>
+          {messages.length === 0 && (
+            <button
+              type="button"
+              onClick={openConversation}
+              disabled={busy}
+              className="press rounded-full border border-[var(--color-flag-deep)]/40 px-3 py-1 text-xs font-medium text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-40"
+            >
+              Try again
+            </button>
+          )}
+        </div>
+      )}
 
       <form onSubmit={send} className="mt-4 flex gap-2">
         <input
+          data-autofocus
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Say as much or as little as you like…"

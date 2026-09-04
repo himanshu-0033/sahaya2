@@ -82,7 +82,7 @@ function ShareRow({ email, onRemove, removing }) {
         type="button"
         onClick={() => onRemove(email)}
         disabled={removing}
-        className="press shrink-0 rounded-full border border-[var(--color-flag)]/35 px-4 py-2 text-xs text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-50"
+        className="press shrink-0 rounded-full border border-[var(--color-flag)]/35 px-4 py-2 text-xs text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-50"
       >
         {removing ? 'Stopping…' : 'Stop sharing'}
       </button>
@@ -276,7 +276,7 @@ export default function Account() {
             console — nothing is emailed to them from here.
           </p>
 
-          {formError && <p className="mt-3 text-sm text-[var(--color-flag)]">{formError}</p>}
+          {formError && <p className="mt-3 text-sm text-[var(--color-flag-deep)]">{formError}</p>}
 
           <button
             type="submit"

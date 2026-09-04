@@ -494,7 +494,7 @@ export default function AssessmentRun() {
                 })}
               </div>
 
-              {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
+              {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
               <p className="mt-6 text-xs leading-relaxed text-[var(--color-muted)]">
                 {onFollowUp
@@ -564,7 +564,7 @@ export default function AssessmentRun() {
                 }`}
               >
                 {crisis?.level === 'acute' && (
-                  <p className="font-display text-xl leading-snug text-[var(--color-flag)]">
+                  <p className="font-display text-xl leading-snug text-[var(--color-flag-deep)]">
                     Please call someone now.
                   </p>
                 )}
@@ -626,7 +626,7 @@ export default function AssessmentRun() {
                         change.tone === 'better'
                           ? 'text-[var(--color-teal-dark)]'
                           : change.tone === 'worse'
-                            ? 'text-[var(--color-flag)]'
+                            ? 'text-[var(--color-flag-deep)]'
                             : ''
                       }
                     >

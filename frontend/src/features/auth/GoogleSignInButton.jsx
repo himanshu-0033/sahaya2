@@ -74,7 +74,13 @@ export default function GoogleSignInButton({ onSignedIn, dark = false }) {
   }, [onSignedIn, dark, width]);
 
   if (error) {
-    return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
+    // On the dark heroes the light coral is the readable one; on cream it is
+    // 2.4:1 and the deep step is 5.5:1.
+    return (
+      <p className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+        {error}
+      </p>
+    );
   }
 
   return (

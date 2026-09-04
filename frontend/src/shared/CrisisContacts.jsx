@@ -59,7 +59,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           className={
             dark
               ? 'w-full rounded-full border border-red-400/30 bg-red-500/10 px-5 py-3 text-sm font-medium text-red-300 transition-colors hover:bg-red-500/20'
-              : 'press w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag)] transition-colors hover:bg-[var(--color-flag)]/20'
+              : 'press w-full rounded-full border border-[var(--color-flag)]/25 bg-[var(--color-flag-soft)] px-5 py-3 text-sm font-medium text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag)]/20'
           }
         >
           Need help right now? Crisis contacts
@@ -81,7 +81,7 @@ export default function CrisisContacts({ variant = 'button', dark = false }) {
           className={`press inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
             dark
               ? 'border border-red-400/45 bg-red-500/15 text-red-200 hover:bg-red-500/25'
-              : 'border border-[var(--color-flag)]/45 bg-[var(--color-flag-soft)] text-[var(--color-flag)] hover:bg-[var(--color-flag)]/22'
+              : 'border border-[var(--color-flag)]/45 bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] hover:bg-[var(--color-flag)]/22'
           }`}
         >
           <svg

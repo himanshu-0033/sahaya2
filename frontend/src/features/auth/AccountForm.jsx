@@ -124,7 +124,11 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
           stop sharing at any time.
         </p>
 
-        {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
+        {error && (
+          <p className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+            {error}
+          </p>
+        )}
 
         <Button type="submit" disabled={saving}>
           {saving ? 'Saving…' : 'Complete profile'}

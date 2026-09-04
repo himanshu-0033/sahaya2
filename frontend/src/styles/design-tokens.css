@@ -14,6 +14,7 @@
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-violet-400: #a79cf0;
   --primitive-color-coral-400: #ef8064;
+  --primitive-color-coral-700: #b03d16;
   --primitive-color-sky-400: #58b6f5;
   --primitive-color-teal-500: #1fae95;
   --primitive-color-orchid-300: #e0a3d5;
@@ -43,6 +44,7 @@
   --color-lavender-soft: rgb(var(--primitive-channel-violet) / 0.16);
   --color-flag: #ef8064;
   --color-flag-soft: rgb(var(--primitive-channel-coral) / 0.14);
+  --color-flag-deep: #b03d16;
   --color-sky: #58b6f5;
   --color-sky-soft: rgb(var(--primitive-channel-sky) / 0.16);
   --color-rose: #f2789f;

@@ -314,7 +314,7 @@ export default function CheckIn() {
                   <VoiceInputButton onTranscript={appendTranscript} />
                 </div>
 
-                {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error}</p>}
+                {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
                 <div className="mt-6 w-full">
                   {plateStep < plates.length - 1 ? (
@@ -457,7 +457,7 @@ export default function CheckIn() {
             </p>
           </div>
 
-          {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error}</p>}
+          {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
           <button
             type="button"

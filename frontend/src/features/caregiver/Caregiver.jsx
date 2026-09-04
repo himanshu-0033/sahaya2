@@ -95,13 +95,13 @@ export default function Caregiver() {
         </p>
 
         {loading && <SkeletonCards label="Loading residents…" count={4} columns={1} />}
-        {error && <p className="mt-6 text-sm text-[var(--color-flag)]">{error}</p>}
+        {error && <p className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
         {residents && (
           <>
             <div className="mt-6 flex items-center justify-between gap-4 text-sm">
               <span className="text-[var(--color-ink-soft)]">
-                <span className="text-[var(--color-flag)] font-medium">{flaggedCount}</span> flagged ·{' '}
+                <span className="text-[var(--color-flag-deep)] font-medium">{flaggedCount}</span> flagged ·{' '}
                 {activeCount} active · {residents.length} total
               </span>
               <button
@@ -143,7 +143,7 @@ export default function Caregiver() {
                 </button>
               </form>
             )}
-            {addError && <p className="mt-2 text-sm text-[var(--color-flag)]">{addError}</p>}
+            {addError && <p className="mt-2 text-sm text-[var(--color-flag-deep)]">{addError}</p>}
 
             <div className="mt-4 flex gap-3">
               <input
@@ -156,7 +156,7 @@ export default function Caregiver() {
                 onClick={() => setFlaggedOnly((v) => !v)}
                 className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm transition-colors ${
                   flaggedOnly
-                    ? 'border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
+                    ? 'border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
                     : 'border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] text-[var(--color-ink-soft)]'
                 }`}
               >
@@ -184,7 +184,7 @@ export default function Caregiver() {
                       <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
                     </div>
                     {r.flaggedRecently ? (
-                      <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag)] text-xs px-3 py-1">
+                      <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] text-xs px-3 py-1">
                         Check in soon
                       </span>
                     ) : r.invited && !r.lastCheckIn ? (

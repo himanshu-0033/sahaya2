@@ -37,7 +37,10 @@ export default function useDialogFocus(open) {
     if (!node) return undefined;
 
     const items = () => [...node.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
-    items()[0]?.focus();
+    // The first focusable is usually the close button, which is a poor place
+    // to land: a dialog exists to be used, not dismissed. A dialog that has a
+    // primary control marks it with data-autofocus and gets focus there.
+    (node.querySelector('[data-autofocus]') || items()[0])?.focus();
 
     // Tab off either end wraps back inside, so the overlay is a real modal
     // rather than a picture of one.

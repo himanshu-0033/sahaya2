@@ -189,7 +189,7 @@ export default function InkblotTest() {
           </div>
 
           {error && plates.length > 0 && (
-            <p className="mt-4 text-sm text-[var(--color-flag)]">{error.message}</p>
+            <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>
           )}
 
           <button
@@ -265,7 +265,7 @@ export default function InkblotTest() {
               <VoiceInputButton onTranscript={appendTranscript} />
             </div>
 
-            {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error.message}</p>}
+            {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
             <div className="mt-6 w-full">
               {step < plates.length - 1 ? (

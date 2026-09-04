@@ -475,7 +475,7 @@ export default function GroundingPractice() {
                   )}
                 </div>
 
-                {error && <p className="mt-5 text-sm text-[var(--color-flag)]">{error.message}</p>}
+                {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Button className="w-auto px-6" disabled={saving} onClick={save}>

@@ -264,7 +264,7 @@ export default function PathRun() {
             )}
           </div>
 
-          {error && <p className="mt-4 text-sm text-[var(--color-flag)]">{error.message}</p>}
+          {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
           <ol className="stack-section grid gap-2.5">
             {path.days.map((day) => (
