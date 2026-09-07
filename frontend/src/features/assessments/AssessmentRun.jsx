@@ -375,6 +375,11 @@ export default function AssessmentRun() {
   // back until /results, and outside it a band between each pair turns one
   // sitting into three appointments.
   const handoff = Boolean(liveResult) && inSet && !helplines && !setDone;
+  // Answering is the one phase that has to hold still: a question and its
+  // options are a single decision, and hunting for the sixth option below the
+  // fold is the reader doing the layout's job. The result and set screens are
+  // reading, and reading scrolls.
+  const taking = !loading && instrument && !liveResult && !setDone;
   // One dot per step on the board, follow-up included once it is being asked.
   const dots = steps.map((st) => (st === itemCount ? followUpAnswer : answers[st]));
 
@@ -387,14 +392,18 @@ export default function AssessmentRun() {
         />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
+      <div
+        className={`relative mx-auto flex max-w-2xl flex-col px-6 ${
+          taking ? 'h-[100dvh] overflow-y-auto py-6 md:py-8' : 'min-h-screen py-8 md:py-12'
+        }`}
+      >
         {loading && <SkeletonPanel label="Loading this questionnaire…" height="16rem" />}
         {error && !instrument && (
           <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
         )}
 
         {/* ---------- taking it ---------- */}
-        {!loading && instrument && !liveResult && !setDone && (
+        {taking && (
           <>
             <header className="flex items-center justify-between gap-4">
               <button
@@ -415,7 +424,7 @@ export default function AssessmentRun() {
               </p>
             </header>
 
-            <div className="mt-6">
+            <div className="mt-4">
               {inSet && (
                 <SetRail
                   names={setIds.map(labelFor)}
@@ -423,10 +432,12 @@ export default function AssessmentRun() {
                   eyebrow={handsOffToCheckin ? 'Check-in' : null}
                 />
               )}
-              <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
-              <p className="mt-3 text-[0.6875rem] text-[var(--color-muted)]">
-                {answered} of {askedItemSteps.length} answered
-              </p>
+              <div className="flex items-center justify-between gap-4">
+                <Dots answers={dots} current={position} onJump={(i) => setStep(steps[i])} />
+                <p className="shrink-0 text-[0.6875rem] text-[var(--color-muted)]">
+                  {answered} of {askedItemSteps.length} answered
+                </p>
+              </div>
             </div>
 
             {resumed && (
@@ -436,7 +447,7 @@ export default function AssessmentRun() {
             )}
 
             {/* keyed on step so the whole block re-enters on each question */}
-            <div key={step} className="stack-block flex flex-1 flex-col">
+            <div key={step} className="mt-5 flex min-h-0 flex-1 flex-col">
               {onFollowUp ? (
                 <p className="animate-rise text-xs tracking-wide text-[var(--sec-tests)]">
                   One last question — it is not scored
@@ -450,17 +461,17 @@ export default function AssessmentRun() {
               )}
 
               <h1
-                className={`font-display animate-rise mt-4 leading-[1.22] ${
+                className={`font-display animate-rise mt-3 leading-[1.18] ${
                   onFollowUp
-                    ? 'text-[1.4rem] md:text-[1.7rem]'
-                    : 'text-[1.8rem] md:text-[2.25rem]'
+                    ? 'text-[1.35rem] md:text-[1.55rem]'
+                    : 'text-[1.7rem] md:text-[2rem]'
                 }`}
                 style={{ animationDelay: '40ms', textWrap: 'pretty' }}
               >
                 {item.text}
               </h1>
 
-              <div className="mt-8 grid gap-2.5">
+              <div className="mt-5 grid min-h-0 flex-1 auto-rows-min content-start gap-2 overflow-y-auto">
                 {item.options.map((option, i) => {
                   // The follow-up's answer is held apart from `answers`, so
                   // the tick has to be read from wherever this step stores it.
@@ -472,14 +483,14 @@ export default function AssessmentRun() {
                       type="button"
                       onClick={() => choose(option.value)}
                       style={{ animationDelay: `${110 + i * 55}ms` }}
-                      className={`animate-rise press group flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-200 ${
+                      className={`animate-rise press group flex w-full items-center gap-4 rounded-2xl border px-5 py-3 text-left transition-all duration-200 ${
                         selected
                           ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)]/12'
                           : 'border-[var(--line-2)] bg-[var(--surface-1)] lift hover:border-[var(--sec-tests)]/45 hover:bg-[var(--surface-2)]'
                       }`}
                     >
                       <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[0.6875rem] transition-colors ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.6875rem] transition-colors ${
                           selected
                             ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)] text-[#07080a]'
                             : 'border-[var(--color-ink)]/15 text-[var(--color-muted)] group-hover:border-[var(--color-teal)]/40'
@@ -499,15 +510,15 @@ export default function AssessmentRun() {
                 })}
               </div>
 
-              {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
+              {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
-              <p className="mt-6 text-xs leading-relaxed text-[var(--color-muted)]">
+              <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
                 {onFollowUp
                   ? followUp.note
                   : encouragement(position, askedItemSteps.length, needsFollowUp)}
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center gap-3">
                 {position > 0 && (
                   <Button
                     variant="secondary"
@@ -548,7 +559,7 @@ export default function AssessmentRun() {
               </div>
             </div>
 
-            <footer className="stack-block flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
+            <footer className="mt-4 flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-3">
               <p className="hidden text-[0.6875rem] text-[var(--color-muted)] sm:block">
                 Press 1–{item.options.length} to answer · ← → to move
               </p>
