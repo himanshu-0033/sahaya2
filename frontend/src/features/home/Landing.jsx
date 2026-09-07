@@ -7,7 +7,7 @@ import Welcome from '../auth/Welcome.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { getSession } from '../auth/session.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
-import { PHOTO, pathPhoto } from '../../shared/photos.js';
+import { pathPhoto } from '../../shared/photos.js';
 import { accent } from '../../shared/accents.js';
 
 // Home — redesigned with richer visual hierarchy.
@@ -86,42 +86,6 @@ const ACTIONS = [
         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
       </svg>
     ),
-  },
-];
-
-// ─── Explore section — feature previews ──────────────────────────────────────
-const EXPLORE = [
-  {
-    to: '/paths',
-    photo: PHOTO.paths,
-    title: 'Guided paths',
-    sub: '5 paths · 5 min/day',
-    hue: 'var(--sec-paths)',
-    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z" /><path d="M16.2 7.8l-2 6.3-6.3 2 2-6.3z" /><circle cx="12" cy="12" r="1.5" /></svg>,
-  },
-  {
-    to: '/assessments',
-    photo: PHOTO.tests,
-    title: 'Questionnaires',
-    sub: '21 clinical tools',
-    hue: 'var(--sec-tests)',
-    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /><path d="M9 12l2 2 4-4" /></svg>,
-  },
-  {
-    to: '/read',
-    photo: PHOTO.read,
-    title: 'Reading',
-    sub: 'Essays & research',
-    hue: 'var(--sec-read)',
-    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>,
-  },
-  {
-    to: '/inkblot-test',
-    photo: PHOTO.inkblot,
-    title: 'Inkblot test',
-    sub: '10 plates · ~10 min',
-    hue: 'var(--sec-inkblot)',
-    icon: <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 2-1 3-2 4l-1 2h-4l-1-2c-1-1-2-2-2-4a5 5 0 0 1 5-5Z" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /><path d="M10 13h4" /></svg>,
   },
 ];
 
@@ -568,34 +532,6 @@ export default function Landing() {
 
       </div>{/* /right column */}
       </div>{/* /two-column wrapper */}
-
-      {/* ═══════════════════════════════════════════ Explore — Feature Cards */}
-      <section className="animate-slide-up stack-section" style={{ animationDelay: '300ms' }}>
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="home-section-title">Explore</h2>
-          <Link to="/more" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
-            More
-          </Link>
-        </div>
-        <div className="hscroll mt-3 flex gap-3 pb-1">
-          {EXPLORE.map((e) => (
-            <Link key={e.to} to={e.to} className="explore-card" style={{ '--ph-hue': e.hue }}>
-              {/* alt="" on purpose: the picture is decoration for a link whose
-                  own text already says where it goes, and describing a stock
-                  photograph out loud would only put a second, vaguer label in
-                  front of the one that matters. */}
-              <span className="photo-head">
-                <img src={e.photo} alt="" loading="lazy" decoding="async" />
-              </span>
-              <div className="explore-body">
-                <span aria-hidden="true" style={{ color: e.hue }}>{e.icon}</span>
-                <p className="mt-2 text-sm font-medium text-[var(--color-ink)]">{e.title}</p>
-                <p className="mt-1 text-[0.6875rem] text-[var(--color-muted)]">{e.sub}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       <div className="rule-fade stack-section" />
 
