@@ -3,26 +3,26 @@
 
 /* === PRIMITIVES === */
 :root {
-  --primitive-color-pink-50: #fdf2f8;
-  --primitive-color-pink-100: #f8eaf2;
+  --primitive-color-sage-50: #f4f7f3;
+  --primitive-color-sage-100: #e8efe9;
+  --primitive-color-sage-400: #a8c3b0;
+  --primitive-color-sage-500: #6f947d;
+  --primitive-color-sage-600: #526057;
+  --primitive-color-sage-700: #4a6857;
+  --primitive-color-sage-900: #2f4036;
   --primitive-color-pink-300: #f2789f;
-  --primitive-color-pink-500: #ec4899;
-  --primitive-color-pink-700: #9d174d;
-  --primitive-color-pink-900: #831843;
-  --primitive-color-slate-600: #475569;
   --primitive-color-gray-500: #6b7280;
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-violet-400: #a79cf0;
   --primitive-color-coral-400: #ef8064;
   --primitive-color-coral-700: #b03d16;
   --primitive-color-sky-400: #58b6f5;
-  --primitive-color-teal-500: #1fae95;
   --primitive-color-orchid-300: #e0a3d5;
   --primitive-color-mint-300: #8fd6b4;
   --primitive-color-paper-100: #f4f2ee;
-  --primitive-channel-ink: 131 24 67;
-  --primitive-channel-paper: 244 242 238;
-  --primitive-channel-pink: 236 72 153;
+  --primitive-channel-ink: 47 64 54;
+  --primitive-channel-paper: 244 247 243;
+  --primitive-channel-sage: 168 195 176;
   --primitive-channel-violet: 167 156 240;
   --primitive-channel-coral: 239 128 100;
   --primitive-channel-sky: 88 182 245;
@@ -31,14 +31,14 @@
 
 /* === SEMANTIC === */
 :root {
-  --color-cream: #fdf2f8;
-  --color-cream-soft: #f8eaf2;
-  --color-ink: #831843;
-  --color-ink-soft: #475569;
+  --color-cream: #f4f7f3;
+  --color-cream-soft: #e8efe9;
+  --color-ink: #2f4036;
+  --color-ink-soft: #526057;
   --color-muted: #6b7280;
-  --color-teal: #ec4899;
-  --color-teal-dark: #9d174d;
-  --color-teal-soft: rgb(var(--primitive-channel-pink) / 0.14);
+  --color-teal: #6f947d;
+  --color-teal-dark: #4a6857;
+  --color-teal-soft: rgb(var(--primitive-channel-sage) / 0.14);
   --color-amber: #d9a55c;
   --color-lavender: #a79cf0;
   --color-lavender-soft: rgb(var(--primitive-channel-violet) / 0.16);
@@ -49,7 +49,7 @@
   --color-sky-soft: rgb(var(--primitive-channel-sky) / 0.16);
   --color-rose: #f2789f;
   --color-rose-soft: rgb(var(--primitive-channel-rose) / 0.16);
-  --sec-home: #1fae95;
+  --sec-home: #6f947d;
   --sec-paths: #e0a3d5;
   --sec-calm: #a79cf0;
   --sec-tests: #58b6f5;

@@ -38,7 +38,7 @@ function SettledPicker({ value, onChange, accentName }) {
             aria-pressed={selected}
             className="press rounded-full border px-4 py-2.5 text-sm transition-colors duration-200"
             style={{
-              borderColor: selected ? base : 'rgba(244, 242, 238, 0.12)',
+              borderColor: selected ? base : 'rgba(244, 247, 243, 0.12)',
               background: selected ? alpha(base, 0.16) : 'transparent',
               color: selected ? bright : 'var(--color-ink-soft)',
             }}
@@ -144,7 +144,7 @@ function StepRunner({ steps, accentName, running, onFinish }) {
             className="h-1.5 rounded-full transition-all duration-300"
             style={{
               width: i === index ? 24 : 6,
-              background: i <= index ? bright : 'rgba(244, 242, 238, 0.14)',
+              background: i <= index ? bright : 'rgba(244, 247, 243, 0.14)',
             }}
           />
         ))}

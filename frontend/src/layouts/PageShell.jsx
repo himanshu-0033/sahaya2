@@ -17,7 +17,7 @@ import TabBar from './TabBar.jsx';
 // `section` drives that wash and nothing else. Content decides its own accents.
 
 const WASH = {
-  home: 'rgba(31, 174, 149, 0.13)',
+  home: 'rgba(111, 148, 125, 0.16)',
   paths: 'rgba(224, 163, 213, 0.13)',
   calm: 'rgba(167, 156, 240, 0.14)',
   tests: 'rgba(88, 182, 245, 0.12)',
