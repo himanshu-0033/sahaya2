@@ -242,17 +242,17 @@ export default function AssessmentRun() {
             band: data.record.band,
             reportsBandOnly: data.record.reportsBandOnly,
           });
-          // Straight on to the next questionnaire — the whole point of the
-          // set is that it is one sitting, and a results screen between each
-          // pair would make it three.
+          // The set used to run straight on to the next questionnaire here.
+          // It still runs as one sitting — no score, no band, no methodology
+          // between the two — but it asks before starting the next one, so
+          // three questionnaires in a row is a choice somebody makes twice
+          // rather than a thing that happens to them.
           //
-          // Unless the answers brought back helplines. Then the set stops
-          // here and the crisis screen gets the full attention it is for;
-          // there is a button on it to carry on when the person is ready.
-          if (!data.helplines) {
-            advanceSet();
-            return;
-          }
+          // When the answers brought back helplines that handoff is skipped:
+          // the crisis screen below is the whole screen, and the way on lives
+          // on it, taken when the person is ready rather than offered as one
+          // of two tidy buttons.
+          if (!data.helplines) return;
         }
       } catch (err) {
         setError(err);
@@ -260,7 +260,7 @@ export default function AssessmentRun() {
         setSubmitting(false);
       }
     },
-    [instrumentId, inSet, setIds, advanceSet],
+    [instrumentId, inSet, setIds],
   );
 
   const saveDraft = useCallback(
@@ -370,6 +370,11 @@ export default function AssessmentRun() {
 
   const complete = instrument && allAnswered(instrument, answers);
   const liveResult = resultFor === instrumentId ? result : null;
+  // Between two questionnaires of a set, with nothing that needs reading now.
+  // Deliberately not the result screen: mid-check-in the three scores are held
+  // back until /results, and outside it a band between each pair turns one
+  // sitting into three appointments.
+  const handoff = Boolean(liveResult) && inSet && !helplines && !setDone;
   // One dot per step on the board, follow-up included once it is being asked.
   const dots = steps.map((st) => (st === itemCount ? followUpAnswer : answers[st]));
 
@@ -552,8 +557,43 @@ export default function AssessmentRun() {
           </>
         )}
 
+        {/* ---------- between two of a set ---------- */}
+        {handoff && (
+          <div className="animate-fade-up my-auto text-center">
+            <p className="marginalia">
+              {setIndex + 1} of {setIds.length} done
+            </p>
+            <p className="font-display mt-3 text-[1.8rem] leading-tight">
+              That&apos;s {labelFor(instrumentId)} answered.
+            </p>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              {nextInSet
+                ? `${labelFor(nextInSet)} is next. Everything answered so far is saved either way.`
+                : 'That is the last of the three. Everything answered is saved.'}
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button className="w-auto px-6" onClick={advanceSet}>
+                {nextInSet ? `Continue — ${labelFor(nextInSet)}` : 'Finish'}
+              </Button>
+              <Button
+                variant="secondary"
+                className="w-auto px-6"
+                onClick={() => {
+                  // Mid-check-in the scores already earned are kept: they are
+                  // part of the sitting's one results screen, which reads them
+                  // out of storage and clears them there.
+                  if (!handsOffToCheckin) clearSetResults(setIds);
+                  navigate(handsOffToCheckin ? '/checkin?stage=plates' : '/');
+                }}
+              >
+                {handsOffToCheckin ? 'Skip to the plates' : 'Stop here'}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* ---------- result ---------- */}
-        {liveResult && !setDone && (
+        {liveResult && !setDone && !handoff && (
           <div className="animate-fade-up">
             {helplines && (
               <div

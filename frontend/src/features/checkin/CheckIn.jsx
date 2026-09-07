@@ -6,6 +6,7 @@ import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import { SkeletonPanel } from '../../shared/Skeleton.jsx';
 import { MOOD_OPTIONS } from '../../shared/moods.js';
+import { hasRealWord } from '../../shared/words.js';
 import { useSession } from '../auth/useSession.js';
 import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../../shared/api.js';
 import { CHECKIN_EVENT } from '../../shared/StreakBadge.jsx';
@@ -217,6 +218,12 @@ export default function CheckIn() {
   }
 
   const answeredPlates = plates.filter((p) => (answers[p.id] || '').trim()).length;
+  // What is in the box for the plate on screen, and whether it is something
+  // the summary can read. Typed-but-unreadable is its own state: the way on is
+  // to write a word or to clear the box, never to send mash through.
+  const plateText = plate ? answers[plate.id] || '' : '';
+  const plateTyped = plateText.trim().length > 0;
+  const plateUsable = hasRealWord(plateText);
 
   return (
     // No tab bar during the check-in. A row of exits along the bottom of every
@@ -318,27 +325,35 @@ export default function CheckIn() {
                   <VoiceInputButton onTranscript={appendTranscript} />
                 </div>
 
+                {plateTyped && !plateUsable && (
+                  <p className="mt-3 w-full text-sm text-[var(--color-ink-soft)]">
+                    Say it in a word or two — &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
+                    written now cannot be read back to you. Clearing the box skips this plate.
+                  </p>
+                )}
+
                 {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
                 <div className="mt-6 w-full">
                   {plateStep < plates.length - 1 ? (
                     <button
                       type="button"
+                      disabled={plateTyped && !plateUsable}
                       onClick={() => setPlateStep((s) => s + 1)}
-                      className="press w-full rounded-full py-3.5 font-medium transition-all duration-200"
+                      className="press w-full rounded-full py-3.5 font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45"
                       style={
-                        answers[plate.id]?.trim()
+                        plateUsable
                           ? { background: 'var(--sec-inkblot)', color: '#07080a' }
                           : { background: 'rgba(255,255,255,0.06)', color: 'var(--color-ink-soft)' }
                       }
                     >
-                      {answers[plate.id]?.trim() ? 'Next plate' : 'Skip this one'}
+                      {plateTyped ? 'Next plate' : 'Skip this one'}
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={handlePlatesFinish}
-                      disabled={submitting}
+                      disabled={submitting || (plateTyped && !plateUsable)}
                       className="press w-full rounded-full py-3.5 font-medium text-[#07080a] transition-all duration-200 disabled:opacity-50"
                       style={{ background: 'var(--sec-inkblot)' }}
                     >
