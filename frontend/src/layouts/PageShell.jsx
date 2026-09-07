@@ -45,6 +45,7 @@ export default function PageShell({
   section = 'home',
   width = 'default',
   tabs = true,
+  fit = false,
   children,
 }) {
   const wash = WASH[section] || WASH.home;
@@ -87,7 +88,7 @@ export default function PageShell({
       <main
         id="main"
         tabIndex={-1}
-        className={`lap-type mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? 'pad-tabbar' : 'pb-12'} pt-6 focus:outline-none md:pt-2`}
+        className={`lap-type mx-auto px-5 sm:px-6 ${WIDTH[width]} ${tabs ? `pad-tabbar${fit ? ' pad-fit' : ''}` : 'pb-12'} pt-6 focus:outline-none md:pt-2`}
       >
         {children}
       </main>

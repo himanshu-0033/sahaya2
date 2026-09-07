@@ -481,6 +481,11 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 
 @media (min-width: 768px) {
   .pad-tabbar { padding-bottom: 3rem; }
+  /* Home is meant to land inside one screen. The 3rem rest below the footer
+     is the last thing standing between it and the fold, and there is no next
+     section for it to breathe away from. Two classes so it wins on
+     specificity without !important. */
+  .pad-tabbar.pad-fit { padding-bottom: 1rem; }
 }
 
 /* The DP button sits above the mobile tab bar, and on desktop — where the

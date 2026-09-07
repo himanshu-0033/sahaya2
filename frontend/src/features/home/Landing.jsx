@@ -344,7 +344,7 @@ export default function Landing() {
   const sub = dailySubline();
 
   return (
-    <PageShell section="home">
+    <PageShell section="home" fit>
       <Header eyebrow="Home" />
 
       {/* ═══════════════════════════════════════════ Hero greeting */}
@@ -533,10 +533,10 @@ export default function Landing() {
       </div>{/* /right column */}
       </div>{/* /two-column wrapper */}
 
-      <div className="rule-fade stack-section" />
+      <div className="rule-fade stack-block" />
 
       {/* ═══════════════════════════════════════════ Footer */}
-      <footer className="mt-4 flex flex-wrap items-center justify-between gap-3 pb-4">
+      <footer className="mt-3 flex flex-wrap items-center justify-between gap-3 pb-1">
         <p className="max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
           DP Sahay AI is a reflective prototype, not a medical device. Nothing here is a diagnosis.
         </p>
