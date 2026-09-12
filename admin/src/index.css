@@ -127,3 +127,23 @@ select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up { animation: none; }
 }
+
+/* The small capitalised label above a panel. It was four utilities repeated on
+   every heading in the console; one class is less to keep in step. */
+.label-eyebrow {
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* A rail of figures reading as one object rather than five floating cards:
+   the grid gap is a single pixel and the container's background shows through
+   it as a hairline. */
+.rail {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}

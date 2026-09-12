@@ -1,10 +1,71 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import StatCard from '../components/StatCard.jsx';
-import TrendChart from '../components/TrendChart.jsx';
+import FlagBadge from '../components/FlagBadge.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
+import TrendChart from '../components/TrendChart.jsx';
 import { getOverview, getExportLog } from '../lib/api.js';
+import { buildCaseload, hasScreen } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
+
+// The four lists the overview endpoint returns are merged into one caseload in
+// lib/caseload.js — see the note there for why. What is left here is the page:
+// the totals become the rail at the top, which is also what filters the list,
+// and `quietest` becomes a segment rather than a panel of its own.
+
+const SEGMENTS = [
+  { key: 'attention', label: 'Needs a conversation' },
+  { key: 'risk', label: 'Risk screens' },
+  { key: 'quiet', label: 'Quiet 3+ days' },
+  { key: 'all', label: 'Everyone here' },
+];
+
+const QUIET_DAYS = 3;
+
+function Metric({ label, value, hint, tone = 'default', onClick, active = false }) {
+  const toneClass =
+    tone === 'flag'
+      ? 'text-[var(--color-flag)]'
+      : tone === 'teal'
+        ? 'text-[var(--color-teal)]'
+        : tone === 'lavender'
+          ? 'text-[var(--color-lavender)]'
+          : 'text-[var(--color-ink)]';
+
+  const body = (
+    <>
+      <p className="label-eyebrow">{label}</p>
+      <p className={`font-display mt-2 text-3xl tabular-nums ${toneClass}`}>{value}</p>
+      {hint && <p className="mt-1 text-xs leading-snug text-[var(--color-muted)]">{hint}</p>}
+    </>
+  );
+
+  // A figure that maps onto a subset of the list below is a filter; one that
+  // does not stays a figure. The hover label is what tells the two apart,
+  // rather than every tile pretending to be a button.
+  if (!onClick) return <div className="bg-[var(--color-cream-soft)] px-5 py-4">{body}</div>;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`group cursor-pointer px-5 py-4 text-left transition-colors ${
+        active
+          ? 'bg-[var(--color-lavender-soft)]'
+          : 'bg-[var(--color-cream-soft)] hover:bg-white/[0.055]'
+      }`}
+    >
+      {body}
+      <span
+        className={`mt-2 block text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)] transition-opacity ${
+          active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100'
+        }`}
+      >
+        {active ? 'Filtering — click to clear' : 'Filter the list'}
+      </span>
+    </button>
+  );
+}
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -13,6 +74,8 @@ export default function Dashboard() {
   // The export log is supporting information, not the point of the page, so a
   // failure here is swallowed — it must never take the dashboard down with it.
   const [exports, setExports] = useState([]);
+  const [segment, setSegment] = useState('attention');
+  const [day, setDay] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,31 +91,73 @@ export default function Dashboard() {
     };
   }, []);
 
+  const caseload = useMemo(() => (data ? buildCaseload(data) : []), [data]);
+
+  const visible = useMemo(() => {
+    const bySegment = caseload.filter((r) => {
+      if (segment === 'attention') return Boolean(r.attention) || Boolean(r.sparse);
+      if (segment === 'risk') return hasScreen(r);
+      if (segment === 'quiet') return (daysSince(r.lastCheckIn?.date) ?? 99) >= QUIET_DAYS;
+      return true;
+    });
+    if (!day) return bySegment;
+    return bySegment.filter(
+      (r) => r.lastCheckIn?.date === day || r.events.some((e) => e.date === day),
+    );
+  }, [caseload, segment, day]);
+
   if (loading) return <p className="text-sm text-[var(--color-muted)]">Loading…</p>;
   if (error) return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
   if (!data) return null;
 
-  const { totals, trend, moodDistribution, recentFlags, recentRiskScreens, needsAttention, quietest } =
-    data;
+  const { totals, trend, moodDistribution, quietest } = data;
   const maxMoodCount = Math.max(1, ...moodDistribution.map((m) => m.count));
+  const moodTotal = moodDistribution.reduce((sum, m) => sum + m.count, 0);
+  const lowShare = moodTotal
+    ? Math.round(((moodDistribution[0].count + moodDistribution[1].count) / moodTotal) * 100)
+    : 0;
+  const quietCount = quietest.filter(
+    (r) => (daysSince(r.lastCheckIn?.date) ?? 99) >= QUIET_DAYS,
+  ).length;
 
   // Every figure below is scoped to the people who have shared with this
   // counsellor. When that is nobody, a wall of zeros looks like an outage — so
-  // say what it actually means before showing the tiles.
+  // say what it actually means before showing the figures.
   const nobodyShared = totals.onboarded === 0 && totals.flaggedResidents === 0;
 
+  // The state of the caseload as a sentence, because a counsellor opening this
+  // window wants the answer before they want the numbers behind it.
+  const lede = nobodyShared
+    ? 'Nobody has shared with you yet.'
+    : totals.acuteRisk > 0
+      ? `${totals.acuteRisk} ${totals.acuteRisk === 1 ? 'person' : 'people'} said “right now”. Call first.`
+      : totals.flaggedResidents > 0
+        ? `${totals.flaggedResidents} ${
+            totals.flaggedResidents === 1 ? 'person is' : 'people are'
+          } worth a conversation today.`
+        : 'Nothing is flagged today.';
+
+  function toggleSegment(key) {
+    setSegment((current) => (current === key ? 'all' : key));
+  }
+
   return (
-    <div className="animate-fade-up space-y-8">
-      <div>
-        <h2 className="font-display text-3xl">Today at a glance</h2>
-        <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-          {formatDate(data.today)} · {totals.checkedInToday} of {totals.onboarded} residents have
-          checked in.
+    <div className="animate-fade-up">
+      <header>
+        <p className="label-eyebrow">{formatDate(data.today)}</p>
+        <h2 className="font-display mt-2 max-w-2xl text-[clamp(1.6rem,3.4vw,2.4rem)] leading-tight">
+          {lede}
+        </h2>
+        <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
+          <span className="tabular-nums">{totals.checkedInToday}</span> of{' '}
+          <span className="tabular-nums">{totals.onboarded}</span> residents have checked in ·{' '}
+          <span className="tabular-nums">{totals.residents}</span> on your list,{' '}
+          <span className="tabular-nums">{totals.invited}</span> invited
         </p>
-      </div>
+      </header>
 
       {nobodyShared && (
-        <div className="rounded-2xl border border-[var(--color-lavender)]/30 bg-[var(--color-lavender-soft)] px-6 py-5">
+        <div className="mt-6 rounded-2xl border border-[var(--color-lavender)]/30 bg-[var(--color-lavender-soft)] px-6 py-5">
           <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
             These figures cover the people who have shared their account with you, and right now
             that is nobody — so everything below reads zero. This is not an error. Ask the people
@@ -62,60 +167,69 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
+      <div className="rail mt-8 rounded-2xl border border-white/8 sm:grid-cols-2 lg:grid-cols-5">
+        <Metric
           label="Positive risk screens"
           value={totals.atRisk}
-          hint={
-            totals.acuteRisk > 0
-              ? `${totals.acuteRisk} said "right now" — call first`
-              : 'In the last 14 days'
-          }
+          hint={totals.acuteRisk > 0 ? `${totals.acuteRisk} said “right now”` : 'In the last 14 days'}
           tone="flag"
+          onClick={() => toggleSegment('risk')}
+          active={segment === 'risk'}
         />
-        <StatCard
+        <Metric
           label="Needs a conversation"
           value={totals.flaggedResidents}
           hint="Check-in flags and risk screens"
           tone="flag"
+          onClick={() => toggleSegment('attention')}
+          active={segment === 'attention'}
         />
-        <StatCard
+        <Metric
+          label={`Quiet ${QUIET_DAYS}+ days`}
+          value={quietCount}
+          hint="Longest since a check-in"
+          tone="lavender"
+          onClick={() => toggleSegment('quiet')}
+          active={segment === 'quiet'}
+        />
+        <Metric
           label="Checked in today"
           value={totals.checkedInToday}
           hint={totals.avgMoodToday ? `Average mood ${totals.avgMoodToday} / 5` : 'No check-ins yet'}
           tone="teal"
         />
-        <StatCard
-          label="Residents"
-          value={totals.residents}
-          hint={`${totals.onboarded} joined · ${totals.invited} invited`}
-          tone="lavender"
-        />
-        <StatCard
+        <Metric
           label="Questionnaires taken"
           value={totals.assessmentsTaken}
           hint={`${totals.totalCheckIns} check-ins recorded`}
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <section className="card-soft rounded-2xl p-6 lg:col-span-2">
-          <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-            Check-ins, last 14 days
-          </h3>
-          <div className="mt-4">
-            <TrendChart trend={trend} />
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h3 className="label-eyebrow">Check-ins, last {trend.length} days</h3>
+            {day && (
+              <button
+                type="button"
+                onClick={() => setDay(null)}
+                className="cursor-pointer rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-[11px] text-[var(--color-lavender)] transition-colors hover:bg-[var(--color-lavender)]/25"
+              >
+                Showing {formatDate(day)} — clear ✕
+              </button>
+            )}
           </div>
-          <div className="mt-3 flex justify-between text-[10px] text-[var(--color-muted)]">
+          <div className="mt-4">
+            <TrendChart trend={trend} selected={day} onSelect={setDay} />
+          </div>
+          <div className="mt-2 flex justify-between text-[10px] text-[var(--color-muted)]">
             <span>{formatDate(trend[0]?.date)}</span>
             <span>{formatDate(trend[trend.length - 1]?.date)}</span>
           </div>
         </section>
 
         <section className="card-soft rounded-2xl p-6">
-          <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-            Mood mix, last 30 days
-          </h3>
+          <h3 className="label-eyebrow">Mood mix, last 30 days</h3>
           <div className="mt-4 space-y-2.5">
             {[...moodDistribution].reverse().map((entry) => (
               <div key={entry.mood} className="flex items-center gap-3 text-xs">
@@ -136,188 +250,165 @@ export default function Dashboard() {
                     }}
                   />
                 </div>
-                <span className="w-6 shrink-0 text-right text-[var(--color-muted)]">
+                <span className="w-6 shrink-0 text-right tabular-nums text-[var(--color-muted)]">
                   {entry.count}
                 </span>
               </div>
             ))}
           </div>
+          <p className="mt-4 text-[11px] leading-relaxed text-[var(--color-muted)]">
+            {moodTotal === 0
+              ? 'No check-ins in this window.'
+              : `${moodTotal} check-ins — ${lowShare}% of them Heavy or Low.`}
+          </p>
         </section>
       </div>
 
-      <section>
-        <div className="flex items-baseline justify-between">
-          <h3 className="font-display text-xl">Worth reaching out to</h3>
-          <Link
-            to="/residents"
-            className="text-sm text-[var(--color-lavender)] underline underline-offset-4"
-          >
-            All residents
-          </Link>
-        </div>
-        {needsAttention.length === 0 ? (
-          <p className="mt-3 text-sm text-[var(--color-muted)]">Nobody is flagged right now.</p>
-        ) : (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {needsAttention.map((r) => (
-              <Link
-                key={r.id}
-                to={`/residents/${encodeURIComponent(r.id)}`}
-                className="card-soft rounded-2xl p-5 transition-colors hover:border-[var(--color-flag)]/40"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{r.name}</p>
-                    <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
-                  </div>
-                  <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
-                    {r.flaggedCount} flagged
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <MoodSparkline history={r.trend} height={34} barWidth={9} />
-                </div>
-                <p className="mt-3 text-xs text-[var(--color-muted)]">
-                  Last check-in {formatDate(r.lastCheckIn?.date)} · {moodLabel(r.lastCheckIn?.mood)}
-                  {r.lastCheckIn?.words?.length ? ` — ${r.lastCheckIn.words.join(', ')}` : ''}
-                </p>
-              </Link>
-            ))}
+      <section className="mt-10">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h3 className="font-display text-xl">The caseload</h3>
+            <p className="mt-1 text-sm text-[var(--color-muted)]">
+              <span className="tabular-nums">{visible.length}</span> shown
+              {day ? ` on ${formatDate(day)}` : ''} · click anyone for their full history
+            </p>
           </div>
-        )}
-      </section>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-1 rounded-full bg-white/5 p-1 text-xs">
+              {SEGMENTS.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => setSegment(s.key)}
+                  aria-pressed={segment === s.key}
+                  className={`cursor-pointer rounded-full px-3 py-1.5 transition-colors ${
+                    segment === s.key
+                      ? 'bg-[var(--color-lavender)] text-[#14121f]'
+                      : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            <Link
+              to="/residents"
+              className="text-sm text-[var(--color-lavender)] underline underline-offset-4"
+            >
+              All residents
+            </Link>
+          </div>
+        </div>
 
-      <section className="card-soft rounded-2xl p-6">
-        <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-          Recent risk screens
-        </h3>
-        {recentRiskScreens.length === 0 ? (
-          <p className="mt-3 text-sm text-[var(--color-muted)]">
-            No questionnaire has flagged anyone.
+        {visible.length === 0 ? (
+          <p className="mt-6 text-sm text-[var(--color-muted)]">
+            {day
+              ? `Nobody in this segment has anything on ${formatDate(day)}.`
+              : segment === 'attention'
+                ? 'Nobody is flagged right now.'
+                : 'Nobody matches this filter.'}
           </p>
         ) : (
-          <ul className="mt-4 space-y-3">
-            {recentRiskScreens.map((screen) => (
-              <li
-                key={`${screen.residentId}:${screen.createdAt}`}
-                className="border-t border-white/6 pt-3 first:border-0 first:pt-0"
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      to={`/residents/${encodeURIComponent(screen.residentId)}`}
-                      className="text-sm font-medium text-[var(--color-ink)] hover:text-[var(--color-lavender)]"
-                    >
-                      {screen.residentName}
-                    </Link>
-                    <span
-                      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] ${
-                        screen.level === 'acute'
-                          ? 'bg-[var(--color-flag)] text-white'
-                          : 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
-                      }`}
-                    >
-                      {screen.level === 'acute' ? 'At risk now' : 'Positive'}
-                    </span>
-                  </div>
-                  <span className="text-xs text-[var(--color-muted)]">
-                    {screen.instrumentName} · {formatDate(screen.date)}
-                  </span>
-                </div>
-                {screen.reasons.length > 0 && (
-                  <p className="mt-1 text-xs leading-snug text-[var(--color-flag)]">
-                    {screen.reasons.join(' · ')}
-                  </p>
-                )}
-              </li>
-            ))}
+          <ul className="mt-4 divide-y divide-white/6 border-y border-white/6">
+            {visible.map((r) => {
+              const gap = daysSince(r.lastCheckIn?.date);
+              return (
+                <li key={r.id}>
+                  <Link
+                    to={`/residents/${encodeURIComponent(r.id)}`}
+                    className="group grid gap-4 px-2 py-4 transition-colors hover:bg-white/[0.035] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+                        <p className="font-medium transition-colors group-hover:text-[var(--color-lavender)]">
+                          {r.name}
+                        </p>
+                        {r.email && <p className="text-xs text-[var(--color-muted)]">{r.email}</p>}
+                      </div>
+
+                      {/* What actually happened, newest first — the screens and
+                          flagged check-ins that used to sit in two panels of
+                          their own. Three is enough to see the shape of it; the
+                          rest are on the resident's own page. */}
+                      {r.events.slice(0, 3).map((e) => (
+                        <p
+                          key={`${e.kind}:${e.date}:${e.detail}`}
+                          className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-xs leading-snug"
+                        >
+                          <span
+                            className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
+                              e.kind === 'screen'
+                                ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
+                                : 'bg-white/6 text-[var(--color-muted)]'
+                            }`}
+                          >
+                            {e.kind === 'screen' ? 'Screen' : 'Check-in'}
+                          </span>
+                          <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
+                          <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
+                          {e.reasons.length > 0 && (
+                            <span className="text-[var(--color-flag)]">{e.reasons.join(' · ')}</span>
+                          )}
+                        </p>
+                      ))}
+
+                      {r.events.length === 0 && (
+                        <p className="mt-1.5 text-xs text-[var(--color-muted)]">
+                          Last check-in{' '}
+                          {r.lastCheckIn
+                            ? `${formatDate(r.lastCheckIn.date)} · ${moodLabel(r.lastCheckIn.mood)}${
+                                gap ? ` · ${gap} day${gap === 1 ? '' : 's'} ago` : ''
+                              }`
+                            : 'never'}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-4 sm:justify-end">
+                      {r.trend?.length > 0 && (
+                        <MoodSparkline history={r.trend} height={30} barWidth={7} />
+                      )}
+                      {r.sparse ? (
+                        <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
+                          {r.events[0]?.kind === 'screen' ? 'Risk screen' : 'Flagged earlier'}
+                        </span>
+                      ) : (
+                        <FlagBadge resident={r} />
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="card-soft rounded-2xl p-6">
-          <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-            Recent flagged check-ins
-          </h3>
-          {recentFlags.length === 0 ? (
-            <p className="mt-3 text-sm text-[var(--color-muted)]">Nothing flagged yet.</p>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {recentFlags.map((flag) => (
-                <li
-                  key={`${flag.residentId}:${flag.date}`}
-                  className="border-t border-white/6 pt-3 first:border-0 first:pt-0"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <Link
-                      to={`/residents/${encodeURIComponent(flag.residentId)}`}
-                      className="text-sm font-medium text-[var(--color-ink)] hover:text-[var(--color-lavender)]"
-                    >
-                      {flag.residentName}
-                    </Link>
-                    <span className="text-xs text-[var(--color-muted)]">
-                      {formatDate(flag.date)}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-[var(--color-ink-soft)]">
-                    {moodLabel(flag.mood)} — {flag.words.join(', ')}
-                  </p>
-                  <p className="mt-1 text-xs text-[var(--color-flag)]">
-                    {flag.flagReasons.join('; ')}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="card-soft rounded-2xl p-6">
-          <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-            Quietest — longest since a check-in
-          </h3>
-          {quietest.length === 0 ? (
-            <p className="mt-3 text-sm text-[var(--color-muted)]">Everyone is up to date.</p>
-          ) : (
-            <ul className="mt-4 space-y-3">
-              {quietest.map((r) => {
-                const gap = daysSince(r.lastCheckIn?.date);
-                return (
-                  <li
-                    key={r.id}
-                    className="flex items-baseline justify-between gap-3 border-t border-white/6 pt-3 first:border-0 first:pt-0"
-                  >
-                    <Link
-                      to={`/residents/${encodeURIComponent(r.id)}`}
-                      className="text-sm hover:text-[var(--color-lavender)]"
-                    >
-                      {r.name}
-                    </Link>
-                    <span className="text-xs text-[var(--color-muted)]">
-                      {r.lastCheckIn
-                        ? gap === 0
-                          ? 'today'
-                          : `${gap} day${gap === 1 ? '' : 's'} ago`
-                        : 'never'}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-      </div>
-
       {/* Who took data out of here.
-          
+
           The console has warned counsellors to handle exports carefully for a
           while. A warning is a request; this is a record. It is shown rather
           than merely written, because an audit log nobody can read protects
-          nobody — and being visible is most of what makes it work. */}
-      <section className="card-soft rounded-2xl p-6">
-        <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
-          Recent exports
-        </h3>
+          nobody — and being visible is most of what makes it work.
+
+          Collapsed, not hidden: it is a thing a counsellor consults, not
+          something they read every morning, and <details> carries the
+          disclosure and its keyboard handling without any state of ours. */}
+      <details className="card-soft group mt-10 rounded-2xl px-6 py-5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+          <span className="label-eyebrow">Recent exports</span>
+          <span className="text-xs text-[var(--color-muted)]">
+            {exports.length === 0
+              ? 'none yet'
+              : `${exports.length} logged · latest ${new Date(exports[0].at).toLocaleDateString()}`}
+            <span
+              aria-hidden="true"
+              className="ml-2 inline-block transition-transform group-open:rotate-90"
+            >
+              ›
+            </span>
+          </span>
+        </summary>
 
         {exports.length === 0 ? (
           <p className="mt-4 text-sm text-[var(--color-muted)]">
@@ -353,7 +444,7 @@ export default function Dashboard() {
           This log records that an export happened, never what was in it. Entries cannot be edited
           or deleted from the console.
         </p>
-      </section>
+      </details>
     </div>
   );
 }
