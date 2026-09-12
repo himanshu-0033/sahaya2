@@ -147,3 +147,12 @@ select:focus-visible {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* The lit edge on the figure you are filtering by. A ring rather than a glow
+   behind the card, so it reads as "this one is on" without bleeding light onto
+   the two beside it. */
+.metric-on {
+  box-shadow:
+    inset 0 0 0 1px var(--color-lavender),
+    0 10px 30px -18px var(--color-lavender);
+}

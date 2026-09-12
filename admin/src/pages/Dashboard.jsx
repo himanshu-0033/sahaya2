@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import FlagBadge from '../components/FlagBadge.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
 import TrendChart from '../components/TrendChart.jsx';
+import { Monogram, Ring, Spark } from '../components/Spark.jsx';
 import { getOverview, getExportLog } from '../lib/api.js';
 import { buildCaseload, hasScreen } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
@@ -21,7 +22,7 @@ const SEGMENTS = [
 
 const QUIET_DAYS = 3;
 
-function Metric({ label, value, hint, tone = 'default', onClick, active = false }) {
+function Metric({ label, value, hint, tone = 'default', visual, onClick, active = false }) {
   const toneClass =
     tone === 'flag'
       ? 'text-[var(--color-flag)]'
@@ -34,8 +35,14 @@ function Metric({ label, value, hint, tone = 'default', onClick, active = false 
   const body = (
     <>
       <p className="label-eyebrow">{label}</p>
-      <p className={`font-display mt-2 text-3xl tabular-nums ${toneClass}`}>{value}</p>
-      {hint && <p className="mt-1 text-xs leading-snug text-[var(--color-muted)]">{hint}</p>}
+      {/* The slot keeps its height whether or not there is a visual in it, and
+          whether that visual is a ring or a sparkline — otherwise the five
+          figures along the rail sit at five slightly different heights. */}
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <p className={`font-display text-3xl leading-none tabular-nums ${toneClass}`}>{value}</p>
+        <span className="flex h-9 items-center">{visual}</span>
+      </div>
+      {hint && <p className="mt-2 text-xs leading-snug text-[var(--color-muted)]">{hint}</p>}
     </>
   );
 
@@ -51,17 +58,19 @@ function Metric({ label, value, hint, tone = 'default', onClick, active = false 
       aria-pressed={active}
       className={`group cursor-pointer px-5 py-4 text-left transition-colors ${
         active
-          ? 'bg-[var(--color-lavender-soft)]'
+          ? 'metric-on bg-[var(--color-lavender-soft)]'
           : 'bg-[var(--color-cream-soft)] hover:bg-white/[0.055]'
       }`}
     >
       {body}
+      {/* Always rendered, so switching a filter on does not make its cell
+          taller than the four beside it. */}
       <span
-        className={`mt-2 block text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)] transition-opacity ${
+        className={`mt-2 block truncate text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)] transition-opacity ${
           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100'
         }`}
       >
-        {active ? 'Filtering — click to clear' : 'Filter the list'}
+        {active ? 'Filtering — clear' : 'Filter the list'}
       </span>
     </button>
   );
@@ -171,8 +180,11 @@ export default function Dashboard() {
         <Metric
           label="Positive risk screens"
           value={totals.atRisk}
-          hint={totals.acuteRisk > 0 ? `${totals.acuteRisk} said “right now”` : 'In the last 14 days'}
+          hint={
+            totals.acuteRisk > 0 ? `${totals.acuteRisk} said “right now”` : 'In the last 14 days'
+          }
           tone="flag"
+          visual={<Ring value={totals.atRisk} max={totals.onboarded} tone="var(--color-flag)" />}
           onClick={() => toggleSegment('risk')}
           active={segment === 'risk'}
         />
@@ -181,6 +193,7 @@ export default function Dashboard() {
           value={totals.flaggedResidents}
           hint="Check-in flags and risk screens"
           tone="flag"
+          visual={<Spark values={trend.map((d) => d.flagged)} tone="var(--color-flag)" />}
           onClick={() => toggleSegment('attention')}
           active={segment === 'attention'}
         />
@@ -189,14 +202,18 @@ export default function Dashboard() {
           value={quietCount}
           hint="Longest since a check-in"
           tone="lavender"
+          visual={<Ring value={quietCount} max={totals.onboarded} />}
           onClick={() => toggleSegment('quiet')}
           active={segment === 'quiet'}
         />
         <Metric
           label="Checked in today"
           value={totals.checkedInToday}
-          hint={totals.avgMoodToday ? `Average mood ${totals.avgMoodToday} / 5` : 'No check-ins yet'}
+          hint={
+            totals.avgMoodToday ? `Average mood ${totals.avgMoodToday} / 5` : 'No check-ins yet'
+          }
           tone="teal"
+          visual={<Spark values={trend.map((d) => d.checkIns)} />}
         />
         <Metric
           label="Questionnaires taken"
@@ -221,10 +238,6 @@ export default function Dashboard() {
           </div>
           <div className="mt-4">
             <TrendChart trend={trend} selected={day} onSelect={setDay} />
-          </div>
-          <div className="mt-2 flex justify-between text-[10px] text-[var(--color-muted)]">
-            <span>{formatDate(trend[0]?.date)}</span>
-            <span>{formatDate(trend[trend.length - 1]?.date)}</span>
           </div>
         </section>
 
@@ -318,50 +331,57 @@ export default function Dashboard() {
                     to={`/residents/${encodeURIComponent(r.id)}`}
                     className="group grid gap-4 px-2 py-4 transition-colors hover:bg-white/[0.035] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
                   >
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-                        <p className="font-medium transition-colors group-hover:text-[var(--color-lavender)]">
-                          {r.name}
-                        </p>
-                        {r.email && <p className="text-xs text-[var(--color-muted)]">{r.email}</p>}
-                      </div>
+                    <div className="flex min-w-0 gap-3">
+                      <Monogram name={r.name} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+                          <p className="font-medium transition-colors group-hover:text-[var(--color-lavender)]">
+                            {r.name}
+                          </p>
+                          {r.email && (
+                            <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
+                          )}
+                        </div>
 
-                      {/* What actually happened, newest first — the screens and
+                        {/* What actually happened, newest first — the screens and
                           flagged check-ins that used to sit in two panels of
                           their own. Three is enough to see the shape of it; the
                           rest are on the resident's own page. */}
-                      {r.events.slice(0, 3).map((e) => (
-                        <p
-                          key={`${e.kind}:${e.date}:${e.detail}`}
-                          className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-xs leading-snug"
-                        >
-                          <span
-                            className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
-                              e.kind === 'screen'
-                                ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
-                                : 'bg-white/6 text-[var(--color-muted)]'
-                            }`}
+                        {r.events.slice(0, 3).map((e) => (
+                          <p
+                            key={`${e.kind}:${e.date}:${e.detail}`}
+                            className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-xs leading-snug"
                           >
-                            {e.kind === 'screen' ? 'Screen' : 'Check-in'}
-                          </span>
-                          <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
-                          <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
-                          {e.reasons.length > 0 && (
-                            <span className="text-[var(--color-flag)]">{e.reasons.join(' · ')}</span>
-                          )}
-                        </p>
-                      ))}
+                            <span
+                              className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
+                                e.kind === 'screen'
+                                  ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
+                                  : 'bg-white/6 text-[var(--color-muted)]'
+                              }`}
+                            >
+                              {e.kind === 'screen' ? 'Screen' : 'Check-in'}
+                            </span>
+                            <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
+                            <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
+                            {e.reasons.length > 0 && (
+                              <span className="text-[var(--color-flag)]">
+                                {e.reasons.join(' · ')}
+                              </span>
+                            )}
+                          </p>
+                        ))}
 
-                      {r.events.length === 0 && (
-                        <p className="mt-1.5 text-xs text-[var(--color-muted)]">
-                          Last check-in{' '}
-                          {r.lastCheckIn
-                            ? `${formatDate(r.lastCheckIn.date)} · ${moodLabel(r.lastCheckIn.mood)}${
-                                gap ? ` · ${gap} day${gap === 1 ? '' : 's'} ago` : ''
-                              }`
-                            : 'never'}
-                        </p>
-                      )}
+                        {r.events.length === 0 && (
+                          <p className="mt-1.5 text-xs text-[var(--color-muted)]">
+                            Last check-in{' '}
+                            {r.lastCheckIn
+                              ? `${formatDate(r.lastCheckIn.date)} · ${moodLabel(r.lastCheckIn.mood)}${
+                                  gap ? ` · ${gap} day${gap === 1 ? '' : 's'} ago` : ''
+                                }`
+                              : 'never'}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-4 sm:justify-end">
