@@ -47,7 +47,9 @@ export default function GoogleSignInButton({ onSignedIn }) {
       // renderButton appends, so clear first or resizes stack up copies.
       slotRef.current.innerHTML = '';
       window.google.accounts.id.renderButton(slotRef.current, {
-        theme: 'filled_black',
+        // 'outline' now the console is cream. filled_black was picked for a
+        // near-black ground and reads as a slab dropped on a light card.
+        theme: 'outline',
         size: 'large',
         shape: 'pill',
         width: Math.min(GIS_MAX_WIDTH, Math.max(GIS_MIN_WIDTH, width)),
@@ -72,7 +74,7 @@ export default function GoogleSignInButton({ onSignedIn }) {
   }, [onSignedIn, width]);
 
   if (error) {
-    return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
+    return <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>;
   }
 
   return (

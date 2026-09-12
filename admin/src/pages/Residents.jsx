@@ -131,7 +131,7 @@ export default function Residents() {
   }
 
   if (loading) return <p className="text-sm text-[var(--color-muted)]">Loading…</p>;
-  if (error) return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
+  if (error) return <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>;
 
   return (
     <div className="animate-fade-up space-y-6">
@@ -147,13 +147,13 @@ export default function Residents() {
           <button
             onClick={handleExport}
             disabled={visible.length === 0}
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/30 hover:text-[var(--color-ink)] disabled:opacity-40"
+            className="rounded-full border border-[var(--line-3)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] hover:text-[var(--color-ink)] disabled:opacity-40"
           >
             Export CSV
           </button>
           <button
             onClick={() => setShowInvite((v) => !v)}
-            className="rounded-full bg-[var(--color-lavender)] px-4 py-2 text-sm font-medium text-[#14121f]"
+            className="rounded-full bg-[var(--color-lavender-deep)] px-4 py-2 text-sm font-medium text-white"
           >
             {showInvite ? 'Cancel' : 'Add resident'}
           </button>
@@ -186,13 +186,13 @@ export default function Residents() {
           <button
             type="submit"
             disabled={inviteSaving}
-            className="rounded-xl bg-[var(--color-teal)] px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-xl bg-[var(--color-teal)] px-4 py-2.5 text-sm font-medium text-[var(--color-ink)] disabled:opacity-50"
           >
             {inviteSaving ? 'Adding…' : 'Add'}
           </button>
         </form>
       )}
-      {inviteError && <p className="text-sm text-[var(--color-flag)]">{inviteError}</p>}
+      {inviteError && <p className="text-sm text-[var(--color-flag-deep)]">{inviteError}</p>}
 
       <div className="flex flex-wrap items-center gap-3">
         <input
@@ -201,14 +201,14 @@ export default function Residents() {
           placeholder="Search name, email, phone, or a word they used…"
           className="input-soft min-w-[240px] flex-1"
         />
-        <div className="flex gap-1 rounded-full bg-white/5 p-1 text-xs">
+        <div className="flex gap-1 rounded-full bg-[var(--surface-2)] p-1 text-xs">
           {FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={`rounded-full px-3 py-1.5 transition-colors ${
                 filter === f.key
-                  ? 'bg-[var(--color-lavender)] text-[#14121f]'
+                  ? 'bg-[var(--color-lavender-deep)] text-white'
                   : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
               }`}
             >
@@ -280,7 +280,7 @@ export default function Residents() {
                     .map((reason) => (
                       <p
                         key={reason}
-                        className="mt-1 text-xs leading-snug text-[var(--color-flag)]"
+                        className="mt-1 text-xs leading-snug text-[var(--color-flag-deep)]"
                       >
                         {reason}
                       </p>

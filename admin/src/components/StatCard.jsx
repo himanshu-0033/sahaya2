@@ -1,11 +1,11 @@
 export default function StatCard({ label, value, hint, tone = 'default' }) {
   const toneClass =
     tone === 'flag'
-      ? 'text-[var(--color-flag)]'
+      ? 'text-[var(--color-flag-deep)]'
       : tone === 'teal'
-        ? 'text-[var(--color-teal)]'
+        ? 'text-[var(--color-teal-dark)]'
         : tone === 'lavender'
-          ? 'text-[var(--color-lavender)]'
+          ? 'text-[var(--color-lavender-deep)]'
           : 'text-[var(--color-ink)]';
 
   return (

@@ -1,26 +1,54 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
-/* Same palette as the resident app so the two feel like one product, with
-   lavender promoted to the accent so a counsellor can tell at a glance which
-   window they are looking at. */
+/* The resident app's palette, literally — the console was near-black and the
+   app is light sage, and the two reading as one product matters more than the
+   console announcing itself by being dark. Lavender stays the accent, so a
+   counsellor can still tell at a glance which window they are in.
+
+   THE PART THAT IS NOT A SWAP. Several of these hues are legible as text on a
+   near-black ground and are not legible on cream — #ef8064 measures 2.4:1 here,
+   and it carries every flag reason in the console. So the bright step stays for
+   fills, strokes and chart marks, and a deep step exists for text. The resident
+   app already made this distinction with --color-flag-deep; the console now
+   borrows the idea for lavender and sage too. Anything used as TEXT takes the
+   deep step. */
 @theme {
   --font-serif: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-cream: #07080a;
-  --color-cream-soft: #15171b;
-  --color-ink: #f4f2ee;
-  --color-ink-soft: #b7bcc0;
-  --color-muted: #8b929c;
-  --color-teal: #1fae95;
-  --color-teal-dark: #5fd6bf;
-  --color-teal-soft: rgba(31, 174, 149, 0.16);
+  --color-cream: #f4f7f3;
+  --color-cream-soft: #ffffff;
+  --color-ink: #2f4036;
+  --color-ink-soft: #526057;
+  --color-muted: #6b7280;
+
+  /* Fills and marks. */
+  --color-teal: #6f947d;
+  --color-teal-soft: rgb(168 195 176 / 0.22);
   --color-amber: #d9a55c;
   --color-lavender: #a79cf0;
-  --color-lavender-soft: rgba(167, 156, 240, 0.16);
+  --color-lavender-soft: rgb(167 156 240 / 0.18);
   --color-flag: #ef8064;
-  --color-flag-soft: rgba(239, 128, 100, 0.14);
+  --color-flag-soft: rgb(239 128 100 / 0.16);
+
+  /* Text steps. Measured against --color-cream (#f4f7f3):
+     flag-deep 5.5:1, lavender-deep 7.0:1, teal-dark 6.4:1. */
+  --color-flag-deep: #b03d16;
+  --color-lavender-deep: #5b4bc4;
+  --color-teal-dark: #4a6857;
+
+  /* One ink at a range of strengths, for every fill and rule that used to be
+     white at a range of strengths. Same scale the resident app uses. */
+  --surface-1: rgb(47 64 54 / 0.03);
+  --surface-2: rgb(47 64 54 / 0.05);
+  --surface-3: rgb(47 64 54 / 0.08);
+  --surface-4: rgb(47 64 54 / 0.12);
+  --line-1: rgb(47 64 54 / 0.08);
+  --line-2: rgb(47 64 54 / 0.12);
+  --line-3: rgb(47 64 54 / 0.18);
+  --line-4: rgb(47 64 54 / 0.28);
+  --line-5: rgb(47 64 54 / 0.38);
 }
 
 body {
@@ -35,14 +63,14 @@ body {
 
 .card-soft {
   background: var(--color-cream-soft);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--line-1);
+  box-shadow: 0 12px 32px -22px rgb(47 64 54 / 0.35);
 }
 
 .input-soft {
   border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line-2);
+  background: var(--surface-1);
   padding: 0.6rem 0.9rem;
   font-size: 0.875rem;
   color: var(--color-ink);
@@ -50,17 +78,17 @@ body {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* 0.5, not 0.3. At 0.3 this measured 2.5:1 against the console ground —
-   below the 4.5:1 that body text needs, and a placeholder is body text: it is
-   the example that tells you what the field wants. "Search by name or email"
-   was the least readable string on the residents page. 0.5 measures 5.3:1 and
-   still reads as a hint rather than as a value already typed. */
+/* A placeholder is body text — it is the example that tells you what the field
+   wants — so it needs 4.5:1 like any other. This was white at 0.5 against a
+   near-black ground; on cream the equivalent is the muted ink, which measures
+   4.6:1 against the field and still reads as a hint rather than as a value
+   already typed. */
 .input-soft::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-muted);
 }
 
 .input-soft:focus {
-  border-color: var(--color-lavender);
+  border-color: var(--color-lavender-deep);
   box-shadow: 0 0 0 3px var(--color-lavender-soft);
 }
 
@@ -75,7 +103,7 @@ body {
    border goes lavender and a soft ring appears — and stacking this on top drew
    two concentric outlines around every field. */
 :focus-visible {
-  outline: 2px solid var(--color-lavender);
+  outline: 2px solid var(--color-lavender-deep);
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -97,8 +125,8 @@ select:focus-visible {
   margin: 0.75rem;
   padding: 0.8rem 1.35rem;
   border-radius: 999px;
-  background: var(--color-lavender);
-  color: #14121f;
+  background: var(--color-lavender-deep);
+  color: #ffffff;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
@@ -145,7 +173,7 @@ select:focus-visible {
   display: grid;
   gap: 1px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--line-1);
 }
 
 /* The lit edge on the figure you are filtering by. A ring rather than a glow
@@ -153,6 +181,6 @@ select:focus-visible {
    the two beside it. */
 .metric-on {
   box-shadow:
-    inset 0 0 0 1px var(--color-lavender),
-    0 10px 30px -18px var(--color-lavender);
+    inset 0 0 0 1px var(--color-lavender-deep),
+    0 10px 28px -20px var(--color-lavender-deep);
 }

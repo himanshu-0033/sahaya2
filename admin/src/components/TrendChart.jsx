@@ -86,7 +86,7 @@ export default function TrendChart({ trend, selected, onSelect, height = 150 }) 
                 </span>
               )}
               {active.flagged > 0 && (
-                <span className="tabular-nums text-[var(--color-flag)]">
+                <span className="tabular-nums text-[var(--color-flag-deep)]">
                   {active.flagged} flagged
                 </span>
               )}
@@ -99,7 +99,7 @@ export default function TrendChart({ trend, selected, onSelect, height = 150 }) 
           )}
         </p>
 
-        <div className="flex gap-1 rounded-full bg-white/5 p-0.5 text-[11px]">
+        <div className="flex gap-1 rounded-full bg-[var(--surface-2)] p-0.5 text-[11px]">
           {RANGES.map((r) => (
             <button
               key={r}
@@ -108,7 +108,7 @@ export default function TrendChart({ trend, selected, onSelect, height = 150 }) 
               aria-pressed={days === r}
               className={`cursor-pointer rounded-full px-2.5 py-1 tabular-nums transition-colors ${
                 days === r
-                  ? 'bg-[var(--color-lavender)] text-[#14121f]'
+                  ? 'bg-[var(--color-lavender-deep)] text-white'
                   : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
               }`}
             >
@@ -179,7 +179,7 @@ export default function TrendChart({ trend, selected, onSelect, height = 150 }) 
                   aria-hidden="true"
                   className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2"
                   style={{
-                    background: isSelected ? 'var(--color-lavender)' : 'rgba(255,255,255,0.16)',
+                    background: isSelected ? 'var(--color-lavender)' : 'var(--line-4)',
                   }}
                 />
               )}

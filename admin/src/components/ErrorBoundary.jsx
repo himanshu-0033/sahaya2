@@ -55,20 +55,20 @@ export default class ErrorBoundary extends Component {
               type="button"
               onClick={() => window.location.reload()}
               className="rounded-full px-6 py-3 text-sm font-medium transition-opacity hover:opacity-90"
-              style={{ background: 'var(--color-lavender)', color: '#14121f' }}
+              style={{ background: 'var(--color-lavender-deep)', color: '#ffffff' }}
             >
               Reload the console
             </button>
             <a
               href="/"
-              className="rounded-full border border-white/15 px-6 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/30 hover:text-[var(--color-ink)]"
+              className="rounded-full border border-[var(--line-3)] px-6 py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] hover:text-[var(--color-ink)]"
             >
               Back to the dashboard
             </a>
           </div>
 
           {import.meta.env.DEV && (
-            <pre className="mt-8 overflow-x-auto rounded-2xl border border-white/8 bg-white/4 p-4 text-xs leading-relaxed text-[var(--color-muted)]">
+            <pre className="mt-8 overflow-x-auto rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] p-4 text-xs leading-relaxed text-[var(--color-muted)]">
               {String(this.state.error?.stack || this.state.error)}
             </pre>
           )}

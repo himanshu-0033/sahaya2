@@ -25,11 +25,11 @@ const QUIET_DAYS = 3;
 function Metric({ label, value, hint, tone = 'default', visual, onClick, active = false }) {
   const toneClass =
     tone === 'flag'
-      ? 'text-[var(--color-flag)]'
+      ? 'text-[var(--color-flag-deep)]'
       : tone === 'teal'
-        ? 'text-[var(--color-teal)]'
+        ? 'text-[var(--color-teal-dark)]'
         : tone === 'lavender'
-          ? 'text-[var(--color-lavender)]'
+          ? 'text-[var(--color-lavender-deep)]'
           : 'text-[var(--color-ink)]';
 
   const body = (
@@ -59,14 +59,14 @@ function Metric({ label, value, hint, tone = 'default', visual, onClick, active 
       className={`group cursor-pointer px-5 py-4 text-left transition-colors ${
         active
           ? 'metric-on bg-[var(--color-lavender-soft)]'
-          : 'bg-[var(--color-cream-soft)] hover:bg-white/[0.055]'
+          : 'bg-[var(--color-cream-soft)] hover:bg-[var(--surface-2)]'
       }`}
     >
       {body}
       {/* Always rendered, so switching a filter on does not make its cell
           taller than the four beside it. */}
       <span
-        className={`mt-2 block truncate text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)] transition-opacity ${
+        className={`mt-2 block truncate text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)] transition-opacity ${
           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100'
         }`}
       >
@@ -116,7 +116,7 @@ export default function Dashboard() {
   }, [caseload, segment, day]);
 
   if (loading) return <p className="text-sm text-[var(--color-muted)]">Loading…</p>;
-  if (error) return <p className="text-sm text-[var(--color-flag)]">{error}</p>;
+  if (error) return <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>;
   if (!data) return null;
 
   const { totals, trend, moodDistribution, quietest } = data;
@@ -176,7 +176,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="rail mt-8 rounded-2xl border border-white/8 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="rail mt-8 rounded-2xl border border-[var(--line-1)] sm:grid-cols-2 lg:grid-cols-5">
         <Metric
           label="Positive risk screens"
           value={totals.atRisk}
@@ -230,7 +230,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => setDay(null)}
-                className="cursor-pointer rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-[11px] text-[var(--color-lavender)] transition-colors hover:bg-[var(--color-lavender)]/25"
+                className="cursor-pointer rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-[11px] text-[var(--color-lavender-deep)] transition-colors hover:bg-[var(--color-lavender)]/25"
               >
                 Showing {formatDate(day)} — clear ✕
               </button>
@@ -249,7 +249,7 @@ export default function Dashboard() {
                 <span className="w-14 shrink-0 text-[var(--color-ink-soft)]">
                   {moodLabel(entry.mood)}
                 </span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/6">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--surface-2)]">
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -287,7 +287,7 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex flex-wrap gap-1 rounded-full bg-white/5 p-1 text-xs">
+            <div className="flex flex-wrap gap-1 rounded-full bg-[var(--surface-2)] p-1 text-xs">
               {SEGMENTS.map((s) => (
                 <button
                   key={s.key}
@@ -296,7 +296,7 @@ export default function Dashboard() {
                   aria-pressed={segment === s.key}
                   className={`cursor-pointer rounded-full px-3 py-1.5 transition-colors ${
                     segment === s.key
-                      ? 'bg-[var(--color-lavender)] text-[#14121f]'
+                      ? 'bg-[var(--color-lavender-deep)] text-white'
                       : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
                   }`}
                 >
@@ -306,7 +306,7 @@ export default function Dashboard() {
             </div>
             <Link
               to="/residents"
-              className="text-sm text-[var(--color-lavender)] underline underline-offset-4"
+              className="text-sm text-[var(--color-lavender-deep)] underline underline-offset-4"
             >
               All residents
             </Link>
@@ -322,20 +322,20 @@ export default function Dashboard() {
                 : 'Nobody matches this filter.'}
           </p>
         ) : (
-          <ul className="mt-4 divide-y divide-white/6 border-y border-white/6">
+          <ul className="mt-4 divide-y divide-[var(--line-1)] border-y border-[var(--line-1)]">
             {visible.map((r) => {
               const gap = daysSince(r.lastCheckIn?.date);
               return (
                 <li key={r.id}>
                   <Link
                     to={`/residents/${encodeURIComponent(r.id)}`}
-                    className="group grid gap-4 px-2 py-4 transition-colors hover:bg-white/[0.035] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+                    className="group grid gap-4 px-2 py-4 transition-colors hover:bg-[var(--surface-1)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
                   >
                     <div className="flex min-w-0 gap-3">
                       <Monogram name={r.name} />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-                          <p className="font-medium transition-colors group-hover:text-[var(--color-lavender)]">
+                          <p className="font-medium transition-colors group-hover:text-[var(--color-lavender-deep)]">
                             {r.name}
                           </p>
                           {r.email && (
@@ -355,8 +355,8 @@ export default function Dashboard() {
                             <span
                               className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
                                 e.kind === 'screen'
-                                  ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag)]'
-                                  : 'bg-white/6 text-[var(--color-muted)]'
+                                  ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
+                                  : 'bg-[var(--surface-2)] text-[var(--color-muted)]'
                               }`}
                             >
                               {e.kind === 'screen' ? 'Screen' : 'Check-in'}
@@ -364,7 +364,7 @@ export default function Dashboard() {
                             <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
                             <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
                             {e.reasons.length > 0 && (
-                              <span className="text-[var(--color-flag)]">
+                              <span className="text-[var(--color-flag-deep)]">
                                 {e.reasons.join(' · ')}
                               </span>
                             )}
@@ -389,7 +389,7 @@ export default function Dashboard() {
                         <MoodSparkline history={r.trend} height={30} barWidth={7} />
                       )}
                       {r.sparse ? (
-                        <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
+                        <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
                           {r.events[0]?.kind === 'screen' ? 'Risk screen' : 'Flagged earlier'}
                         </span>
                       ) : (
@@ -439,7 +439,7 @@ export default function Dashboard() {
             {exports.slice(0, 8).map((e) => (
               <li
                 key={e.id}
-                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-white/6 pt-3 first:border-0 first:pt-0"
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-[var(--line-1)] pt-3 first:border-0 first:pt-0"
               >
                 <span className="text-sm">
                   {e.actor}

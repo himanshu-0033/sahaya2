@@ -52,7 +52,7 @@ export function Ring({ value, max, tone = 'var(--color-lavender)', size = 34 }) 
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke="rgba(255,255,255,0.14)"
+        stroke="var(--surface-4)"
         strokeWidth="3"
       />
       <circle
@@ -94,7 +94,7 @@ export function Monogram({ name = '', size = 36 }) {
         width: size,
         height: size,
         color: tone,
-        background: 'rgba(255,255,255,0.05)',
+        background: 'var(--surface-1)',
         border: `1px solid ${tone}`,
         borderColor: 'color-mix(in srgb, currentColor 35%, transparent)',
       }}

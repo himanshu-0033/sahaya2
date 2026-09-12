@@ -5,35 +5,35 @@ export default function FlagBadge({ resident }) {
   const risk = resident.riskScreen;
   if (risk?.recent && risk.level === 'acute') {
     return (
-      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag)] px-3 py-1 text-xs font-medium text-white">
+      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag)] px-3 py-1 text-xs font-medium text-[var(--color-ink)]">
         At risk now
       </span>
     );
   }
   if (risk?.recent) {
     return (
-      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)] ring-1 ring-[var(--color-flag)]/40">
+      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)] ring-1 ring-[var(--color-flag)]/40">
         Risk screen positive
       </span>
     );
   }
   if (resident.flaggedRecently) {
     return (
-      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
+      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
         Needs a conversation
       </span>
     );
   }
   if (resident.invited && !resident.onboarded) {
     return (
-      <span className="whitespace-nowrap rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-xs text-[var(--color-lavender)]">
+      <span className="whitespace-nowrap rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-xs text-[var(--color-lavender-deep)]">
         Invited
       </span>
     );
   }
   if (!resident.lastCheckIn) {
     return (
-      <span className="whitespace-nowrap rounded-full bg-white/5 px-3 py-1 text-xs text-[var(--color-muted)]">
+      <span className="whitespace-nowrap rounded-full bg-[var(--surface-2)] px-3 py-1 text-xs text-[var(--color-muted)]">
         No check-ins
       </span>
     );

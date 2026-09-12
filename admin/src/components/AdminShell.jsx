@@ -15,12 +15,12 @@ export default function AdminShell({ admin, onSignOut, children }) {
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-10 border-b border-white/8 bg-[var(--color-cream)]/85 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-[var(--line-1)] bg-[var(--color-cream)]/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4">
           <div className="mr-auto">
             <div className="flex items-center gap-2">
               <h1 className="font-display text-xl">DP Sahay AI</h1>
-              <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)]">
+              <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)]">
                 Counsellor
               </span>
             </div>
@@ -29,7 +29,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
             </p>
           </div>
 
-          <nav className="flex items-center gap-1 rounded-full bg-white/5 p-1 text-sm">
+          <nav className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] p-1 text-sm">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -38,7 +38,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
                 className={({ isActive }) =>
                   `rounded-full px-4 py-1.5 transition-colors ${
                     isActive
-                      ? 'bg-[var(--color-lavender)] text-[#14121f]'
+                      ? 'bg-[var(--color-lavender-deep)] text-white'
                       : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
                   }`
                 }
@@ -52,7 +52,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
             <span className="hidden text-[var(--color-muted)] sm:inline">{admin?.email}</span>
             <button
               onClick={onSignOut}
-              className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-white/30 hover:text-[var(--color-ink)]"
+              className="rounded-full border border-[var(--line-3)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] hover:text-[var(--color-ink)]"
             >
               Sign out
             </button>

@@ -29,7 +29,7 @@ export default function SignIn({ onSignedIn, notice }) {
       <div className="card-soft animate-fade-up w-full max-w-md rounded-3xl p-8">
         <div className="flex items-center gap-2">
           <h1 className="font-display text-2xl">DP Sahay AI</h1>
-          <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender)]">
+          <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)]">
             Counsellor
           </span>
         </div>
@@ -40,7 +40,7 @@ export default function SignIn({ onSignedIn, notice }) {
         </p>
 
         {notice && (
-          <p className="mt-5 rounded-xl bg-[var(--color-flag-soft)] px-4 py-3 text-sm text-[var(--color-flag)]">
+          <p className="mt-5 rounded-xl bg-[var(--color-flag-soft)] px-4 py-3 text-sm text-[var(--color-flag-deep)]">
             {notice}
           </p>
         )}
@@ -50,9 +50,9 @@ export default function SignIn({ onSignedIn, notice }) {
         </div>
 
         <div className="my-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-[var(--color-muted)]">
-          <span className="h-px flex-1 bg-white/10" />
+          <span className="h-px flex-1 bg-[var(--surface-3)]" />
           or
-          <span className="h-px flex-1 bg-white/10" />
+          <span className="h-px flex-1 bg-[var(--surface-3)]" />
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -80,12 +80,12 @@ export default function SignIn({ onSignedIn, notice }) {
             />
           </label>
 
-          {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
+          {error && <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
           <button
             type="submit"
             disabled={submitting || !identifier.trim() || !password}
-            className="mt-2 rounded-xl bg-[var(--color-lavender)] px-4 py-2.5 text-sm font-medium text-[#14121f] transition-opacity disabled:opacity-40"
+            className="mt-2 rounded-xl bg-[var(--color-lavender-deep)] px-4 py-2.5 text-sm font-medium text-white transition-opacity disabled:opacity-40"
           >
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>

@@ -47,7 +47,7 @@ function RiskBanner({ risk, resident }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-display text-xl text-[var(--color-flag)]">
+          <p className="font-display text-xl text-[var(--color-flag-deep)]">
             {acute ? 'Said they are at risk right now' : 'Positive risk screen'}
           </p>
           <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
@@ -58,7 +58,7 @@ function RiskBanner({ risk, resident }) {
         {resident.phone && (
           <a
             href={`tel:${resident.phone}`}
-            className="whitespace-nowrap rounded-full bg-[var(--color-flag)] px-4 py-2 text-sm font-medium text-white"
+            className="whitespace-nowrap rounded-full bg-[var(--color-flag-deep)] px-4 py-2 text-sm font-medium text-white"
           >
             Call {resident.phone}
           </a>
@@ -122,13 +122,13 @@ export default function ResidentDetail() {
     <div className="animate-fade-up space-y-6">
       <Link
         to="/residents"
-        className="inline-block text-sm text-[var(--color-lavender)] underline underline-offset-4"
+        className="inline-block text-sm text-[var(--color-lavender-deep)] underline underline-offset-4"
       >
         ← All residents
       </Link>
 
       {loading && <p className="text-sm text-[var(--color-muted)]">Loading…</p>}
-      {error && <p className="text-sm text-[var(--color-flag)]">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
       {data && (
         <>
@@ -142,7 +142,7 @@ export default function ResidentDetail() {
               <button
                 onClick={handleExport}
                 disabled={data.history.length === 0}
-                className="rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-white/30 hover:text-[var(--color-ink)] disabled:opacity-40"
+                className="rounded-full border border-[var(--line-3)] px-4 py-2 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] hover:text-[var(--color-ink)] disabled:opacity-40"
               >
                 Export CSV
               </button>
@@ -248,7 +248,7 @@ export default function ResidentDetail() {
                     {[...data.history].reverse().map((c) => {
                       const gap = daysSince(c.date);
                       return (
-                        <tr key={c.date} className="border-t border-white/6 align-top">
+                        <tr key={c.date} className="border-t border-[var(--line-1)] align-top">
                           <td className="whitespace-nowrap px-5 py-3">
                             <span>{formatDate(c.date)}</span>
                             <span className="ml-2 text-xs text-[var(--color-muted)]">
@@ -270,7 +270,7 @@ export default function ResidentDetail() {
                           <td className="px-5 py-3 text-[var(--color-ink-soft)]">
                             {(c.words || []).filter(Boolean).join(', ') || '—'}
                           </td>
-                          <td className="px-5 py-3 text-xs text-[var(--color-flag)]">
+                          <td className="px-5 py-3 text-xs text-[var(--color-flag-deep)]">
                             {c.flagged ? (c.flagReasons || []).join('; ') : ''}
                           </td>
                         </tr>
@@ -302,7 +302,7 @@ export default function ResidentDetail() {
                     </summary>
 
                     {s.flagged && (
-                      <p className="mt-3 text-xs text-[var(--color-flag)]">
+                      <p className="mt-3 text-xs text-[var(--color-flag-deep)]">
                         {(s.flagReasons || []).join('; ')}
                       </p>
                     )}
@@ -318,7 +318,7 @@ export default function ResidentDetail() {
                       {s.responses
                         .filter((r) => r.text)
                         .map((r) => (
-                          <li key={r.plateId} className="border-t border-white/6 pt-3">
+                          <li key={r.plateId} className="border-t border-[var(--line-1)] pt-3">
                             <p className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
                               {plateLabel(r.plateId)}
                               {r.latencyMs != null && (
@@ -375,7 +375,7 @@ export default function ResidentDetail() {
                   </thead>
                   <tbody>
                     {data.assessments.map((a) => (
-                      <tr key={a.id} className="border-t border-white/6 align-top">
+                      <tr key={a.id} className="border-t border-[var(--line-1)] align-top">
                         <td className="whitespace-nowrap px-5 py-3">{formatDate(a.date)}</td>
                         <td className="px-5 py-3">
                           <span>{a.instrumentName}</span>
@@ -396,12 +396,12 @@ export default function ResidentDetail() {
                         <td className="px-5 py-3">
                           <span className="text-[var(--color-ink-soft)]">{a.band.label}</span>
                           {a.flagged && (
-                            <span className="ml-2 whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag)]">
+                            <span className="ml-2 whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag-deep)]">
                               {a.riskLevel === 'acute' ? 'At risk now' : 'Flagged'}
                             </span>
                           )}
                           {a.flagged && (a.flagReasons || []).length > 0 && (
-                            <span className="mt-1 block text-xs leading-snug text-[var(--color-flag)]">
+                            <span className="mt-1 block text-xs leading-snug text-[var(--color-flag-deep)]">
                               {a.flagReasons.join(' · ')}
                             </span>
                           )}
@@ -446,7 +446,7 @@ export default function ResidentDetail() {
                         {c.turns.length} {c.turns.length === 1 ? 'message' : 'messages'}
                       </span>
                       {c.flagged && (
-                        <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag)]">
+                        <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
                           Safety screen fired
                         </span>
                       )}
