@@ -11,6 +11,17 @@ import { requireGoogleUser } from '../../lib/auth.js';
 // evidence that this tab was signed in at some point, not that the person
 // holding the laptop right now is the account's owner. On a shared hostel
 // machine that difference is the whole point.
+//
+// ponytail: a session already issued survives this change — the tokens are
+// stateless, so there is nothing to revoke. Sessions live in sessionStorage
+// and die with the tab, which is what keeps that acceptable. If it stops
+// being acceptable: stamp passwordChangedAt on the record here, and have
+// verifyOwnSessionToken reject a token whose iat predates it.
+//
+// ponytail: no attempt throttle on the current-password check either, which
+// matches auth/login.js next door. The attacker has to hold a live session
+// for the account before the guess is worth anything. A per-account cooldown
+// would need a store write per attempt; add one when either door gets abused.
 const MIN_PASSWORD = 8;
 
 export default async function handler(req, res) {

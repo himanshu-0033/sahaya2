@@ -236,6 +236,13 @@ export default function Account() {
   function handleSaveDetails(e) {
     e.preventDefault();
     if (!details) return;
+    // The server keeps the stored name rather than saving a blank one, so
+    // submitting an empty field would look like it had silently ignored you.
+    if (!details.name.trim()) {
+      setDetailsNote(null);
+      setDetailsError('Your name cannot be blank.');
+      return;
+    }
     setSavingDetails(true);
     setDetailsNote(null);
     setDetailsError(null);
@@ -381,6 +388,7 @@ export default function Account() {
               <input
                 id="detail-dob"
                 type="date"
+                max={new Date().toISOString().slice(0, 10)}
                 value={details.dob}
                 onChange={(ev) => setDetails((d) => ({ ...d, dob: ev.target.value }))}
                 className={`input-soft ${INPUT}`}
