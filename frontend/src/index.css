@@ -920,17 +920,55 @@ p, li {
 }
 
 /* Feeling cards — horizontal-scroll emotion shortcuts */
+/* These were four chips in a horizontal scroller — a row you could miss, and
+   on a phone a row you had to swipe to see the fourth of. They are a grid of
+   four tall cards now, each a wash of its own hue with a wave banked across
+   the bottom. Same hues, same destinations; only the shape changed. */
 .feeling-card {
-  flex-shrink: 0;
-  min-width: 7rem;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 8.5rem;
   padding: 1rem 1.1rem;
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: flex-start;
+  gap: 0.65rem;
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
-  border: 1px solid rgba(47, 64, 54, 0.06);
+  border: 1px solid color-mix(in srgb, var(--fc-hue, var(--color-ink)) 18%, transparent);
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--fc-hue, var(--color-teal)) 16%, white),
+      color-mix(in srgb, var(--fc-hue, var(--color-teal)) 4%, white) 62%);
+}
+
+/* Bottom-anchored and behind the text, so the label never sits on the busiest
+   part of the curve. */
+.feeling-card-wave {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3.4rem;
+  z-index: -1;
+  line-height: 0;
+}
+
+.feeling-card-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid color-mix(in srgb, var(--fc-hue, var(--color-ink)) 22%, transparent);
+}
+
+.feeling-card-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: auto;
 }
 
 .feeling-card:active {

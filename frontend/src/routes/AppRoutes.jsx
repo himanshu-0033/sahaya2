@@ -18,6 +18,7 @@ import GroundingPractice from '../features/grounding/GroundingPractice.jsx';
 import Caregiver from '../features/caregiver/Caregiver.jsx';
 import CaregiverResident from '../features/caregiver/CaregiverResident.jsx';
 import ResetPassword from '../features/auth/ResetPassword.jsx';
+import Welcome from '../features/auth/Welcome.jsx';
 import NotFound from '../shared/NotFound.jsx';
 
 export default function App() {
@@ -28,6 +29,9 @@ export default function App() {
       <RouteChrome />
       <Routes>
         <Route path="/" element={<Landing />} />
+        {/* Signing in is its own page. Landing redirects here when there is
+            no session, and this redirects back once there is one. */}
+        <Route path="/welcome" element={<Welcome />} />
         {/* Reached from a link in an email, so it must work signed out. */}
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account />} />

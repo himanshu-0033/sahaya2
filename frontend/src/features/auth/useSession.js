@@ -21,8 +21,10 @@ import { getSession } from './session.js';
 // reference for the life of the component, which is exactly the semantics the
 // dependency arrays were assuming all along.
 //
-// Sign-in pages that need to CHANGE the session (Landing) keep their own
-// useState pair instead — this hook is read-only on purpose.
+// A page that needs to CHANGE the session keeps its own useState pair
+// instead — this hook is read-only on purpose. Landing used to be that
+// exception, back when it rendered the sign-in screen itself; signing in
+// is its own route now, so Landing only ever reads.
 export function useSession() {
   const [session] = useState(getSession);
   return session;

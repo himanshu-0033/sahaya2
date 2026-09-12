@@ -63,6 +63,36 @@ const TABS = [
   },
 ];
 
+
+// What More stands in for. Listed outright in the sidebar, where there is room
+// for them, and left behind More on the phone, where there is not.
+const EXPLORE = [
+  {
+    to: '/paths',
+    label: 'Paths',
+    hue: 'var(--sec-paths)',
+    icon: <path d="M18 6l-6 6-6-6M18 18l-6-6-6 6" />,
+  },
+  {
+    to: '/assessments',
+    label: 'Tests',
+    hue: 'var(--sec-tests)',
+    icon: <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />,
+  },
+  {
+    to: '/read',
+    label: 'Read',
+    hue: 'var(--sec-read)',
+    icon: <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
+  },
+  {
+    to: '/inkblot-test',
+    label: 'Inkblot',
+    hue: 'var(--color-amber)',
+    icon: <path d="M12 3c3 3.5 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5.5 5-9Z" />,
+  },
+];
+
 // `/` is only "Home" when it is exactly `/`; every other tab also owns its
 // children, so /grounding/box-breathing keeps the Calm tab lit — and More
 // stays lit across every section it stands in for.
@@ -89,6 +119,25 @@ function TabIcon({ tab, active }) {
     >
       {tab.icon}
     </svg>
+  );
+}
+
+// One row in the sidebar. The active row is a filled pill in the section's own
+// hue — the same signal the bottom bar gives with a glow and a dot.
+function SideLink({ tab, active }) {
+  return (
+    <Link
+      to={tab.to}
+      aria-current={active ? 'page' : undefined}
+      className="press flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors duration-300"
+      style={{
+        color: active ? tab.hue : 'var(--color-ink-soft)',
+        background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
+      }}
+    >
+      <TabIcon tab={tab} active={active} />
+      {tab.label}
+    </Link>
   );
 }
 
@@ -160,74 +209,64 @@ export default function TabBar() {
         </div>
       </nav>
 
-      {/* ---------------------------- desktop: unified top bar ------------ */}
-      {/* Logo left, nav center, crisis + profile right — all one row.
-          The pill shape is kept for the nav links but the bar itself spans
-          the full width so there is no separate Header row on desktop. */}
+      {/* ---------------------------- desktop: left sidebar --------------- */}
+      {/* The three tabs were a top pill. A sidebar gives the same destinations
+          a column of their own, which is what buys the second group below:
+          the phone hides Paths, Tests, Read and the inkblot behind More
+          because six targets on a 360px bar is 57px each, and none of that is
+          true of a column with room to spare. More still owns them on the
+          phone; nothing moved, and no route changed. */}
       <nav
         aria-label="Main"
-        className="sticky top-0 z-40 hidden md:block"
-        style={{
-          background: 'rgba(253, 242, 248, 0.85)',
-          backdropFilter: 'blur(18px)',
-          borderBottom: '1px solid var(--line-1)',
-        }}
+        className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-[var(--line-1)] px-4 py-5 md:flex"
+        style={{ background: 'rgba(253, 242, 248, 0.72)', backdropFilter: 'blur(18px)' }}
       >
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-2.5">
-          {/* Left: Logo */}
-          <Link to="/" className="press group flex shrink-0 items-center gap-2.5">
-            <Logo size={24} />
-            <span className="font-display text-[1.15rem] leading-none">
-              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal)]">AI</span>
-            </span>
-          </Link>
+        <Link to="/" className="press group flex shrink-0 items-center gap-2.5 px-2">
+          <Logo size={24} />
+          <span className="font-display text-[1.15rem] leading-none">
+            DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal)]">AI</span>
+          </span>
+        </Link>
 
-          {/* Center: Nav tabs */}
-          <div
-            className="flex items-center gap-1 rounded-full border border-[var(--line-2)] p-1.5"
-            style={{ background: 'rgba(253, 242, 248, 0.6)' }}
-          >
-            {TABS.map((tab) => {
-              const active = isActive(pathname, tab);
-              return (
-                <Link
-                  key={tab.to}
-                  to={tab.to}
-                  aria-current={active ? 'page' : undefined}
-                  className="press relative flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors duration-300"
-                  style={{
-                    color: active ? tab.hue : 'var(--color-ink-soft)',
-                    background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
-                  }}
-                >
-                  <TabIcon tab={tab} active={active} />
-                  {tab.label}
-                </Link>
-              );
-            })}
-          </div>
+        <div className="mt-7 flex flex-1 flex-col gap-1 overflow-y-auto">
+          {TABS.map((tab) => (
+            <SideLink key={tab.to} tab={tab} active={isActive(pathname, tab)} />
+          ))}
 
-          {/* Right: Crisis + Profile — filled by Header via the desktopRight slot */}
-          <div className="flex shrink-0 items-center gap-3" id="desktop-topbar-right">
-            <StreakBadge />
+          <p className="marginalia mt-6 mb-1 px-3">Explore</p>
+          {EXPLORE.map((tab) => (
+            <SideLink key={tab.to} tab={tab} active={isActive(pathname, tab)} />
+          ))}
+        </div>
+
+        {/* Pinned to the bottom: who you are, and the one link that has to be
+            reachable from anywhere without hunting for it. */}
+        <div className="shrink-0 border-t border-[var(--line-1)] pt-4">
+          <div className="mb-3 px-1">
             <CrisisContacts variant="link" />
-            {profile && (
-              <Link
-                to="/account"
-                aria-label="Your account"
-                title={profile.name || 'Your account'}
-                className="press flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
-              >
+          </div>
+          {profile && (
+            <Link
+              to="/account"
+              className="press flex items-center gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-[var(--surface-2)]"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium">
                 {profile.picture ? (
                   <img src={profile.picture} alt="" className="h-full w-full object-cover" />
                 ) : (
                   (profile.name || '?').charAt(0).toUpperCase()
                 )}
-              </Link>
-            )}
-          </div>
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm">{profile.name || 'Your account'}</span>
+                <span className="marginalia block">Account</span>
+              </span>
+              <StreakBadge />
+            </Link>
+          )}
         </div>
       </nav>
+
     </>
   );
 }

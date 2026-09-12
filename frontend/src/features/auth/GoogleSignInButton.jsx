@@ -40,6 +40,14 @@ export default function GoogleSignInButton({ onSignedIn, dark = false }) {
       if (cancelled || !window.google?.accounts?.id || !slotRef.current) return;
       window.google.accounts.id.initialize({
         client_id: CLIENT_ID,
+        // Google's own sign-in opens in a separate browser window rather than
+        // inside this page. Popup is already the default; it is written down
+        // because the alternative ('redirect') navigates this tab away to
+        // Google and needs a server `login_uri` to POST the credential back,
+        // which this app does not have. Whether the browser gives that window
+        // a tab or a panel is the browser's call, not something a site can ask
+        // for — and a blocked popup is the one failure worth watching for.
+        ux_mode: 'popup',
         callback: (response) => {
           const profile = decodeJwt(response.credential);
           const session = saveSession({ idToken: response.credential, profile });

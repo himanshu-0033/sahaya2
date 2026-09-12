@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import LoadError from '../../shared/LoadError.jsx';
-import Welcome from '../auth/Welcome.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
-import { getSession } from '../auth/session.js';
+import { useSession } from '../auth/useSession.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
 import { pathPhoto } from '../../shared/photos.js';
 import { accent } from '../../shared/accents.js';
@@ -248,7 +247,7 @@ function PrimarySkeleton() {
 
 // ─── Landing page ───────────────────────────────────────────────────────────
 export default function Landing() {
-  const [session, setSession] = useState(() => getSession());
+  const session = useSession();
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -304,7 +303,12 @@ export default function Landing() {
       .finally(() => setSavingProfile(false));
   }
 
-  if (!session) return <Welcome onSignedIn={setSession} />;
+  // Signed out is its own page at its own URL, not a branch of the home
+  // screen. It used to render here, which meant the sign-in screen and the
+  // dashboard shared the address `/`: you could not link anyone to it, the
+  // back button could not leave it, and a signed-out visit looked to the
+  // browser like the same page as a signed-in one.
+  if (!session) return <Navigate to="/welcome" replace />;
 
   if (profileLoading) {
     return (
@@ -487,19 +491,38 @@ export default function Landing() {
             See all
           </Link>
         </div>
-        <div className="hscroll mt-3 flex gap-2.5 pb-1">
+        {/* Four tall cards rather than four chips in a scroller. Each one is a
+            wash of its own hue with a wave banked across the bottom — the
+            section's colours, unchanged, given room to read as a destination
+            you would choose rather than a tag you might tap by accident. */}
+        {/* Two up, at every width. These sit in the narrow right-hand column
+            from `lg`, and four across in there clipped every label. */}
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
           {QUICK.map((q) => (
             <Link
               key={q.mood}
               to={q.to}
-              className="feeling-card"
-              style={{
-                background: `color-mix(in srgb, ${q.hue} 8%, white)`,
-                '--fc-hue': q.hue,
-              }}
+              className="feeling-card press"
+              style={{ '--fc-hue': q.hue }}
             >
-              <span aria-hidden="true">{q.icon}</span>
-              <span className="text-sm font-medium" style={{ color: q.hue }}>
+              <span className="feeling-card-wave" aria-hidden="true">
+                <svg viewBox="0 0 120 48" preserveAspectRatio="none" width="100%" height="100%">
+                  <path
+                    d="M0 30 C 22 10, 40 40, 62 24 S 100 8, 120 22 L120 48 L0 48 Z"
+                    fill={q.hue}
+                    opacity="0.22"
+                  />
+                  <path
+                    d="M0 38 C 24 22, 44 46, 66 33 S 102 20, 120 31 L120 48 L0 48 Z"
+                    fill={q.hue}
+                    opacity="0.14"
+                  />
+                </svg>
+              </span>
+              <span className="feeling-card-icon" aria-hidden="true" style={{ color: q.hue }}>
+                {q.icon}
+              </span>
+              <span className="feeling-card-label" style={{ color: q.hue }}>
                 {q.label}
               </span>
             </Link>

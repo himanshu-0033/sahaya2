@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import Logo from '../../shared/Logo.jsx';
 import { PHOTO } from '../../shared/photos.js';
+import { getSession } from './session.js';
 
 // The page a stranger lands on.
 //
@@ -182,6 +183,19 @@ function SectionHead({ eyebrow, title, sub }) {
 
 export default function Welcome({ onSignedIn }) {
   const [signingIn, setSigningIn] = useState(false);
+  const navigate = useNavigate();
+
+  // This page owns the `/welcome` URL now, so it also owns what happens after
+  // a successful sign-in: go to the dashboard. The `onSignedIn` prop is kept
+  // for any caller that still wants to handle it itself.
+  const handleSignedIn = (next) => {
+    if (onSignedIn) onSignedIn(next);
+    else navigate('/', { replace: true });
+  };
+
+  // Someone who is already signed in has no business on the sign-in page —
+  // arriving here from a bookmark or the back button should land on the app.
+  if (!onSignedIn && getSession()) return <Navigate to="/" replace />;
 
   // The panel replaces the hero's button row, which is near the top of a long
   // page — and two of the three buttons that open it are the sticky header and
@@ -295,7 +309,7 @@ export default function Welcome({ onSignedIn }) {
           <div className="w-full lg:w-[45%]">
             {signingIn ? (
               <div className="w-card mx-auto max-w-md p-6 sm:p-7">
-                <GoogleSignInButton onSignedIn={onSignedIn} />
+                <GoogleSignInButton onSignedIn={handleSignedIn} />
                 <div
                   className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide"
                   style={{ color: 'var(--w-ink-soft)' }}
@@ -304,7 +318,7 @@ export default function Welcome({ onSignedIn }) {
                   or use email
                   <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
                 </div>
-                <PasswordAuthForm onSignedIn={onSignedIn} />
+                <PasswordAuthForm onSignedIn={handleSignedIn} />
                 <button
                   type="button"
                   onClick={() => setSigningIn(false)}

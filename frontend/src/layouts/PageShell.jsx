@@ -51,7 +51,10 @@ export default function PageShell({
   const wash = WASH[section] || WASH.home;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    // md:pl-60 clears the sidebar, which is fixed and so takes no space of
+    // its own. Below md the nav is the bottom bar and there is nothing to
+    // clear.
+    <div className="relative min-h-screen overflow-x-hidden md:pl-60">
       {/* First thing in the document, so it is the first thing Tab reaches.
           Without it, a keyboard or switch user arriving on any page had to
           walk the masthead, the crisis button and every tab before reaching
