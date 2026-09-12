@@ -936,7 +936,10 @@ p, li {
   align-items: flex-start;
   justify-content: flex-start;
   gap: 0.65rem;
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
   border: 1px solid color-mix(in srgb, var(--fc-hue, var(--color-ink)) 18%, transparent);
   background:
     linear-gradient(160deg,
@@ -976,9 +979,55 @@ p, li {
 }
 
 @media (hover: hover) and (pointer: fine) {
+  /* The card comes up off the page rather than nudging: a lift, a little
+     scale, and a shadow in its own hue so the colour reads as light coming
+     off the card instead of a grey box under it. */
   .feeling-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px -8px var(--fc-hue, rgba(0,0,0,0.15));
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 18px 38px -14px color-mix(in srgb, var(--fc-hue, #000) 55%, transparent);
+    border-color: color-mix(in srgb, var(--fc-hue, var(--color-ink)) 42%, transparent);
+    z-index: 1;
+  }
+
+  /* The wave rises a touch further than the card, which is what stops the
+     whole thing reading as a flat rectangle being moved. */
+  .feeling-card:hover .feeling-card-wave {
+    transform: translateY(-3px) scaleY(1.08);
+  }
+
+  .feeling-card:hover .feeling-card-icon {
+    transform: scale(1.08);
+  }
+}
+
+.feeling-card-wave,
+.feeling-card-icon {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: bottom center;
+}
+
+/* Entrance and hover both drive `transform`, and an animation filling
+   `both` outranks any rule — including :hover — for as long as it is applied.
+   `backwards` keeps what the stagger needs (invisible through the delay) and
+   hands the property back when the animation ends. Without this the cards
+   arrive correctly and then never lift. */
+.feeling-card.animate-pop {
+  animation-fill-mode: backwards;
+}
+
+/* A hover that moves is still motion. The guards further up cover animations;
+   this one covers the transforms, which they do not. */
+@media (prefers-reduced-motion: reduce) {
+  .feeling-card,
+  .feeling-card-wave,
+  .feeling-card-icon {
+    transition: none;
+  }
+
+  .feeling-card:hover,
+  .feeling-card:hover .feeling-card-wave,
+  .feeling-card:hover .feeling-card-icon {
+    transform: none;
   }
 }
 

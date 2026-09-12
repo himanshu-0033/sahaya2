@@ -498,12 +498,15 @@ export default function Landing() {
         {/* Two up, at every width. These sit in the narrow right-hand column
             from `lg`, and four across in there clipped every label. */}
         <div className="mt-3 grid grid-cols-2 gap-2.5">
-          {QUICK.map((q) => (
+          {QUICK.map((q, i) => (
             <Link
               key={q.mood}
               to={q.to}
-              className="feeling-card press"
-              style={{ '--fc-hue': q.hue }}
+              className="feeling-card animate-pop press"
+              /* 70ms apart: enough to read as four things arriving rather than
+                 one block, short enough that the last one is not still coming
+                 in when a thumb is already moving toward the first. */
+              style={{ '--fc-hue': q.hue, animationDelay: `${i * 70}ms` }}
             >
               <span className="feeling-card-wave" aria-hidden="true">
                 <svg viewBox="0 0 120 48" preserveAspectRatio="none" width="100%" height="100%">
