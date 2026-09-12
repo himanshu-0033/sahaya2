@@ -106,7 +106,7 @@ export default function Caregiver() {
               </span>
               <button
                 onClick={() => setShowAddForm((v) => !v)}
-                className="shrink-0 text-[var(--color-teal)] underline underline-offset-4"
+                className="shrink-0 text-[var(--color-teal-dark)] underline underline-offset-4"
               >
                 {showAddForm ? 'Cancel' : '+ Add resident'}
               </button>
@@ -207,7 +207,7 @@ export default function Caregiver() {
           </>
         )}
 
-        <Link to="/" className="mt-8 inline-block text-sm text-[var(--color-teal)] underline">
+        <Link to="/" className="mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
           Back to check-in
         </Link>
       </div>

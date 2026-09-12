@@ -274,7 +274,7 @@ export default function Grounding() {
           <div className="mt-8 text-center">
             <Link
               to="/assessments"
-              className="text-sm text-[var(--color-teal)] underline underline-offset-4"
+              className="text-sm text-[var(--color-teal-dark)] underline underline-offset-4"
             >
               Looking for the questionnaires instead?
             </Link>

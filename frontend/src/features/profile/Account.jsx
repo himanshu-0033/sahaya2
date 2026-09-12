@@ -30,7 +30,7 @@ const MIN_PASSWORD = 8;
 // One input style for the whole page. Three forms live here now, and three
 // hand-copied class strings is how they drift apart.
 const INPUT =
-  'w-full rounded-xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3 outline-none transition-colors placeholder:text-[var(--ink-placeholder)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]';
+  'w-full rounded-xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3 outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]/60 focus:bg-[var(--surface-2)]';
 
 const BUTTON =
   'press rounded-full bg-[var(--color-teal)] px-6 py-3 text-sm font-medium text-[#07080a] transition-colors hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]';

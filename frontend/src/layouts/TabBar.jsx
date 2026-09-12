@@ -234,7 +234,7 @@ export default function TabBar() {
         <Link to="/" className="press group flex shrink-0 items-center gap-2.5 px-2">
           <Logo size={24} />
           <span className="font-display text-[1.15rem] leading-none">
-            DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal)]">AI</span>
+            DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)]">AI</span>
           </span>
         </Link>
 

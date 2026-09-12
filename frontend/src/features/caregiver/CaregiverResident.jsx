@@ -28,7 +28,7 @@ export default function CaregiverResident() {
     <div className="min-h-screen px-6 py-10 md:py-16">
       <div className="mx-auto max-w-2xl">
         <Header />
-        <Link to="/caregiver" className="mt-8 inline-block text-sm text-[var(--color-teal)] underline">
+        <Link to="/caregiver" className="mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
           ← All residents
         </Link>
 

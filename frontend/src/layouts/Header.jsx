@@ -35,7 +35,7 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
                 other is a disclosure. Running them at the same weight would
                 make "AI" look like part of the word. */}
             <span className="font-display block text-[1.2rem] leading-none sm:text-[1.3rem]">
-              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal)]">AI</span>
+              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)]">AI</span>
             </span>
             <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
               {eyebrow}

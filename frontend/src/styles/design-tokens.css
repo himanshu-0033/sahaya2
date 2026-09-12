@@ -11,7 +11,7 @@
   --primitive-color-sage-700: #4a6857;
   --primitive-color-sage-900: #2f4036;
   --primitive-color-pink-300: #f2789f;
-  --primitive-color-gray-500: #6b7280;
+  --primitive-color-gray-500: #616976;
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-violet-400: #a79cf0;
   --primitive-color-coral-400: #ef8064;
@@ -35,7 +35,7 @@
   --color-cream-soft: #e8efe9;
   --color-ink: #2f4036;
   --color-ink-soft: #526057;
-  --color-muted: #6b7280;
+  --color-muted: #616976;
   --color-teal: #6f947d;
   --color-teal-dark: #4a6857;
   --color-teal-soft: rgb(var(--primitive-channel-sage) / 0.14);
@@ -68,7 +68,6 @@
   --line-6: rgb(var(--primitive-channel-ink) / 0.40);
   --line-7: rgb(var(--primitive-channel-ink) / 0.60);
   --ink-faint: rgb(var(--primitive-channel-ink) / 0.35);
-  --ink-placeholder: rgb(var(--primitive-channel-paper) / 0.5);
 }
 
 /* === COMPONENTS === */
