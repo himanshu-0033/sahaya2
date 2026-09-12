@@ -182,6 +182,16 @@ export function requestPasswordReset({ email }) {
   return request('/api/auth/forgot', { method: 'POST', body: JSON.stringify({ email }) });
 }
 
+// Changing a password from inside the account, where the proof is the old
+// password rather than a mailed token. resetPassword() below is the forgotten
+// case and cannot be reused for it.
+export function changePassword({ currentPassword, password }) {
+  return request('/api/auth/password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, password }),
+  });
+}
+
 export function resetPassword({ token, password }) {
   return request('/api/auth/reset', { method: 'POST', body: JSON.stringify({ token, password }) });
 }

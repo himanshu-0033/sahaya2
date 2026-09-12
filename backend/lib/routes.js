@@ -23,6 +23,7 @@ import signupHandler from '../handlers/auth/signup.js';
 import loginHandler from '../handlers/auth/login.js';
 import forgotHandler from '../handlers/auth/forgot.js';
 import resetHandler from '../handlers/auth/reset.js';
+import passwordHandler from '../handlers/auth/password.js';
 import caregiverResidentsHandler from '../handlers/caregiver/residents.js';
 import caregiverResidentHandler from '../handlers/caregiver/resident.js';
 import adminMeHandler from '../handlers/admin/me.js';
@@ -52,6 +53,7 @@ export const routes = {
   '/api/auth/login': loginHandler,
   '/api/auth/forgot': forgotHandler,
   '/api/auth/reset': resetHandler,
+  '/api/auth/password': passwordHandler,
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
   '/api/admin/me': adminMeHandler,

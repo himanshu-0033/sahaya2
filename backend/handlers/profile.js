@@ -14,7 +14,13 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const residents = await getResidents();
     const profile = residents.find((r) => r.id === residentId) || null;
-    return res.status(200).json({ profile: publicResident(profile) });
+    // hasPassword, not the hash: the account page needs to know whether to
+    // offer a password form at all, and a Google account has nothing to
+    // change. Derived here rather than in publicResident() because the
+    // consoles that also use that helper have no business knowing.
+    return res.status(200).json({
+      profile: profile ? { ...publicResident(profile), hasPassword: Boolean(profile.passwordHash) } : null,
+    });
   }
 
   if (req.method === 'POST') {
