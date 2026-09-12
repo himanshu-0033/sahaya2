@@ -149,10 +149,14 @@ export default function TabBar() {
   return (
     <>
       {/* ---------------------------- mobile: fixed bottom bar ------------ */}
+      {/* Lifted off the bottom edge and rounded, rather than a full-width
+          slab welded to it — the phone shape the reference for this is built
+          around. The padding below it is the safe-area inset plus a little, so
+          it clears the home indicator instead of sitting under it. */}
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 md:hidden"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        className="fixed inset-x-0 bottom-0 z-40 px-3 md:hidden"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.6rem)' }}
       >
         {/* A gradient scrim above the bar so content scrolling underneath
             fades out rather than colliding with the icons. */}
@@ -161,11 +165,12 @@ export default function TabBar() {
           className="pointer-events-none absolute inset-x-0 bottom-full h-8 bg-gradient-to-t from-[var(--color-cream)] to-transparent"
         />
         <div
-          className="flex items-stretch justify-around border-t border-[var(--line-1)] px-2"
+          className="flex items-stretch justify-around rounded-[1.6rem] border border-[var(--line-2)] px-2"
           style={{
             height: 'var(--tabbar-h)',
-            background: 'rgba(253, 242, 248, 0.9)',
+            background: 'rgba(253, 242, 248, 0.92)',
             backdropFilter: 'blur(18px)',
+            boxShadow: '0 14px 34px -16px rgba(47, 64, 54, 0.45)',
           }}
         >
           {TABS.map((tab) => {
@@ -175,8 +180,13 @@ export default function TabBar() {
                 key={tab.to}
                 to={tab.to}
                 aria-current={active ? 'page' : undefined}
-                className="press relative flex flex-1 flex-col items-center justify-center gap-1.5 pt-1"
-                style={{ color: active ? tab.hue : 'var(--color-muted)' }}
+                className="press relative m-1.5 flex flex-1 flex-col items-center justify-center gap-1.5 rounded-[1.15rem] pt-1 transition-colors"
+                style={{
+                  color: active ? tab.hue : 'var(--color-muted)',
+                  background: active
+                    ? `color-mix(in srgb, ${tab.hue} 13%, transparent)`
+                    : 'transparent',
+                }}
               >
                 {/* Glow behind the active icon — the thing that makes the bar
                     feel like an app rather than a row of links. */}

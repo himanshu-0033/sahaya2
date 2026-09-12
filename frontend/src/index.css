@@ -484,7 +484,11 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* Reserve room for the mobile tab bar. Applied by the page shell rather than
    globally, because the sign-in hero and the running practice screens are
    deliberately full-bleed with no tab bar at all. */
-.pad-tabbar { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1rem); }
+/* The bar floats 0.6rem clear of the safe area now, so everything that has
+   to sit above it — the page's own bottom padding and the companion's
+   button — clears that too, or the last card scrolls under a bar that is
+   no longer flush with the edge. */
+.pad-tabbar { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1.6rem); }
 
 @media (min-width: 768px) {
   .pad-tabbar { padding-bottom: 3rem; }
@@ -500,7 +504,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
    A class rather than a Tailwind arbitrary value because the calc carries an
    env() with a fallback, and the comma inside it does not survive the
    bracket syntax. */
-.fab-anchor { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1rem); }
+.fab-anchor { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1.6rem); }
 
 @media (min-width: 768px) {
   .fab-anchor { bottom: 1.75rem; }
