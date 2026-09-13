@@ -153,7 +153,7 @@ export const TEST_INDEX = [
   {
     "id": "cbi-personal",
     "name": "CBI (personal)",
-    "fullName": "Copenhagen Burnout Inventory — personal burnout",
+    "fullName": "Copenhagen Burnout Inventory, personal burnout",
     "domain": "Burnout",
     "itemCount": 6,
     "minutes": 2,
@@ -173,7 +173,7 @@ export const TEST_INDEX = [
   {
     "id": "sas-sv",
     "name": "SAS-SV",
-    "fullName": "Smartphone Addiction Scale — Short Version",
+    "fullName": "Smartphone Addiction Scale, Short Version",
     "domain": "Habits",
     "itemCount": 10,
     "minutes": 2,
@@ -183,7 +183,7 @@ export const TEST_INDEX = [
   {
     "id": "audit-c",
     "name": "AUDIT-C",
-    "fullName": "Alcohol Use Disorders Identification Test — Consumption",
+    "fullName": "Alcohol Use Disorders Identification Test, Consumption",
     "domain": "Habits",
     "itemCount": 3,
     "minutes": 1,
@@ -233,7 +233,7 @@ export const TEST_INDEX = [
   {
     "id": "scs-sf",
     "name": "SCS-SF",
-    "fullName": "Self-Compassion Scale — Short Form",
+    "fullName": "Self-Compassion Scale, Short Form",
     "domain": "Strengths",
     "itemCount": 12,
     "minutes": 3,

@@ -285,7 +285,7 @@ export default function ChatPanel({
 
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
-          ? 'Scripted preview — no AI model is connected yet. Not a therapist, and not a crisis service.'
+          ? 'Scripted preview. No AI model is connected yet. Not a therapist, and not a crisis service.'
           : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above. This conversation is saved to your account, and anyone you have shared your account with can read it.'}
       </p>
     </div>

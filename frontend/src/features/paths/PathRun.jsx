@@ -258,7 +258,7 @@ export default function PathRun() {
                 </span>
                 <span className="ml-2 text-[var(--color-ink-soft)]">
                   of {progress.total} days done
-                  {progress.finished ? ' — that is the whole path.' : ''}
+                  {progress.finished ? '. That is the whole path.' : ''}
                 </span>
               </p>
             )}

@@ -28,9 +28,9 @@ const draftKey = (id) => `sahay:assessment-draft:${id}`;
 // congratulating anyone for answering a question.
 function encouragement(step, total, followUpPending) {
   const left = total - step;
-  if (step === 0) return 'Answer with your first instinct — it is usually the accurate one.';
+  if (step === 0) return 'Answer with your first instinct. It is usually the accurate one.';
   if (left === 1) {
-    return followUpPending ? 'Last symptom — then one short question about your days.' : 'Last one.';
+    return followUpPending ? 'Last symptom, then one short question about your days.' : 'Last one.';
   }
   if (left <= 3) return `${left} to go.`;
   if (step / total >= 0.5) return 'Past halfway.';
@@ -584,7 +584,7 @@ export default function AssessmentRun() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button className="w-auto px-6" onClick={advanceSet}>
-                {nextInSet ? `Continue — ${labelFor(nextInSet)}` : 'Finish'}
+                {nextInSet ? `Continue with ${labelFor(nextInSet)}` : 'Finish'}
               </Button>
               <Button
                 variant="secondary"
@@ -621,7 +621,7 @@ export default function AssessmentRun() {
                 )}
                 <p className={`text-sm leading-relaxed ${crisis?.level === 'acute' ? 'mt-3' : ''}`}>
                   {crisis?.message ||
-                    'Thank you for answering honestly. Please talk to someone about that — today if you can.'}
+                    'Thank you for answering honestly. Please talk to someone about that, today if you can.'}
                 </p>
                 <ul className="mt-4 space-y-1 text-sm">
                   {helplines.map((h) => (
@@ -765,7 +765,7 @@ export default function AssessmentRun() {
             {inSet ? (
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button className="w-auto px-6" onClick={advanceSet}>
-                  {nextInSet ? `Continue — ${labelFor(nextInSet)}` : 'See all three'}
+                  {nextInSet ? `Continue with ${labelFor(nextInSet)}` : 'See all three'}
                 </Button>
                 <Button
                   variant="secondary"

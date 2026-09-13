@@ -588,7 +588,7 @@ export default function Landing() {
                 day{streak === 1 ? '' : 's'} of grounding
               </span>
             </p>
-            <p className="mt-0.5 text-xs text-[var(--color-muted)]">Keep it going — consistency matters most.</p>
+            <p className="mt-0.5 text-xs text-[var(--color-muted)]">Keep it going. Consistency matters most.</p>
           </div>
         </div>
       )}

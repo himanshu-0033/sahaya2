@@ -75,7 +75,7 @@ export default function RouteChrome() {
   useEffect(() => {
     // Home keeps the fuller line, because that is the one that gets shared,
     // bookmarked and shown in a link preview.
-    document.title = pathname === '/' ? `${SITE} — you matter to us` : `${name} · ${SITE}`;
+    document.title = pathname === '/' ? `${SITE} · you matter to us` : `${name} · ${SITE}`;
   }, [name, pathname]);
 
   // `search` is in the dependencies because the check-in's stages live in the

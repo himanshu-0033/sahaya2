@@ -7,7 +7,7 @@
 // who opens this while the backend is down should still be able to read.
 //
 // WHAT THIS CONTENT HAS TO DO. Everything else in the app is careful about not
-// overclaiming — the grounding techniques carry an evidence strength, the
+// overclaiming: the grounding techniques carry an evidence strength, the
 // questionnaires carry their caveats. Prose is where overclaiming is easiest,
 // because it has no schema forcing the caveat into view. So the rule here is
 // that a claim strong enough to change what someone does carries its source,
@@ -30,10 +30,10 @@ export const ARTICLES = [
         heading: 'A perception experiment, not a personality decoder',
         blocks: [
           {
-            p: 'The popular version of the Rorschach — the one in films, where a detective looks at a blot and a psychiatrist learns his darkest secret — has almost nothing to do with what the test was built to do. Hermann Rorschach was a Swiss psychiatrist interested in perception: not what people saw, so much as how they went about seeing it.',
+            p: 'The popular version of the Rorschach, the one in films where a detective looks at a blot and a psychiatrist learns his darkest secret, has almost nothing to do with what the test was built to do. Hermann Rorschach was a Swiss psychiatrist interested in perception: not what people saw, so much as how they went about seeing it.',
           },
           {
-            p: 'He published Psychodiagnostik in 1921. He died the following year, aged 37, of a burst appendix — months after the book appeared and long before it became famous. He never saw what the world did with his plates, which is worth remembering whenever someone tells you what Rorschach believed his test could prove.',
+            p: 'He published Psychodiagnostik in 1921. He died the following year, aged 37, of a burst appendix, months after the book appeared and long before it became famous. He never saw what the world did with his plates, which is worth remembering whenever someone tells you what Rorschach believed his test could prove.',
           },
           {
             p: 'The question he was asking was closer to "does this person take in the whole shape or fasten on one fragment? Did the outline drive the answer, or the colour, or the shading?" than to "what does a bat mean?". Content is the part everyone remembers and the part that matters least.',
@@ -44,7 +44,7 @@ export const ARTICLES = [
         heading: 'What the ten plates actually are',
         blocks: [
           {
-            p: 'There are ten, always shown in the same order. Five are achromatic — black and grey on white: plates I, IV, V, VI and VII. Two add red to the black: plates II and III. The last three, VIII, IX and X, are fully coloured.',
+            p: 'There are ten, always shown in the same order. Five are achromatic, black and grey on white: plates I, IV, V, VI and VII. Two add red to the black: plates II and III. The last three, VIII, IX and X, are fully coloured.',
           },
           {
             p: 'That progression is designed, not decorative. Colour arrives abruptly at plate II and takes over completely at VIII, and how someone handles those two switches is itself part of what is being observed. The symmetry comes from the oldest trick there is: ink on paper, folded while wet.',
@@ -62,10 +62,10 @@ export const ARTICLES = [
           },
           {
             list: [
-              'Location — did you use the whole blot, a commonly-used part, or an unusual one?',
-              'Determinants — what property made it look like that: form, colour, shading, or an impression of movement?',
-              'Form quality — does the thing you saw actually fit the contours, judged against large tables of what other people report?',
-              'Popularity — is this one of the responses most people give to this plate?',
+              'Location. Did you use the whole blot, a commonly-used part, or an unusual one?',
+              'Determinants. What property made it look like that: form, colour, shading, or an impression of movement?',
+              'Form quality. Does the thing you saw actually fit the contours, judged against large tables of what other people report?',
+              'Popularity. Is this one of the responses most people give to this plate?',
             ],
           },
           {
@@ -86,10 +86,10 @@ export const ARTICLES = [
             p: 'The case against was put most sharply by Wood, Nezworski and Lilienfeld in What’s Wrong with the Rorschach? (2003): that norms were skewed enough to make ordinary people look disturbed, and that many of the claims made for the test had never survived a decent study.',
           },
           {
-            p: 'The most careful answer is a 2013 meta-analysis by Mihura and colleagues in Psychological Bulletin, which did the tedious and correct thing: it tested the variables one at a time instead of asking whether "the Rorschach" works. The result was a split decision. Variables about perception and thinking — form quality, the indices for disordered thought — held up. Many others, particularly those claimed to detect depression or abuse histories, did not.',
+            p: 'The most careful answer is a 2013 meta-analysis by Mihura and colleagues in Psychological Bulletin, which did the tedious and correct thing: it tested the variables one at a time instead of asking whether "the Rorschach" works. The result was a split decision. Variables about perception and thinking, form quality and the indices for disordered thought, held up. Many others, particularly those claimed to detect depression or abuse histories, did not.',
           },
           {
-            p: 'So the honest summary is narrow and slightly boring. The test has some traction on the question "is this person organising what they see the way most people do?", which matters for psychosis and thought disorder. It has very little on "is this person depressed" or "what is this person really like" — the two things the popular version promises.',
+            p: 'So the honest summary is narrow and slightly boring. The test has some traction on the question "is this person organising what they see the way most people do?", which matters for psychosis and thought disorder. It has very little on "is this person depressed" or "what is this person really like", the two things the popular version promises.',
           },
         ],
       },
@@ -97,13 +97,13 @@ export const ARTICLES = [
         heading: 'Why you can see them here at all',
         blocks: [
           {
-            p: 'When the plates went up on Wikipedia in 2009, psychological bodies objected formally. The concern was not copyright — that expired long ago — but test security: if you have already seen a plate and read what answers are considered typical, your responses in a real assessment are no longer naive, and the norms no longer describe you.',
+            p: 'When the plates went up on Wikipedia in 2009, psychological bodies objected formally. The concern was not copyright, which expired long ago, but test security: if you have already seen a plate and read what answers are considered typical, your responses in a real assessment are no longer naive, and the norms no longer describe you.',
           },
           {
             p: 'That concern is legitimate, and it is worth knowing before you scroll. It is also, at this point, somewhat moot: the images have been a search away for over fifteen years.',
           },
           {
-            p: 'What this app does with them is deliberately not the test. You are shown a plate, asked what you see, and your own words are reflected back to you at the end. Nothing is coded, nothing is scored, and no one is told what your answers mean — because nothing here is qualified to say.',
+            p: 'What this app does with them is deliberately not the test. You are shown a plate, asked what you see, and your own words are reflected back to you at the end. Nothing is coded, nothing is scored, and no one is told what your answers mean, because nothing here is qualified to say.',
           },
         ],
       },
@@ -143,7 +143,7 @@ export const ARTICLES = [
             p: 'Put a finger on your pulse and breathe slowly. It speeds up slightly as you breathe in and slows as you breathe out. That is respiratory sinus arrhythmia, it is happening right now, and it is not a sign of anything wrong.',
           },
           {
-            p: 'It happens because the vagus nerve — the main line of the body’s calming branch — puts a brake on the heart, and that brake eases on the in-breath and reapplies on the out-breath. Which gives you something unusual: a deliberate handle on a system that is otherwise automatic.',
+            p: 'It happens because the vagus nerve, the main line of the body’s calming branch, puts a brake on the heart, and that brake eases on the in-breath and reapplies on the out-breath. Which gives you something unusual: a deliberate handle on a system that is otherwise automatic.',
           },
           {
             p: 'Make the exhale longer than the inhale and you spend proportionally more time with the brake on. That is the entire trick behind every breathing practice on this site. It is mechanical rather than psychological, which is why it works in about ninety seconds and why it works even when you feel silly doing it.',
@@ -154,7 +154,7 @@ export const ARTICLES = [
         heading: 'Roughly six breaths a minute',
         blocks: [
           {
-            p: 'Most slow-breathing protocols land near six breaths a minute, and that is not a coincidence. Around that rate the rhythms of breathing and of blood-pressure regulation line up, and the swing in heart rate gets noticeably larger for the same effort — the reason it is sometimes called resonance frequency breathing.',
+            p: 'Most slow-breathing protocols land near six breaths a minute, and that is not a coincidence. Around that rate the rhythms of breathing and of blood-pressure regulation line up, and the swing in heart rate gets noticeably larger for the same effort, which is the reason it is sometimes called resonance frequency breathing.',
           },
           {
             p: 'You do not need to count or measure. A 4-second in and a 6-second out is already there. So is box breathing at 5-5-5-5.',
@@ -165,7 +165,7 @@ export const ARTICLES = [
         heading: 'What the trials actually show',
         blocks: [
           {
-            p: 'The most useful recent study is Balban and colleagues (2023) in Cell Reports Medicine. 111 adults, randomised, five minutes a day for a month. Cyclic sighing — two inhales, one long exhale — beat mindfulness meditation on both mood improvement and reduction in resting breathing rate.',
+            p: 'The most useful recent study is Balban and colleagues (2023) in Cell Reports Medicine. 111 adults, randomised, five minutes a day for a month. Cyclic sighing, which is two inhales and one long exhale, beat mindfulness meditation on both mood improvement and reduction in resting breathing rate.',
           },
           { practice: 'cyclic-sighing', label: 'Try cyclic sighing' },
           {
@@ -177,7 +177,7 @@ export const ARTICLES = [
         heading: 'Where the evidence is thinner than the internet suggests',
         blocks: [
           {
-            p: 'The 5-4-3-2-1 sensory exercise is taught in almost every clinic and school in the country. It is also barely tested as a standalone technique — most of what supports it is mechanistic reasoning and its role inside larger therapy packages, not trials of the exercise on its own.',
+            p: 'The 5-4-3-2-1 sensory exercise is taught in almost every clinic and school in the country. It is also barely tested as a standalone technique. Most of what supports it is mechanistic reasoning and its role inside larger therapy packages, not trials of the exercise on its own.',
           },
           {
             p: 'That does not make it useless. It makes it a sensible thing with thin evidence, which is a different claim from a proven one, and this is why every practice in the Calm section carries a strength label rather than a uniform endorsement.',
@@ -189,7 +189,7 @@ export const ARTICLES = [
         blocks: [
           {
             list: [
-              'Breath holds — the 7 in 4-7-8 — are worth skipping if you are pregnant, have epilepsy, or have a heart condition. Never do them while driving or in water.',
+              'Breath holds, the 7 in 4-7-8, are worth skipping if you are pregnant, have epilepsy, or have a heart condition. Never do them while driving or in water.',
               'Light-headedness means you are over-breathing, not that it is working. Go gentler and shorter.',
               'Cold water on the face slows the heart sharply. Give it a miss with a cardiac condition, and be careful with it if you have an eating disorder, where it can become another way to punish the body.',
             ],
@@ -247,7 +247,7 @@ export const ARTICLES = [
         heading: 'If you feel far away, or not quite real',
         blocks: [
           {
-            p: 'Flat, foggy, watching yourself from slightly outside. The aim is not calm — you are arguably too calm — but contact. Something concrete and physical, and eyes that move around the room rather than staring.',
+            p: 'Flat, foggy, watching yourself from slightly outside. The aim is not calm, since you are arguably too calm already, but contact. Something concrete and physical, and eyes that move around the room rather than staring.',
           },
           { practice: 'orienting', label: 'Orienting' },
           { practice: 'feet-on-floor', label: 'Feet on the floor' },
@@ -257,7 +257,7 @@ export const ARTICLES = [
         heading: 'If the voice in your head has turned cruel',
         blocks: [
           {
-            p: 'This one gets missed, because it does not feel like anxiety — it feels like being right about yourself. It is worth treating as a state that will pass rather than as a verdict that has arrived.',
+            p: 'This one gets missed, because it does not feel like anxiety. It feels like being right about yourself. It is worth treating as a state that will pass rather than as a verdict that has arrived.',
           },
           { practice: 'self-compassion-break', label: 'Self-compassion break' },
           { practice: 'butterfly-hug', label: 'Butterfly hug' },
@@ -277,7 +277,7 @@ export const ARTICLES = [
         heading: 'The part everyone skips',
         blocks: [
           {
-            p: 'Practise these when you are fine. A technique you have only ever read about is not available to you at 2am — what you can reach for in a bad state is roughly what you have already rehearsed in a good one.',
+            p: 'Practise these when you are fine. A technique you have only ever read about is not available to you at 2am. What you can reach for in a bad state is roughly what you have already rehearsed in a good one.',
           },
           {
             p: 'Two minutes on an ordinary Tuesday is worth more than an hour of reading about which method is best.',
@@ -328,7 +328,7 @@ export const ARTICLES = [
         heading: 'These scores move on their own',
         blocks: [
           {
-            p: 'A bad week of sleep, a cold, an exam, a fight, a fortnight that happened to contain a deadline — all of these move a score by several points without anything meaningful having changed about you. Over a short window that is most of what you are looking at.',
+            p: 'A bad week of sleep, a cold, an exam, a fight, a fortnight that happened to contain a deadline. All of these move a score by several points without anything meaningful having changed about you. Over a short window that is most of what you are looking at.',
           },
         ],
       },
@@ -336,7 +336,7 @@ export const ARTICLES = [
         heading: 'What they genuinely cannot do',
         blocks: [
           {
-            p: 'They cannot diagnose. Diagnosis involves history, duration, how much a thing is actually interfering with your life, and ruling out the medical and situational explanations — none of which fits in nine questions. A high score means the questions are worth taking to someone, and that is the whole of what it means.',
+            p: 'They cannot diagnose. Diagnosis involves history, duration, how much a thing is actually interfering with your life, and ruling out the medical and situational explanations, none of which fits in nine questions. A high score means the questions are worth taking to someone, and that is the whole of what it means.',
           },
           {
             p: 'There is one exception to the "it is only a number" framing. Items asking about self-harm or being better off dead are not scored like the rest; if one of those is true for you, that is worth acting on today, regardless of what the total came to.',
@@ -383,13 +383,13 @@ export const ARTICLES = [
           },
           {
             list: [
-              'Of the 100 who do have it, 88% get flagged — 88 correct flags, and 12 people missed.',
+              'Of the 100 who do have it, 88% get flagged: 88 correct flags, and 12 people missed.',
               'Of the 900 who do not, 88% correctly pass. But 12% do not, and that is 108 people flagged who are fine.',
               'So 196 students screen positive, and only 88 of them have the thing being screened for.',
             ],
           },
           {
-            p: 'Fewer than half — from a test that is right 88% of the time in both directions. If you screened positive, the single most likely explanation is still that you do not have a depressive disorder.',
+            p: 'Fewer than half, from a test that is right 88% of the time in both directions. If you screened positive, the single most likely explanation is still that you do not have a depressive disorder.',
           },
           {
             note: 'It gets worse as the condition gets rarer. At one in twenty rather than one in ten, the same test gives 44 true flags against 114 false ones: barely one positive in four is real.',
@@ -411,7 +411,7 @@ export const ARTICLES = [
         heading: 'What to actually do with a high score',
         blocks: [
           {
-            p: 'Treat it as a question rather than an answer. The useful response is a conversation with someone who can ask the follow-ups — how long, how much it is interfering, what else is going on, what changed. Those are what turn a flag into an assessment, and none of them fit on a form.',
+            p: 'Treat it as a question rather than an answer. The useful response is a conversation with someone who can ask the follow-ups: how long, how much it is interfering, what else is going on, what changed. Those are what turn a flag into an assessment, and none of them fit on a form.',
           },
           {
             p: 'The wrong response is to conclude you have a condition. The other wrong response is to dismiss it because you have just read that most positives are false. Yours might be one of the true ones, and that is the entire reason the question is worth asking out loud.',
@@ -446,7 +446,7 @@ export const ARTICLES = [
         heading: 'Start with one',
         blocks: [
           {
-            p: 'The instinct on seeing a list this long is to work through it, and that is the one approach worth avoiding. Twenty-one scores is not twenty-one times the insight — it is a pile of overlapping numbers, several of which will appear to contradict each other, and an afternoon spent being measured.',
+            p: 'The instinct on seeing a list this long is to work through it, and that is the one approach worth avoiding. Twenty-one scores is not twenty-one times the insight. It is a pile of overlapping numbers, several of which will appear to contradict each other, and an afternoon spent being measured.',
           },
           { p: 'Pick the one that matches what you are actually wondering about.' },
         ],
@@ -455,7 +455,7 @@ export const ARTICLES = [
         heading: '“I feel flat, or low, or like nothing is interesting”',
         blocks: [
           {
-            p: 'PHQ-9 asks about depression symptoms directly. WHO-5 reaches the same territory from the opposite side, asking what is present rather than what is wrong — some people find that far easier to answer honestly, and a low WHO-5 next to a mild PHQ-9 is a real and informative combination rather than a contradiction.',
+            p: 'PHQ-9 asks about depression symptoms directly. WHO-5 reaches the same territory from the opposite side, asking what is present rather than what is wrong. Some people find that far easier to answer honestly, and a low WHO-5 next to a mild PHQ-9 is a real and informative combination rather than a contradiction.',
           },
         ],
       },
@@ -463,7 +463,7 @@ export const ARTICLES = [
         heading: '“I can’t stop worrying” · “everything is too much”',
         blocks: [
           {
-            p: 'GAD-7 for worry that will not switch off. PSS-10 when the problem is less anxiety than sheer load — it asks how unpredictable and uncontrollable the last month felt rather than what happened in it. K10 is the one for knowing something is wrong but not being able to say what.',
+            p: 'GAD-7 for worry that will not switch off. PSS-10 when the problem is less anxiety than sheer load. It asks how unpredictable and uncontrollable the last month felt rather than what happened in it. K10 is the one for knowing something is wrong but not being able to say what.',
           },
         ],
       },
@@ -471,7 +471,7 @@ export const ARTICLES = [
         heading: '“I am exhausted” · “I can’t sleep”',
         blocks: [
           {
-            p: 'The CBI personal burnout subscale measures exhaustion without mentioning work, which is why it transfers to students. AIS-8 is for sleep specifically, and it is worth doing before drawing conclusions from any of the others — badly slept people score worse on nearly every scale here.',
+            p: 'The CBI personal burnout subscale measures exhaustion without mentioning work, which is why it transfers to students. AIS-8 is for sleep specifically, and it is worth doing before drawing conclusions from any of the others. Badly slept people score worse on nearly every scale here.',
           },
         ],
       },
@@ -496,15 +496,15 @@ export const ARTICLES = [
         blocks: [
           {
             list: [
-              'PHQ-15 — persistent physical symptoms: headaches, stomach trouble, dizziness.',
-              'PC-PTSD-5 — after something frightening or harmful happened to you.',
-              'SCOFF — food and eating.',
-              'SAS-SV and BSMAS — phone and social media use that has started to cost you something.',
-              'AUDIT-C — how much you drink.',
+              'PHQ-15, for persistent physical symptoms: headaches, stomach trouble, dizziness.',
+              'PC-PTSD-5, after something frightening or harmful happened to you.',
+              'SCOFF, for food and eating.',
+              'SAS-SV and BSMAS, for phone and social media use that has started to cost you something.',
+              'AUDIT-C, for how much you drink.',
             ],
           },
           {
-            note: 'These are screens for particular things, and a positive result on any of them is a reason to talk to someone rather than a conclusion. PC-PTSD-5 asks you to think about the worst thing that has happened to you — it will keep until a day you have chosen.',
+            note: 'These are screens for particular things, and a positive result on any of them is a reason to talk to someone rather than a conclusion. PC-PTSD-5 asks you to think about the worst thing that has happened to you. It will keep until a day you have chosen.',
           },
         ],
       },
@@ -533,7 +533,7 @@ export const ARTICLES = [
         heading: 'What is kept',
         blocks: [
           {
-            p: 'When you submit a questionnaire, DP Sahay AI stores your individual answers — not only the total. It also keeps the score, the band, the date, and which questionnaire it was.',
+            p: 'When you submit a questionnaire, DP Sahay AI stores your individual answers, not only the total. It also keeps the score, the band, the date, and which questionnaire it was.',
           },
           {
             p: 'That is more than the result screen needs, and it is the kind of thing worth knowing before you answer rather than after.',
@@ -550,7 +550,7 @@ export const ARTICLES = [
             p: 'That is the design of the app rather than an unfortunate side effect. DP Sahay AI was built for a hostel where somebody is responsible for the students in it, and a screening result nobody ever reads is not much use to anyone. But it does mean this is not a private diary and should not be treated as one.',
           },
           {
-            note: 'If what you want is somewhere to think without it being read, the grounding practices record only that you practised — never what you were feeling, and never anything you wrote.',
+            note: 'If what you want is somewhere to think without it being read, the grounding practices record only that you practised, never what you were feeling, and never anything you wrote.',
           },
         ],
       },

@@ -32,7 +32,7 @@ const CAMPUS = [
 
 const GROUPS = [
   { id: 'helplines', label: null, entries: HELPLINES },
-  { id: 'campus', label: 'On campus — IIT Kharagpur', entries: CAMPUS },
+  { id: 'campus', label: 'On campus, IIT Kharagpur', entries: CAMPUS },
 ];
 
 export default function CrisisContacts({ variant = 'button', dark = false }) {

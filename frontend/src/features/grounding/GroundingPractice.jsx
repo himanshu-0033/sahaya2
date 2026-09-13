@@ -557,7 +557,7 @@ export default function GroundingPractice() {
                       {moved > 0
                         ? `Up ${moved} from before you started.`
                         : moved < 0
-                          ? `Down ${Math.abs(moved)}. That happens — some of these surface a feeling before they settle it.`
+                          ? `Down ${Math.abs(moved)}. That happens. Some of these surface a feeling before they settle it.`
                           : 'No change. Worth trying a different one, or the same one for longer.'}
                     </p>
                   )}

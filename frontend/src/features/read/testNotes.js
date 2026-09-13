@@ -2,7 +2,7 @@
 //
 // The app already tells you your score and which band it falls in. What it did
 // not tell you is where the questionnaire came from, what it was actually
-// built to detect, or what it is known to be bad at — and those are the things
+// built to detect, or what it is known to be bad at, and those are the things
 // that decide whether a number deserves any weight.
 //
 // WHY THIS IS NOT FETCHED FROM THE API. Same reasoning as the essays in
@@ -11,7 +11,7 @@
 //
 // WHY THE NUMBERS ARE REPEATED HERE. `range` and `cutoffs` also exist, in
 // effect, in backend/lib/instruments.js as band tables. Duplicating them is a
-// real risk — the two can drift apart and then the reading section is quietly
+// real risk. The two can drift apart and then the reading section is quietly
 // lying about a score. test/test-notes.test.mjs guards this: it fails if an
 // instrument has no dossier, if a dossier names an instrument that does not
 // exist, or if a stated range disagrees with the band table it describes.
@@ -28,46 +28,46 @@ export const TEST_NOTES = {
     measures:
       'Four direct questions about wishing you were dead, feeling your family would be better off without you, thoughts of killing yourself in the past week, and any past attempt. A fifth question is asked only if you answered yes to one of those, and it asks whether the thoughts are happening right now.',
     origin:
-      'Developed at the US National Institute of Mental Health by Horowitz and colleagues and published in 2012, built to be usable by someone who is not a mental health specialist — a nurse in an emergency room with two minutes. It is public domain, which is why it can appear in an app like this one at all.',
+      'Developed at the US National Institute of Mental Health by Horowitz and colleagues and published in 2012, built to be usable by someone who is not a mental health specialist, a nurse in an emergency room with two minutes. It is public domain, which is why it can appear in an app like this one at all.',
     reading:
-      'It is deliberately over-inclusive. At a single yes it catches very nearly everyone who is at risk, and in exchange it flags a lot of people who are not — that trade is intentional and correct for a screen whose failure mode is somebody being missed.',
+      'It is deliberately over-inclusive. At a single yes it catches very nearly everyone who is at risk, and in exchange it flags a lot of people who are not. That trade is intentional and correct for a screen whose failure mode is somebody being missed.',
     limits:
       'It tells you that a conversation needs to happen. It cannot tell you how likely anything is to happen, and nothing can: no questionnaire in existence predicts suicide at the level of an individual person, and any tool claiming to is overselling itself. Treat a positive screen as the beginning of a conversation, never as a probability.',
     watch:
-      'Answering yes to anything here puts crisis numbers on your screen straight away and flags the result in the counsellor console. That is the intended behaviour rather than a punishment for answering — the point of asking is that someone gets to respond.',
+      'Answering yes to anything here puts crisis numbers on your screen straight away and flags the result in the counsellor console. That is the intended behaviour rather than a punishment for answering. The point of asking is that someone gets to respond.',
     sources: [
       {
         label: 'Horowitz, L. M. et al. (2012). Arch Pediatr Adolesc Med 166(12), 1170–1176.',
         url: 'https://pubmed.ncbi.nlm.nih.gov/23027429/',
       },
       {
-        label: 'NIMH ASQ Toolkit — the official screening materials and follow-up scripts.',
+        label: 'NIMH ASQ Toolkit: the official screening materials and follow-up scripts.',
         url: 'https://www.nimh.nih.gov/research/research-conducted-at-nimh/asq-toolkit-materials',
       },
     ],
   },
 
   'c-ssrs': {
-    range: 'No meaningful total — four triage levels instead',
+    range: 'No meaningful total, four triage levels instead',
     cutoffs:
       'Yes to Q1 or Q2 is low · Q3 is moderate · Q4 or Q5 is high · past behaviour is moderate, or high if it was within three months',
     measures:
-      'Six questions covering thoughts of being dead, thoughts of suicide, and then — only if you said yes to that second one — whether you have thought about how, whether there was any intention behind it, and whether you have worked out a plan. The last question asks whether you have ever acted on any of it.',
+      'Six questions covering thoughts of being dead, thoughts of suicide, and then, only if you said yes to that second one, whether you have thought about how, whether there was any intention behind it, and whether you have worked out a plan. The last question asks whether you have ever acted on any of it.',
     origin:
       'Developed by Posner and colleagues at Columbia University and published in 2011. It became the standard suicide-risk instrument in clinical trials and emergency departments largely because it separates thinking about suicide from planning it and from acting on it, which earlier scales tended to blur together.',
     reading:
       'Read the level, not the number of yeses. This is the one questionnaire in this app where adding the answers up would actively mislead: two yeses at the top of the scale is a low-risk pattern, while a single yes to the plan question is a high-risk one. The scale is built around that distinction and the app scores it that way.',
     limits:
-      'It sorts people into levels of concern. It does not predict, and cannot: the honest state of the evidence is that no instrument identifies which individual will act, and the C-SSRS is no exception despite how widely it is used. Its real value is that it makes the conversation specific — what kind of thought, how far it went — rather than leaving it at "are you okay".',
+      'It sorts people into levels of concern. It does not predict, and cannot: the honest state of the evidence is that no instrument identifies which individual will act, and the C-SSRS is no exception despite how widely it is used. Its real value is that it makes the conversation specific, what kind of thought and how far it went, rather than leaving it at "are you okay".',
     watch:
-      'The questions narrow deliberately. If you say no to having had thoughts of killing yourself, it does not go on to ask how you would do it — that skip is part of the instrument, not the app cutting things short.',
+      'The questions narrow deliberately. If you say no to having had thoughts of killing yourself, it does not go on to ask how you would do it. That skip is part of the instrument, not the app cutting things short.',
     sources: [
       {
         label: 'Posner, K. et al. (2011). Am J Psychiatry 168(12), 1266–1277.',
         url: 'https://pubmed.ncbi.nlm.nih.gov/22193671/',
       },
       {
-        label: 'The Columbia Lighthouse Project — the official protocol, and where use has to be requested.',
+        label: 'The Columbia Lighthouse Project: the official protocol, and where use has to be requested.',
         url: 'https://cssrs.columbia.edu/',
       },
     ],
@@ -78,7 +78,7 @@ export const TEST_NOTES = {
     range: '0–27',
     cutoffs: '5 mild · 10 moderate · 15 moderately severe · 20 severe',
     measures:
-      'Nine symptoms of depression over the last two weeks. The items are not a general mood question — they map one-to-one onto the diagnostic criteria for a major depressive episode, which is why sleep, appetite, concentration and movement all appear alongside sadness.',
+      'Nine symptoms of depression over the last two weeks. The items are not a general mood question. They map one-to-one onto the diagnostic criteria for a major depressive episode, which is why sleep, appetite, concentration and movement all appear alongside sadness.',
     origin:
       'Developed by Kroenke, Spitzer and Williams in 2001 as the depression module of the larger PRIME-MD questionnaire, redesigned so a busy clinician could hand it over in a waiting room. Pfizer funded it and released the PHQ family into the public domain, which is most of why it is now the most-used depression measure in the world.',
     reading:
@@ -86,7 +86,7 @@ export const TEST_NOTES = {
     limits:
       'It cannot distinguish depression from the things that imitate it. Grief, thyroid problems, anaemia, a new medication, chronic pain and simple sustained exhaustion all push this score up, and the questionnaire has no way to tell them apart from each other.',
     watch:
-      'Item 9 asks about thoughts of being better off dead or of hurting yourself. It is not really part of the total: if it is true for you, that matters on its own, whatever the other eight items added up to. The form then asks one more, also unscored — how difficult these problems have made work, home and other people — because two people can both score 14 with one of them still going to class and the other unable to leave a room.',
+      'Item 9 asks about thoughts of being better off dead or of hurting yourself. It is not really part of the total: if it is true for you, that matters on its own, whatever the other eight items added up to. The form then asks one more, also unscored: how difficult these problems have made work, home and other people. It is there because two people can both score 14 with one of them still going to class and the other unable to leave a room.',
     sources: [
       {
         label: 'Kroenke, K., Spitzer, R. L. & Williams, J. B. (2001). J Gen Intern Med 16(9), 606–613.',
@@ -99,11 +99,11 @@ export const TEST_NOTES = {
     range: '0–21',
     cutoffs: '5 mild · 10 moderate · 15 severe',
     measures:
-      'Seven symptoms of generalised anxiety over two weeks — the worrying itself, and what it does to the body: restlessness, irritability, being unable to settle.',
+      'Seven symptoms of generalised anxiety over two weeks. The worrying itself, and what it does to the body: restlessness, irritability, being unable to settle.',
     origin:
-      'Spitzer and colleagues built it in 2006 as the anxiety counterpart to the PHQ-9, starting from a longer item pool and keeping the seven that best separated people with generalised anxiety disorder from those without. Its form ends with the same unscored difficulty question the PHQ-9 uses — how hard these problems have made work, home and other people — and for the same reason: the total says how much anxiety, never how much it is costing you.',
+      'Spitzer and colleagues built it in 2006 as the anxiety counterpart to the PHQ-9, starting from a longer item pool and keeping the seven that best separated people with generalised anxiety disorder from those without. Its form ends with the same unscored difficulty question the PHQ-9 uses, asking how hard these problems have made work, home and other people, and for the same reason: the total says how much anxiety, never how much it is costing you.',
     reading:
-      'At 10 or more it identifies about 89% of people with generalised anxiety disorder. It also picks up panic disorder, social anxiety and PTSD at a decent rate — useful in practice, but it means a high score tells you that something anxious is going on, not which thing.',
+      'At 10 or more it identifies about 89% of people with generalised anxiety disorder. It also picks up panic disorder, social anxiety and PTSD at a decent rate. Useful in practice, but it means a high score tells you that something anxious is going on, not which thing.',
     limits:
       'It was validated on adults in primary care, not on students in an exam term. Anxiety that is proportionate to a genuinely difficult few weeks scores the same as anxiety that has detached from circumstance, and only one of those is a disorder.',
     watch:
@@ -120,11 +120,11 @@ export const TEST_NOTES = {
     range: '10–50',
     cutoffs: '20 mild · 25 moderate · 30 severe distress',
     measures:
-      'Non-specific psychological distress over the last four weeks — how often you felt nervous, hopeless, restless, worthless, or that everything was an effort.',
+      'Non-specific psychological distress over the last four weeks: how often you felt nervous, hopeless, restless, worthless, or that everything was an effort.',
     origin:
       'Commissioned by the US National Center for Health Statistics and built by Ronald Kessler and colleagues in 2002, specifically to be short enough to ride along on national health surveys. It is the distress measure behind a great deal of what is known about population mental health.',
     reading:
-      'Deliberately not diagnosis-shaped. A high score means "this person is having a hard time and is more likely than average to meet criteria for something" — it does not point at which something.',
+      'Deliberately not diagnosis-shaped. A high score means "this person is having a hard time and is more likely than average to meet criteria for something". It does not point at which something.',
     limits:
       'Its vagueness is the feature and the flaw. It is excellent at finding people worth talking to and useless for deciding what to talk about.',
     sources: [
@@ -141,7 +141,7 @@ export const TEST_NOTES = {
     measures:
       'Wellbeing over the last two weeks, asked entirely in the positive: feeling cheerful, calm, active, rested, interested. There is not a single symptom question in it.',
     origin:
-      'Written by the WHO Regional Office for Europe in 1998. The all-positive wording was a deliberate choice — it asks what is present rather than what is wrong, which people find markedly easier to answer honestly.',
+      'Written by the WHO Regional Office for Europe in 1998. The all-positive wording was a deliberate choice. It asks what is present rather than what is wrong, which people find markedly easier to answer honestly.',
     reading:
       'A low score is an absence of good things, not the presence of bad ones, and the two are genuinely different. You can score badly here while scoring fine on PHQ-9, and that gap is informative rather than contradictory.',
     limits:
@@ -157,15 +157,15 @@ export const TEST_NOTES = {
   // ---------------------------------------------------------------- stress
   'pss-10': {
     range: '0–40',
-    cutoffs: 'No clinical threshold — compare against population norms only',
+    cutoffs: 'No clinical threshold, compare against population norms only',
     measures:
       'How unpredictable, uncontrollable and overloaded your life has felt in the last month. Notably it does not ask what has happened to you.',
     origin:
-      'Cohen, Kamarck and Mermelstein published the original in 1983, on the then-contested premise that appraisal matters more than events — that the same month can be ruinous to one person and manageable to another, and that this difference is measurable.',
+      'Cohen, Kamarck and Mermelstein published the original in 1983, on the then-contested premise that appraisal matters more than events, that the same month can be ruinous to one person and manageable to another, and that this difference is measurable.',
     reading:
       'Four of the ten items are worded positively and scored in reverse, which is a check on people who answer everything down one column without reading.',
     limits:
-      'There is no cut-off and there should not be one. Perceived stress is a continuum with no natural line across it, so a score is only meaningful next to other scores — yours from last month, or a published average.',
+      'There is no cut-off and there should not be one. Perceived stress is a continuum with no natural line across it, so a score is only meaningful next to other scores: yours from last month, or a published average.',
     sources: [
       {
         label: 'Cohen, S., Kamarck, T. & Mermelstein, R. (1983). J Health Soc Behav 24(4), 385–396.',
@@ -185,7 +185,7 @@ export const TEST_NOTES = {
     reading:
       'The word "lonely" never appears, and that is deliberate. People under-report loneliness when it is named, because admitting to it feels like admitting to a personal failure. Asking about the components gets a truer answer.',
     limits:
-      'Three items cannot separate being alone from feeling alone, and those come apart constantly — a full hostel is one of the more reliable places to feel isolated.',
+      'Three items cannot separate being alone from feeling alone, and those come apart constantly. A full hostel is one of the more reliable places to feel isolated.',
     sources: [
       {
         label: 'Hughes, M. E. et al. (2004). Research on Aging 26(6), 655–672.',
@@ -221,9 +221,9 @@ export const TEST_NOTES = {
     origin:
       'Connor and colleagues distilled it in 2001 from the seventeen-item Social Phobia Inventory, hunting for the shortest possible screen for generalised social anxiety disorder.',
     reading:
-      'At a cut-off of 6 it catches roughly nine in ten people who have generalised social anxiety — very good sensitivity for three questions, bought at the cost of flagging a lot of people who are simply shy.',
+      'At a cut-off of 6 it catches roughly nine in ten people who have generalised social anxiety. Very good sensitivity for three questions, bought at the cost of flagging a lot of people who are simply shy.',
     limits:
-      'Shyness is not a disorder. What separates them is impairment — whether it is costing you things you wanted — and that question is not on the form.',
+      'Shyness is not a disorder. What separates them is impairment, whether it is costing you things you wanted, and that question is not on the form.',
     sources: [
       {
         label: 'Connor, K. M. et al. (2001). Depression and Anxiety 14(2), 137–140.',
@@ -237,7 +237,7 @@ export const TEST_NOTES = {
     range: '0–30',
     cutoffs: 'Below 15 is usually read as low self-esteem',
     measures:
-      'Global self-worth — your overall sense of being a person of value, rather than confidence at any particular thing.',
+      'Global self-worth: your overall sense of being a person of value, rather than confidence at any particular thing.',
     origin:
       'Morris Rosenberg wrote it in 1965 for a study of five thousand New York high-school students. Sixty years on it is still the standard, and almost every later self-esteem measure is compared against it.',
     reading:
@@ -254,9 +254,9 @@ export const TEST_NOTES = {
     range: '1–5 (mean of six items)',
     cutoffs: '3.0–4.3 is normal resilience · below 3.0 low · above 4.3 high',
     measures:
-      'The one thing its authors argued resilience actually means: how quickly you recover after something difficult. Not toughness, not resources — recovery speed.',
+      'The one thing its authors argued resilience actually means: how quickly you recover after something difficult. Not toughness, not resources. Recovery speed.',
     origin:
-      'Smith and colleagues, 2008, written as a corrective. Most resilience scales measure the ingredients thought to produce resilience — optimism, support, self-efficacy — and then claim to have measured resilience. This one measures the bouncing back directly.',
+      'Smith and colleagues, 2008, written as a corrective. Most resilience scales measure the ingredients thought to produce resilience, optimism, support and self-efficacy, and then claim to have measured resilience. This one measures the bouncing back directly.',
     reading:
       'Three of the six items are reversed, and the score is a mean rather than a sum, so it lands on the same 1–5 scale as the response options.',
     limits:
@@ -271,9 +271,9 @@ export const TEST_NOTES = {
 
   'gse-10': {
     range: '10–40',
-    cutoffs: 'No clinical threshold — higher is more self-efficacy',
+    cutoffs: 'No clinical threshold, higher is more self-efficacy',
     measures:
-      'Belief that you can handle new or difficult demands through your own effort — a general expectation of competence rather than skill at anything specific.',
+      'Belief that you can handle new or difficult demands through your own effort, a general expectation of competence rather than skill at anything specific.',
     origin:
       'Schwarzer and Jerusalem, first in German in 1981 and in the current form in 1995. It has since been translated into more than thirty languages and is one of the most cross-culturally tested scales in psychology.',
     reading:
@@ -287,13 +287,13 @@ export const TEST_NOTES = {
 
   flourishing: {
     range: '8–56',
-    cutoffs: 'No clinical threshold — higher is more flourishing',
+    cutoffs: 'No clinical threshold, higher is more flourishing',
     measures:
       'Whether life feels like it is going well in the ways people actually care about: relationships, purpose, self-respect, optimism, being of use to others.',
     origin:
       'Ed Diener and colleagues, 2010, part of a long argument that measuring the absence of illness leaves out most of what makes a life good.',
     reading:
-      'All eight items point the same way and it produces one number, which makes it a blunt instrument by design — it is meant to sit alongside a symptom measure, not replace one.',
+      'All eight items point the same way and it produces one number, which makes it a blunt instrument by design. It is meant to sit alongside a symptom measure, not replace one.',
     limits:
       'Highly sensitive to how the last week went. It is also the kind of scale people answer aspirationally.',
     sources: [
@@ -308,11 +308,11 @@ export const TEST_NOTES = {
     range: '1–5 (mean of twelve items)',
     cutoffs: 'Roughly: below 2.5 low · 2.5–3.5 moderate · above 3.5 high',
     measures:
-      'How you treat yourself when things go badly — across kindness versus self-judgement, common humanity versus isolation, and mindfulness versus over-identification.',
+      'How you treat yourself when things go badly, across kindness versus self-judgement, common humanity versus isolation, and mindfulness versus over-identification.',
     origin:
       'Raes, Pommier, Neff and Van Gucht, 2011, a twelve-item short form of Kristin Neff’s original twenty-six-item scale.',
     reading:
-      'Six of the twelve items are reversed. The short form is only recommended for the total score — the subscales are too short to be reliable on their own, and reading them individually is a known misuse.',
+      'Six of the twelve items are reversed. The short form is only recommended for the total score. The subscales are too short to be reliable on their own, and reading them individually is a known misuse.',
     limits:
       'There is an ongoing methodological argument about whether the reversed items measure self-compassion at all, or simply measure the absence of self-criticism, which may be a different thing.',
     sources: [
@@ -328,7 +328,7 @@ export const TEST_NOTES = {
     range: '0–100',
     cutoffs: '50 or above is the usual marker for moderate burnout',
     measures:
-      'Personal burnout — physical and psychological exhaustion, regardless of what caused it.',
+      'Personal burnout: physical and psychological exhaustion, regardless of what caused it.',
     origin:
       'Kristensen and colleagues, 2005, built for a large Danish study of human-service workers and released free of charge, in deliberate contrast to the licensed Maslach inventory that dominated the field.',
     reading:
@@ -352,7 +352,7 @@ export const TEST_NOTES = {
     origin:
       'Soldatos, Dikeos and Paparrigopoulos, 2000, deliberately mapped onto a diagnostic definition rather than assembled from items that happened to correlate.',
     reading:
-      'The last three items are about daytime function — mood, ability, sleepiness. That is the part that distinguishes insomnia as a disorder from simply sleeping less than you would like.',
+      'The last three items are about daytime function: mood, ability, sleepiness. That is the part that distinguishes insomnia as a disorder from simply sleeping less than you would like.',
     limits:
       'It does not ask why. Sleep apnoea, a noisy hostel, caffeine, a phone in bed and anxiety all produce the same score, and the treatment for each is completely different.',
     sources: [
@@ -385,13 +385,13 @@ export const TEST_NOTES = {
 
   bsmas: {
     range: '6–30',
-    cutoffs: 'No settled threshold — 19 and 24 both appear in the literature',
+    cutoffs: 'No settled threshold, 19 and 24 both appear in the literature',
     measures:
       'Social media use mapped onto the six components proposed for behavioural addiction: salience, mood modification, tolerance, withdrawal, conflict and relapse.',
     origin:
       'Andreassen and colleagues, 2016, generalised from their earlier Bergen Facebook Addiction Scale as it became obvious that people were not only on one platform.',
     reading:
-      'One item per component, which makes it fast and coarse. The absence of an agreed cut-off is honest rather than sloppy — the field has not settled on where the line is.',
+      'One item per component, which makes it fast and coarse. The absence of an agreed cut-off is honest rather than sloppy. The field has not settled on where the line is.',
     limits:
       'The addiction framework itself is contested for social media. Heavy use that is genuinely costing you something is worth addressing whether or not it qualifies as an addiction.',
     sources: [
@@ -426,7 +426,7 @@ export const TEST_NOTES = {
     range: '0–30',
     cutoffs: '5 low · 10 medium · 15 high somatic symptom burden',
     measures:
-      'How much you have been bothered by fifteen physical symptoms over the last four weeks — stomach pain, headaches, dizziness, palpitations, and so on.',
+      'How much you have been bothered by fifteen physical symptoms over the last four weeks: stomach pain, headaches, dizziness, palpitations, and so on.',
     origin:
       'Kroenke and colleagues, 2002, from the same PRIME-MD work as the PHQ-9, covering the physical complaints that account for a large share of all primary-care visits.',
     reading:
@@ -474,7 +474,7 @@ export const TEST_NOTES = {
     reading:
       'Two or more is the threshold, and it is set to over-refer on purpose. In eating disorders, missing a case is far more costly than an unnecessary conversation.',
     limits:
-      'Developed on young women in the UK and it performs less well elsewhere — particularly for men, for binge eating disorder, and for ARFID, none of which it was built to find.',
+      'Developed on young women in the UK and it performs less well elsewhere, particularly for men, for binge eating disorder, and for ARFID, none of which it was built to find.',
     watch:
       'A positive screen is not a diagnosis and is not a verdict on your body. It is a reason to talk to someone who knows this area.',
     sources: [

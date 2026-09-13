@@ -47,7 +47,7 @@ function StreakCard({ streak }) {
       <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
         {days <= 1
           ? 'That is the hard one done. Tomorrow is easier.'
-          : 'Nothing is riding on this — it is just a count of the days you came back.'}
+          : 'Nothing is riding on this. It is just a count of the days you came back.'}
       </p>
     </div>
   );

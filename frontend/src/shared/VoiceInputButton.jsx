@@ -74,7 +74,7 @@ export default function VoiceInputButton({
       const message =
         event.error === 'not-allowed'
           ? 'Microphone permission was declined'
-          : 'Could not hear that — try typing instead';
+          : 'Could not hear that, try typing instead';
       setError(message);
       onErrorRef.current?.(message);
       setListening(false);

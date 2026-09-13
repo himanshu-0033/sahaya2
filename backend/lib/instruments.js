@@ -782,7 +782,7 @@ export const INSTRUMENTS = [
   {
     id: 'cbi-personal',
     name: 'CBI (personal)',
-    fullName: 'Copenhagen Burnout Inventory — personal burnout',
+    fullName: 'Copenhagen Burnout Inventory, personal burnout',
     domain: 'Burnout',
     blurb: 'Physical and emotional exhaustion.',
     minutes: 2,
@@ -838,7 +838,7 @@ export const INSTRUMENTS = [
   {
     id: 'sas-sv',
     name: 'SAS-SV',
-    fullName: 'Smartphone Addiction Scale — Short Version',
+    fullName: 'Smartphone Addiction Scale, Short Version',
     domain: 'Habits',
     blurb: 'How much your phone use is interfering.',
     minutes: 2,
@@ -866,7 +866,7 @@ export const INSTRUMENTS = [
   {
     id: 'audit-c',
     name: 'AUDIT-C',
-    fullName: 'Alcohol Use Disorders Identification Test — Consumption',
+    fullName: 'Alcohol Use Disorders Identification Test, Consumption',
     domain: 'Habits',
     blurb: 'A three-question screen for drinking patterns.',
     minutes: 1,
@@ -1020,7 +1020,7 @@ export const INSTRUMENTS = [
     id: 'scs-sf',
     higherIsBetter: true,
     name: 'SCS-SF',
-    fullName: 'Self-Compassion Scale — Short Form',
+    fullName: 'Self-Compassion Scale, Short Form',
     domain: 'Strengths',
     blurb: 'How you treat yourself when things go badly.',
     minutes: 3,

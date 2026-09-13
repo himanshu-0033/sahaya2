@@ -42,11 +42,11 @@ export default function CaregiverResident() {
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-[var(--color-cream-soft)] p-6 text-sm">
               <div>
                 <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Phone</p>
-                <p className="mt-1">{data.resident.phone || '—'}</p>
+                <p className="mt-1">{data.resident.phone || 'Not given'}</p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Date of birth</p>
-                <p className="mt-1">{data.resident.dob || '—'}</p>
+                <p className="mt-1">{data.resident.dob || 'Not given'}</p>
               </div>
             </div>
 
@@ -86,7 +86,7 @@ export default function CaregiverResident() {
                     <tr key={c.date} className="border-t border-[var(--color-ink)]/8">
                       <td className="py-2 pr-4 whitespace-nowrap">{c.date}</td>
                       <td className="py-2 pr-4 whitespace-nowrap">{moodLabel(c.mood)}</td>
-                      <td className="py-2 pr-4">{(c.words || []).filter(Boolean).join(', ') || '—'}</td>
+                      <td className="py-2 pr-4">{(c.words || []).filter(Boolean).join(', ') || 'None'}</td>
                       <td className="py-2 text-[var(--color-flag-deep)]">
                         {c.flagged ? c.flagReasons.join('; ') : ''}
                       </td>

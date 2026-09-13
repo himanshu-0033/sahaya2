@@ -14,7 +14,7 @@ export default function MoodSparkline({ history, height = 40, barWidth = 8 }) {
         return (
           <div
             key={entry.date}
-            title={`${entry.date} — ${moodLabel(entry.moodScore)}`}
+            title={`${entry.date}, ${moodLabel(entry.moodScore)}`}
             className={entry.flagged ? 'bg-[var(--color-flag)]' : 'bg-[var(--color-teal)]'}
             style={{
               width: barWidth,

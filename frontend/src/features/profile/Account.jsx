@@ -75,7 +75,7 @@ function Avatar({ name, picture }) {
 }
 
 // One labelled fact, rendered only when there is a value. A row reading
-// "Phone —" is worse than no row: it looks like something that failed to load
+// "Phone, with nothing after it" is worse than no row: it looks like something that failed to load
 // rather than something never filled in.
 function Fact({ label, value }) {
   if (!value) return null;

@@ -60,7 +60,7 @@ export default function StreakBadge({ className = '' }) {
   return (
     <Link
       to={checkedIn ? '/results' : '/checkin'}
-      title={checkedIn ? `${days} in a row` : `${days} in a row — today is still open`}
+      title={checkedIn ? `${days} in a row` : `${days} in a row, today is still open`}
       aria-label={
         checkedIn
           ? `Check-in streak: ${days}`

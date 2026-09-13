@@ -464,7 +464,7 @@ export default function CheckIn() {
                 <span className="num shrink-0 text-[var(--color-muted)]">2</span>
                 <span>
                   {platesError
-                    ? 'The ten inkblot plates — not available right now.'
+                    ? 'The ten inkblot plates are not available right now.'
                     : 'The ten Rorschach plates, in your own words. About ten minutes.'}
                 </span>
               </li>
