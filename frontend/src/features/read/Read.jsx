@@ -4,6 +4,7 @@ import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { ARTICLES, TOPICS } from './articles.js';
+import { SHELVES } from './books.js';
 import { TEST_INDEX } from './testIndex.js';
 import { topicPhoto } from '../../shared/photos.js';
 
@@ -94,6 +95,64 @@ export default function Read() {
           <ArticleCard key={article.id} article={article} index={i} />
         ))}
       </div>
+
+      {/* Books, above the questionnaire index and below the essays.
+
+          The essays explain this app; nothing here pointed anywhere outside it.
+          These are the books people have gone on recommending to each other for
+          decades, which is a harder test than being new — and a student who
+          reads one of them gets more out of it than out of anything we could
+          write. Shelved rather than listed flat: "I cannot sleep and my chest
+          is tight" and "something happened to me" do not want the same book. */}
+      <section className="stack-section">
+        <p className="marginalia">Books, if you want to go further</p>
+        <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          Not a syllabus. Six shelves, and the reason each one is here.
+        </p>
+
+        <div className="mt-6 grid gap-7">
+          {SHELVES.map((shelf) => (
+            <div key={shelf.id}>
+              <h2 className="font-display text-lg leading-snug">{shelf.title}</h2>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--color-muted)]">
+                {shelf.blurb}
+              </p>
+
+              <ul className="mt-3.5 grid gap-2.5">
+                {shelf.books.map((book) => (
+                  <li key={book.title} className="card p-4">
+                    <p className="text-sm leading-snug">
+                      {book.title}
+                      {book.year && (
+                        <span className="num ml-1.5 text-xs text-[var(--color-muted)]">
+                          {book.year}
+                        </span>
+                      )}
+                    </p>
+                    <p className="mt-0.5 text-xs text-[var(--sec-read-deep)]">{book.author}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                      {book.why}
+                    </p>
+                    {/* The caution rides with the book, not in a footnote that
+                        can be scrolled past. */}
+                    {book.note && (
+                      <p className="mt-2 border-l-2 border-[var(--color-amber)] pl-3 text-xs leading-relaxed text-[var(--color-muted)]">
+                        {book.note}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-6 max-w-lg text-xs leading-relaxed text-[var(--color-muted)]">
+          Nobody pays to be on this list and nothing here is a shop link. A book is also not
+          treatment — several of these are memoirs of being seriously unwell, and they can be
+          heavy in a bad week. Put one down if it is not helping.
+        </p>
+      </section>
 
       {/* Every questionnaire in the Tests tab, grouped the way that tab groups
           them. A list rather than twenty-one more cards: these are reference
