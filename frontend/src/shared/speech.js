@@ -1,4 +1,4 @@
-// Spoken replies, through the browser's own speechSynthesis — no key, no new
+// Spoken replies, through the browser's own speechSynthesis. No key, no new
 // dependency, and on most platforms the voice is generated on the device.
 // The listening half lives in VoiceInputButton.jsx.
 export const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
@@ -15,7 +15,7 @@ export function stopSpeaking() {
 // to someone with their eyes shut, where the chat voice is answering a question.
 export const GUIDE_RATE = 0.82;
 
-// `onEnd` runs when the voice stops — including when there was no voice at all,
+// `onEnd` runs when the voice stops, including when there was no voice at all,
 // because the hands-free loop reopens the mic from this callback and a browser
 // without synthesis must not leave the person waiting for a turn that never comes.
 export function speak(text, onEnd, rate = 0.95) {

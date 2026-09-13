@@ -1,6 +1,6 @@
 // Groq, via its OpenAI-compatible chat-completions endpoint.
 //
-// Plain fetch, same as cerebras.js and gemini.js — one POST, one JSON body.
+// Plain fetch, same as cerebras.js and gemini.js: one POST, one JSON body.
 const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
 // llama-3.3-70b-versatile is Groq's general-purpose free-tier model. An env
@@ -59,7 +59,7 @@ export async function groqReply({ system, messages }) {
   }
 
   if (res.status === 401 || res.status === 403) {
-    console.error(`[groq] ${res.status} — GROQ_API_KEY rejected or insufficient permissions`);
+    console.error(`[groq] ${res.status}: GROQ_API_KEY rejected or insufficient permissions`);
     throw new Error('The chat is not available right now.');
   }
 

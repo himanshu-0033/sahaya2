@@ -1,5 +1,5 @@
 // Every `-deep` token has one job: to be legible as text. This asserts it, on
-// the two grounds the app actually paints — its own cream, and the white card
+// the two grounds the app actually paints: its own cream, and the white card
 // that sits on top of it.
 //
 // It exists because this bug has now been found twice. The section greys went
@@ -37,7 +37,7 @@ const GROUNDS = { 'app cream': '#f4f7f3', 'white card': '#ffffff' };
 const css = readFileSync(join(here, '..', 'src', 'styles', 'design-tokens.css'), 'utf8');
 const deepTokens = [...css.matchAll(/--([\w-]*-deep):\s*(#[0-9a-fA-F]{6})/g)];
 
-assert.ok(deepTokens.length > 0, 'no -deep tokens found — did the token build run?');
+assert.ok(deepTokens.length > 0, 'no -deep tokens found. Did the token build run?');
 
 const failures = [];
 for (const [, name, hex] of deepTokens) {
@@ -49,8 +49,8 @@ for (const [, name, hex] of deepTokens) {
 
 assert.deepEqual(failures, [], `these read below ${FLOOR}:1:\n  ${failures.join('\n  ')}`);
 
-// The accents are literal hex rather than tokens — the pacer interpolates alpha
-// into them at runtime — so they are checked from their own source.
+// The accents are literal hex rather than tokens, because the pacer interpolates
+// alpha into them at runtime, so they are checked from their own source.
 const accents = readFileSync(join(here, '..', 'src', 'shared', 'accents.js'), 'utf8');
 const accentDeeps = [...accents.matchAll(/(\w+):\s*\{[^}]*deep:\s*'(#[0-9a-fA-F]{6})'/g)];
 

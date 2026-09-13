@@ -9,7 +9,7 @@
 // they still do exactly the right thing as an orb, a gradient, a ring stroke or
 // a tint. What they cannot do any more is carry a letter. The app's ground is
 // #f4f7f3 now, and every one of these lands between 1.5:1 and 2.3:1 against it
-// — against a floor of 4.5:1. That is the same class of bug as the section
+// and the floor is 4.5:1. That is the same class of bug as the section
 // greys that got fixed, one layer further in.
 //
 // So `deep` is the third step: the same hue, dark enough to read, measured on

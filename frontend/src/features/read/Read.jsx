@@ -4,7 +4,7 @@ import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { ARTICLES, TOPICS } from './articles.js';
-import { SHELVES } from './books.js';
+import { PAPERS, SHELVES } from './books.js';
 import { TEST_INDEX } from './testIndex.js';
 import { topicPhoto } from '../../shared/photos.js';
 
@@ -100,7 +100,7 @@ export default function Read() {
 
           The essays explain this app; nothing here pointed anywhere outside it.
           These are the books people have gone on recommending to each other for
-          decades, which is a harder test than being new — and a student who
+          decades, which is a harder test than being new. A student who
           reads one of them gets more out of it than out of anything we could
           write. Shelved rather than listed flat: "I cannot sleep and my chest
           is tight" and "something happened to me" do not want the same book. */}
@@ -115,7 +115,7 @@ export default function Read() {
         <p className="mt-2 max-w-lg text-xs leading-relaxed text-[var(--color-muted)]">
           Chosen three ways: some are on Reading Well Books on Prescription, picked by health
           experts and people with lived experience and endorsed by the British Psychological
-          Society. Some have been through trials as books — reading them, on their own, was the
+          Society. Some have been through trials as books: reading them, on their own, was the
           thing tested. And where one is famous and also disputed, the dispute is in the entry.
         </p>
 
@@ -167,9 +167,54 @@ export default function Read() {
 
         <p className="mt-6 max-w-lg text-xs leading-relaxed text-[var(--color-muted)]">
           Nobody pays to be on this list and nothing here is a shop link. A book is also not
-          treatment — several of these are memoirs of being seriously unwell, and they can be
+          treatment. Several of these are memoirs of being seriously unwell, and they can be
           heavy in a bad week. Put one down if it is not helping.
         </p>
+      </section>
+
+      {/* The studies the exercises came out of.
+
+          The essays cite their sources at the foot of the piece, which is the
+          right place for a source and the wrong place for an invitation. This
+          says plainly that the breathing screen and the writing box came from
+          particular experiments, names them, and gives their limits the same
+          type size as their findings. Someone who suspects we are making it up
+          can go and check, which is the only answer to that suspicion worth
+          giving. */}
+      <section className="stack-section">
+        <p className="marginalia">The studies behind the exercises</p>
+        <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
+          Three papers this app leans on, and what each one does not show.
+        </p>
+
+        <div className="mt-5 grid gap-2.5">
+          {PAPERS.map((paper) => (
+            <div key={paper.citation} className="card p-5">
+              <p className="font-display text-lg leading-snug">{paper.claim}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                {paper.finding}
+              </p>
+              <p className="mt-3 border-l-2 border-[var(--color-amber)] pl-3 text-xs leading-relaxed text-[var(--color-muted)]">
+                <span className="text-[var(--color-amber-deep)]">What it does not show. </span>
+                {paper.limits}
+              </p>
+              <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
+                {paper.citation}
+              </p>
+              {paper.practice && (
+                <Link
+                  to={paper.practice.to}
+                  className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-read-deep)]"
+                >
+                  Try it: {paper.practice.label}
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Every questionnaire in the Tests tab, grouped the way that tab groups
