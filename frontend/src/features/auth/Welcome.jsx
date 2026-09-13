@@ -21,6 +21,14 @@ import { getSession } from './session.js';
 // a screening tool to someone who may not be. So the structure is copied and
 // the tone is not: no stock smiles, no five-star rows, no urgency.
 //
+// The hero has since been rebuilt against a reference in the right trade — an
+// actual mental-health app's site rather than a wedding planner's. Three things
+// came from it. The hero shows the product mid-conversation instead of an
+// artefact from inside it. The ask sits under the sentence that earns it,
+// leaving the far column to the picture. And the instruments are named above
+// the fold, because provenance is what answers "why should I trust this" and it
+// was six sections down, below everything it should have been vouching for.
+//
 // Sign-in is unchanged and untouched. DarkSignInHero still owns the whole auth
 // flow; this page simply stands in front of it, and every call to action swaps
 // it in. Nothing about a working login was risked to add a landing page.
@@ -123,9 +131,126 @@ const FOOTER = [
   },
 ];
 
-// The plates, overlapped rather than spaced. Three neatly separated thumbnails
-// would quietly contradict a page that says there are ten.
-const FAN = ['01', '03', '08'];
+// The hero visual: the product, mid-conversation.
+//
+// Three overlapped Rorschach plates stood here. They are the most distinctive
+// thing the app owns and also the least representative of using it — an
+// ambiguous clinical artefact, asking a stranger to decode something before
+// anything on the page has said what it is for. A conversation explains itself
+// on sight, and it is the part someone actually opens on a Tuesday. The plates
+// keep their own card in "What's inside", under the sentence that explains them.
+//
+// aria-hidden, and deliberately: this is a picture of the product, not a
+// transcript. Read aloud it would sound like somebody's real conversation, and
+// the paragraph beside it already says what the app does.
+function ChatMockup() {
+  const bubble = 'max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.8125rem] leading-relaxed';
+
+  return (
+    <div className="mx-auto w-full max-w-sm" aria-hidden="true">
+      <div className="w-card overflow-hidden">
+        <div
+          className="flex items-center gap-2.5 border-b px-5 py-3.5"
+          style={{ borderColor: 'var(--w-line)' }}
+        >
+          <Logo size={26} glow={false} />
+          <span className="font-display text-[1.05rem] leading-none">DP</span>
+
+          {/* The streak rides in the bar rather than on a pill overlapping the
+              card's lower rim, where it sat on top of the mic — and where, being
+              absolutely positioned past the right edge, it was one more thing
+              that could widen the document on a narrow screen. */}
+          <span
+            className="ml-auto flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1"
+            style={{ background: 'var(--w-accent-wash)' }}
+          >
+            <span
+              className="flex h-4 w-4 items-center justify-center rounded-full"
+              style={{ background: 'var(--w-accent-deep)' }}
+            >
+              <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <span className="text-[0.6875rem] font-medium whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
+              4 days
+            </span>
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-2.5 px-5 py-5">
+          {/* What the check-in handed over — the two halves of the app, shown
+              joined up rather than described as separate features. */}
+          <div className="mb-1 flex flex-wrap items-center gap-1.5">
+            <span className="text-[0.6875rem]" style={{ color: 'var(--w-ink-soft)' }}>
+              You said
+            </span>
+            {['tired', 'flat'].map((w) => (
+              <span
+                key={w}
+                className="rounded-full px-2.5 py-0.5 text-[0.75rem]"
+                style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
+              >
+                {w}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex justify-start">
+            <span className={bubble} style={{ background: 'var(--w-accent-wash)', color: 'var(--w-ink)' }}>
+              You wrote &lsquo;tired&rsquo; and &lsquo;flat&rsquo; today. What is sitting heaviest?
+            </span>
+          </div>
+
+          <div className="flex justify-end">
+            <span className={bubble} style={{ background: 'var(--w-accent-deep)', color: '#fff' }}>
+              exams mostly. and i am not sleeping
+            </span>
+          </div>
+
+          <div className="flex justify-start">
+            <span className={bubble} style={{ background: 'var(--w-accent-wash)', color: 'var(--w-ink)' }}>
+              That is a lot to hold at once. How long has the sleep been like this?
+            </span>
+          </div>
+        </div>
+
+        {/* The composer, mic included — you can say it out loud instead. */}
+        <div
+          className="flex items-center gap-2 border-t px-4 py-3"
+          style={{ borderColor: 'var(--w-line)' }}
+        >
+          <span
+            className="min-w-0 flex-1 truncate rounded-full border px-3.5 py-2 text-[0.75rem]"
+            style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink-soft)' }}
+          >
+            Say as much or as little as you like…
+          </span>
+          <span
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+            style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="9" y="3" width="6" height="11" rx="3" />
+              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0" />
+              <path d="M12 18v3" />
+            </svg>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  );
+}
 
 function Ornament() {
   return (
@@ -211,11 +336,16 @@ export default function Welcome({ onSignedIn }) {
       {/* ------------------------------------------------------------ header */}
       <header
         className="sticky top-0 z-40 border-b backdrop-blur-md"
-        style={{ borderColor: 'var(--w-line)', background: 'rgba(253,242,248,0.88)' }}
+        // The page's own ground, not pink-50. This tint and the two Logo
+        // overrides below were the last of the blush palette the page was first
+        // built in: the ground went sage precisely so the green mark would stop
+        // reading as a foreign object, and a pink bar over a sage page under a
+        // pink logo was the same two-brand problem the other way round.
+        style={{ borderColor: 'var(--w-line)', background: 'rgba(244,247,243,0.88)' }}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
           <span className="flex items-center gap-2.5">
-            <Logo size={30} glow={false} from="#ec4899" to="#9d174d" />
+            <Logo size={30} glow={false} />
             <span className="font-display text-[1.2rem] leading-none">
               DP Sahay
               <span className="ml-1.5 text-[0.78em]" style={{ color: 'var(--w-accent-deep)' }}>
@@ -271,41 +401,38 @@ export default function Welcome({ onSignedIn }) {
               you ask them to.
             </p>
 
-            {/* The plates close the left column: the most distinctive thing
-                the product owns, under the sentence that explains them. */}
-            <div className="mt-10 flex w-full justify-center lg:mt-12 lg:justify-start">
-            <div className="plate-fan flex items-center">
-              {FAN.map((n, i) => (
-                <span
-                  key={n}
-                  className="block overflow-hidden rounded-2xl border"
-                  // Size and overlap live in CSS. At a fixed 10.5rem each the
-                  // three plates came to 408px against ~350px of content box
-                  // on a 390px phone, with no overflow:hidden anywhere above
-                  // them to catch it. Rotation, stacking and shadow stay here
-                  // — they are the parts that differ per plate.
-                  style={{
-                    borderColor: 'var(--w-line)',
-                    background: '#f7e6ef',
-                    zIndex: i,
-                    transform: `rotate(${(i - 1) * 5}deg)`,
-                    boxShadow: '0 26px 50px -28px rgba(51,57,58,0.6)',
-                  }}
+            {/* The ask sits under the sentence that earns it, rather than in a
+                panel across the gutter. The picture of the product has the
+                other column now, and a hero whose only actionable thing was
+                over there left the headline with nothing beneath it. */}
+            {!signingIn && (
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={go}
+                  className="press rounded-full px-7 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ background: 'var(--w-accent-deep)' }}
                 >
-                  <img
-                    src={`/plates/rorschach-${n}.jpg`}
-                    alt=""
-                    loading="eager"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                </span>
-              ))}
-            </div>
-            </div>
+                  Sign in to start
+                </button>
+                <a
+                  href="#inside"
+                  className="press rounded-full border px-7 py-3.5 text-center text-[0.9375rem] font-medium transition-colors"
+                  style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
+                >
+                  See what is inside
+                </a>
+              </div>
+            )}
+
+            <p className="mt-5 text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
+              Free. No card. You can delete everything from your account page.
+            </p>
           </div>
 
-          {/* The right column: the only thing on this screen you can act on. */}
+          {/* The right column: the product, and — the moment it is asked for —
+              the door. The form takes the mockup's place, so signing in changes
+              the contents of a panel that was already there. */}
           <div className="w-full lg:w-[45%]">
             {signingIn ? (
               <div className="w-card mx-auto max-w-md p-6 sm:p-7">
@@ -329,33 +456,8 @@ export default function Welcome({ onSignedIn }) {
                 </button>
               </div>
             ) : (
-              /* Before the form is opened this column holds the two calls to
-                 action. A card, so that the column reads as the place where
-                 something happens rather than as two buttons adrift in it —
-                 and so the swap to the form below changes the contents of a
-                 panel that was already there, not the shape of the page. */
-              <div className="w-card mx-auto max-w-md p-6 text-center sm:p-7">
-                <button
-                  type="button"
-                  onClick={go}
-                  className="press w-full rounded-full px-7 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
-                  style={{ background: 'var(--w-accent-deep)' }}
-                >
-                  Sign in to start
-                </button>
-                <a
-                  href="#inside"
-                  className="press mt-3 block w-full rounded-full border px-7 py-3.5 text-[0.9375rem] font-medium transition-colors"
-                  style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
-                >
-                  See what is inside
-                </a>
-              </div>
+              <ChatMockup />
             )}
-
-            <p className="mx-auto mt-4 max-w-md text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
-              Free. No card. You can delete everything from your account page.
-            </p>
           </div>
         </div>
 
@@ -376,6 +478,27 @@ export default function Welcome({ onSignedIn }) {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Names the instruments where the reference names its clinicians and
+            its trials: immediately, before the ask. The provenance of these
+            questionnaires is the strongest claim this page has and it was six
+            sections down, below the fold, behind everything it should have been
+            vouching for. The full row and the licences stay in "Why trust it". */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+          <span className="w-eyebrow">Built on</span>
+          {['PHQ-9', 'GAD-7', 'WHO-5'].map((n) => (
+            <span key={n} className="font-display text-[1.15rem]" style={{ color: 'var(--w-ink-soft)' }}>
+              {n}
+            </span>
+          ))}
+          <a
+            href="#trust"
+            className="text-[0.8125rem] underline underline-offset-4 transition-colors hover:text-[var(--w-ink)]"
+            style={{ color: 'var(--w-ink-soft)' }}
+          >
+            and eighteen more
+          </a>
         </div>
       </section>
 
@@ -542,7 +665,7 @@ export default function Welcome({ onSignedIn }) {
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex flex-col gap-4">
               <span className="flex items-center gap-2.5">
-                <Logo size={28} glow={false} from="#ec4899" to="#9d174d" />
+                <Logo size={28} glow={false} />
                 <span className="font-display text-[1.15rem] leading-none">DP Sahay AI</span>
               </span>
               <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
