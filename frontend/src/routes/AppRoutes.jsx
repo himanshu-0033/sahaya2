@@ -20,6 +20,7 @@ import CaregiverResident from '../features/caregiver/CaregiverResident.jsx';
 import ResetPassword from '../features/auth/ResetPassword.jsx';
 import Welcome from '../features/auth/Welcome.jsx';
 import QuickCheck from '../features/checkin/QuickCheck.jsx';
+import ChatHistory from '../features/companion/ChatHistory.jsx';
 import NotFound from '../shared/NotFound.jsx';
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/more" element={<More />} />
         <Route path="/checkin" element={<CheckIn />} />
         <Route path="/results" element={<Results />} />
+        <Route path="/talks" element={<ChatHistory />} />
         <Route path="/inkblot-test" element={<InkblotTest />} />
         <Route path="/assessments" element={<Assessments />} />
         <Route path="/assessments/:instrumentId" element={<AssessmentRun />} />

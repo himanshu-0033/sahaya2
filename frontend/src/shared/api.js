@@ -214,6 +214,13 @@ export function submitInkblotTest({ responses }) {
   });
 }
 
+// Your own conversations with DP, newest first. Scoped to the signed-in
+// account by the server, so there is no id to pass and no way to ask for
+// somebody else's.
+export function getChatHistory() {
+  return request('/api/chat-log');
+}
+
 // The one questionnaire that needs no account. The server stores nothing from
 // either of these calls, so there is no history to fetch and nothing to delete.
 export function getQuickCheck() {

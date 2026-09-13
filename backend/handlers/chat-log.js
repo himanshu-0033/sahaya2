@@ -1,4 +1,4 @@
-import { upsertRecord } from '../lib/store.js';
+import { getChatSessions, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 
@@ -17,11 +17,17 @@ import { requireGoogleUser } from '../lib/auth.js';
 //   never from the body, so this endpoint cannot be used to file a transcript
 //   under somebody else's name.
 //
-//   Reading is not part of this file. It happens in handlers/admin/resident.js
-//   behind canView(), which is the consent the resident already granted to a
-//   named counsellor — the same gate as their check-ins and their
-//   questionnaires. No new way in, and nothing visible to a counsellor they
-//   have not chosen.
+//   A counsellor reads through handlers/admin/resident.js, behind canView(),
+//   which is the consent the resident already granted to a named counsellor:
+//   the same gate as their check-ins and their questionnaires. No new way in,
+//   and nothing visible to a counsellor they have not chosen.
+//
+//   The resident reads their own, through the GET below. This used to say that
+//   reading was not part of this file at all, which left the app in an odd
+//   place: a counsellor the student invited could read every conversation the
+//   student had, and the student could not. The transcript was theirs and the
+//   only person it was kept from was them. GET is scoped by the verified
+//   session, so it can only ever return the caller's own.
 //
 //   A session is one document, not one document per turn. The agent already
 //   caps a conversation at 24 turns of 2000 characters, so a session cannot
@@ -37,15 +43,30 @@ function sessionIdFor(residentId, startedAt) {
   return `${residentId}:${startedAt}`;
 }
 
+// How many conversations the history screen gets. Enough to scroll back
+// through a term, short of shipping a year of transcripts to a phone.
+const MAX_SESSIONS = 40;
+
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
 
   const user = await requireGoogleUser(req, res);
   if (!user) return;
+
+  if (req.method === 'GET') {
+    const sessions = await getChatSessions();
+    return res.status(200).json({
+      sessions: sessions
+        .filter((c) => c.residentId === user.sub)
+        .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+        .slice(0, MAX_SESSIONS),
+    });
+  }
+
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'GET, POST, OPTIONS');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const { startedAt, messages, flagged } = req.body || {};
 
