@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap");
 @import "tailwindcss";
 @import "./styles/design-tokens.css";
 
@@ -8,7 +8,7 @@
    `font-sans` is a real utility in use, and @theme is the only place that
    can generate it. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
@@ -49,12 +49,13 @@ body {
   :root { font-size: 112.5%; }   /* ~18px */
 }
 
-/* One family now: Inter, at 600 for headings, 500 for subheadings and
-   buttons, 400 for body. The serif that used to carry the headlines was the
+/* One family now: Plus Jakarta Sans, at 600 for headings, 500 for subheadings
+   and buttons, 400 for body. The serif that used to carry the headlines was the
    app's one piece of personality, and dropping it is a deliberate trade for a
    plainer, calmer surface — see the note in the design-system block below.
-   Inter has a far larger x-height than Cormorant did, so it needs negative
-   tracking at display sizes to stop headlines reading as shouted. */
+   The negative tracking is for the same reason it was set under Inter: both
+   carry a far larger x-height than Cormorant did, and at display sizes an
+   untracked headline in either reads as shouted. */
 .font-display {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -331,9 +332,9 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /*      which part of the app you are in before you read a word.      */
 /*   2. TOUCH GETS ANSWERED. Every pressable thing moves when pressed.*/
 /*      On a phone that is the only feedback there is.                */
-/*   3. ONE FAMILY. Inter throughout — 600 for headings, 500 for      */
-/*      subheadings and buttons, 400 for body. This replaced a serif  */
-/*      headline face that was the app's one piece of visual          */
+/*   3. ONE FAMILY. Plus Jakarta Sans throughout — 600 for headings,  */
+/*      500 for subheadings and buttons, 400 for body. This replaced  */
+/*      a serif headline face that was the app's one piece of visual  */
 /*      personality; the trade was made on purpose, for a plainer     */
 /*      surface. If it comes back, it comes back everywhere at once.  */
 /* ================================================================== */
@@ -795,7 +796,7 @@ p, li {
    so it is a FILL and an ornament here, never a letter. Anything that has to
    be read uses the deep step. */
 .welcome {
-  --w-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --w-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --w-cream: #f4f7f3;
   --w-band: #e8efe9;
