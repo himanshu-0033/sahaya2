@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { sendChat, saveChatLog } from '../../shared/api.js';
 import Logo from '../../shared/Logo.jsx';
+import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
+import { speak, stopSpeaking } from '../../shared/speech.js';
 
 function Bubble({ role, children }) {
   const mine = role === 'user';
@@ -64,6 +66,12 @@ export default function ChatPanel({
   // conversation an update of one record rather than a new one.
   const startedAt = useRef(new Date().toISOString());
   const flaggedRef = useRef(false);
+  // Whether the turn being answered arrived by voice. A ref rather than state
+  // because it is read after an await, by which point state from the closure is
+  // a render behind. It is what decides whether the reply is spoken: talk to
+  // this and it talks back, type to it and it stays quiet.
+  const spokenTurnRef = useRef(false);
+  const [listenSignal, setListenSignal] = useState(0);
 
   // Ask the agent for its opening line, seeded with today's check-in.
   //
@@ -110,6 +118,15 @@ export default function ChatPanel({
       setMessages(full);
       if (data.flagged) flaggedRef.current = true;
 
+      // Said out loud, so it answers out loud, and the mic reopens once the
+      // voice stops — a voice conversation takes no tapping between turns. The
+      // mic is never opened *while* it is speaking, or it would hear itself and
+      // answer its own reply. Saying nothing ends the loop; so does the stop
+      // button on the mic.
+      if (spokenTurnRef.current) {
+        speak(data.reply, () => setListenSignal((n) => n + 1));
+      }
+
       // Filed after the reply is on screen, and never awaited: this is a
       // record of the conversation, not part of it, and a storage problem must
       // not become the person's problem mid-sentence.
@@ -129,9 +146,22 @@ export default function ChatPanel({
     e.preventDefault();
     const text = draft.trim();
     if (!text || busy) return;
+    // Typing is a request for quiet: it stops any reply still being read out,
+    // and this answer is not spoken.
+    stopSpeaking();
+    spokenTurnRef.current = false;
     setDraft('');
     void ask(text);
   }
+
+  function hear(transcript) {
+    if (busy) return;
+    spokenTurnRef.current = true;
+    void ask(transcript);
+  }
+
+  // Nothing should still be talking once this panel is gone.
+  useEffect(() => stopSpeaking, []);
 
   // Hand-off from Home. Waits for the opener so the history starts with the
   // assistant, and runs once even if this re-renders while the reply is in
@@ -227,13 +257,22 @@ export default function ChatPanel({
         </div>
       )}
 
-      <form onSubmit={send} className="mt-4 flex gap-2">
+      <form onSubmit={send} className="mt-4 flex items-center gap-2">
         <input
           data-autofocus
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Say as much or as little as you like…"
           className="min-w-0 flex-1 rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]"
+        />
+        {/* Draws nothing in a browser without speech recognition, so the typed
+            box is never left sitting next to a control that cannot work. */}
+        <VoiceInputButton
+          size="sm"
+          onTranscript={hear}
+          onError={setError}
+          listenSignal={listenSignal}
+          disabled={busy}
         />
         <button
           type="submit"
