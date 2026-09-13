@@ -8,6 +8,28 @@ import LoadError from '../../shared/LoadError.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getGroundingTechnique, logGroundingPractice } from '../../shared/api.js';
 import { accent, alpha, EVIDENCE_LABEL, formatDuration } from '../../shared/accents.js';
+import { canSpeak, speak, stopSpeaking, GUIDE_RATE } from '../../shared/speech.js';
+
+// Reading a practice defeats it. The instructions want to be heard: eyes shut,
+// or in the middle of a panic attack, where a paragraph is more than anyone is
+// going to manage. The steps are spoken through the browser's own synthesis —
+// the same voice the companion answers in — so this needs no key and no audio
+// files to ship.
+//
+// Off until it is asked for. This app gets used in shared rooms, on buses and
+// at one in the morning next to someone asleep, and a screen that starts
+// talking by itself is the last thing a bad ten minutes needs. The answer is
+// remembered, because somebody who wants a voice once wants it every time.
+const VOICE_KEY = 'sahaya:grounding-voice';
+
+function loadVoicePref() {
+  try {
+    return localStorage.getItem(VOICE_KEY) === 'on';
+  } catch {
+    // Private mode, or storage blocked outright. Silence is the safe default.
+    return false;
+  }
+}
 
 // One practice, start to finish.
 //
@@ -94,13 +116,21 @@ function StepRing({ seconds, stepKey, accentName, children }) {
   );
 }
 
-function StepRunner({ steps, accentName, running, onFinish }) {
+function StepRunner({ steps, accentName, running, speakAloud, onFinish }) {
   const { bright } = accent(accentName);
   const [index, setIndex] = useState(0);
   const timerRef = useRef(null);
 
   const finishRef = useRef(onFinish);
   finishRef.current = onFinish;
+
+  // The prompt, out loud, as each step arrives. The hint is left on the screen
+  // rather than read: it is a detail for someone who is looking, and a step
+  // whose speech outlasts its own timer would be talking over the next one.
+  useEffect(() => {
+    if (!running || !speakAloud) return;
+    speak(steps[index].prompt, null, GUIDE_RATE);
+  }, [index, running, speakAloud, steps]);
 
   useEffect(() => {
     if (!running) return undefined;
@@ -189,9 +219,33 @@ export default function GroundingPractice() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [voice, setVoice] = useState(loadVoicePref);
 
   const startedAt = useRef(null);
   const completedRef = useRef(false);
+
+  function toggleVoice() {
+    setVoice((on) => {
+      const next = !on;
+      try {
+        localStorage.setItem(VOICE_KEY, next ? 'on' : 'off');
+      } catch {
+        // The preference is a convenience; losing it is not worth an error.
+      }
+      // Turning it off has to shut the current sentence up, not wait for it to
+      // finish — the reason anyone reaches for this is that they want silence.
+      if (!next) stopSpeaking();
+      return next;
+    });
+  }
+
+  // Leaving the practice, by any of the several routes out of it, ends the
+  // voice with it. Nothing should still be talking on the next screen.
+  useEffect(() => {
+    if (phase !== 'running') stopSpeaking();
+  }, [phase]);
+
+  useEffect(() => stopSpeaking, []);
 
   useEffect(() => {
     if (!session) {
@@ -294,7 +348,39 @@ export default function GroundingPractice() {
               </svg>
               {phase === 'running' ? 'Stop' : 'All practices'}
             </button>
-            <p className="marginalia">{technique.name}</p>
+
+            <div className="flex items-center gap-4">
+              {/* Drawn only where the browser can actually speak, and sitting in
+                  the header so it is reachable from the intro, mid-practice and
+                  after — muting has to be one tap from wherever you are. */}
+              {canSpeak && (
+                <button
+                  type="button"
+                  onClick={toggleVoice}
+                  aria-pressed={voice}
+                  className="press flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.6875rem] transition-colors"
+                  style={{
+                    borderColor: voice ? alpha(colors.base, 0.45) : 'var(--line-2)',
+                    background: voice ? alpha(colors.base, 0.16) : 'transparent',
+                    color: voice ? colors.bright : 'var(--color-muted)',
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                    {voice ? (
+                      <>
+                        <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                        <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+                      </>
+                    ) : (
+                      <path d="M22 9l-6 6M16 9l6 6" />
+                    )}
+                  </svg>
+                  {voice ? 'Voice on' : 'Read aloud'}
+                </button>
+              )}
+              <p className="marginalia">{technique.name}</p>
+            </div>
           </header>
         )}
 
@@ -414,6 +500,7 @@ export default function GroundingPractice() {
                 pacer={technique.pacer}
                 accent={accentName}
                 running
+                speakAloud={voice}
                 onFinish={() => stop(true)}
               />
             ) : (
@@ -421,6 +508,7 @@ export default function GroundingPractice() {
                 steps={technique.steps}
                 accentName={accentName}
                 running
+                speakAloud={voice}
                 onFinish={() => stop(true)}
               />
             )}
@@ -512,7 +600,10 @@ export default function GroundingPractice() {
               <VideoShelf
                 videos={technique.videos}
                 accentName={accentName}
-                title="If you want a voice next time"
+                // Was "If you want a voice next time". There is one now, in the
+                // header — this shelf is the other thing, a person talking you
+                // through it rather than the app reading the steps out.
+                title="If you want someone to talk you through it"
               />
             </div>
 

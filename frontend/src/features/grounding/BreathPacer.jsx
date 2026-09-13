@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { accent, alpha } from '../../shared/accents.js';
+import { speak, GUIDE_RATE } from '../../shared/speech.js';
 
 // The animated orb that paces a breath (or a tap) cycle.
 //
@@ -25,7 +26,7 @@ function prefersReducedMotion() {
   );
 }
 
-export default function BreathPacer({ pacer, accent: accentName, running, onFinish }) {
+export default function BreathPacer({ pacer, accent: accentName, running, speakAloud, onFinish }) {
   const { base, bright } = accent(accentName);
   const reduced = useMemo(prefersReducedMotion, []);
 
@@ -92,6 +93,16 @@ export default function BreathPacer({ pacer, accent: accentName, running, onFini
 
   const phase = timeline[index] || timeline[0];
   const round = (phase?.round ?? 0) + 1;
+
+  // The phase, spoken as the orb turns. This is the one place a voice earns its
+  // keep most plainly: the whole point of a pacer is to breathe to it without
+  // watching it, and every phase is two or three words that fit inside the
+  // shortest phase this app has. speak() cancels whatever is still going, so a
+  // phase change cuts the previous cue rather than queueing behind it.
+  useEffect(() => {
+    if (!running || !speakAloud) return;
+    speak(phase.label, null, GUIDE_RATE);
+  }, [index, running, speakAloud, phase.label]);
 
   // A hold keeps whatever size the phase before it left behind, so the orb
   // does not twitch when the breath is meant to be still.

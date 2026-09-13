@@ -11,10 +11,14 @@ export function stopSpeaking() {
   if (canSpeak) window.speechSynthesis.cancel();
 }
 
+// Slower than the companion's voice. This one paces a breath and reads a step
+// to someone with their eyes shut, where the chat voice is answering a question.
+export const GUIDE_RATE = 0.82;
+
 // `onEnd` runs when the voice stops — including when there was no voice at all,
 // because the hands-free loop reopens the mic from this callback and a browser
 // without synthesis must not leave the person waiting for a turn that never comes.
-export function speak(text, onEnd) {
+export function speak(text, onEnd, rate = 0.95) {
   if (!canSpeak || !text) {
     onEnd?.();
     return;
@@ -25,8 +29,8 @@ export function speak(text, onEnd) {
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = VOICE_LANG;
-  // A shade under default. This is a companion, not a newsreader.
-  utterance.rate = 0.95;
+  // A shade under default by default. This is a companion, not a newsreader.
+  utterance.rate = rate;
   utterance.onend = () => onEnd?.();
   utterance.onerror = () => onEnd?.();
   window.speechSynthesis.speak(utterance);
