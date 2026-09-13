@@ -81,7 +81,7 @@ export default function ReadArticle() {
         <Header eyebrow="Read" />
         <div className="stack-block">
           <h1 className="font-display text-2xl">That piece isn’t here.</h1>
-          <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read)]">
+          <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read-deep)]">
             Back to everything else
           </Link>
         </div>

@@ -82,7 +82,7 @@ export default function Read() {
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
           Reading
-          <span className="text-[var(--sec-read)]">.</span>
+          <span className="text-[var(--sec-read-deep)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           Why any of this works, and where it doesn&apos;t.

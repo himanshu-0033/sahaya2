@@ -156,7 +156,7 @@ export default function InkblotTest() {
         <div className="animate-slide-up mt-8">
           <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
             Ten plates. Say whatever you see
-            <span className="text-[var(--sec-inkblot)]">.</span>
+            <span className="text-[var(--sec-inkblot-deep)]">.</span>
           </h1>
 
           <div className="mt-6 flex justify-center py-4 sm:justify-start">
@@ -184,7 +184,7 @@ export default function InkblotTest() {
             </p>
             <Link
               to="/read/the-inkblots-honestly"
-              className="press mt-3.5 inline-flex items-center gap-1.5 text-xs text-[var(--sec-inkblot)]"
+              className="press mt-3.5 inline-flex items-center gap-1.5 text-xs text-[var(--sec-inkblot-deep)]"
             >
               What the inkblots actually measure
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

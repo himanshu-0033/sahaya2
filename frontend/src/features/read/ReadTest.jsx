@@ -49,7 +49,7 @@ export default function ReadTest() {
         <Header eyebrow="Read" />
         <div className="stack-block">
           <h1 className="font-display text-2xl">No notes on that questionnaire.</h1>
-          <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read)]">
+          <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read-deep)]">
             Back to reading
           </Link>
         </div>
@@ -161,7 +161,7 @@ export default function ReadTest() {
             button that 404s is not. See licenceCleared in instruments.js. */}
         {meta.available === false && (
           <div className="mt-10 rounded-2xl border border-[var(--color-amber)]/30 bg-[rgba(217,165,92,0.06)] p-5">
-            <p className="marginalia" style={{ color: 'var(--color-amber)' }}>
+            <p className="marginalia" style={{ color: 'var(--color-amber-deep)' }}>
               Not available here
             </p>
             <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">

@@ -23,7 +23,7 @@ function PlayIcon() {
 }
 
 function VideoCard({ video, accentName }) {
-  const { base, bright } = accent(accentName);
+  const { base, deep } = accent(accentName);
   const [playing, setPlaying] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
 
@@ -103,7 +103,7 @@ function VideoCard({ video, accentName }) {
           target="_blank"
           rel="noopener noreferrer"
           className="text-[0.6875rem] underline underline-offset-4"
-          style={{ color: bright }}
+          style={{ color: deep }}
         >
           Open on YouTube
         </a>

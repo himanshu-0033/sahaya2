@@ -449,7 +449,7 @@ export default function AssessmentRun() {
             {/* keyed on step so the whole block re-enters on each question */}
             <div key={step} className="mt-5 flex min-h-0 flex-1 flex-col">
               {onFollowUp ? (
-                <p className="animate-rise text-xs tracking-wide text-[var(--sec-tests)]">
+                <p className="animate-rise text-xs tracking-wide text-[var(--sec-tests-deep)]">
                   One last question — it is not scored
                 </p>
               ) : (
@@ -749,7 +749,7 @@ export default function AssessmentRun() {
                 should I believe this?" becomes a live question. */}
             <Link
               to={`/read/tests/${instrumentId}`}
-              className="press mt-4 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+              className="press mt-4 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests-deep)]"
             >
               What the {result.instrumentName} can and cannot tell you
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -812,7 +812,7 @@ export default function AssessmentRun() {
             <p className="marginalia">Three tests, one sitting</p>
             <h1 className="font-display mt-3 text-[2rem] leading-tight sm:text-4xl">
               Where you are, roughly
-              <span className="text-[var(--sec-tests)]">.</span>
+              <span className="text-[var(--sec-tests-deep)]">.</span>
             </h1>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
               Three ranges, side by side. Low mood, worry and wellbeing move
@@ -843,7 +843,7 @@ export default function AssessmentRun() {
                   </p>
                   <Link
                     to={`/read/tests/${r.id}`}
-                    className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+                    className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests-deep)]"
                   >
                     What the {r.name} can and cannot tell you
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

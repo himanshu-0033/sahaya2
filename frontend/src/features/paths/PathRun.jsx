@@ -20,7 +20,7 @@ import { accent, alpha } from '../../shared/accents.js';
 // rendered next to it and is not collapsible.
 
 function DayRow({ day, path, done, isNext, onToggle, busy }) {
-  const { base, bright } = accent(path.accent);
+  const { base, bright, deep } = accent(path.accent);
 
   return (
     <li
@@ -55,7 +55,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
             {day.title}
           </p>
           {isNext && !done && (
-            <span className="text-[0.6875rem]" style={{ color: bright }}>
+            <span className="text-[0.6875rem]" style={{ color: deep }}>
               next
             </span>
           )}
@@ -81,7 +81,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
 // instrument can resolve is reported as "no measurable change" rather than as
 // a direction, because a 1-point GAD-7 move is noise.
 function Bookend({ path, scores, change }) {
-  const { base, bright } = accent(path.accent);
+  const { base, bright, deep } = accent(path.accent);
   if (!path.closesWith) return null;
 
   const before = scores?.before;
@@ -118,7 +118,7 @@ function Bookend({ path, scores, change }) {
               <>
                 <div>
                   <p className="text-xs text-[var(--color-muted)]">Now</p>
-                  <p className="num mt-1 text-3xl" style={{ color: bright }}>
+                  <p className="num mt-1 text-3xl" style={{ color: deep }}>
                     {after.score}
                   </p>
                   <p className="mt-0.5 text-xs text-[var(--color-muted)]">{after.band.label}</p>
@@ -152,7 +152,7 @@ function Bookend({ path, scores, change }) {
                 <Link
                   to={`/assessments/${path.closesWith}`}
                   className="press mt-2 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm"
-                  style={{ borderColor: alpha(base, 0.4), color: bright }}
+                  style={{ borderColor: alpha(base, 0.4), color: deep }}
                 >
                   Take it again
                 </Link>
@@ -253,7 +253,7 @@ export default function PathRun() {
 
             {started && (
               <p className="mt-5 text-sm">
-                <span className="num text-2xl" style={{ color: colors.bright }}>
+                <span className="num text-2xl" style={{ color: colors.deep }}>
                   {progress.done}
                 </span>
                 <span className="ml-2 text-[var(--color-ink-soft)]">

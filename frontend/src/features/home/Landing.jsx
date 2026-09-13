@@ -19,19 +19,19 @@ import { accent } from '../../shared/accents.js';
 // ─── Quick shortcuts for a bad moment ───────────────────────────────────────
 const QUICK = [
   {
-    mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)',
+    mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)', ink: 'var(--color-flag-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c-2-2.67-4-5.33-4-8 4-5.33 8 0 4 8m0 0c2 2.67 4 5.33 4 8-4 5.33-8 0-4-8Z" /><path d="M12 12c-2.67 2-5.33 4-8 4-5.33-4 0-8 8-4m0 0c2.67-2 5.33-4 8-4 5.33 4 0 8-8 4Z" /></svg>,
   },
   {
-    mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)',
+    mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)', ink: 'var(--sec-home-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7A7.1 7.1 0 0 0 6.3 7.7" /><path d="M9.9 12.6a2.8 2.8 0 0 1 4.2 0" /><path d="M2 12h2M20 12h2M12 2v2M12 20v2" /></svg>,
   },
   {
-    mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)',
+    mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)', ink: 'var(--color-amber-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0" /><path d="M12 8a4 4 0 0 1 4 4" /><path d="M12 4a8 8 0 0 1 8 8" /><path d="M12 16a4 4 0 0 1-4-4" /><path d="M12 20a8 8 0 0 1-8-8" /></svg>,
   },
   {
-    mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)',
+    mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)', ink: 'var(--color-rose-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v6M8 4v4M16 4v4" /><path d="M4 10a16 16 0 0 0 16 0" /><path d="M12 14v4M8 16v2M16 16v2" /></svg>,
   },
 ];
@@ -184,7 +184,7 @@ function todayDate() {
 // half-finished things on the home screen is a list of ways you have already
 // let yourself down.
 function CarryOn({ path, progress }) {
-  const { bright } = accent(path.accent);
+  const { bright, deep } = accent(path.accent);
   const total = path.dayCount;
   const done = progress.completedDays.length;
 
@@ -201,7 +201,7 @@ function CarryOn({ path, progress }) {
         <img src={pathPhoto(path.id)} alt="" loading="lazy" decoding="async" />
       </span>
       <div className="card-photo-body min-w-0 flex-1">
-        <span className="marginalia" style={{ color: bright }}>Carry on</span>
+        <span className="marginalia" style={{ color: deep }}>Carry on</span>
         <p className="font-display mt-1.5 text-lg leading-snug">{path.name}</p>
 
         {/* The same pip row the Paths tab uses, so the two screens agree on
@@ -219,7 +219,7 @@ function CarryOn({ path, progress }) {
           ))}
         </div>
 
-        <p className="mt-2.5 text-xs" style={{ color: bright }}>
+        <p className="mt-2.5 text-xs" style={{ color: deep }}>
           Day <span className="num">{progress.nextDay}</span> next
           <span className="text-[var(--color-muted)]">
             {' '}· <span className="num">{done}</span> of <span className="num">{total}</span> done
@@ -487,7 +487,7 @@ export default function Landing() {
       <section className="animate-slide-up stack-block" style={{ animationDelay: '180ms' }}>
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="home-section-title">How are you feeling?</h2>
-          <Link to="/grounding" className="text-xs text-[var(--color-lavender)] underline underline-offset-4">
+          <Link to="/grounding" className="text-xs text-[var(--sec-calm-deep)] underline underline-offset-4">
             See all
           </Link>
         </div>
@@ -525,7 +525,7 @@ export default function Landing() {
               <span className="feeling-card-icon" aria-hidden="true" style={{ color: q.hue }}>
                 {q.icon}
               </span>
-              <span className="feeling-card-label" style={{ color: q.hue }}>
+              <span className="feeling-card-label" style={{ color: q.ink }}>
                 {q.label}
               </span>
             </Link>
@@ -546,7 +546,7 @@ export default function Landing() {
           </span>
           <div>
             <p className="text-sm font-medium">
-              <span className="num text-xl text-[var(--color-lavender)]">{streak}</span>
+              <span className="num text-xl text-[var(--sec-calm-deep)]">{streak}</span>
               <span className="ml-2 text-[var(--color-ink-soft)]">
                 day{streak === 1 ? '' : 's'} of grounding
               </span>

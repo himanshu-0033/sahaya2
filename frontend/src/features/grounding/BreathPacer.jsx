@@ -27,7 +27,7 @@ function prefersReducedMotion() {
 }
 
 export default function BreathPacer({ pacer, accent: accentName, running, speakAloud, onFinish }) {
-  const { base, bright } = accent(accentName);
+  const { base, bright, deep } = accent(accentName);
   const reduced = useMemo(prefersReducedMotion, []);
 
   // Flatten the rounds into one list of phases so the runner only ever has to
@@ -174,7 +174,7 @@ export default function BreathPacer({ pacer, accent: accentName, running, speakA
           this is the whole practice for anyone not watching the orb. */}
       <p
         className="font-display mt-8 min-h-[2.5rem] text-center text-2xl leading-snug sm:text-3xl"
-        style={{ color: bright }}
+        style={{ color: deep }}
         aria-live="polite"
       >
         {phase.label}

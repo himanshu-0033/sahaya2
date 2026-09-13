@@ -34,7 +34,7 @@ function Pips({ total, completed, hue }) {
 }
 
 function PathCard({ path, progress, index }) {
-  const { base, bright } = accent(path.accent);
+  const { base, bright, deep } = accent(path.accent);
   const done = progress?.done || 0;
   const started = Boolean(progress?.startedAt);
 
@@ -52,7 +52,7 @@ function PathCard({ path, progress, index }) {
         <p className="font-display text-xl leading-snug">{path.name}</p>
         <span
           className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
-          style={{ background: alpha(base, 0.14), color: bright }}
+          style={{ background: alpha(base, 0.14), color: deep }}
         >
           {path.dayCount} days
         </span>
@@ -64,7 +64,7 @@ function PathCard({ path, progress, index }) {
         {started ? (
           <>
             <Pips total={path.dayCount} completed={progress.completedDays} hue={bright} />
-            <p className="mt-2.5 text-xs" style={{ color: bright }}>
+            <p className="mt-2.5 text-xs" style={{ color: deep }}>
               {progress.finished
                 ? 'Finished'
                 : `Day ${progress.nextDay} next · ${done} of ${path.dayCount} done`}
@@ -127,7 +127,7 @@ export default function Paths() {
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
           7-day paths
-          <span className="text-[var(--sec-paths)]">.</span>
+          <span className="text-[var(--sec-paths-deep)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           One small thing a day. Miss a day and nothing is lost.

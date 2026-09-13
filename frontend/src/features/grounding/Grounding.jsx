@@ -47,7 +47,7 @@ function MoodPicker({ moods, active, onPick }) {
 // a breath exercise from a kindness one without giving every card its own
 // coloured background.
 function TechniqueCard({ technique, last, index }) {
-  const { base, bright } = accent(technique.accent);
+  const { base, deep } = accent(technique.accent);
 
   return (
     <Link
@@ -64,7 +64,7 @@ function TechniqueCard({ technique, last, index }) {
         </div>
         <span
           className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
-          style={{ background: alpha(base, 0.14), color: bright }}
+          style={{ background: alpha(base, 0.14), color: deep }}
         >
           {formatDuration(technique.seconds)}
         </span>
@@ -78,7 +78,7 @@ function TechniqueCard({ technique, last, index }) {
           however long its tagline runs. */}
       <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-xs text-[var(--color-muted)]">
         <span>{SPEED_LABEL[technique.speed]}</span>
-        {last && <span style={{ color: bright }}>done {last}</span>}
+        {last && <span style={{ color: deep }}>done {last}</span>}
       </div>
     </Link>
   );
@@ -151,7 +151,7 @@ export default function Grounding() {
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
           Calm down
-          <span className="text-[var(--sec-calm)]">.</span>
+          <span className="text-[var(--sec-calm-deep)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           Thirteen short practices for a bad ten minutes.
@@ -249,7 +249,7 @@ export default function Grounding() {
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               <Link
                 to="/read/why-a-long-exhale-works"
-                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm)]"
+                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm-deep)]"
               >
                 Why a long exhale works so fast
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -258,7 +258,7 @@ export default function Grounding() {
               </Link>
               <Link
                 to="/read/which-technique-when"
-                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm)]"
+                className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-calm-deep)]"
               >
                 Which one, and when
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

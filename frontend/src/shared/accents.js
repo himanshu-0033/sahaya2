@@ -5,12 +5,23 @@
 // rgba() shadows and radial gradients from them at runtime, and you cannot
 // interpolate alpha into a CSS custom property without colour-mix, which is
 // still uneven across the browsers this runs on.
+// `base` and `bright` are light: they were drawn to glow on a dark ground, and
+// they still do exactly the right thing as an orb, a gradient, a ring stroke or
+// a tint. What they cannot do any more is carry a letter. The app's ground is
+// #f4f7f3 now, and every one of these lands between 1.5:1 and 2.3:1 against it
+// — against a floor of 4.5:1. That is the same class of bug as the section
+// greys that got fixed, one layer further in.
+//
+// So `deep` is the third step: the same hue, dark enough to read, measured on
+// both the app's ground and a white card. Nothing about the light values
+// changed, because nothing is wrong with them where they are used as light.
+// Text takes `deep`; everything that is a fill keeps `base` and `bright`.
 const ACCENTS = {
-  teal: { base: '#1fae95', bright: '#5fd6bf' },
-  sky: { base: '#58b6f5', bright: '#8fd0ff' },
-  lavender: { base: '#a79cf0', bright: '#c4bcff' },
-  amber: { base: '#d9a55c', bright: '#f0c68a' },
-  rose: { base: '#f2789f', bright: '#ffa3c0' },
+  teal: { base: '#1fae95', bright: '#5fd6bf', deep: '#0f7e6b' },
+  sky: { base: '#58b6f5', bright: '#8fd0ff', deep: '#1a6da6' },
+  lavender: { base: '#a79cf0', bright: '#c4bcff', deep: '#5546c0' },
+  amber: { base: '#d9a55c', bright: '#f0c68a', deep: '#8a5716' },
+  rose: { base: '#f2789f', bright: '#ffa3c0', deep: '#b83a63' },
 };
 
 const FALLBACK = ACCENTS.teal;

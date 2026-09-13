@@ -38,7 +38,7 @@ function StreakCard({ streak }) {
       <span className="marginalia">Check-in streak</span>
 
       <div className="mt-4 flex items-baseline gap-3">
-        <span className="num text-[2.6rem] leading-none text-[var(--color-lavender)]">{days}</span>
+        <span className="num text-[2.6rem] leading-none text-[var(--sec-calm-deep)]">{days}</span>
         <span className="font-display text-xl text-[var(--color-ink-soft)]">
           day{days === 1 ? '' : 's'} in a row
         </span>
@@ -183,7 +183,7 @@ export default function Results() {
                     </p>
                     <Link
                       to={`/read/tests/${r.id}`}
-                      className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+                      className="press mt-3 inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests-deep)]"
                     >
                       What the {r.name} can and cannot tell you
                       <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

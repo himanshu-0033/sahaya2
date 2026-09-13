@@ -159,7 +159,7 @@ export default function Assessments() {
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
           Questionnaires
-          <span className="text-[var(--sec-tests)]">.</span>
+          <span className="text-[var(--sec-tests-deep)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           The same ones a clinic uses. A score is not a diagnosis.
@@ -173,7 +173,7 @@ export default function Assessments() {
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
           <Link
             to="/read/which-test-and-what-for"
-            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests-deep)]"
           >
             Which test, and what for
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -182,7 +182,7 @@ export default function Assessments() {
           </Link>
           <Link
             to="/read/a-positive-screen-is-not-a-diagnosis"
-            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests)]"
+            className="press inline-flex items-center gap-1.5 text-xs text-[var(--sec-tests-deep)]"
           >
             A positive screen is not a diagnosis
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

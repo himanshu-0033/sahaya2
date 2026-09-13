@@ -8,7 +8,7 @@
     "tokens": "node scripts/generate-tokens.cjs --config tokens.json -o src/styles/design-tokens.css",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node scripts/words.test.mjs",
+    "test": "node scripts/words.test.mjs && node scripts/contrast.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

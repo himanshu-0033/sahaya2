@@ -47,7 +47,7 @@ const SETTLED = [
 ];
 
 function SettledPicker({ value, onChange, accentName }) {
-  const { base, bright } = accent(accentName);
+  const { base, deep } = accent(accentName);
   return (
     <div className="flex flex-wrap gap-2">
       {SETTLED.map((option) => {
@@ -62,7 +62,7 @@ function SettledPicker({ value, onChange, accentName }) {
             style={{
               borderColor: selected ? base : 'var(--line-4)',
               background: selected ? alpha(base, 0.16) : 'transparent',
-              color: selected ? bright : 'var(--color-ink-soft)',
+              color: selected ? deep : 'var(--color-ink-soft)',
             }}
           >
             {option.label}
@@ -117,7 +117,7 @@ function StepRing({ seconds, stepKey, accentName, children }) {
 }
 
 function StepRunner({ steps, accentName, running, speakAloud, onFinish }) {
-  const { bright } = accent(accentName);
+  const { bright, deep } = accent(accentName);
   const [index, setIndex] = useState(0);
   const timerRef = useRef(null);
 
@@ -146,7 +146,7 @@ function StepRunner({ steps, accentName, running, speakAloud, onFinish }) {
   return (
     <div className="flex flex-col items-center">
       <StepRing seconds={step.seconds} stepKey={index} accentName={accentName}>
-        <p className="num text-6xl leading-none" style={{ color: bright }}>
+        <p className="num text-6xl leading-none" style={{ color: deep }}>
           {step.label}
         </p>
         {step.count ? (
@@ -362,7 +362,7 @@ export default function GroundingPractice() {
                   style={{
                     borderColor: voice ? alpha(colors.base, 0.45) : 'var(--line-2)',
                     background: voice ? alpha(colors.base, 0.16) : 'transparent',
-                    color: voice ? colors.bright : 'var(--color-muted)',
+                    color: voice ? colors.deep : 'var(--color-muted)',
                   }}
                 >
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -395,14 +395,14 @@ export default function GroundingPractice() {
                 face: a coloured tagline at text-xl, directly under a serif
                 headline. Everything else this size and this prominent is set in
                 Cormorant. */}
-            <p className="font-display mt-5 text-xl leading-snug" style={{ color: colors.bright }}>
+            <p className="font-display mt-5 text-xl leading-snug" style={{ color: colors.deep }}>
               {technique.tagline}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
               <span
                 className="rounded-full px-3 py-1.5 text-xs"
-                style={{ background: alpha(colors.base, 0.18), color: colors.bright }}
+                style={{ background: alpha(colors.base, 0.18), color: colors.deep }}
               >
                 {formatDuration(technique.seconds)}
               </span>
@@ -419,7 +419,7 @@ export default function GroundingPractice() {
             {/* Cautions come before the start button, never after it. */}
             {technique.cautions && (
               <div className="mt-6 rounded-2xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] p-5">
-                <p className="marginalia" style={{ color: 'var(--color-flag)' }}>Before you start</p>
+                <p className="marginalia" style={{ color: 'var(--color-flag-deep)' }}>Before you start</p>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
                   {technique.cautions}
                 </p>
@@ -456,7 +456,7 @@ export default function GroundingPractice() {
               >
                 <span
                   className="inline-block rounded-full px-3 py-1 text-[0.6875rem]"
-                  style={{ background: alpha(colors.base, 0.18), color: colors.bright }}
+                  style={{ background: alpha(colors.base, 0.18), color: colors.deep }}
                 >
                   {EVIDENCE_LABEL[technique.evidence.strength]}
                 </span>
@@ -471,7 +471,7 @@ export default function GroundingPractice() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline underline-offset-4"
-                    style={{ color: colors.bright }}
+                    style={{ color: colors.deep }}
                   >
                     source
                   </a>
@@ -532,7 +532,7 @@ export default function GroundingPractice() {
                 className="animate-bloom absolute h-40 w-40 rounded-full"
                 style={{ background: `radial-gradient(circle, ${alpha(colors.bright, 0.5)}, transparent 68%)` }}
               />
-              <p className="font-display relative text-3xl" style={{ color: colors.bright }}>
+              <p className="font-display relative text-3xl" style={{ color: colors.deep }}>
                 {completedRef.current ? 'Done.' : 'That counts.'}
               </p>
             </div>
