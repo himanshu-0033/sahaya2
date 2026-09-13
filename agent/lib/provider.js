@@ -1,6 +1,7 @@
 import { SYSTEM_PROMPT } from './persona.js';
 import { cerebrasReply } from './cerebras.js';
 import { geminiReply } from './gemini.js';
+import { groqReply } from './groq.js';
 
 // ---------------------------------------------------------------------------
 // THE SEAM
@@ -179,6 +180,10 @@ const PROVIDERS = {
   // Google Gemini, via its OpenAI-compatible endpoint. Needs GEMINI_API_KEY
   // from aistudio.google.com. Free tier: 15 RPM, 1500 requests/day.
   gemini: geminiReply,
+
+  // Groq, via its OpenAI-compatible endpoint. Needs GROQ_API_KEY; see
+  // agent/.env.example.
+  groq: groqReply,
 };
 
 export const activeProvider = process.env.AGENT_PROVIDER || 'mock';
