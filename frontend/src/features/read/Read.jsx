@@ -109,6 +109,15 @@ export default function Read() {
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           Not a syllabus. Six shelves, and the reason each one is here.
         </p>
+        {/* How the list was built, said out loud. "Recommended reading" usually
+            means "books somebody liked", and a reader has no way to tell the
+            difference from the outside. */}
+        <p className="mt-2 max-w-lg text-xs leading-relaxed text-[var(--color-muted)]">
+          Chosen three ways: some are on Reading Well Books on Prescription, picked by health
+          experts and people with lived experience and endorsed by the British Psychological
+          Society. Some have been through trials as books — reading them, on their own, was the
+          thing tested. And where one is famous and also disputed, the dispute is in the entry.
+        </p>
 
         <div className="mt-6 grid gap-7">
           {SHELVES.map((shelf) => (
@@ -133,6 +142,15 @@ export default function Read() {
                     <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
                       {book.why}
                     </p>
+                    {/* What is actually known, where anyone has checked. Set
+                        apart from the blurb because it is a different kind of
+                        claim: the blurb is our opinion, this is somebody's
+                        finding. */}
+                    {book.evidence && (
+                      <p className="mt-2 rounded-xl bg-[var(--surface-2)] px-3 py-2 text-xs leading-relaxed text-[var(--color-ink-soft)]">
+                        {book.evidence}
+                      </p>
+                    )}
                     {/* The caution rides with the book, not in a footnote that
                         can be scrolled past. */}
                     {book.note && (
