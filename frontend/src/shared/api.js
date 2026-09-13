@@ -214,6 +214,19 @@ export function submitInkblotTest({ responses }) {
   });
 }
 
+// The one questionnaire that needs no account. The server stores nothing from
+// either of these calls, so there is no history to fetch and nothing to delete.
+export function getQuickCheck() {
+  return request('/api/preview');
+}
+
+export function submitQuickCheck(answers) {
+  return request('/api/preview', {
+    method: 'POST',
+    body: JSON.stringify({ answers }),
+  });
+}
+
 export function getAssessmentCatalog() {
   return request('/api/assessments');
 }

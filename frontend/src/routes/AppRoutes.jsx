@@ -19,6 +19,7 @@ import Caregiver from '../features/caregiver/Caregiver.jsx';
 import CaregiverResident from '../features/caregiver/CaregiverResident.jsx';
 import ResetPassword from '../features/auth/ResetPassword.jsx';
 import Welcome from '../features/auth/Welcome.jsx';
+import QuickCheck from '../features/checkin/QuickCheck.jsx';
 import NotFound from '../shared/NotFound.jsx';
 
 export default function App() {
@@ -32,6 +33,8 @@ export default function App() {
         {/* Signing in is its own page. Landing redirects here when there is
             no session, and this redirects back once there is one. */}
         <Route path="/welcome" element={<Welcome />} />
+        {/* Public on purpose: no session check inside it. */}
+        <Route path="/check" element={<QuickCheck />} />
         {/* Reached from a link in an email, so it must work signed out. */}
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/account" element={<Account />} />

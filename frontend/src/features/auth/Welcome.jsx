@@ -49,7 +49,7 @@ const SERVICES = [
   {
     title: 'The real questionnaires',
     photo: PHOTO.tests,
-    body: 'PHQ-9, GAD-7, WHO-5 and eighteen more — the published instruments a clinic uses, each with its citation and licence on the page.',
+    body: 'PHQ-9, GAD-7, WHO-5 and eighteen more. The published instruments a clinic uses, each with its citation and licence on the page.',
     meta: 'Twenty-one, about 6 minutes for the core three',
     icon: (
       <>
@@ -61,7 +61,7 @@ const SERVICES = [
   {
     title: 'The ten plates',
     photo: PHOTO.inkblot,
-    body: 'The original Rorschach plates, in your own words, typed or spoken. Nothing is scored — you get your own words counted back, never interpreted.',
+    body: 'The original Rorschach plates, in your own words, typed or spoken. Nothing is scored. You get your own words counted back, never interpreted.',
     meta: 'About 10 minutes',
     icon: (
       <>
@@ -74,7 +74,7 @@ const SERVICES = [
 const TOOLS = [
   {
     title: 'Grounding, not meditation',
-    body: 'Thirteen practices for a bad ten minutes — cyclic sighing, temperature, body scan. Most are under three minutes.',
+    body: 'Thirteen practices for a bad ten minutes: cyclic sighing, temperature, body scan. Most are under three minutes.',
     tags: ['Panicking', 'Anxious', 'Spiralling', 'Low'],
     tone: 'rose',
   },
@@ -405,28 +405,36 @@ export default function Welcome({ onSignedIn }) {
                 panel across the gutter. The picture of the product has the
                 other column now, and a hero whose only actionable thing was
                 over there left the headline with nothing beneath it. */}
+            {/* The first thing offered asks for nothing. Every version of this
+                page before it led with "sign in", which put a Google account
+                between a stranger and the first useful thing the app does. The
+                questionnaire behind this button stores nothing and needs no
+                account, so the ask can wait until after it has been worth
+                something. Signing in is still here, one line down, for the
+                people who came back on purpose. */}
             {!signingIn && (
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  to="/check"
+                  className="press rounded-full px-7 py-3.5 text-center text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ background: 'var(--w-accent-deep)' }}
+                >
+                  Take the 1-minute check
+                </Link>
                 <button
                   type="button"
                   onClick={go}
-                  className="press rounded-full px-7 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
-                  style={{ background: 'var(--w-accent-deep)' }}
-                >
-                  Sign in to start
-                </button>
-                <a
-                  href="#inside"
-                  className="press rounded-full border px-7 py-3.5 text-center text-[0.9375rem] font-medium transition-colors"
+                  className="press rounded-full border px-7 py-3.5 text-[0.9375rem] font-medium transition-colors"
                   style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
                 >
-                  See what is inside
-                </a>
+                  Sign in
+                </button>
               </div>
             )}
 
             <p className="mt-5 text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
-              Free. No card. You can delete everything from your account page.
+              The check needs no account and saves nothing. The app is free, takes no card, and
+              you can delete everything from your account page.
             </p>
           </div>
 
@@ -586,7 +594,7 @@ export default function Welcome({ onSignedIn }) {
           <SectionHead
             eyebrow="Why trust the numbers"
             title="These are the published instruments, not our quiz."
-            sub="Each one carries its full name, its citation and its licence on the page where you take it. A score places you in a range that the instrument's authors defined — it is never a diagnosis, and it describes a few weeks rather than you."
+            sub="Each one carries its full name, its citation and its licence on the page where you take it. A score places you in a range that the instrument's authors defined. It is never a diagnosis, and it describes a few weeks rather than you."
           />
 
           <div className="mt-11 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-center">
@@ -617,7 +625,7 @@ export default function Welcome({ onSignedIn }) {
 
           <div className="mt-11 flex flex-col gap-5">
             {[
-              ['Nobody, by default.', 'Your words, your mood and your scores are yours. No counsellor, no warden, no parent — until you invite one.'],
+              ['Nobody, by default.', 'Your words, your mood and your scores are yours. No counsellor, no warden, no parent sees them until you invite one.'],
               ['Invitations are yours to undo.', 'If you have invited someone to follow along, you can take it back from your account page, and it takes effect immediately.'],
               ['You can delete everything.', 'The whole account, from inside the app. Not a support ticket.'],
             ].map(([head, body]) => (
@@ -698,7 +706,7 @@ export default function Welcome({ onSignedIn }) {
             className="mt-12 flex flex-col gap-3 border-t pt-7 text-[0.75rem] sm:flex-row sm:items-center sm:justify-between"
             style={{ borderColor: 'var(--w-line)', color: 'var(--w-ink-soft)' }}
           >
-            <p>DP Sahay AI — a reflective prototype, not a medical device.</p>
+            <p>DP Sahay AI is a reflective prototype, not a medical device.</p>
             <p>
               In danger right now? Call KIRAN <span className="whitespace-nowrap">1800-599-0019</span>,
               free and open around the clock. Emergency: 112.

@@ -16,6 +16,7 @@ import profileHandler from '../handlers/profile.js';
 import sharingHandler from '../handlers/sharing.js';
 import inkblotTestHandler from '../handlers/inkblot-test.js';
 import assessmentsHandler from '../handlers/assessments.js';
+import previewHandler from '../handlers/preview.js';
 import groundingHandler from '../handlers/grounding.js';
 import chatLogHandler from '../handlers/chat-log.js';
 import pathsHandler from '../handlers/paths.js';
@@ -46,6 +47,8 @@ export const routes = {
   '/api/sharing': sharingHandler,
   '/api/inkblot-test': inkblotTestHandler,
   '/api/assessments': assessmentsHandler,
+  // Public on purpose: one questionnaire, no account, nothing stored.
+  '/api/preview': previewHandler,
   '/api/grounding': groundingHandler,
   '/api/chat-log': chatLogHandler,
   '/api/paths': pathsHandler,
