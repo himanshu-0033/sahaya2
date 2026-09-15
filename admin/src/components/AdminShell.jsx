@@ -11,7 +11,9 @@ function navFor(admin) {
     { to: '/', label: 'Dashboard', end: true },
     { to: '/residents', label: 'Students' },
   ];
-  if (admin?.superAdmin) items.push({ to: '/enquiries', label: 'Enquiries' }, { to: '/team', label: 'Team' });
+  if (admin?.superAdmin) {
+    items.push({ to: '/enquiries', label: 'Enquiries' }, { to: '/team', label: 'Team', badge: admin.pendingRequests });
+  }
   return items;
 }
 
@@ -55,6 +57,15 @@ export default function AdminShell({ admin, onSignOut, children }) {
                 }
               >
                 {item.label}
+                {/* Access requests waiting, so they are seen from any page. */}
+                {item.badge > 0 && (
+                  <>
+                    <span aria-hidden="true" className="ml-1.5 inline-flex min-w-5 justify-center rounded-full bg-[#c2410c] px-1.5 text-[11px] font-semibold leading-5 text-white">
+                      {item.badge}
+                    </span>
+                    <span className="sr-only">, {item.badge} waiting for approval</span>
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>

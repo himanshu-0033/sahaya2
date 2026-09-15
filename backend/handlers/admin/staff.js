@@ -4,13 +4,14 @@ import { isSuperAdmin, requireSuperAdmin } from '../../lib/auth.js';
 import { isValidEmail } from '../../lib/contact.js';
 import { normalizeEmail } from '../../lib/sharing.js';
 
-// Who may sign in to the admin panel, managed by the super admin from the Team
-// page rather than by editing ADMIN_EMAILS on the server.
+// Who may use the admin panel, managed by the super admin from the Team page
+// rather than by editing ADMIN_EMAILS on the server.
 //
-// Adding an address lets that person in; on their first sign-in they choose
-// counsellor or manager. Removing it takes the panel away again. Addresses on
-// the ADMIN_EMAILS allowlist cannot be removed from here, since the server's
-// environment is not something the panel can edit.
+// POST approves: a request someone made by choosing their role, or an address
+// added ahead of time (who then chooses on their first sign-in). DELETE declines
+// a request or takes the panel away again. Addresses on the ADMIN_EMAILS
+// allowlist cannot be removed from here, since the server's environment is not
+// something the panel can edit.
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
   if (req.method !== 'POST' && req.method !== 'DELETE') {
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
   const existing = (await getStaff()).find((s) => s.id === email);
 
   if (req.method === 'DELETE') {
-    if (!existing) return res.status(404).json({ error: 'That address was not added from the Team page.' });
+    if (!existing) return res.status(404).json({ error: 'That address has no request and was not added from the Team page.' });
     await removeRecords('staff', { id: email });
     return res.status(200).json({ removed: email });
   }
@@ -44,6 +45,9 @@ export default async function handler(req, res) {
     email,
     role: existing?.role || null,
     name: existing?.name || '',
+    status: 'approved',
+    approvedBy: normalizeEmail(admin.email),
+    approvedAt: now,
     addedBy: existing?.addedBy || normalizeEmail(admin.email),
     createdAt: existing?.createdAt || now,
     updatedAt: now,

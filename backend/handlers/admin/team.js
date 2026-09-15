@@ -35,7 +35,9 @@ export default async function handler(req, res) {
     summarizeResidents(residents, checkins, { assessments, chatSessions }).map((s) => [s.id, s]),
   );
 
-  const staffEmails = staff.map((s) => s.id);
+  // Approved staff only; a pending request is not on the team yet.
+  const approvedStaff = staff.filter((s) => s.status !== 'pending');
+  const staffEmails = approvedStaff.map((s) => s.id);
   const emails = new Set([...allowlist, ...staffEmails]);
   for (const r of residents) for (const e of sharedWithList(r)) emails.add(e);
 
@@ -76,8 +78,15 @@ export default async function handler(req, res) {
     return res.status(200).json({ counsellors, unassignedCount: unassigned.length });
   }
 
+  // Waiting for the super admin: who asked, and as what.
+  const requests = staff
+    .filter((s) => s.status === 'pending')
+    .map((s) => ({ email: s.email, name: s.name || null, role: s.role, requestedAt: s.requestedAt || s.createdAt }))
+    .sort((a, b) => (b.requestedAt || '').localeCompare(a.requestedAt || ''));
+
   return res.status(200).json({
     counsellors,
+    requests,
     unassignedCount: unassigned.length,
     unassigned,
     students: residents

@@ -38,7 +38,7 @@ export default function RolePicker({ admin, onChosen, onSignOut }) {
     setSaving(role);
     setError(null);
     setRole(role)
-      .then((res) => onChosen(res.role))
+      .then((res) => onChosen(res))
       .catch((err) => {
         setError(err.message);
         setSaving(null);
@@ -72,7 +72,9 @@ export default function RolePicker({ admin, onChosen, onSignOut }) {
           Welcome{admin?.name && admin.name !== admin.email ? `, ${admin.name.split(' ')[0]}` : ''}. What is your role?
         </h1>
         <p className="mt-3 text-[0.9375rem] text-[var(--color-ink-soft)]">
-          This decides what your dashboard shows, and how the super admin sees you on the team.
+          {admin?.status === 'approved'
+            ? 'This decides what your dashboard shows.'
+            : 'This sends a request to the super admin. Once they approve it, your dashboard opens with what your role can see.'}
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">

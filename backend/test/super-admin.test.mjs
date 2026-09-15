@@ -71,24 +71,40 @@ res = await call(meHandler, { as: COUNSELLOR });
 assert.equal(res.body.admin.superAdmin, false, 'an allowlisted counsellor is not a super admin');
 assert.equal(res.body.admin.role, null, 'and is asked their role on first sign-in');
 
-// --- who gets in: the allowlist, or the super admin adding them ---------
+// --- who gets in: ask, and the super admin approves ----------------------
 res = await call(meHandler, { as: STAFFER });
-assert.equal(res.statusCode, 403, 'an address nobody added cannot open the panel');
+assert.equal(res.statusCode, 200, 'anyone signed in can see where they stand');
+assert.equal(res.body.admin.status, 'new', 'and has not asked yet');
+res = await call(teamHandler, { as: STAFFER });
+assert.equal(res.statusCode, 403, 'but gets nothing with data behind it');
+
+res = await call(roleHandler, { method: 'POST', as: STAFFER, body: { role: 'manager' } });
+assert.equal(res.body.status, 'pending', 'choosing a role is the request to join');
+res = await call(teamHandler, { as: STAFFER });
+assert.equal(res.statusCode, 403, 'a pending request still sees nothing');
+res = await call(teamHandler, { as: SUPER });
+assert.deepEqual(
+  res.body.requests.map((r) => [r.email, r.role]),
+  [[STAFFER.email, 'manager']],
+  'the super admin sees who asked and as what',
+);
+assert.ok(!res.body.counsellors.some((c) => c.email === STAFFER.email), 'a request is not on the team yet');
+res = await call(meHandler, { as: SUPER });
+assert.equal(res.body.admin.pendingRequests, 1, 'the super admin is told someone is waiting');
+
 res = await call(staffHandler, { method: 'POST', as: COUNSELLOR, body: { email: STAFFER.email } });
-assert.equal(res.statusCode, 403, 'only the super admin adds staff');
+assert.equal(res.statusCode, 403, 'only the super admin approves');
 res = await call(staffHandler, { method: 'POST', as: SUPER, body: { email: STAFFER.email } });
-assert.equal(res.statusCode, 201);
+assert.equal(res.statusCode, 200, 'approving an existing request');
 res = await call(meHandler, { as: STAFFER });
-assert.equal(res.statusCode, 200, 'once added, they are in');
-assert.equal(res.body.admin.role, null, 'and are asked their role');
+assert.equal(res.body.admin.status, 'approved', 'once approved, they are in');
+assert.equal(res.body.admin.role, 'manager', 'as the role they asked for');
 
 // --- counsellor or manager ----------------------------------------------
 res = await call(roleHandler, { method: 'POST', as: STAFFER, body: { role: 'wizard' } });
 assert.equal(res.statusCode, 400, 'only counsellor or manager');
-res = await call(roleHandler, { method: 'POST', as: STAFFER, body: { role: 'manager' } });
-assert.equal(res.statusCode, 200);
-res = await call(meHandler, { as: STAFFER });
-assert.equal(res.body.admin.role, 'manager', 'the answer is kept');
+res = await call(roleHandler, { method: 'POST', as: OTHER, body: { role: 'counsellor' } });
+assert.equal(res.body.status, 'approved', 'an allowlisted account needs no approval to choose');
 res = await call(roleHandler, { method: 'POST', as: SUPER, body: { role: 'counsellor' } });
 assert.equal(res.statusCode, 400, 'the super admin keeps the super admin role');
 
@@ -157,7 +173,9 @@ assert.deepEqual(stored.assignedBy, {});
 res = await call(staffHandler, { method: 'DELETE', as: SUPER, body: { email: STAFFER.email } });
 assert.equal(res.statusCode, 200);
 res = await call(meHandler, { as: STAFFER });
-assert.equal(res.statusCode, 403, 'removed staff are out');
+assert.equal(res.body.admin.status, 'new', 'removed staff are back to asking');
+res = await call(teamHandler, { as: STAFFER });
+assert.equal(res.statusCode, 403, 'and see nothing');
 
 fs.rmSync(DATA_DIR, { recursive: true, force: true });
 console.log('super admin checks passed: sees everyone, assigns, and nobody else can');

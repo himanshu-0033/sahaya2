@@ -37,7 +37,8 @@ export function login({ identifier, password }) {
   });
 }
 
-// Super admin: who may sign in to the admin panel.
+// Super admin: approve a request, or add someone ahead of time (POST); decline
+// a request or take access away (DELETE).
 export function addStaff(email) {
   return request('/api/admin/staff', { method: 'POST', body: JSON.stringify({ email }) });
 }

@@ -174,23 +174,40 @@ export async function requireSuperAdmin(req, res) {
 // The counsellor/admin console is a separate app with its own allowlist.
 // Falls back to CAREGIVER_EMAILS so a single-allowlist deployment keeps
 // working without extra configuration.
+// Where a signed-in account stands with the admin panel.
+//
+//   approved  the super admin, anyone on ADMIN_EMAILS, and anyone the super
+//             admin approved or added from the Team page
+//   pending   asked to join (chose counsellor or manager on first sign-in) and
+//             is waiting for the super admin
+//   new       has not asked yet
+//
+// Staff records written before requests existed have no status, and only the
+// super admin could create those, so they count as approved.
+export async function adminStanding(user) {
+  if (isSuperAdmin(user.email)) return { superAdmin: true, role: 'super_admin', status: 'approved' };
+  const email = (user.email || '').toLowerCase();
+  const staff = (await getStaff()).find((s) => s.id === email);
+  if (staff) {
+    return { superAdmin: false, role: staff.role || null, status: staff.status === 'pending' ? 'pending' : 'approved' };
+  }
+  if (counsellorAllowlist().includes(email)) return { superAdmin: false, role: null, status: 'approved' };
+  return { superAdmin: false, role: null, status: 'new' };
+}
+
 export async function requireAdminUser(req, res) {
   const user = await requireGoogleUser(req, res);
   if (!user) return null;
 
-  // The super admin opens the panel whether or not the allowlist names them.
-  if (isSuperAdmin(user.email)) return { ...user, superAdmin: true, role: 'super_admin' };
-
-  // Everyone else is let in by the ADMIN_EMAILS allowlist or by the super admin
-  // adding them as staff from the Team page, and carries the role they chose on
-  // their first sign-in (null until then).
-  const email = (user.email || '').toLowerCase();
-  const staff = (await getStaff()).find((s) => s.id === email);
-  if (staff) return { ...user, superAdmin: false, role: staff.role || null };
-  if (counsellorAllowlist().includes(email)) return { ...user, superAdmin: false, role: null };
-  res.status(403).json({
-    error: `${user.email || 'This account'} does not have access to the admin panel yet. Ask the super admin to add this address on the Team page.`,
-  });
-  return null;
-
+  const standing = await adminStanding(user);
+  if (standing.status !== 'approved') {
+    res.status(403).json({
+      error:
+        standing.status === 'pending'
+          ? 'Your request to join the admin panel is waiting for the super admin.'
+          : `${user.email || 'This account'} has not asked to join the admin panel yet.`,
+    });
+    return null;
+  }
+  return { ...user, ...standing };
 }

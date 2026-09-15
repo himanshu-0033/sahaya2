@@ -11,7 +11,7 @@ import { EMAIL_MESSAGE, isValidEmail } from '../lib/contact.js';
 // assign form, and the students with no counsellor by name. A manager sees the
 // counsellor figures only; the server does not send them any student's name
 // (see handlers/admin/team.js), so there is nothing here to hide from them.
-export default function Team({ admin }) {
+export default function Team({ admin, onRequests }) {
   const isSuper = Boolean(admin?.superAdmin);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -24,10 +24,15 @@ export default function Team({ admin }) {
   const [staffBusy, setStaffBusy] = useState(false);
   const [staffNote, setStaffNote] = useState(null);
   const [staffError, setStaffError] = useState(null);
+  const [requestNote, setRequestNote] = useState(null);
 
   function load() {
     return getTeam()
-      .then(setData)
+      .then((res) => {
+        setData(res);
+        // Keeps the Team tab's badge in step as requests are answered.
+        if (isSuper) onRequests?.(res.requests?.length ?? 0);
+      })
       .catch((err) => setError(err.message));
   }
 
@@ -68,6 +73,23 @@ export default function Team({ admin }) {
         return load();
       })
       .catch((err) => setStaffError(err.message))
+      .finally(() => setStaffBusy(false));
+  }
+
+  // Approve or decline an access request.
+  function answer(email, approved) {
+    setStaffBusy(true);
+    setRequestNote(null);
+    (approved ? addStaff(email) : removeStaff(email))
+      .then(() => {
+        setRequestNote({
+          text: approved
+            ? `${email} is approved. Their dashboard opens the next time they check.`
+            : `${email}'s request was declined.`,
+        });
+        return load();
+      })
+      .catch((err) => setRequestNote({ text: err.message, error: true }))
       .finally(() => setStaffBusy(false));
   }
 
@@ -112,7 +134,7 @@ export default function Team({ admin }) {
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-[var(--color-ink-soft)]">
           {isSuper
-            ? 'Who may sign in, every counsellor and how their students are doing, and who still needs a counsellor. An assignment gives the counsellor access straight away, and the student sees it on their account page.'
+            ? 'Access requests, every counsellor and how their students are doing, and who still needs a counsellor. An assignment gives the counsellor access straight away, and the student sees it on their account page.'
             : "How each counsellor's caseload is doing. Individual students are not shown here; each counsellor sees their own."}
         </p>
       </header>
@@ -133,12 +155,67 @@ export default function Team({ admin }) {
         ))}
       </div>
 
+      {/* Waiting for an answer. Above everything else the super admin can act on,
+          because until they do, that person is looking at a "request sent" screen.
+          The note sits outside the list, which is gone once the last one is answered. */}
+      {isSuper && requestNote && (
+        <p
+          role={requestNote.error ? 'alert' : 'status'}
+          className={`rounded-xl px-4 py-3 text-sm ${requestNote.error ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]' : 'bg-[#e3efeb] text-[#1f4d47]'}`}
+        >
+          {requestNote.text}
+        </p>
+      )}
+      {isSuper && data.requests?.length > 0 && (
+        <section className="rounded-2xl border-2 border-[#1f4d47]/30 bg-[#f1f7f4] p-6">
+          <h3 className="font-display text-xl">
+            Access requests <span className="tabular-nums text-[var(--color-muted)]">{data.requests.length}</span>
+          </h3>
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            People who signed in and asked to join. Approving gives them the dashboard for the role they chose.
+          </p>
+          <ul className="mt-4 divide-y divide-[var(--line-1)] rounded-xl border border-[var(--line-1)] bg-white">
+            {data.requests.map((r) => (
+              <li key={r.email} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{r.name || r.email}</p>
+                  <p className="truncate text-xs text-[var(--color-muted)]">
+                    {r.name ? `${r.email} · ` : ''}asked to join as{' '}
+                    <span className="font-semibold text-[#1f4d47]">{ROLE_LABEL[r.role] || 'staff'}</span>
+                    {r.requestedAt ? ` · ${new Date(r.requestedAt).toLocaleString()}` : ''}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => answer(r.email, true)}
+                    disabled={staffBusy}
+                    className="rounded-full bg-[#1f4d47] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => answer(r.email, false)}
+                    disabled={staffBusy}
+                    className="rounded-full border border-[var(--color-flag)]/40 px-4 py-1.5 text-sm text-[var(--color-flag-deep)] hover:bg-[var(--color-flag-soft)] disabled:opacity-40"
+                  >
+                    Decline
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {isSuper && (
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-2xl border border-[var(--line-1)] bg-white p-6">
             <h3 className="font-display text-xl">Add a staff member</h3>
             <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
-              Lets them sign in. On their first sign-in they choose counsellor or manager.
+              Approves someone ahead of time, so they skip the request. On their first sign-in they
+              choose counsellor or manager.
             </p>
             <form onSubmit={add} className="mt-4 flex flex-wrap gap-2">
               <input
