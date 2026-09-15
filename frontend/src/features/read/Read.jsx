@@ -10,7 +10,7 @@ import { articlePhoto } from '../../shared/photos.js';
 
 // The reading index.
 //
-// Every other section of the app asks something of you — answer this, practise
+// Every other section of the app asks something of you: answer this, practise
 // that, do today's day. This one asks nothing, which is the point: someone who
 // is not ready to be measured should still have a reason to be here, and
 // somewhere to go that is not a questionnaire.
@@ -25,6 +25,38 @@ const DOMAINS = TEST_INDEX.reduce((groups, test) => {
   else groups.push([test.domain, [test]]);
   return groups;
 }, []);
+
+function dayOfYear() {
+  const d = new Date();
+  return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+}
+
+// Worth reading: one essay as a pull-quote card.
+//
+// The quote is a sentence from the essay itself, never a testimonial. There
+// are no user stories in this app to quote, and a named face saying the app
+// helped them would be invented.
+function StoryCard({ article }) {
+  const topic = TOPICS[article.topic] || TOPICS.calm;
+  return (
+    <Link to={`/read/${article.id}`} className="press block">
+      <span className="story-frame" style={{ '--ph-hue': topic.hue }}>
+        <span className="photo-head">
+          <img src={articlePhoto(article)} alt="" loading="lazy" decoding="async" />
+        </span>
+        <span className="story-quote">&ldquo;{article.pull}&rdquo;</span>
+      </span>
+      <span className="mt-3.5 flex flex-wrap gap-1.5">
+        <span className="story-chip" style={{ background: topic.deep }}>{topic.label}</span>
+        <span className="story-chip" style={{ background: 'var(--sec-read-deep)' }}>Reading</span>
+      </span>
+      <span className="font-display mt-3 block text-xl leading-snug sm:text-2xl">{article.title}</span>
+      <span className="mt-2 block text-xs text-[var(--color-muted)]">
+        <span className="num">{article.minutes}</span> min read
+      </span>
+    </Link>
+  );
+}
 
 function ArticleCard({ article, index }) {
   const topic = TOPICS[article.topic] || TOPICS.calm;
@@ -76,6 +108,15 @@ export default function Read() {
     return null;
   }
 
+  // One essay leads each day and the next four sit beside it, so a week of
+  // opening this page walks the whole shelf. The rest follow as cards, so no
+  // essay is shown twice.
+  const lead = dayOfYear() % ARTICLES.length;
+  const order = ARTICLES.map((_, i) => ARTICLES[(lead + i) % ARTICLES.length]);
+  const [featured, ...others] = order;
+  const nextFour = others.slice(0, 4);
+  const moreEssays = others.slice(4);
+
   return (
     <PageShell section="read" width="wide">
       <Header eyebrow="Read" />
@@ -90,11 +131,47 @@ export default function Read() {
         </p>
       </div>
 
-      <div className="stack-section grid gap-3 sm:grid-cols-2">
-        {ARTICLES.map((article, i) => (
-          <ArticleCard key={article.id} article={article} index={i} />
-        ))}
-      </div>
+      {/* Worth reading. Today's essay as a pull-quote card, and the next four
+          as a list beside it on a laptop, below it on a phone. */}
+      <section className="animate-slide-up stack-section" style={{ animationDelay: '60ms' }}>
+        <h2 className="home-section-title border-l-[3px] border-[var(--sec-read)] pl-3">Worth reading</h2>
+
+        <div className="mt-4 grid gap-7 lg:grid-cols-[1.55fr_1fr] lg:gap-6">
+          <StoryCard article={featured} />
+
+          <div>
+            <p className="marginalia">Also worth reading</p>
+            <ul className="mt-3 grid gap-3">
+              {nextFour.map((a) => (
+                <li key={a.id}>
+                  <Link to={`/read/${a.id}`} className="press flex items-center gap-3.5">
+                    <span className="photo-head story-thumb" style={{ '--ph-hue': (TOPICS[a.topic] || TOPICS.calm).hue }}>
+                      <img src={articlePhoto(a)} alt="" loading="lazy" decoding="async" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium leading-snug">{a.title}</span>
+                      <span className="mt-1 block text-xs text-[var(--color-muted)]">
+                        <span className="num">{a.minutes}</span> min read
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {moreEssays.length > 0 && (
+        <section className="stack-section">
+          <p className="marginalia">More essays</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {moreEssays.map((article, i) => (
+              <ArticleCard key={article.id} article={article} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Books, above the questionnaire index and below the essays.
 

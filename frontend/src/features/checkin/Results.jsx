@@ -6,7 +6,7 @@ import ChatPanel from '../companion/ChatPanel.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getStatus } from '../../shared/api.js';
 import { bandColor, bandTint } from '../assessments/bands.js';
-import { SET_IDS, clearSetResults, readSetResults } from '../assessments/testSet.js';
+import { AFTER_CHECKIN, SET_IDS, clearSetResults, readSetResults, setStartHref } from '../assessments/testSet.js';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -14,7 +14,7 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-// What used to sit here was the dinner pass — a ticket with an SH-MMDD-XXXX
+// What used to sit here was the dinner pass: a ticket with an SH-MMDD-XXXX
 // code, drawn with a perforation and everything, to be shown at a hostel
 // dining hall.
 //
@@ -59,8 +59,8 @@ export default function Results() {
   const navigate = useNavigate();
   const session = useSession();
   const [record, setRecord] = useState(location.state?.record || null);
-  // Set only when the ten plates were taken as part of this sitting — the
-  // check-in now runs straight on into them. Read once from navigation state
+  // Set only when the ten plates were taken as part of this sitting, which the
+  // check-in runs straight on into when the test is not skipped. Read once from navigation state
   // rather than fetched: this screen is about today, and a Rorschach from
   // last Tuesday is not news.
   const inkblot = location.state?.inkblot || null;
@@ -273,11 +273,23 @@ export default function Results() {
           <section className="animate-slide-up stack-block" style={{ animationDelay: '210ms' }}>
             <p className="marginalia">When you have longer</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {/* Nothing from the test in this sitting, usually because it
+                  was skipped at the check-in: offer all of it, run the way the
+                  check-in runs it, plates after the questionnaires. */}
+              {!inkblot && testSet.length === 0 && (
+                <Link to={setStartHref(SET_IDS, AFTER_CHECKIN)} className="card press p-5">
+                  <p className="font-display text-xl">Begin the test</p>
+                  <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+                    PHQ-9, GAD-7 and WHO-5, then the ten plates. About sixteen minutes, and you can
+                    stop anywhere.
+                  </p>
+                </Link>
+              )}
               {/* The inkblot tile stands down once the plates have been done
                   today. Offering "the ten-plate inkblot, about ten minutes"
                   directly under someone's own ten-plate results reads as the
                   app not having noticed. */}
-              {!inkblot && (
+              {!inkblot && testSet.length > 0 && (
                 <Link
                   to="/inkblot-test"
                   className="card press p-5"

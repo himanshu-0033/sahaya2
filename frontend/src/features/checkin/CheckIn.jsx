@@ -17,21 +17,23 @@ import { AFTER_CHECKIN, SET_IDS, setStartHref } from '../assessments/testSet.js'
 // It used to open with three abstract blobs and a one-word box each, then ask
 // for a mood. Those blobs were invented shapes, not Rorschach plates, and they
 // were asking a smaller version of the question the ten real plates ask
-// properly at the end of this same flow — so the sitting posed the same
+// properly at the end of this same flow, so the sitting posed the same
 // exercise twice, badly first. They are gone. What is left runs in one line:
 //
-//   1. mood        one tap, and the check-in is saved — day logged, streak
-//                  counted — before anything longer is offered
+//   1. mood        one tap, and the check-in is saved (day logged, streak
+//                  counted) before anything longer is offered
 //   2. three tests  PHQ-9, GAD-7, WHO-5, back to back (AssessmentRun owns the
 //                  running of them; this page hands off and is handed back)
 //   3. ten plates   the real Rorschach plates, in your own words
 //   4. /results     the thought for the day, the three ranges, the plate
-//                   counts — one screen, at the end
+//                   counts, on one screen at the end
 //
-// Nothing between stages congratulates anybody or asks whether they want to
-// carry on, because that is what makes it one sitting rather than four. Every
-// stage has an exit that lands on the results, and stage 1 is complete and
-// saved on its own, so leaving at any point costs only what has not been done.
+// Stages 2 and 3 are the test, and it is asked about once, at the mood: "Check
+// in and begin the test", or "Just check in", which skips it and goes to the
+// thought for the day. Past that nothing between stages asks again, because
+// that is what makes it one sitting rather than four. Every stage has an exit
+// that lands on the results, and stage 1 is complete and saved on its own, so
+// leaving at any point costs only what has not been done.
 //
 // The stage lives in the query string (`?stage=plates`) rather than in state:
 // the middle of the flow is a different route entirely, so coming back has to
@@ -82,7 +84,7 @@ function Stages({ current }) {
 }
 
 // The plate step no longer collects three words, and the API still wants the
-// field. Three blanks is the shape it already accepts — it is exactly what
+// field. Three blanks is the shape it already accepts: it is exactly what
 // tapping "Nothing comes to mind" three times used to send.
 const NO_WORDS = ['', '', ''];
 
@@ -113,7 +115,7 @@ export default function CheckIn() {
   const [latencies, setLatencies] = useState({});
 
   // When the current plate first appeared, so we can record how long it took
-  // to put anything down. Descriptive only — nothing scores off it.
+  // to put anything down. Descriptive only, nothing scores off it.
   const shownAtRef = useRef(null);
 
   useEffect(() => {
@@ -122,7 +124,7 @@ export default function CheckIn() {
 
   // Fetched up front on the mood step, not when the plates are needed. There
   // are three questionnaires between the two, so by the time anyone reaches a
-  // plate this has long since landed — and if it never does, the mood step
+  // plate this has long since landed, and if it never does, the mood step
   // says so before promising anything.
   useEffect(() => {
     if (!session || plates.length > 0) return;
@@ -173,8 +175,10 @@ export default function CheckIn() {
 
   if (!session) return null;
 
-  async function handleMood() {
-    setSubmitting(true);
+  // withTest: on into the questionnaires, and the plates after them. Without
+  // it the check-in is the whole sitting, and today's thought is the end of it.
+  async function handleMood(withTest) {
+    setSubmitting(withTest ? 'test' : 'skip');
     setError(null);
     try {
       const saved = await submitCheckin({ words: NO_WORDS, mood });
@@ -182,9 +186,10 @@ export default function CheckIn() {
       // this changes, and it is mounted on every route.
       window.dispatchEvent(new Event(CHECKIN_EVENT));
       setRecord(saved);
-      // Straight into the questionnaires. The day is already saved, so what
-      // follows is time someone is spending, not a form they are completing.
-      navigate(setStartHref(SET_IDS, AFTER_CHECKIN));
+      // The day is already saved, so what follows is time someone is
+      // spending, not a form they are completing.
+      if (withTest) navigate(setStartHref(SET_IDS, AFTER_CHECKIN));
+      else navigate('/results', { state: { record: saved } });
     } catch (err) {
       if (err.message.includes('Create your account')) {
         navigate('/');
@@ -449,13 +454,12 @@ export default function CheckIn() {
             })}
           </div>
 
-          {/* What the whole sitting is, laid out before the button rather than
+          {/* What the test is, laid out before the choice rather than
               discovered one screen at a time. Three questionnaires and ten
-              plates is twenty minutes, and that is a thing people are entitled
-              to know while they can still decide, especially since the tap
-              below is the only part that has to happen. */}
+              plates is sixteen minutes or so, and people are entitled to know
+              that while they can still decide, and to decide not to. */}
           <div className="animate-slide-up mt-8 rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] p-5" style={{ animationDelay: '180ms' }}>
-            <p className="marginalia">Then, if you have the time</p>
+            <p className="marginalia">The test, if you have the time</p>
             <ul className="mt-3 space-y-2.5 text-sm text-[var(--color-ink-soft)]">
               <li className="flex gap-3">
                 <span className="num shrink-0 text-[var(--color-muted)]">1</span>
@@ -474,22 +478,34 @@ export default function CheckIn() {
               </li>
             </ul>
             <p className="mt-3.5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
-              Today is saved and your streak counted the moment you tap below. Everything after
-              that is optional, can be skipped a question or a plate at a time, and lands on the
-              same screen either way.
+              Either button below saves today and counts your streak. The test is up to you: skip
+              it here, or a question or a plate at a time, and you land on today&apos;s thought
+              either way.
             </p>
           </div>
 
           {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
-          <button
-            type="button"
-            disabled={!mood || submitting}
-            onClick={handleMood}
-            className="press mt-6 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
-          >
-            {submitting ? 'Saving…' : 'Save today, then start'}
-          </button>
+          {/* Two ways on from the same tap: the check-in and the test, or the
+              check-in alone. */}
+          <div className="mt-6 grid gap-2.5">
+            <button
+              type="button"
+              disabled={!mood || submitting}
+              onClick={() => handleMood(true)}
+              className="press w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
+            >
+              {submitting === 'test' ? 'Saving…' : 'Check in and begin the test'}
+            </button>
+            <button
+              type="button"
+              disabled={!mood || submitting}
+              onClick={() => handleMood(false)}
+              className="press w-full rounded-full border border-[var(--line-3)] py-3.5 font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:text-[var(--ink-faint)]"
+            >
+              {submitting === 'skip' ? 'Saving…' : 'Just check in, skip the test'}
+            </button>
+          </div>
 
           {/* The check-in had no disclosure at all, which made it the only
               data-collecting flow in the app that did not have one, and the
