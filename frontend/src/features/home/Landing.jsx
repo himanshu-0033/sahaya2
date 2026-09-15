@@ -167,7 +167,7 @@ function TodayCard({ name, status }) {
           <Link
             to="/results"
             state={{ record: status.record }}
-            className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
+            className="mt-3 inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
           >
             {moodLabel ? `Checked in as ${moodLabel}.` : 'Checked in.'} See the rest of today
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -209,11 +209,17 @@ function TodayCard({ name, status }) {
               );
             })}
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
-            {status.error
-              ? "We couldn't reach the server, so we can't tell whether today is already done. Opening it again is safe."
-              : 'Tap one to check in. After that, begin the test or skip it.'}
-          </p>
+          {status.error ? (
+            <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+              We couldn&apos;t reach the server, so we can&apos;t tell whether today is already done.
+              Opening it again is safe.
+            </p>
+          ) : (
+            <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+              <strong className="font-semibold text-[var(--color-ink)]">Tap a mood to start your check-in.</strong>{' '}
+              After that, begin the test or skip it.
+            </p>
+          )}
         </>
       )}
 
