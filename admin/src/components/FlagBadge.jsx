@@ -6,7 +6,7 @@ export default function FlagBadge({ resident }) {
   if (risk?.recent && risk.level === 'acute') {
     return (
       <span className="whitespace-nowrap rounded-full bg-[var(--color-flag)] px-3 py-1 text-xs font-medium text-[var(--color-ink)]">
-        At risk now
+        Critical risk · immediate action
       </span>
     );
   }

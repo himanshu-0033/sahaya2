@@ -184,3 +184,9 @@ select:focus-visible {
     inset 0 0 0 1px var(--color-lavender-deep),
     0 10px 28px -20px var(--color-lavender-deep);
 }
+
+/* The caseload's flag rows and the export log draw their own chevron; Safari
+   would otherwise add its own triangle beside it. */
+summary::-webkit-details-marker {
+  display: none;
+}

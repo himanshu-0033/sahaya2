@@ -14,6 +14,11 @@ export default async function handler(req, res) {
   if (!admin) return;
 
   return res.status(200).json({
-    admin: { email: admin.email, name: admin.name || admin.email, superAdmin: Boolean(admin.superAdmin) },
+    admin: {
+      email: admin.email,
+      name: admin.name || admin.email,
+      picture: admin.picture || null,
+      superAdmin: Boolean(admin.superAdmin),
+    },
   });
 }

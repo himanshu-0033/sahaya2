@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import Logo from './Logo.jsx';
+import ProfileMenu from './ProfileMenu.jsx';
 
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
@@ -11,27 +13,27 @@ export default function AdminShell({ admin, onSignOut, children }) {
   return (
     <div className="min-h-screen">
       {/* First stop for the keyboard, so a counsellor is not walked through
-          the wordmark, both nav links and the sign-out button on every page
-          before reaching the thing they came to read. */}
+          the wordmark, the nav and the sign-out button on every page before
+          reaching the thing they came to read. */}
       <a href="#main" className="skip-link">
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-10 border-b border-[var(--line-1)] bg-[var(--color-cream)]/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4">
-          <div className="mr-auto">
-            <div className="flex items-center gap-2">
-              <h1 className="font-display text-xl">DP Sahay AI</h1>
-              <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)]">
-                {admin?.superAdmin ? 'Super admin' : 'Counsellor'}
-              </span>
+      <header className="sticky top-0 z-10 border-b border-[var(--line-1)] bg-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-3.5">
+          {/* The mark and the name, the same as the resident app, so a
+              counsellor moving between the two windows reads one product. */}
+          <div className="mr-auto flex items-center gap-3">
+            <Logo size={34} glow={false} />
+            <div>
+              <p className="font-display text-xl leading-none">DP Sahay AI</p>
+              <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                Admin console
+              </p>
             </div>
-            <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--color-muted)]">
-              Admin console
-            </p>
           </div>
 
-          <nav className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] p-1 text-sm">
+          <nav aria-label="Console" className="flex items-center gap-1 rounded-full border border-[var(--line-1)] bg-[var(--surface-1)] p-1 text-sm">
             {items.map((item) => (
               <NavLink
                 key={item.to}
@@ -40,7 +42,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
                 className={({ isActive }) =>
                   `rounded-full px-4 py-1.5 transition-colors ${
                     isActive
-                      ? 'bg-[var(--color-lavender-deep)] text-white'
+                      ? 'bg-[#fde4d6] font-medium text-[var(--color-ink)] shadow-[inset_0_0_0_1px_rgba(214,120,78,0.35)]'
                       : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
                   }`
                 }
@@ -50,15 +52,8 @@ export default function AdminShell({ admin, onSignOut, children }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 text-sm">
-            <span className="hidden text-[var(--color-muted)] sm:inline">{admin?.email}</span>
-            <button
-              onClick={onSignOut}
-              className="rounded-full border border-[var(--line-3)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] hover:text-[var(--color-ink)]"
-            >
-              Sign out
-            </button>
-          </div>
+          {/* Who is signed in lives behind the avatar, top right, and nowhere else. */}
+          <ProfileMenu admin={admin} onSignOut={onSignOut} />
         </div>
       </header>
 
@@ -69,8 +64,8 @@ export default function AdminShell({ admin, onSignOut, children }) {
       </main>
 
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-[var(--color-muted)]">
-        Flags are a rule-based nudge to start a conversation, not a diagnosis, and not a
-        substitute for talking to the person.
+        Flags are a rule-based nudge to start a conversation, not a diagnosis, and not a substitute
+        for talking to the person.
       </footer>
     </div>
   );

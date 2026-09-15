@@ -8,10 +8,12 @@ import { getOverview, getExportLog } from '../lib/api.js';
 import { buildCaseload, hasScreen, raisedInChat } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
 
+// The console's first screen: one sentence saying what needs doing, six figures
+// that double as filters, the fortnight's check-ins beside the month's moods,
+// and the caseload, where each person's flags open in place.
+//
 // The four lists the overview endpoint returns are merged into one caseload in
-// lib/caseload.js — see the note there for why. What is left here is the page:
-// the totals become the rail at the top, which is also what filters the list,
-// and `quietest` becomes a segment rather than a panel of its own.
+// lib/caseload.js; see the note there for why.
 
 const SEGMENTS = [
   { key: 'attention', label: 'Needs a conversation' },
@@ -23,57 +25,138 @@ const SEGMENTS = [
 
 const QUIET_DAYS = 3;
 
-function Metric({ label, value, hint, tone = 'default', visual, onClick, active = false }) {
-  const toneClass =
-    tone === 'flag'
-      ? 'text-[var(--color-flag-deep)]'
-      : tone === 'teal'
-        ? 'text-[var(--color-teal-dark)]'
-        : tone === 'lavender'
-          ? 'text-[var(--color-lavender-deep)]'
-          : 'text-[var(--color-ink)]';
+// Each figure's card colour, with its text colours measured against it: the
+// risk figure's orange #c2410c is 5.2:1 on white, the deep teal carries white
+// at 9.5:1, the lavender-grey #2b2946 at 9.8:1.
+const TONES = {
+  risk: { bg: '#ffffff', ink: '#c2410c', soft: 'var(--color-muted)', mark: '#ea7a45', border: true },
+  attention: { bg: '#1f4d47', ink: '#ffffff', soft: 'rgba(255,255,255,0.82)', mark: '#ffffff' },
+  quiet: { bg: '#cfcde3', ink: '#2b2946', soft: '#45436a', mark: '#5b4bc4' },
+  plain: { bg: '#ffffff', ink: 'var(--color-ink)', soft: 'var(--color-muted)', mark: 'var(--color-teal)' },
+};
 
+function Metric({ label, value, hint, tone = 'plain', visual, onClick, active = false }) {
+  const t = TONES[tone];
   const body = (
     <>
-      <p className="label-eyebrow">{label}</p>
-      {/* The slot keeps its height whether or not there is a visual in it, and
-          whether that visual is a ring or a sparkline, otherwise the five
-          figures along the rail sit at five slightly different heights. */}
-      <div className="mt-2 flex items-end justify-between gap-3">
-        <p className={`font-display text-3xl leading-none tabular-nums ${toneClass}`}>{value}</p>
+      <p className="text-[10px] font-semibold uppercase leading-snug tracking-[0.14em]" style={{ color: t.soft }}>
+        {label}
+      </p>
+      <div className="mt-3 flex items-end justify-between gap-3">
+        <p className="font-display text-[2rem] leading-none tabular-nums" style={{ color: t.ink }}>
+          {value}
+        </p>
         <span className="flex h-9 items-center">{visual}</span>
       </div>
-      {hint && <p className="mt-2 text-xs leading-snug text-[var(--color-muted)]">{hint}</p>}
+      {hint && (
+        <p className="mt-2 text-xs leading-snug" style={{ color: t.soft }}>
+          {hint}
+        </p>
+      )}
     </>
   );
 
-  // A figure that maps onto a subset of the list below is a filter; one that
-  // does not stays a figure. The hover label is what tells the two apart,
-  // rather than every tile pretending to be a button.
-  if (!onClick) return <div className="bg-[var(--color-cream-soft)] px-5 py-4">{body}</div>;
+  const shell = `flex h-full flex-col rounded-2xl px-4 py-4 text-left ${tone === 'plain' || t.border ? 'border border-[var(--line-1)]' : ''}`;
 
+  // A figure that maps onto a subset of the list below is a filter; one that
+  // does not stays a figure.
+  if (!onClick) {
+    return (
+      <div className={shell} style={{ background: t.bg }}>
+        {body}
+      </div>
+    );
+  }
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`group cursor-pointer px-5 py-4 text-left transition-colors ${
-        active
-          ? 'metric-on bg-[var(--color-lavender-soft)]'
-          : 'bg-[var(--color-cream-soft)] hover:bg-[var(--surface-2)]'
+      className={`${shell} group cursor-pointer transition-[box-shadow,transform] hover:-translate-y-0.5 ${
+        active ? 'shadow-[0_0_0_2px_var(--color-lavender-deep)]' : 'hover:shadow-[0_10px_24px_-14px_rgba(0,0,0,0.35)]'
       }`}
+      style={{ background: t.bg }}
     >
       {body}
-      {/* Always rendered, so switching a filter on does not make its cell
-          taller than the four beside it. */}
+      {/* Always rendered, so switching a filter on does not change the card's height. */}
       <span
-        className={`mt-2 block truncate text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)] transition-opacity ${
+        className={`mt-auto block truncate pt-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition-opacity ${
           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100'
         }`}
+        style={{ color: t.soft }}
       >
         {active ? 'Filtering · clear' : 'Filter the list'}
       </span>
     </button>
+  );
+}
+
+function ChatIcon({ color }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 5h16v11H9l-5 4Z" />
+      <path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" strokeWidth="2.6" />
+    </svg>
+  );
+}
+
+const MOOD_BAR = { 1: '#c2410c', 2: 'var(--color-flag)', 3: 'var(--color-amber)', 4: '#5a9a6e', 5: 'var(--color-teal-dark)' };
+
+// One flag on a person, as a line that opens to show all of it.
+function EventRow({ event, residentId }) {
+  const label =
+    event.kind === 'screen'
+      ? event.fromChat
+        ? 'Chat with DP'
+        : event.detail
+      : event.kind === 'concern'
+        ? 'Chat with DP'
+        : 'Check-in';
+  const lead =
+    event.kind === 'concern'
+      ? `Talked about ${event.detail.toLowerCase()}`
+      : event.reasons[0] || event.detail;
+  const tag =
+    event.kind === 'screen'
+      ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
+      : event.kind === 'concern'
+        ? 'bg-[var(--color-lavender-soft)] text-[var(--color-lavender-deep)]'
+        : 'bg-[var(--surface-3)] text-[var(--color-ink-soft)]';
+  const anchor = event.kind === 'concern' || event.fromChat ? '#conversations' : '';
+
+  return (
+    <details className="group rounded-xl border border-[var(--line-1)] bg-[var(--surface-1)]">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs">
+        <span className="flex min-w-0 items-center gap-2">
+          <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${tag}`}>{label}</span>
+          <span className="shrink-0 text-[var(--color-muted)]">{formatDate(event.date)}</span>
+          <span aria-hidden="true" className="shrink-0 text-[var(--color-muted)]">→</span>
+          <span className="min-w-0 truncate text-[var(--color-ink-soft)]">
+            {event.kind === 'screen' && <span className="font-semibold text-[var(--color-flag-deep)]">Key flags: </span>}
+            {lead}
+          </span>
+        </span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0 text-[var(--color-muted)] transition-transform group-open:rotate-180">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </summary>
+      <div className="border-t border-[var(--line-1)] px-3 py-2.5 text-xs leading-relaxed">
+        {event.kind === 'checkin' && <p className="text-[var(--color-ink-soft)]">{event.detail}</p>}
+        {event.reasons.length > 0 && (
+          <ul className="space-y-1 text-[var(--color-flag-deep)]">
+            {event.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
+        )}
+        <Link
+          to={`/residents/${encodeURIComponent(residentId)}${anchor}`}
+          className="mt-2 inline-block font-medium text-[var(--color-lavender-deep)] underline underline-offset-4"
+        >
+          View full response
+        </Link>
+      </div>
+    </details>
   );
 }
 
@@ -82,7 +165,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   // The export log is supporting information, not the point of the page, so a
-  // failure here is swallowed — it must never take the dashboard down with it.
+  // failure here is swallowed: it must never take the dashboard down with it.
   const [exports, setExports] = useState([]);
   const [segment, setSegment] = useState('attention');
   const [day, setDay] = useState(null);
@@ -118,9 +201,7 @@ export default function Dashboard() {
       return true;
     });
     if (!day) return bySegment;
-    return bySegment.filter(
-      (r) => r.lastCheckIn?.date === day || r.events.some((e) => e.date === day),
-    );
+    return bySegment.filter((r) => r.lastCheckIn?.date === day || r.events.some((e) => e.date === day));
   }, [caseload, segment, day, topic]);
 
   if (loading) return <p className="text-sm text-[var(--color-muted)]">Loading…</p>;
@@ -133,29 +214,28 @@ export default function Dashboard() {
   const lowShare = moodTotal
     ? Math.round(((moodDistribution[0].count + moodDistribution[1].count) / moodTotal) * 100)
     : 0;
-  const quietCount = quietest.filter(
-    (r) => (daysSince(r.lastCheckIn?.date) ?? 99) >= QUIET_DAYS,
-  ).length;
+  const quietCount = quietest.filter((r) => (daysSince(r.lastCheckIn?.date) ?? 99) >= QUIET_DAYS).length;
 
-  // Every figure below is scoped to the people who have shared with this
-  // counsellor. When that is nobody, a wall of zeros looks like an outage — so
-  // say what it actually means before showing the figures.
+  // Every figure below is scoped to the people this counsellor can see. When
+  // that is nobody, a wall of zeros looks like an outage, so say so first.
   const nobodyShared = totals.onboarded === 0 && totals.flaggedResidents === 0;
 
-  // The state of the caseload as a sentence, because a counsellor opening this
-  // window wants the answer before they want the numbers behind it.
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  // The state of the caseload as a sentence: a counsellor opening this window
+  // wants the answer before the numbers. "Critical" only ever counts risk
+  // screens, so a check-in flag is never inflated into an emergency.
   const lede = nobodyShared
     ? 'Nobody has shared with you yet.'
     : totals.acuteRisk > 0
-      ? `${totals.acuteRisk} ${totals.acuteRisk === 1 ? 'person' : 'people'} said “right now”. Call first.`
+      ? `${plural(totals.acuteRisk, 'person', 'people')} said “right now”. Call them first.`
       : totals.flaggedResidents > 0
-        ? `${totals.flaggedResidents} ${
-            totals.flaggedResidents === 1 ? 'person is' : 'people are'
-          } worth a conversation today.`
+        ? totals.atRisk >= totals.flaggedResidents
+          ? `Your action is requested for ${plural(totals.flaggedResidents, 'critical conversation', 'critical conversations')} today.`
+          : `Your action is requested for ${plural(totals.flaggedResidents, 'conversation', 'conversations')} today${
+              totals.atRisk > 0 ? `, ${totals.atRisk} of them critical` : ''
+            }.`
         : totals.raisedInChat > 0
-          ? `Nothing is flagged. ${totals.raisedInChat} ${
-              totals.raisedInChat === 1 ? 'student' : 'students'
-            } raised something with DP.`
+          ? `Nothing is flagged. ${plural(totals.raisedInChat, 'student', 'students')} raised something with DP.`
           : 'Nothing is flagged today.';
 
   function toggleSegment(key) {
@@ -165,8 +245,10 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-up">
       <header>
-        <p className="label-eyebrow">{formatDate(data.today)}</p>
-        <h2 className="font-display mt-2 max-w-2xl text-[clamp(1.6rem,3.4vw,2.4rem)] leading-tight">
+        <p className="inline-block rounded-full border border-[var(--line-2)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+          {formatDate(data.today)}
+        </p>
+        <h2 className="font-display mt-4 max-w-2xl text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.12]" style={{ textWrap: 'balance' }}>
           {lede}
         </h2>
         <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
@@ -180,23 +262,21 @@ export default function Dashboard() {
       {nobodyShared && (
         <div className="mt-6 rounded-2xl border border-[var(--color-lavender)]/30 bg-[var(--color-lavender-soft)] px-6 py-5">
           <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
-            These figures cover the people who have shared their account with you, and right now
-            that is nobody, so everything below reads zero. This is not an error. Ask the people
-            you work with to add your address from &ldquo;Who can see this&rdquo; in their own
-            account.
+            These figures cover the students you can see, and right now that is nobody, so everything
+            below reads zero. This is not an error. Students appear here when the super admin assigns
+            them to you, or when they add your address from their own account.
           </p>
         </div>
       )}
 
-      <div className="rail mt-8 rounded-2xl border border-[var(--line-1)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {/* ─────────────────────────────── six figures, four of them filters */}
+      <div className="mt-8 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Metric
           label="Positive risk screens"
           value={totals.atRisk}
-          hint={
-            totals.acuteRisk > 0 ? `${totals.acuteRisk} said “right now”` : 'In the last 14 days'
-          }
-          tone="flag"
-          visual={<Ring value={totals.atRisk} max={totals.onboarded} tone="var(--color-flag)" />}
+          hint={totals.acuteRisk > 0 ? `${totals.acuteRisk} said “right now”` : 'In the last 14 days'}
+          tone="risk"
+          visual={<Ring value={totals.atRisk} max={totals.onboarded} tone={TONES.risk.mark} />}
           onClick={() => toggleSegment('risk')}
           active={segment === 'risk'}
         />
@@ -204,17 +284,16 @@ export default function Dashboard() {
           label="Needs a conversation"
           value={totals.flaggedResidents}
           hint="Check-in flags and risk screens"
-          tone="flag"
-          visual={<Spark values={trend.map((d) => d.flagged)} tone="var(--color-flag)" />}
+          tone="attention"
+          visual={<Spark values={trend.map((d) => d.flagged)} tone={TONES.attention.mark} />}
           onClick={() => toggleSegment('attention')}
           active={segment === 'attention'}
         />
         <Metric
           label="Raised in chat"
-          value={totals.raisedInChat}
+          value={totals.raisedInChat ?? 0}
           hint="Students who talked to DP about something, last 14 days"
-          tone="lavender"
-          visual={<Ring value={totals.raisedInChat} max={totals.onboarded} />}
+          visual={<ChatIcon color="var(--color-lavender-deep)" />}
           onClick={() => toggleSegment('chat')}
           active={segment === 'chat'}
         />
@@ -222,19 +301,16 @@ export default function Dashboard() {
           label={`Quiet ${QUIET_DAYS}+ days`}
           value={quietCount}
           hint="Longest since a check-in"
-          tone="lavender"
-          visual={<Ring value={quietCount} max={totals.onboarded} />}
+          tone="quiet"
+          visual={<Ring value={quietCount} max={totals.onboarded} tone={TONES.quiet.mark} />}
           onClick={() => toggleSegment('quiet')}
           active={segment === 'quiet'}
         />
         <Metric
           label="Checked in today"
           value={totals.checkedInToday}
-          hint={
-            totals.avgMoodToday ? `Average mood ${totals.avgMoodToday} / 5` : 'No check-ins yet'
-          }
-          tone="teal"
-          visual={<Spark values={trend.map((d) => d.checkIns)} />}
+          hint={totals.avgMoodToday ? `Average mood ${totals.avgMoodToday} / 5` : 'No check-ins yet'}
+          visual={<Spark values={trend.map((d) => d.checkIns)} tone="var(--color-teal-dark)" />}
         />
         <Metric
           label="Questionnaires taken"
@@ -243,10 +319,16 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <section className="card-soft rounded-2xl p-6 lg:col-span-2">
+      {/* ─────────────────────────────── the fortnight and the month */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.65fr_1fr]">
+        <section className="rounded-2xl border border-[var(--line-1)] bg-white p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <h3 className="label-eyebrow">Check-ins, last {trend.length} days</h3>
+            <h3 className="font-display text-lg">
+              Check-in trends{' '}
+              <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">
+                (last {trend.length} days)
+              </span>
+            </h3>
             {day && (
               <button
                 type="button"
@@ -257,58 +339,50 @@ export default function Dashboard() {
               </button>
             )}
           </div>
-          <div className="mt-4">
+          <div className="mt-3">
             <TrendChart trend={trend} selected={day} onSelect={setDay} />
           </div>
         </section>
 
-        <section className="card-soft rounded-2xl p-6">
-          <h3 className="label-eyebrow">Mood mix, last 30 days</h3>
-          <div className="mt-4 space-y-2.5">
+        <section className="rounded-2xl border border-[var(--line-1)] bg-white p-6">
+          <h3 className="font-display text-lg">
+            Mood distribution{' '}
+            <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">
+              (last 30 days)
+            </span>
+          </h3>
+          <div className="mt-5 space-y-3">
             {[...moodDistribution].reverse().map((entry) => (
               <div key={entry.mood} className="flex items-center gap-3 text-xs">
-                <span className="w-14 shrink-0 text-[var(--color-ink-soft)]">
-                  {moodLabel(entry.mood)}
-                </span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--surface-2)]">
+                <span className="w-14 shrink-0 text-[var(--color-ink-soft)]">{moodLabel(entry.mood)}</span>
+                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-3)]">
                   <div
                     className="h-full rounded-full"
-                    style={{
-                      width: `${(entry.count / maxMoodCount) * 100}%`,
-                      background:
-                        entry.mood <= 2
-                          ? 'var(--color-flag)'
-                          : entry.mood === 3
-                            ? 'var(--color-amber)'
-                            : 'var(--color-teal)',
-                    }}
+                    style={{ width: `${(entry.count / maxMoodCount) * 100}%`, background: MOOD_BAR[entry.mood] }}
                   />
                 </div>
-                <span className="w-6 shrink-0 text-right tabular-nums text-[var(--color-muted)]">
-                  {entry.count}
-                </span>
+                <span className="w-6 shrink-0 text-right font-medium tabular-nums text-[var(--color-ink)]">{entry.count}</span>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-[11px] leading-relaxed text-[var(--color-muted)]">
-            {moodTotal === 0
-              ? 'No check-ins in this window.'
-              : `${moodTotal} check-ins, and ${lowShare}% of them Heavy or Low.`}
+          <p className="mt-5 text-xs leading-relaxed text-[var(--color-muted)]">
+            {moodTotal === 0 ? 'No check-ins in this window.' : `${moodTotal} check-ins, and ${lowShare}% of them Heavy or Low.`}
           </p>
         </section>
       </div>
 
+      {/* ─────────────────────────────── the caseload */}
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h3 className="font-display text-xl">The caseload</h3>
+            <h3 className="font-display text-2xl">Caseload</h3>
             <p className="mt-1 text-sm text-[var(--color-muted)]">
               <span className="tabular-nums">{visible.length}</span> shown
               {day ? ` on ${formatDate(day)}` : ''} · click anyone for their full history
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex flex-wrap gap-1 rounded-full bg-[var(--surface-2)] p-1 text-xs">
+            <div className="flex flex-wrap gap-1 rounded-full border border-[var(--line-1)] bg-white p-1 text-xs">
               {SEGMENTS.map((s) => (
                 <button
                   key={s.key}
@@ -325,21 +399,17 @@ export default function Dashboard() {
                 </button>
               ))}
             </div>
-            <Link
-              to="/residents"
-              className="text-sm text-[var(--color-lavender-deep)] underline underline-offset-4"
-            >
+            <Link to="/residents" className="text-sm font-medium text-[var(--color-lavender-deep)] underline underline-offset-4">
               All residents
             </Link>
           </div>
         </div>
 
-        {/* The topics as sections: pick one to see the students who brought it
-            to DP. Every topic is listed even at zero, so an empty one reads as
-            "nobody" rather than as missing. */}
+        {/* The topics as sections, when the chat segment is on. Every topic is
+            listed even at zero, so an empty one reads as "nobody". */}
         {segment === 'chat' && (
           <div className="mt-4 flex flex-wrap gap-1.5 text-xs">
-            {[{ id: null, label: 'All topics' }, ...data.topics].map((t) => {
+            {[{ id: null, label: 'All topics' }, ...(data.topics || [])].map((t) => {
               const count = caseload.filter((r) => raisedInChat(r, t.id)).length;
               return (
                 <button
@@ -371,80 +441,23 @@ export default function Dashboard() {
                   : 'Nobody matches this filter.'}
           </p>
         ) : (
-          <ul className="mt-4 divide-y divide-[var(--line-1)] border-y border-[var(--line-1)]">
+          <ul className="mt-4 space-y-2.5">
             {visible.map((r) => {
               const gap = daysSince(r.lastCheckIn?.date);
               return (
-                <li key={r.id}>
-                  <Link
-                    to={`/residents/${encodeURIComponent(r.id)}`}
-                    className="group grid gap-4 px-2 py-4 transition-colors hover:bg-[var(--surface-1)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
-                  >
-                    <div className="flex min-w-0 gap-3">
+                <li key={r.id} className="rounded-2xl border border-[var(--line-1)] bg-white px-4 py-3.5 sm:px-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Link to={`/residents/${encodeURIComponent(r.id)}`} className="group flex min-w-0 items-center gap-3">
                       <Monogram name={r.name || r.email} />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-                          <p className="font-medium transition-colors group-hover:text-[var(--color-lavender-deep)]">
-                            {r.name || r.email || 'Unnamed student'}
-                          </p>
-                          {r.email && (
-                            <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
-                          )}
-                        </div>
-
-                        {/* What actually happened, newest first — the screens and
-                          flagged check-ins that used to sit in two panels of
-                          their own. Three is enough to see the shape of it; the
-                          rest are on the resident's own page. */}
-                        {r.events.slice(0, 3).map((e) => (
-                          <p
-                            key={`${e.kind}:${e.date}:${e.detail}`}
-                            className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-xs leading-snug"
-                          >
-                            <span
-                              className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
-                                e.kind === 'screen'
-                                  ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
-                                  : e.kind === 'concern'
-                                    ? 'bg-[var(--color-lavender-soft)] text-[var(--color-lavender-deep)]'
-                                    : 'bg-[var(--surface-2)] text-[var(--color-muted)]'
-                              }`}
-                            >
-                              {e.kind === 'screen'
-                                ? e.fromChat
-                                  ? 'Safety'
-                                  : 'Screen'
-                                : e.kind === 'concern'
-                                  ? 'Chat'
-                                  : 'Check-in'}
-                            </span>
-                            <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
-                            <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
-                            {e.reasons.length > 0 && (
-                              <span className="text-[var(--color-flag-deep)]">
-                                {e.reasons.join(' · ')}
-                              </span>
-                            )}
-                          </p>
-                        ))}
-
-                        {r.events.length === 0 && (
-                          <p className="mt-1.5 text-xs text-[var(--color-muted)]">
-                            Last check-in{' '}
-                            {r.lastCheckIn
-                              ? `${formatDate(r.lastCheckIn.date)} · ${moodLabel(r.lastCheckIn.mood)}${
-                                  gap ? ` · ${gap} day${gap === 1 ? '' : 's'} ago` : ''
-                                }`
-                              : 'never'}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 sm:justify-end">
-                      {r.trend?.length > 0 && (
-                        <MoodSparkline history={r.trend} height={30} barWidth={7} />
-                      )}
+                      <span className="min-w-0">
+                        <span className="block truncate font-semibold transition-colors group-hover:text-[var(--color-lavender-deep)]">
+                          {r.name || r.email || 'Unnamed student'}
+                        </span>
+                        {r.email && <span className="block truncate text-xs text-[var(--color-muted)]">{r.email}</span>}
+                      </span>
+                    </Link>
+                    <div className="flex items-center gap-4">
+                      {r.trend?.length > 0 && <MoodSparkline history={r.trend} height={28} barWidth={6} />}
                       {r.sparse && !r.events.some((e) => e.kind !== 'concern') ? (
                         <span className="whitespace-nowrap rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-xs text-[var(--color-lavender-deep)]">
                           Raised in chat
@@ -457,7 +470,24 @@ export default function Dashboard() {
                         <FlagBadge resident={r} />
                       )}
                     </div>
-                  </Link>
+                  </div>
+
+                  {/* What actually happened, newest first. Three is enough to see
+                      the shape of it; the rest are on the person's own page. */}
+                  {r.events.length > 0 ? (
+                    <div className="mt-3 space-y-1.5 sm:pl-12">
+                      {r.events.slice(0, 3).map((e) => (
+                        <EventRow key={`${e.kind}:${e.date}:${e.detail}`} event={e} residentId={r.id} />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-xs text-[var(--color-muted)] sm:pl-12">
+                      Last check-in{' '}
+                      {r.lastCheckIn
+                        ? `${formatDate(r.lastCheckIn.date)} · ${moodLabel(r.lastCheckIn.mood)}${gap ? ` · ${gap} day${gap === 1 ? '' : 's'} ago` : ''}`
+                        : 'never'}
+                    </p>
+                  )}
                 </li>
               );
             })}
@@ -465,36 +495,24 @@ export default function Dashboard() {
         )}
       </section>
 
-      {/* Who took data out of here.
-
-          The console has warned counsellors to handle exports carefully for a
-          while. A warning is a request; this is a record. It is shown rather
-          than merely written, because an audit log nobody can read protects
-          nobody, and being visible is most of what makes it work.
-
-          Collapsed, not hidden: it is a thing a counsellor consults, not
-          something they read every morning, and <details> carries the
-          disclosure and its keyboard handling without any state of ours. */}
-      <details className="card-soft group mt-10 rounded-2xl px-6 py-5">
+      {/* Who took data out of here. A warning asks people to behave; this is a
+          record, shown rather than merely written, because an audit log nobody
+          can read protects nobody. Collapsed: it is consulted, not read daily. */}
+      <details className="group mt-10 rounded-2xl border border-[var(--line-1)] bg-white px-6 py-5">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
           <span className="label-eyebrow">Recent exports</span>
           <span className="text-xs text-[var(--color-muted)]">
             {exports.length === 0
               ? 'none yet'
               : `${exports.length} logged · latest ${new Date(exports[0].at).toLocaleDateString()}`}
-            <span
-              aria-hidden="true"
-              className="ml-2 inline-block transition-transform group-open:rotate-90"
-            >
+            <span aria-hidden="true" className="ml-2 inline-block transition-transform group-open:rotate-90">
               ›
             </span>
           </span>
         </summary>
 
         {exports.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--color-muted)]">
-            No CSV has been downloaded from this console yet.
-          </p>
+          <p className="mt-4 text-sm text-[var(--color-muted)]">No CSV has been downloaded from this console yet.</p>
         ) : (
           <ul className="mt-4 space-y-3">
             {exports.slice(0, 8).map((e) => (
@@ -506,10 +524,7 @@ export default function Dashboard() {
                   {e.actor}
                   <span className="text-[var(--color-muted)]">
                     {' '}
-                    exported{' '}
-                    {e.scope === 'cohort'
-                      ? 'the resident list'
-                      : `${e.subjectName || 'a resident'}'s history`}
+                    exported {e.scope === 'cohort' ? 'the resident list' : `${e.subjectName || 'a resident'}'s history`}
                   </span>
                 </span>
                 <span className="text-xs whitespace-nowrap text-[var(--color-muted)]">
@@ -522,8 +537,8 @@ export default function Dashboard() {
         )}
 
         <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
-          This log records that an export happened, never what was in it. Entries cannot be edited
-          or deleted from the console.
+          This log records that an export happened, never what was in it. Entries cannot be edited or
+          deleted from the console.
         </p>
       </details>
     </div>
