@@ -120,11 +120,13 @@ function greeting() {
 // Not checked in: each mood is a link to the check-in with that mood already
 // chosen. Nothing is saved from here, because the check-in screen is where the
 // "who sees this" disclosure sits and a stray tap on Home should not log a day.
-// Checked in: the same row, with today's mood ringed and the rest set back.
+// Checked in: the row has nothing left to do, so today's thought takes its
+// place in the same box, and the mood is named in the line under it.
 function TodayCard({ name, status }) {
   const [question, setQuestion] = useState('');
   const done = Boolean(status.checkedIn);
   const todayMood = Number(status.record?.mood ?? status.record?.moodScore) || null;
+  const moodLabel = MOOD_OPTIONS.find((m) => m.value === todayMood)?.label;
 
   const ask = (text) => {
     window.dispatchEvent(new CustomEvent(ASK_DP_EVENT, { detail: { question: text } }));
@@ -152,68 +154,70 @@ function TodayCard({ name, status }) {
         {done ? "That's today done." : 'How is today, really?'}
       </h1>
 
-      <div
-        className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:p-3"
-        role="group"
-        aria-label={done ? "Today's mood" : 'Pick how today feels to start your check-in'}
-      >
-        {MOOD_OPTIONS.map((m, i) => {
-          const hue = MOOD_HUE[i];
-          const picked = todayMood === m.value;
-          const dot = (
-            <span
-              aria-hidden="true"
-              className="h-8 w-8 rounded-full transition-transform duration-200 group-hover:scale-110 sm:h-10 sm:w-10"
-              style={{
-                background: status.loading ? 'var(--surface-3)' : hue,
-                opacity: done && !picked ? 0.35 : 1,
-                boxShadow: picked ? `0 0 0 3px #fff, 0 0 0 5px ${hue}` : 'none',
-              }}
-            />
-          );
-          const label = (
-            <span
-              className={`text-[0.6875rem] ${picked ? 'font-semibold text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}
-            >
-              {m.label}
-            </span>
-          );
-          return done || status.loading ? (
-            <span key={m.value} className="flex flex-col items-center gap-1.5 py-1.5" aria-current={picked || undefined}>
-              {dot}
-              {label}
-            </span>
-          ) : (
-            <Link
-              key={m.value}
-              to={`/checkin?mood=${m.value}`}
-              aria-label={`${m.label}. Start today's check-in`}
-              className="press group flex flex-col items-center gap-1.5 rounded-xl py-1.5 transition-colors hover:bg-[var(--surface-2)]"
-            >
-              {dot}
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-
       {done ? (
-        <Link
-          to="/results"
-          state={{ record: status.record }}
-          className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
-        >
-          Checked in. See today&apos;s thought
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </Link>
+        <>
+          {status.record?.thought && (
+            <div className="mt-4 rounded-2xl border border-[var(--line-1)] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:px-5 sm:py-4">
+              <p className="marginalia">Thought for today</p>
+              <blockquote className="font-display mt-2 text-[1.1rem] leading-snug sm:text-[1.3rem]">
+                <span aria-hidden="true" className="mr-1 text-[var(--color-amber)]">
+                  &ldquo;
+                </span>
+                {status.record.thought}
+              </blockquote>
+            </div>
+          )}
+          <Link
+            to="/results"
+            state={{ record: status.record }}
+            className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
+          >
+            {moodLabel ? `Checked in as ${moodLabel}.` : 'Checked in.'} See the rest of today
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </Link>
+        </>
       ) : (
-        <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
-          {status.error
-            ? "We couldn't reach the server, so we can't tell whether today is already done. Opening it again is safe."
-            : 'Tap one to check in. After that, begin the test or skip it.'}
-        </p>
+        <>
+          <div
+            className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:p-3"
+            role="group"
+            aria-label="Pick how today feels to start your check-in"
+          >
+            {MOOD_OPTIONS.map((m, i) => {
+              const dot = (
+                <span
+                  aria-hidden="true"
+                  className="h-8 w-8 rounded-full transition-transform duration-200 group-hover:scale-110 sm:h-10 sm:w-10"
+                  style={{ background: status.loading ? 'var(--surface-3)' : MOOD_HUE[i] }}
+                />
+              );
+              const label = <span className="text-[0.6875rem] text-[var(--color-ink-soft)]">{m.label}</span>;
+              return status.loading ? (
+                <span key={m.value} className="flex flex-col items-center gap-1.5 py-1.5">
+                  {dot}
+                  {label}
+                </span>
+              ) : (
+                <Link
+                  key={m.value}
+                  to={`/checkin?mood=${m.value}`}
+                  aria-label={`${m.label}. Start today's check-in`}
+                  className="press group flex flex-col items-center gap-1.5 rounded-xl py-1.5 transition-colors hover:bg-[var(--surface-2)]"
+                >
+                  {dot}
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+            {status.error
+              ? "We couldn't reach the server, so we can't tell whether today is already done. Opening it again is safe."
+              : 'Tap one to check in. After that, begin the test or skip it.'}
+          </p>
+        </>
       )}
 
       {/* Sends the question into the DP conversation rather than answering it

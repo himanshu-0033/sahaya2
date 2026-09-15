@@ -38,10 +38,11 @@ function encouragement(step, total, followUpPending) {
 }
 
 // Where you are in the three-test sitting. One rail for the set sits above
-// the per-question dots, so the two questions a person has mid-form — "how
-// much of this form is left" and "how much of this is left" — have separate
-// answers instead of one ambiguous bar.
-function SetRail({ names, index, eyebrow }) {
+// the per-question dots, so the two questions a person has mid-form, "how
+// much of this form is left" and "how much of this is left", have separate
+// answers instead of one ambiguous bar. The skip beside it is for this test
+// alone: the sitting goes on to the next one.
+function SetRail({ names, index, eyebrow, onSkip, skipLabel }) {
   return (
     <div className="mb-5">
       <div className="flex items-center gap-1.5">
@@ -59,9 +60,24 @@ function SetRail({ names, index, eyebrow }) {
           />
         ))}
       </div>
-      <p className="marginalia mt-2.5">
-        {eyebrow ? `${eyebrow} · ` : ''}Test {index + 1} of {names.length}
-      </p>
+      <div className="mt-2.5 flex items-center justify-between gap-3">
+        <p className="marginalia">
+          {eyebrow ? `${eyebrow} · ` : ''}Test {index + 1} of {names.length}
+        </p>
+        {onSkip && (
+          <button
+            type="button"
+            onClick={onSkip}
+            aria-label={skipLabel}
+            className="press inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line-3)] bg-[var(--surface-1)] px-3.5 py-1.5 text-xs font-medium text-[var(--color-ink-soft)] transition-colors hover:border-[var(--sec-tests)]/45 hover:text-[var(--color-ink)]"
+          >
+            Skip this test
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -131,7 +147,7 @@ export default function AssessmentRun() {
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const [helplines, setHelplines] = useState(null);
-  // { level, message } — the backend decides the wording, because which
+  // { level, message }: the backend decides the wording, because which
   // instrument asked and how urgent the answer was both live there.
   const [crisis, setCrisis] = useState(null);
   const [resumed, setResumed] = useState(false);
@@ -203,7 +219,13 @@ export default function AssessmentRun() {
       return;
     }
     const stored = readSetResults(setIds);
-    setSetSummary(setIds.map((id) => stored[id]).filter(Boolean));
+    const rows = setIds.map((id) => stored[id]).filter(Boolean);
+    // Every test skipped: there is nothing to lay side by side.
+    if (rows.length === 0) {
+      navigate('/assessments');
+      return;
+    }
+    setSetSummary(rows);
     setSetDone(true);
   }, [setIds, handsOffToCheckin, navigate]);
 
@@ -211,6 +233,16 @@ export default function AssessmentRun() {
     if (nextInSet) navigate(setHref(setIds, nextInSet, afterSet));
     else finishSet();
   }, [nextInSet, setIds, afterSet, navigate, finishSet]);
+
+  // One test of the set, skipped. Nothing from it is scored or saved, and the
+  // sitting goes on to the next test, or past the last one to wherever the set
+  // ends. Answers already given stay as a draft, so the test picks up where it
+  // was left if it is opened again. The pending auto-advance is cancelled so a
+  // last answer given a moment before cannot score the test after all.
+  const skipTest = useCallback(() => {
+    clearTimeout(advanceRef.current);
+    advanceSet();
+  }, [advanceSet]);
 
   const submit = useCallback(
     async (finalAnswers, finalFollowUp = null) => {
@@ -243,8 +275,8 @@ export default function AssessmentRun() {
             reportsBandOnly: data.record.reportsBandOnly,
           });
           // The set used to run straight on to the next questionnaire here.
-          // It still runs as one sitting — no score, no band, no methodology
-          // between the two — but it asks before starting the next one, so
+          // It still runs as one sitting (no score, no band, no methodology
+          // between the two), but it asks before starting the next one, so
           // three questionnaires in a row is a choice somebody makes twice
           // rather than a thing that happens to them.
           //
@@ -323,7 +355,7 @@ export default function AssessmentRun() {
   const onFollowUp = step === itemCount && needsFollowUp;
   const item = onFollowUp ? followUp : instrument?.items[step];
 
-  // An answer can close the very step you are standing on — retracting a "yes"
+  // An answer can close the very step you are standing on: retracting a "yes"
   // takes its follow-on questions away. Move to the next one that still
   // exists rather than rendering a question that is no longer being asked.
   const stepKey = steps.join(',');
@@ -430,6 +462,14 @@ export default function AssessmentRun() {
                   names={setIds.map(labelFor)}
                   index={setIndex}
                   eyebrow={handsOffToCheckin ? 'Check-in' : null}
+                  onSkip={submitting ? null : skipTest}
+                  skipLabel={`Skip this test, ${labelFor(instrumentId)}. ${
+                    nextInSet
+                      ? `${labelFor(nextInSet)} is next.`
+                      : handsOffToCheckin
+                        ? 'The plates are next.'
+                        : 'That ends the set.'
+                  }`}
                 />
               )}
               <div className="flex items-center justify-between gap-4">
@@ -765,7 +805,7 @@ export default function AssessmentRun() {
             {inSet ? (
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button className="w-auto px-6" onClick={advanceSet}>
-                  {nextInSet ? `Continue with ${labelFor(nextInSet)}` : 'See all three'}
+                  {nextInSet ? `Continue with ${labelFor(nextInSet)}` : 'See your results'}
                 </Button>
                 <Button
                   variant="secondary"
@@ -809,15 +849,21 @@ export default function AssessmentRun() {
         {/* ---------- the whole set ---------- */}
         {setDone && (
           <div className="animate-fade-up">
-            <p className="marginalia">Three tests, one sitting</p>
+            <p className="marginalia">
+              {setSummary.length === setIds.length
+                ? 'Three tests, one sitting'
+                : `${setSummary.length} of ${setIds.length} tests, one sitting`}
+            </p>
             <h1 className="font-display mt-3 text-[2rem] leading-tight sm:text-4xl">
               Where you are, roughly
               <span className="text-[var(--sec-tests-deep)]">.</span>
             </h1>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              Three ranges, side by side. Low mood, worry and wellbeing move
-              somewhat independently, which is the reason for taking all three
-              rather than reading one of them as the whole picture.
+              {setSummary.length === setIds.length
+                ? 'Three ranges, side by side. Low mood, worry and wellbeing move somewhat independently, which is the reason for taking all three rather than reading one of them as the whole picture.'
+                : `The tests you took, side by side. ${
+                    setIds.length - setSummary.length === 1 ? 'The one you skipped is' : 'The ones you skipped are'
+                  } in Tests whenever you want them: low mood, worry and wellbeing move somewhat independently, so each one shows something the others miss.`}
             </p>
 
             <div className="mt-7 space-y-3">
@@ -857,8 +903,9 @@ export default function AssessmentRun() {
             <p className="mt-7 text-xs leading-relaxed text-[var(--color-muted)]">
               Each score places you in a range that a published questionnaire defines. None of
               them is a diagnosis, they describe the last few weeks rather than you, and they can
-              move a lot with sleep, exams and illness. All three are saved to your account, where
-              your counsellor and your institution&apos;s administrator can see them.
+              move a lot with sleep, exams and illness.{' '}
+              {setSummary.length === setIds.length ? 'All three are' : 'They are'} saved to your
+              account, where your counsellor and your institution&apos;s administrator can see them.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -879,7 +926,7 @@ export default function AssessmentRun() {
                   navigate('/assessments');
                 }}
               >
-                See all twenty-one
+                See all tests
               </Button>
             </div>
           </div>

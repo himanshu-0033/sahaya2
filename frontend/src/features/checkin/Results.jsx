@@ -159,7 +159,9 @@ export default function Results() {
               would be a number no instrument defines. */}
           {testSet.length > 0 && (
             <section className="animate-slide-up stack-block" style={{ animationDelay: '190ms' }}>
-              <p className="marginalia">And the three questionnaires</p>
+              <p className="marginalia">
+                {testSet.length === SET_IDS.length ? 'And the three questionnaires' : 'And the questionnaires you took'}
+              </p>
               <div className="mt-4 space-y-3">
                 {testSet.map((r) => (
                   <div key={r.id} className="card p-5">
@@ -277,7 +279,11 @@ export default function Results() {
                   was skipped at the check-in: offer all of it, run the way the
                   check-in runs it, plates after the questionnaires. */}
               {!inkblot && testSet.length === 0 && (
-                <Link to={setStartHref(SET_IDS, AFTER_CHECKIN)} className="card press p-5">
+                <Link
+                  to={setStartHref(SET_IDS, AFTER_CHECKIN)}
+                  onClick={() => clearSetResults(SET_IDS)}
+                  className="card press p-5"
+                >
                   <p className="font-display text-xl">Begin the test</p>
                   <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
                     PHQ-9, GAD-7 and WHO-5, then the ten plates. About sixteen minutes, and you can

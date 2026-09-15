@@ -8,7 +8,7 @@ import { SkeletonCards } from '../../shared/Skeleton.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getAssessmentCatalog } from '../../shared/api.js';
 import { bandColor, bandTint } from './bands.js';
-import { SET_IDS, labelFor, setStartHref } from './testSet.js';
+import { SET_IDS, clearSetResults, labelFor, setStartHref } from './testSet.js';
 
 // Order the domains deliberately rather than however the catalog arrives:
 // safety first, then mood and distress, the social block next, strengths after
@@ -207,6 +207,9 @@ export default function Assessments() {
           know what they came for. */}
       <Link
         to={setStartHref(SET_IDS)}
+        // A fresh sitting: scores an earlier, unfinished one left behind would
+        // otherwise show up in this one's summary.
+        onClick={() => clearSetResults(SET_IDS)}
         className="animate-slide-up card press stack-block flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between"
         style={{ animationDelay: '40ms' }}
       >

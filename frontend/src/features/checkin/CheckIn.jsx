@@ -10,7 +10,7 @@ import { hasRealWord } from '../../shared/words.js';
 import { useSession } from '../auth/useSession.js';
 import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../../shared/api.js';
 import { CHECKIN_EVENT } from '../../shared/StreakBadge.jsx';
-import { AFTER_CHECKIN, SET_IDS, setStartHref } from '../assessments/testSet.js';
+import { AFTER_CHECKIN, SET_IDS, clearSetResults, setStartHref } from '../assessments/testSet.js';
 
 // The check-in, end to end.
 //
@@ -188,6 +188,9 @@ export default function CheckIn() {
       setRecord(saved);
       // The day is already saved, so what follows is time someone is
       // spending, not a form they are completing.
+      // A fresh sitting, so nothing an earlier unfinished one stored can reach
+      // today's results.
+      clearSetResults(SET_IDS);
       if (withTest) navigate(setStartHref(SET_IDS, AFTER_CHECKIN));
       else navigate('/results', { state: { record: saved } });
     } catch (err) {
@@ -479,8 +482,8 @@ export default function CheckIn() {
             </ul>
             <p className="mt-3.5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
               Either button below saves today and counts your streak. The test is up to you: skip
-              it here, or a question or a plate at a time, and you land on today&apos;s thought
-              either way.
+              all of it here, or one test or one plate at a time, and you land on today&apos;s
+              thought either way.
             </p>
           </div>
 
