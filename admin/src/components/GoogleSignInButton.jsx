@@ -79,7 +79,9 @@ export default function GoogleSignInButton({ onSignedIn }) {
 
   return (
     <div ref={wrapRef} className="w-full">
-      <div ref={slotRef} className="flex justify-center" />
+      {/* Holds the button's height while Google's script draws it, so the page
+          does not jump once it arrives. */}
+      <div ref={slotRef} className="flex min-h-10 justify-center" />
     </div>
   );
 }
