@@ -6,6 +6,7 @@ import LoadError from '../../shared/LoadError.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getChatHistory } from '../../shared/api.js';
+import { when, firstLine } from './talks.js';
 
 // What you already said.
 //
@@ -18,25 +19,6 @@ import { getChatHistory } from '../../shared/api.js';
 // opens with old conversations already unrolled invites rereading them because
 // they are there rather than because you came looking, and some of these were
 // written on bad nights.
-
-function when(iso) {
-  const d = new Date(iso);
-  const today = new Date();
-  const sameDay = d.toDateString() === today.toDateString();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const time = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
-  if (sameDay) return `Today, ${time}`;
-  if (d.toDateString() === yesterday.toDateString()) return `Yesterday, ${time}`;
-  return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
-}
-
-function firstLine(session) {
-  const said = session.turns.find((t) => t.role === 'user');
-  if (!said) return 'You opened this one and did not say anything.';
-  return said.content;
-}
 
 export default function ChatHistory() {
   const navigate = useNavigate();

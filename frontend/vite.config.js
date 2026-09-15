@@ -23,7 +23,10 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       // More specific first: the agent module owns /api/chat on its own port.
-      '/api/chat': {
+      // Anchored, because a plain key is a prefix match and also swallowed
+      // /api/chat-log, which is the backend's: chats never saved locally and
+      // the history came back 404 from the agent.
+      '^/api/chat$': {
         target: 'http://localhost:3100',
         changeOrigin: true,
       },

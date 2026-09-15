@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { sendChat, saveChatLog } from '../../shared/api.js';
+import { sendChat, saveChatLog, getChatHistory } from '../../shared/api.js';
 import Logo from '../../shared/Logo.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import { speak, stopSpeaking } from '../../shared/speech.js';
+import { when, firstLine } from './talks.js';
+
+// The agent and the chat log both stop a conversation at 24 turns. A reply
+// adds two, so from 23 on there is no room for one that would still be saved.
+const MAX_TURNS = 24;
 
 function Bubble({ role, children }) {
   const mine = role === 'user';
@@ -72,6 +77,11 @@ export default function ChatPanel({
   // this and it talks back, type to it and it stays quiet.
   const spokenTurnRef = useRef(false);
   const [listenSignal, setListenSignal] = useState(0);
+  // 'chat' or 'history'. History swaps the transcript for a list of past
+  // conversations; picking one loads it back into this panel to carry on.
+  const [view, setView] = useState('chat');
+  const [past, setPast] = useState(null);
+  const [pastError, setPastError] = useState(null);
 
   // Ask the agent for its opening line, seeded with today's check-in.
   //
@@ -101,7 +111,39 @@ export default function ChatPanel({
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, busy]);
+  }, [messages, busy, view]);
+
+  // Fetched fresh every time, since the conversation open right now may have
+  // grown since the last look. The old list stays up while the new one loads.
+  function openHistory() {
+    stopSpeaking();
+    setView('history');
+    setPastError(null);
+    getChatHistory()
+      .then((data) => setPast(data.sessions || []))
+      .catch((err) => setPastError(err.message));
+  }
+
+  // Carrying on under the old startedAt is what makes the next save update
+  // that conversation instead of filing a second copy of it. The flag carries
+  // over too: a conversation that showed crisis contacts once stays marked.
+  function resume(session) {
+    startedAt.current = session.startedAt;
+    flaggedRef.current = Boolean(session.flagged);
+    setMessages(session.turns.map((t) => ({ role: t.role, content: t.content })));
+    setError(null);
+    setView('chat');
+  }
+
+  function startNew() {
+    startedAt.current = new Date().toISOString();
+    flaggedRef.current = false;
+    setMessages([]);
+    setView('chat');
+    openConversation();
+  }
+
+  const full = messages.length + 2 > MAX_TURNS;
 
   async function ask(raw) {
     const text = (raw || '').trim();
@@ -201,20 +243,112 @@ export default function ChatPanel({
             {variant === 'overlay' ? 'DP' : 'Talk it through'}
           </p>
           <h3 className="mt-1 font-display text-xl">
-            {variant === 'overlay' ? 'Say what is going on.' : 'A moment to reflect'}
+            {view === 'history'
+              ? 'Your past talks.'
+              : variant === 'overlay' ? 'Say what is going on.' : 'A moment to reflect'}
           </h3>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close chat"
-          className="-mr-1 -mt-1 shrink-0 rounded-full border border-[var(--line-2)] p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
-        >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M18 6 6 18M6 6l12 12" />
-          </svg>
-        </button>
+        <div className="-mr-1 -mt-1 flex shrink-0 items-center gap-1.5">
+          {/* Off while a reply is on its way: it would land in whichever
+              conversation was open by then. */}
+          <button
+            type="button"
+            onClick={view === 'history' ? () => setView('chat') : openHistory}
+            disabled={busy}
+            className="flex items-center gap-1.5 rounded-full border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)] disabled:opacity-40"
+          >
+            {view === 'history' ? (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M19 12H5M11 18l-6-6 6-6" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                <path d="M3 3v5h5M12 7v5l3 2" />
+              </svg>
+            )}
+            {view === 'history' ? 'Back' : 'History'}
+          </button>
+          <button
+            onClick={onClose}
+            aria-label="Close chat"
+            className="shrink-0 rounded-full border border-[var(--line-2)] p-2 text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
+      {view === 'history' ? (
+        <div
+          className={`mt-4 overflow-y-auto pr-1 ${
+            variant === 'overlay' ? 'max-h-[52vh] min-h-[9rem]' : 'max-h-72'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={startNew}
+            className="press flex w-full items-center gap-2 rounded-2xl border border-dashed border-[var(--line-4)] px-4 py-3 text-sm text-[var(--color-teal-dark)] transition-colors hover:bg-[var(--surface-2)]"
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Start a new conversation
+          </button>
+
+          {!past && !pastError && (
+            <p className="mt-3 animate-pulse text-xs text-[var(--color-muted)]">Loading…</p>
+          )}
+          {pastError && (
+            <p className="mt-3 text-xs text-[var(--color-flag-deep)]" role="alert">
+              {pastError}
+            </p>
+          )}
+          {past && past.length === 0 && (
+            <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+              Nothing here yet. A conversation shows up once you have said something in it.
+            </p>
+          )}
+
+          {past && past.length > 0 && (
+            <ul className="mt-2.5 space-y-2">
+              {past.map((c) => (
+                <li key={c.id}>
+                  <button
+                    type="button"
+                    onClick={() => resume(c)}
+                    className="press card block w-full px-4 py-3 text-left"
+                  >
+                    <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
+                      <span className="font-medium">{when(c.startedAt)}</span>
+                      <span className="text-xs text-[var(--color-muted)]">
+                        <span className="num">{c.turns.length}</span>{' '}
+                        {c.turns.length === 1 ? 'message' : 'messages'}
+                      </span>
+                      {c.startedAt === startedAt.current && (
+                        <span className="rounded-full bg-[var(--surface-3)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-ink-soft)]">
+                          Open now
+                        </span>
+                      )}
+                      {c.flagged && (
+                        <span className="rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-flag-deep)]">
+                          Crisis contacts were shown
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-xs text-[var(--color-muted)]">
+                      {firstLine(c)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+      <>
       <div
         ref={scrollRef}
         className={`mt-4 space-y-2.5 overflow-y-auto pr-1 ${
@@ -257,6 +391,20 @@ export default function ChatPanel({
         </div>
       )}
 
+      {full ? (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[var(--surface-2)] px-4 py-3">
+          <p className="text-xs leading-relaxed text-[var(--color-ink-soft)]">
+            This conversation is as long as one can get.
+          </p>
+          <button
+            type="button"
+            onClick={startNew}
+            className="shrink-0 rounded-full bg-[var(--color-teal-dark)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--color-ink)]"
+          >
+            Start a new one
+          </button>
+        </div>
+      ) : (
       <form onSubmit={send} className="mt-4 flex items-center gap-2">
         <input
           data-autofocus
@@ -282,6 +430,9 @@ export default function ChatPanel({
           Send
         </button>
       </form>
+      )}
+      </>
+      )}
 
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
