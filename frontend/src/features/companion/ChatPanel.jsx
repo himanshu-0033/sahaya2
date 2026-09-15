@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { sendChat, saveChatLog, getChatHistory } from '../../shared/api.js';
 import Logo from '../../shared/Logo.jsx';
+import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import { speak, stopSpeaking } from '../../shared/speech.js';
 import { when, firstLine, TOPICS } from './talks.js';
@@ -26,21 +27,55 @@ function Bubble({ role, children }) {
   );
 }
 
+// Under a crisis reply. Literal light colours, for the same reason as
+// CrisisContacts: it has to be legible in whatever theme the chat opens in.
+// The agent always lists 112 first and the line that fits what was said
+// second, so those two are large buttons and the rest are rows beneath.
+const telHref = (number) => `tel:${number.replace(/[^\d+]/g, '')}`;
+
 function Helplines({ items }) {
+  const [first, second, ...rest] = items;
   return (
-    <div className="mt-2 space-y-1.5">
-      {items.map((h) => (
-        <a
-          key={h.number}
-          href={`tel:${h.number.replace(/[^\d+]/g, '')}`}
-          className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-flag)]/30 bg-[var(--color-flag-soft)] px-3 py-2 text-xs"
-        >
-          <span className="min-w-0 text-[var(--color-ink-soft)]">{h.name}</span>
-          <span className="shrink-0 font-display text-sm whitespace-nowrap text-[var(--color-flag-deep)]">
-            {h.number}
-          </span>
-        </a>
-      ))}
+    <div
+      role="region"
+      aria-label="Crisis contacts"
+      className="mt-2 rounded-2xl border-2 bg-white p-3"
+      style={{ borderColor: '#b42318', color: '#14201a', colorScheme: 'light' }}
+    >
+      <p className="text-[0.8125rem] font-bold" style={{ color: '#b42318' }}>
+        Talk to a person now
+      </p>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        {[first, second].filter(Boolean).map((h, i) => (
+          <a
+            key={h.number}
+            href={telHref(h.number)}
+            className="press rounded-xl px-3 py-2 text-white"
+            style={{ background: i === 0 ? '#b42318' : '#0b6b3a' }}
+          >
+            <span className="block text-[0.6875rem] leading-tight font-semibold">
+              Call {h.name.split(/[,(]/)[0].trim()}
+            </span>
+            <span className="mt-1 block text-lg leading-none font-bold tabular-nums">{h.number}</span>
+          </a>
+        ))}
+      </div>
+      {rest.length > 0 && (
+        <div className="mt-2 space-y-0.5">
+          {rest.map((h) => (
+            <a
+              key={h.number}
+              href={telHref(h.number)}
+              className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-xs hover:bg-[#f5f7f6]"
+            >
+              <span className="min-w-0" style={{ color: '#4a5750' }}>{h.name}</span>
+              <span className="shrink-0 font-bold whitespace-nowrap tabular-nums" style={{ color: '#0b6b3a' }}>
+                {h.number}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -468,10 +503,17 @@ export default function ChatPanel({
       </>
       )}
 
+      {/* Always on screen under the conversation, not only after a crisis
+          reply: the moment someone needs it is not always a moment the
+          pattern screen recognised. */}
+      <div className="mt-3 flex justify-start">
+        <CrisisContacts variant="link" />
+      </div>
+
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
           ? 'Scripted preview. No AI model is connected yet. Not a therapist, and not a crisis service.'
-          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above. This conversation is saved to your account, and anyone you have shared your account with can read it and see what it is about.'}
+          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, tap Get help now. This conversation is saved to your account, and anyone you have shared your account with can read it and see what it is about.'}
       </p>
     </div>
   );

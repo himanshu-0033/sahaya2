@@ -33,7 +33,8 @@ import { Component } from 'react';
 // national line that answers around the clock, and the emergency number. The
 // full list lives in CrisisContacts, which this screen cannot safely import.
 const LINES = [
-  { name: 'KIRAN mental health helpline', number: '1800-599-0019', tel: '18005990019', note: 'Free, confidential, 24/7' },
+  // KIRAN (1800-599-0019) was merged into Tele-MANAS, the national 24/7 line.
+  { name: 'Tele-MANAS mental health helpline', number: '14416', tel: '14416', note: 'Govt. of India, free, confidential, 24/7' },
   { name: 'Emergency', number: '112', tel: '112', note: 'If you or someone else is in immediate danger' },
 ];
 

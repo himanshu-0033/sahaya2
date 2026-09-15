@@ -118,11 +118,19 @@ const FOOTER = [
 
 // Written out here rather than taken from CrisisContacts, because the footer
 // reads as a sentence with the numbers inline, not as the dialog's list.
+// Verified September 2026: KIRAN was merged into Tele-MANAS, iCall keeps
+// 10am to 8pm, and Vandrevala's number changed.
 const FOOTER_LINES = [
   ['Emergency', '112', null],
-  ['iCall (TISS)', '9152987821', 'Mon to Sat, 8am to 10pm'],
-  ['Vandrevala Foundation', '1860-2662-345', '24/7'],
-  ['AASRA', '9820466726', '24/7'],
+  ['Vandrevala Foundation', '+91 9999 666 555', '24/7'],
+  ['AASRA', '+91 98204 66726', '24/7'],
+  ['iCall (TISS)', '9152987821', 'Mon to Sat, 10am to 8pm'],
+];
+
+const FOOTER_HURT = [
+  ['Women Helpline', '181'],
+  ['National Commission for Women', '7827170170'],
+  ['Childline, under 18', '1098'],
 ];
 
 const tel = (n) => `tel:${n.replace(/[^\d+]/g, '')}`;
@@ -237,7 +245,7 @@ export default function Welcome({ onSignedIn }) {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
           <a href="#top" className="flex items-center gap-2" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
-            <span className="text-[1.3rem] leading-none font-bold tracking-[-0.02em]" style={{ color: 'var(--w-accent-deep)' }}>
+            <span className="text-[1.3rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
               DP Sahay
             </span>
           </a>
@@ -255,10 +263,15 @@ export default function Welcome({ onSignedIn }) {
             ))}
           </nav>
 
-          <button type="button" onClick={go} className={`${PRIMARY} shrink-0 px-5 py-2.5`} style={GREEN_FILL}>
-            Sign in
-            <Arrow size={14} />
-          </button>
+          <div className="flex shrink-0 items-center gap-2.5">
+            <CrisisContacts variant="link" />
+            <span className="hidden sm:block">
+              <button type="button" onClick={go} className={`${PRIMARY} px-5 py-2.5`} style={GREEN_FILL}>
+                Sign in
+                <Arrow size={14} />
+              </button>
+            </span>
+          </div>
         </div>
       </header>
 
@@ -505,10 +518,10 @@ export default function Welcome({ onSignedIn }) {
           <div className="mt-10 max-w-3xl rounded-2xl px-6 py-5 text-[0.875rem] leading-relaxed" style={{ background: 'rgba(255,255,255,0.07)' }}>
             <p>
               In crisis or thinking about suicide? You are not alone. Call{' '}
-              <a href={tel('1800-599-0019')} className="font-semibold underline-offset-4 hover:underline">
-                KIRAN 1800-599-0019
+              <a href={tel('14416')} className="font-semibold underline-offset-4 hover:underline">
+                Tele-MANAS 14416
               </a>{' '}
-              <span style={{ color: 'var(--w-forest-soft)' }}>(Govt. of India, 24/7, toll-free)</span>.
+              <span style={{ color: 'var(--w-forest-soft)' }}>(Govt. of India, 24/7, free)</span>.
             </p>
             <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               {FOOTER_LINES.map(([name, number, note]) => (
@@ -517,6 +530,17 @@ export default function Welcome({ onSignedIn }) {
                     {name} {number}
                   </a>
                   {note && <span style={{ color: 'var(--w-forest-soft)' }}> ({note})</span>}
+                </span>
+              ))}
+            </p>
+            <p className="mt-3">
+              Someone hurting you?{' '}
+              {FOOTER_HURT.map(([name, number], i) => (
+                <span key={number}>
+                  {i > 0 && <span style={{ color: 'var(--w-forest-soft)' }}> · </span>}
+                  <a href={tel(number)} className="font-semibold underline-offset-4 hover:underline">
+                    {name} {number}
+                  </a>
                 </span>
               ))}
             </p>

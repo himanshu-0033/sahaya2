@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import { PLATES, isPlateId } from '../lib/plates.js';
 import { summarizeSession } from '../lib/reflection.js';
-import { screenForCrisis, screenResponses } from '../lib/safety.js';
+import { HELPLINES_BY_CATEGORY, PATTERNS, screenForCrisis, screenResponses, screenTranscript } from '../lib/safety.js';
 
 // --- plates ---------------------------------------------------------------
 assert.equal(PLATES.length, 10, 'ten plates');
@@ -63,5 +63,24 @@ assert.equal(screenForCrisis('I want to hurt myself').flagged, true);
 assert.equal(screenForCrisis('').flagged, false);
 assert.equal(screenForCrisis(null).flagged, false);
 assert.equal(screenResponses([]).flagged, false);
+assert.equal(screenForCrisis('my father hits me').category, 'abuse');
+assert.equal(screenForCrisis('jeene ka mann nahi karta').category, 'suicide');
+assert.deepEqual(
+  screenTranscript([
+    { role: 'assistant', content: 'If you are thinking about suicide, call 14416.' },
+    { role: 'user', content: 'my boyfriend threatened me' },
+    { role: 'user', content: 'sometimes i want to die' },
+  ]),
+  ['suicide', 'abuse'],
+  "a transcript is screened on the resident's lines only, most urgent first",
+);
+
+// The agent deploys separately and carries its own copy. The two must say the
+// same thing, or the chat and the stored transcript disagree about what a
+// disclosure is and which numbers go with it.
+const agent = await import('../../agent/lib/safety.js');
+assert.deepEqual(PATTERNS, agent.PATTERNS, 'backend and agent crisis patterns match');
+assert.deepEqual(HELPLINES_BY_CATEGORY, agent.HELPLINES, 'backend and agent helplines match');
+assert.ok(!JSON.stringify(HELPLINES_BY_CATEGORY).includes('1800-599-0019'), 'KIRAN is not offered');
 
 console.log('reflection + safety checks passed');

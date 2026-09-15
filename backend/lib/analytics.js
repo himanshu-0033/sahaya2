@@ -11,6 +11,7 @@
 // screen sorts to the top of every list it appears in.
 
 import { TOPICS, topicLabel } from './topics.js';
+import { LABELS as SAFETY_LABELS } from './safety.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -70,6 +71,32 @@ function recentChats(chatSessions) {
   return chatSessions.filter(
     (c) => (c.topics || []).length > 0 && new Date(c.updatedAt || c.startedAt).getTime() >= since,
   );
+}
+
+// The most recent conversation in the window where the resident disclosed
+// suicide, self-harm or abuse. Counts toward "needs a conversation" and sits
+// with the risk screens, because to a counsellor it is the same kind of fact:
+// the person said something about their safety.
+function chatSafetyFor(chatSessions, residentId) {
+  const since = Date.now() - RISK_WINDOW_DAYS * DAY_MS;
+  const hits = chatSessions
+    .filter(
+      (c) =>
+        c.residentId === residentId &&
+        (c.safety || []).length > 0 &&
+        new Date(c.updatedAt || c.startedAt).getTime() >= since,
+    )
+    .sort((a, b) => (b.updatedAt || b.startedAt).localeCompare(a.updatedAt || a.startedAt));
+  if (hits.length === 0) return null;
+  const categories = [...new Set(hits.flatMap((c) => c.safety))];
+  const at = hits[0].updatedAt || hits[0].startedAt;
+  return {
+    categories,
+    labels: categories.map((c) => SAFETY_LABELS[c] || c),
+    at,
+    date: at.slice(0, 10),
+    conversations: hits.length,
+  };
 }
 
 function concernsFor(chatSessions, residentId) {
@@ -140,6 +167,7 @@ export function summarizeResident(
     ...new Set(recentThree.filter((c) => c.flagged).flatMap((c) => c.flagReasons || [])),
   ];
   const riskScreen = riskScreenFor(assessments, resident.id);
+  const chatSafety = chatSafetyFor(chatSessions, resident.id);
 
   const mine = assessments
     .filter((a) => a.residentId === resident.id)
@@ -170,10 +198,12 @@ export function summarizeResident(
     streak: currentStreak(history.map((c) => c.date)),
     flaggedCount: history.filter((c) => c.flagged).length,
     // Deliberately broader than it used to be — see the note at the top.
-    flaggedRecently: checkinFlagRecently || Boolean(riskScreen && riskScreen.recent),
+    flaggedRecently:
+      checkinFlagRecently || Boolean(riskScreen && riskScreen.recent) || Boolean(chatSafety),
     checkinFlaggedRecently: checkinFlagRecently,
     checkinFlagReasons,
     riskScreen,
+    chatSafety,
     concerns: concernsFor(chatSessions, resident.id),
     assessmentCount: mine.length,
     lastAssessment,
@@ -204,7 +234,7 @@ export function summarizeResident(
 // alphabetical.
 function triageRank(row) {
   if (row.riskScreen?.recent && row.riskScreen.level === 'acute') return 0;
-  if (row.riskScreen?.recent) return 1;
+  if (row.riskScreen?.recent || row.chatSafety) return 1;
   if (row.flaggedRecently) return 2;
   if (row.riskScreen) return 3;
   return 4;
@@ -228,7 +258,7 @@ export function buildOverview(
   { trendDays = 14, assessments = [], chatSessions = [] } = {},
 ) {
   const today = isoDay(0);
-  const summaries = summarizeResidents(residents, checkins, { detailed: false, assessments });
+  const summaries = summarizeResidents(residents, checkins, { detailed: false, assessments, chatSessions });
 
   const trend = [];
   for (let i = trendDays - 1; i >= 0; i--) {
@@ -297,7 +327,24 @@ export function buildOverview(
     )
     .sort((a, b) => b.at.localeCompare(a.at));
 
-  const atRisk = summaries.filter((s) => s.riskScreen && s.riskScreen.recent);
+  // A disclosure in a chat joins the questionnaire screens here, so the
+  // dashboard's risk list is one list of "said something about their safety".
+  for (const s of summaries) {
+    if (!s.chatSafety) continue;
+    recentRiskScreens.push({
+      residentId: s.id,
+      residentName: s.name,
+      instrumentId: 'chat',
+      instrumentName: 'Chat with DP',
+      level: 'positive',
+      date: s.chatSafety.date,
+      createdAt: s.chatSafety.at,
+      reasons: [`Talked about ${s.chatSafety.labels.join(' and ')}`],
+    });
+  }
+  recentRiskScreens.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+  const atRisk = summaries.filter((s) => (s.riskScreen && s.riskScreen.recent) || s.chatSafety);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -309,7 +356,7 @@ export function buildOverview(
       checkedInToday: checkins.filter((c) => c.date === today).length,
       flaggedResidents: summaries.filter((s) => s.flaggedRecently).length,
       atRisk: atRisk.length,
-      acuteRisk: atRisk.filter((s) => s.riskScreen.level === 'acute').length,
+      acuteRisk: atRisk.filter((s) => s.riskScreen?.recent && s.riskScreen.level === 'acute').length,
       assessmentsTaken: assessments.length,
       raisedInChat: new Set(recentConcerns.map((c) => c.residentId)).size,
       totalCheckIns: checkins.length,

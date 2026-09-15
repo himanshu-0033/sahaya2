@@ -164,5 +164,11 @@ c = await topicsOf(
 );
 assert.deepEqual(c.topics, [], "only the student's words are matched, and topics are never taken from the body");
 
+// A disclosure is flagged by the server even when the client says it was not.
+c = await topicsOf({ startedAt, messages: said('my exams', 'honestly i want to die'), flagged: false }, 't5');
+assert.equal(c.flagged, true, 'the server screens the transcript itself');
+assert.deepEqual(c.safety, ['suicide']);
+assert.deepEqual(c.topics, ['study'], 'and still files the topic');
+
 fs.rmSync(DATA_DIR, { recursive: true, force: true });
 console.log('chat-log checks passed — the session names the record, and nothing else does');

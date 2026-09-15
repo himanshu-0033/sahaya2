@@ -172,4 +172,16 @@ assert.deepEqual(
 assert.equal(talked.topics.length, 5, 'every section is listed, even when empty');
 assert.deepEqual(quiet.recentConcerns, [], 'no chats, no concerns');
 
+// A disclosure in a chat is a safety fact, not a topic: it says this person
+// needs a conversation and joins the risk list.
+const disclosed = [{ ...chat('r2', 1, ['family']), safety: ['abuse'] }, { ...chat('r2', 40, []), safety: ['suicide'] }];
+const bilal = summarizeResident(other, [], { chatSessions: disclosed });
+assert.deepEqual(bilal.chatSafety.categories, ['abuse'], 'only disclosures inside the window count');
+assert.equal(bilal.flaggedRecently, true, 'a disclosure means "needs a conversation"');
+const risky = buildOverview([resident, other], [], { chatSessions: disclosed });
+assert.equal(risky.totals.atRisk, 1);
+assert.equal(risky.totals.acuteRisk, 0, 'a chat disclosure is not reported as "right now"');
+assert.equal(risky.recentRiskScreens[0].instrumentName, 'Chat with DP');
+assert.deepEqual(risky.recentRiskScreens[0].reasons, ['Talked about abuse or violence']);
+
 console.log('analytics checks passed — risk screens reach the counsellor console');

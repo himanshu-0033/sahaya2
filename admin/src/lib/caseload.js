@@ -62,6 +62,9 @@ export function buildCaseload({
   for (const s of recentRiskScreens) {
     ensure(s.residentId, s.residentName).events.push({
       kind: 'screen',
+      // A disclosure to the companion arrives in the same list as the
+      // questionnaire screens, and ranks the same, but is labelled apart.
+      fromChat: s.instrumentId === 'chat',
       date: s.date,
       level: s.level,
       detail: s.instrumentName,

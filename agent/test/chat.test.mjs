@@ -85,6 +85,59 @@ assert.equal(res.statusCode, 200, 'a crisis message is answered');
 assert.equal(res.body.flagged, true, 'a crisis message is flagged');
 assert.ok(res.body.helplines?.length, 'a crisis reply carries helplines');
 assert.ok(/112/.test(JSON.stringify(res.body.helplines)), 'the emergency number is present');
+assert.equal(res.body.category, 'suicide');
+assert.ok(/safe right now/.test(res.body.reply), 'the reply asks directly whether they are safe');
+assert.ok(!/1800-599-0019/.test(JSON.stringify(res.body)), 'KIRAN was merged into Tele-MANAS and is not offered');
+assert.ok(/14416/.test(res.body.reply), 'Tele-MANAS is named in the reply itself');
+
+// Each kind of disclosure gets the help that fits it, with Hinglish and the
+// indirect phrasings covered, and the everyday phrases that sound similar left
+// alone. Checked against the screen directly, so no rate limit is spent.
+const { screenForCrisis, screenConversation } = await import('../lib/safety.js');
+const cases = [
+  ['I just want to sleep and never wake up', 'suicide'],
+  ['everyone would be better off without me', 'suicide'],
+  ['main marna chahta hoon', 'suicide'],
+  ['jeene ka mann nahi karta', 'suicide'],
+  ['I’ve been cutting myself again', 'self_harm'],
+  ['khud ko hurt karta hoon', 'self_harm'],
+  ['my father hits me when he drinks', 'abuse'],
+  ['my boyfriend threatened me last night', 'abuse'],
+  ['seniors are ragging us every night', 'abuse'],
+  ['papa mujhe maarte hain', 'abuse'],
+  ['he beat me up', 'abuse'],
+  // Ordinary talk that must not trip a crisis reply.
+  ['this deadline is killing me', null],
+  ['that song really hits me', null],
+  ['my parents forced me to take engineering', null],
+  ['the hostel is 5 kms from campus', null],
+  ['I could die of embarrassment lol no', null],
+  ['my exams are next week', null],
+];
+for (const [text, category] of cases) {
+  assert.equal(screenForCrisis(text).category, category, `"${text}" screens as ${category}`);
+}
+
+res = await post({ messages: [{ role: 'user', content: 'my uncle abused me when I was small' }] }, { sub: 'abuse' });
+assert.equal(res.body.category, 'abuse');
+assert.ok(/not your fault/.test(res.body.reply), 'an abuse reply says it is not their fault');
+assert.ok(/181/.test(JSON.stringify(res.body.helplines)), 'and carries the Women Helpline');
+assert.ok(/1098/.test(JSON.stringify(res.body.helplines)), 'and Childline');
+
+// A disclosure earlier in the conversation keeps it marked, and keeps the model
+// on the safety protocol, after the person has moved on to "ok".
+const later = [
+  { role: 'assistant', content: 'How is today?' },
+  { role: 'user', content: 'i want to kill myself' },
+  { role: 'assistant', content: 'Thank you for telling me.' },
+  { role: 'user', content: 'ok' },
+];
+assert.deepEqual(screenConversation(later).categories, ['suicide']);
+assert.equal(screenConversation(later).latest.flagged, false);
+res = await post({ messages: later }, { sub: 'follow-up' });
+assert.equal(res.statusCode, 200);
+assert.equal(res.body.flagged, true, 'the follow-up reply still carries the flag');
+assert.equal(res.body.category, 'suicide');
 
 // --- rate limiting -----------------------------------------------------
 // A fresh subject, so earlier assertions do not spend its allowance.

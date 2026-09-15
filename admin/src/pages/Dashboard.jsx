@@ -410,7 +410,13 @@ export default function Dashboard() {
                                     : 'bg-[var(--surface-2)] text-[var(--color-muted)]'
                               }`}
                             >
-                              {e.kind === 'screen' ? 'Screen' : e.kind === 'concern' ? 'Chat' : 'Check-in'}
+                              {e.kind === 'screen'
+                                ? e.fromChat
+                                  ? 'Safety'
+                                  : 'Screen'
+                                : e.kind === 'concern'
+                                  ? 'Chat'
+                                  : 'Check-in'}
                             </span>
                             <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
                             <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>

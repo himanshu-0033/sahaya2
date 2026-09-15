@@ -10,6 +10,14 @@ export default function FlagBadge({ resident }) {
       </span>
     );
   }
+  // Said something about suicide, self-harm or abuse to the companion.
+  if (resident.chatSafety) {
+    return (
+      <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)] ring-1 ring-[var(--color-flag)]/40">
+        Safety concern in chat
+      </span>
+    );
+  }
   if (risk?.recent) {
     return (
       <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)] ring-1 ring-[var(--color-flag)]/40">

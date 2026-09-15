@@ -189,12 +189,20 @@ const PROVIDERS = {
 export const activeProvider = process.env.AGENT_PROVIDER || 'mock';
 export const isMock = activeProvider === 'mock';
 
-export async function generateReply(messages) {
+// `safety` is set when an earlier turn in this conversation was a disclosure.
+// The fixed crisis reply has already gone out by then; this keeps the model on
+// the safety protocol for every reply after it, rather than letting the next
+// "ok" be answered as though nothing had been said.
+export const SAFETY_FOLLOW_UP =
+  'Earlier in this conversation the person disclosed something about their safety, and has already been given crisis contacts. Stay in the safety protocol for the rest of this conversation: check gently whether they are safe right now, keep the way to a person open, and do not change the subject away from it unless they do.';
+
+export async function generateReply(messages, { safety = false } = {}) {
   const impl = PROVIDERS[activeProvider];
   if (!impl) {
     throw new Error(
       `AGENT_PROVIDER "${activeProvider}" is not implemented. Add it to PROVIDERS in agent/lib/provider.js.`,
     );
   }
-  return impl({ system: SYSTEM_PROMPT, messages });
+  const system = safety ? [SYSTEM_PROMPT, SAFETY_FOLLOW_UP].join('\n\n') : SYSTEM_PROMPT;
+  return impl({ system, messages });
 }

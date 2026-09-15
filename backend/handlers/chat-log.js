@@ -2,6 +2,7 @@ import { getChatSessions, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 import { isTopic, topicsFor } from '../lib/topics.js';
+import { screenTranscript } from '../lib/safety.js';
 
 // The companion's transcripts, kept so a counsellor the resident has already
 // let in can read what has been going on between check-ins.
@@ -99,8 +100,8 @@ export default async function handler(req, res) {
     startedAt,
     updatedAt: now,
     // Whether the safety screen fired at any point in this conversation. The
-    // agent decides it; this only records what it decided, so a client cannot
-    // clear a flag by lying about it — the worst it can do is set one.
+    // client reports what the agent decided, and it can only ever set a flag,
+    // never clear one: the transcript is screened again here below.
     flagged: Boolean(flagged),
     turns: messages.map((m) => ({ role: m.role, content: m.content })),
   };
@@ -110,6 +111,11 @@ export default async function handler(req, res) {
   // would lose the whole transcript over a label.
   record.topic = isTopic(topic) ? topic : null;
   record.topics = topicsFor({ chosen: record.topic, turns: record.turns });
+  // Screened on the server as well, so a disclosure reaches the counsellor
+  // console even if the browser never reported the agent's flag: an old tab,
+  // a failed request, or a client that simply did not send it.
+  record.safety = screenTranscript(record.turns);
+  if (record.safety.length > 0) record.flagged = true;
 
   await upsertRecord('chatSessions', { id: record.id }, record);
 

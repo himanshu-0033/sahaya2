@@ -11,6 +11,7 @@ import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
 import { canView } from '../../lib/sharing.js';
 import { topicLabel } from '../../lib/topics.js';
+import { LABELS as SAFETY_LABELS } from '../../lib/safety.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -57,6 +58,10 @@ export default async function handler(req, res) {
     chatSessions: chatSessions
       .filter((c) => c.residentId === residentId)
       .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
-      .map((c) => ({ ...c, topicLabels: (c.topics || []).map(topicLabel) })),
+      .map((c) => ({
+        ...c,
+        topicLabels: (c.topics || []).map(topicLabel),
+        safetyLabels: (c.safety || []).map((k) => SAFETY_LABELS[k] || k),
+      })),
   });
 }

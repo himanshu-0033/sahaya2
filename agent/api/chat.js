@@ -1,6 +1,6 @@
 import { applyCors } from '../lib/cors.js';
 import { requireUser } from '../lib/auth.js';
-import { screenForCrisis, crisisResponse } from '../lib/safety.js';
+import { screenConversation, crisisResponse } from '../lib/safety.js';
 import { generateReply, activeProvider, isMock } from '../lib/provider.js';
 import { openingLine } from '../lib/persona.js';
 
@@ -77,17 +77,26 @@ export default async function handler(req, res) {
     });
   }
 
-  const latest = [...messages].reverse().find((m) => m.role === 'user');
-  const screen = screenForCrisis(latest?.content);
-  if (screen.flagged) {
+  const { latest, categories } = screenConversation(messages);
+  if (latest.flagged) {
     // Deliberately short-circuits before the provider: crisis handling must not
     // depend on a model being reachable, correct, or even configured.
-    return res.status(200).json({ ...crisisResponse(), provider: activeProvider, isMock });
+    return res.status(200).json({ ...crisisResponse(latest.category), provider: activeProvider, isMock });
   }
 
+  // A disclosure earlier in the conversation keeps the model on the safety
+  // protocol, and keeps the conversation marked, for every reply after it.
+  const safety = categories.length > 0;
+
   try {
-    const reply = await generateReply(messages);
-    return res.status(200).json({ reply, flagged: false, provider: activeProvider, isMock });
+    const reply = await generateReply(messages, { safety });
+    return res.status(200).json({
+      reply,
+      flagged: safety,
+      category: categories[0] || null,
+      provider: activeProvider,
+      isMock,
+    });
   } catch (err) {
     // The message can carry provider detail, configuration hints and the shape
     // of the request that was sent upstream. That belongs in the server log,

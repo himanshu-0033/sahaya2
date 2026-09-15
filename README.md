@@ -107,6 +107,18 @@ window of the same browser), and it never ships resident-facing code.
   as "no measurable change" rather than as a direction. A path is described
   throughout as a way to practise, never as a course of treatment.
 
+- **Crisis handling in the chat**: `agent/lib/safety.js` screens every user
+  turn before any model is called, for three kinds of disclosure (suicide,
+  self-harm, and abuse or violence), in English and romanised Hindi. A match
+  gets a fixed reply that thanks them, asks directly whether they are safe right
+  now, gives 112 and the line that fits (Tele-MANAS 14416, or the Women
+  Helpline 181, NCW and Childline 1098 for abuse), and stays in the
+  conversation. Every later reply runs the model under a safety protocol that
+  forbids method information and keeps the way to a person open. The backend
+  screens the saved transcript again, so a disclosure reaches the counsellor
+  console as a safety concern even if the browser never reported it. Helpline
+  numbers were re-verified in September 2026: KIRAN has merged into
+  Tele-MANAS, and iCall answers Monday to Saturday, 10am to 8pm.
 - **Raised in chat**: a chat with DP can open on a topic chip (study pressure,
   relationships, placements, family, something else), or the student just
   talks. When the transcript is saved, `backend/lib/topics.js` files it under

@@ -84,6 +84,49 @@ function RiskBanner({ risk, resident }) {
   );
 }
 
+// A disclosure of suicide, self-harm or abuse in a chat with DP. Sits with the
+// risk banner, above the topics, and says how it was found: by matching words,
+// so the counsellor reads the conversation before they pick up the phone.
+function ChatSafetyBanner({ safety, resident }) {
+  if (!safety) return null;
+  return (
+    <section className="rounded-2xl border border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)] p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-xl text-[var(--color-flag-deep)]">
+            Talked to DP about {safety.labels.join(' and ')}
+          </p>
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            {safety.conversations} {safety.conversations === 1 ? 'conversation' : 'conversations'} ·
+            latest {ago(safety.date)}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {resident.phone && (
+            <a
+              href={`tel:${resident.phone}`}
+              className="whitespace-nowrap rounded-full bg-[var(--color-flag-deep)] px-4 py-2 text-sm font-medium text-white"
+            >
+              Call {resident.phone}
+            </a>
+          )}
+          <a
+            href="#conversations"
+            className="whitespace-nowrap rounded-full border border-[var(--color-flag-deep)] px-4 py-2 text-sm text-[var(--color-flag-deep)]"
+          >
+            Read the conversation
+          </a>
+        </div>
+      </div>
+      <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+        Found by matching the words the student wrote, so it can miss things and can misread
+        them. They were shown crisis contacts in the chat at the time. It says a conversation is
+        needed, not how serious this is.
+      </p>
+    </section>
+  );
+}
+
 // What the student has brought to DP lately, and the way to reach them about
 // it. Sits under the risk banner, never above it: a topic is a reason to get in
 // touch, not an alarm.
@@ -219,6 +262,7 @@ export default function ResidentDetail() {
           )}
 
           <RiskBanner risk={data.summary.riskScreen} resident={data.resident} />
+          <ChatSafetyBanner safety={data.summary.chatSafety} resident={data.resident} />
           <ConcernBanner concerns={data.summary.concerns} resident={data.resident} />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -512,7 +556,9 @@ export default function ResidentDetail() {
                       ))}
                       {c.flagged && (
                         <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
-                          Safety screen fired
+                          {c.safetyLabels?.length
+                            ? `Safety: ${c.safetyLabels.join(', ')}`
+                            : 'Safety screen fired'}
                         </span>
                       )}
                     </summary>
