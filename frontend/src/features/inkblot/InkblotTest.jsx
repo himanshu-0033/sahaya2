@@ -246,12 +246,15 @@ export default function InkblotTest() {
               <Pedestal plate={plate} size={230} />
             </div>
 
-            <p
-              className="animate-slide-up mt-6 text-center text-sm text-[var(--color-muted)]"
-              style={{ animationDelay: '80ms' }}
-            >
-              Take your time. There are no wrong answers.
-            </p>
+            {/* Two questions, not one: what the shape looks like, and what it stirs.
+                Written out above the box, because a placeholder vanishes at the first
+                keystroke, exactly when someone wants to check what was asked. */}
+            <div className="animate-slide-up mt-6 text-center" style={{ animationDelay: '80ms' }}>
+              <p className="font-display text-lg leading-snug text-[var(--color-ink)]">
+                What do you see, and what do you feel about it?
+              </p>
+              <p className="mt-1.5 text-sm text-[var(--color-muted)]">Take your time. There are no wrong answers.</p>
+            </div>
 
             <div
               className="animate-slide-up mt-4 flex w-full items-start gap-2.5"
@@ -262,9 +265,9 @@ export default function InkblotTest() {
                 rows={3}
                 value={answers[plate.id] || ''}
                 onChange={(e) => recordText(plate.id, e.target.value)}
-                placeholder="What do you see?"
+                placeholder="I see… and it makes me feel…"
                 maxLength={800}
-                aria-label={`What you see in plate ${step + 1}`}
+                aria-label={`What you see and feel in plate ${step + 1}`}
                 className="min-h-[3.75rem] flex-1 resize-y rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-3.5 text-base outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--sec-inkblot)]/60 focus:bg-[var(--surface-2)]"
               />
               <VoiceInputButton onTranscript={appendTranscript} />
@@ -272,7 +275,7 @@ export default function InkblotTest() {
 
             {plateTyped && !plateUsable && (
               <p className="mt-3 w-full text-sm text-[var(--color-ink-soft)]">
-                Say it in a word or two: &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
+                Use a few real words: what you see, and how it makes you feel. What is
                 written now cannot be read back to you. Clearing the box skips this plate.
               </p>
             )}
