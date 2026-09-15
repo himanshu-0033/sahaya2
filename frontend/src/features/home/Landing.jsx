@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import LoadError from '../../shared/LoadError.jsx';
+import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
+import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
+import { ASK_DP_EVENT } from '../companion/AskDP.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
@@ -12,12 +15,17 @@ import { ARTICLES, TOPICS } from '../read/articles.js';
 import { SHELVES } from '../read/books.js';
 import { TEST_INDEX } from '../read/testIndex.js';
 
-// Home — redesigned with richer visual hierarchy.
+// Home.
 //
-// Inspired by Instagram (horizontal scrollers, visual cards, strong hierarchy)
-// and Google Pay (quick-action icon grid, organized sections). The page now
-// surfaces features that were buried in "More" and gives the daily check-in
-// a more celebratory presence when completed.
+// Opens on one card that is the day: a greeting and the streak, "How is today,
+// really?", the five moods as one row you tap, and a bar to ask DP anything.
+// Four quick actions sit beside it on a laptop and under it on a phone. The
+// same screen is drawn on the landing page, so the picture a stranger sees
+// before signing in is the screen they get after.
+//
+// The two top blocks share a row on a laptop and stretch to one height. The
+// layout before this put a short check-in card beside a tall column of
+// shortcuts, and the difference was a screen-wide gap of nothing.
 
 // ─── Quick shortcuts for a bad moment ───────────────────────────────────────
 const QUICK = [
@@ -43,7 +51,8 @@ const QUICK = [
 const ACTIONS = [
   {
     to: '/grounding',
-    label: 'Calm',
+    label: 'Grounding',
+    sub: (c) => (c.streak ? `${c.streak}-day streak` : c.practices ? `${c.practices} practices` : 'For a bad ten minutes'),
     hue: 'var(--sec-calm)',
     bg: 'rgba(167, 156, 240, 0.14)',
     icon: (
@@ -55,7 +64,8 @@ const ACTIONS = [
   },
   {
     to: '/assessments',
-    label: 'Tests',
+    label: 'Questionnaires',
+    sub: (c) => `${c.questionnaires} published screens`,
     hue: 'var(--sec-tests)',
     bg: 'rgba(88, 182, 245, 0.14)',
     icon: (
@@ -67,7 +77,8 @@ const ACTIONS = [
   },
   {
     to: '/paths',
-    label: 'Paths',
+    label: 'Guided paths',
+    sub: (c) => (c.paths ? `${c.paths} multi-day paths` : 'A little each day'),
     hue: 'var(--sec-paths)',
     bg: 'rgba(224, 163, 213, 0.14)',
     icon: (
@@ -79,7 +90,8 @@ const ACTIONS = [
   },
   {
     to: '/read',
-    label: 'Read',
+    label: 'Reading',
+    sub: (c) => `${c.essays} short essays`,
     hue: 'var(--sec-read)',
     bg: 'rgba(143, 214, 180, 0.14)',
     icon: (
@@ -91,91 +103,157 @@ const ACTIONS = [
   },
 ];
 
-// ─── Daily sublines (rotated by date, like the plate picker) ────────────────
-const SUBLINES = [
-  'One quiet minute can shift the whole day.',
-  "Checking in takes thirty seconds. That's it.",
-  'You showed up. That matters.',
-  'Small steps, steady ground.',
-  'Today is its own thing.',
-  'Nothing here is a test. Nothing is graded.',
-  'The streak is yours. No one else sees it.',
-];
-
 function dayOfYear() {
   const d = new Date();
   return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
 }
 
-function dailySubline() {
-  return SUBLINES[dayOfYear() % SUBLINES.length];
-}
-
-// ─── Plate thumbnails ────────────────────────────────────────────────────────
 const PLATE_COUNT = 10;
-
-function platesForDay(seedSource) {
-  const seed = String(seedSource || 'today');
-  let hash = 2166136261;
-  for (let i = 0; i < seed.length; i += 1) {
-    hash ^= seed.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  let n = hash >>> 0 || 1;
-  const next = () => {
-    n ^= n << 13; n >>>= 0;
-    n ^= n >>> 17;
-    n ^= n << 5; n >>>= 0;
-    return n / 4294967296;
-  };
-  const pool = Array.from({ length: PLATE_COUNT }, (_, i) => i + 1);
-  const picked = [];
-  while (picked.length < 3 && pool.length > 0) {
-    picked.push(pool.splice(Math.floor(next() * pool.length), 1)[0]);
-  }
-  return picked.map((i) => `/plates/rorschach-${String(i).padStart(2, '0')}-thumb.jpg`);
-}
-
-function PlateStrip({ seed }) {
-  const plates = useMemo(() => platesForDay(seed), [seed]);
-  return (
-    <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
-      {plates.map((src) => (
-        <span
-          key={src}
-          className="block h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-[var(--line-1)]"
-          style={{ background: '#efece5' }}
-        >
-          <img src={src} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain" />
-        </span>
-      ))}
-    </div>
-  );
-}
-
-// ─── Time of day helpers ────────────────────────────────────────────────────
-const GREET_ICONS = {
-  moon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-lavender)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>,
-  sunrise: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-amber)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><path d="M12 9V2M4.22 10.22l1.42 1.42M1 18h2M21 18h2M18.36 11.64l1.42-1.42" /><path d="M12 2l3 5H9l3-5Z" /></svg>,
-  sun: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-amber)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>,
-  sunset: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-flag)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><path d="M12 2v7M4.22 10.22l1.42 1.42M1 18h2M21 18h2M18.36 11.64l1.42-1.42" /></svg>,
-};
 
 function greeting() {
   const h = new Date().getHours();
-  if (h < 5) return { text: 'Still up', icon: GREET_ICONS.moon };
-  if (h < 12) return { text: 'Morning', icon: GREET_ICONS.sunrise };
-  if (h < 17) return { text: 'Afternoon', icon: GREET_ICONS.sun };
-  if (h < 21) return { text: 'Evening', icon: GREET_ICONS.sunset };
-  return { text: 'Late one', icon: GREET_ICONS.moon };
+  if (h < 5) return 'Still up';
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  if (h < 21) return 'Good evening';
+  return 'Late one';
 }
 
-function todayDate() {
-  return new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
+// ─── Today: the card the page is for ───────────────────────────────────────
+//
+// Not checked in: each mood is a link to the check-in with that mood already
+// chosen. Nothing is saved from here, because the check-in screen is where the
+// "who sees this" disclosure sits and a stray tap on Home should not log a day.
+// Checked in: the same row, with today's mood ringed and the rest set back.
+function TodayCard({ name, status }) {
+  const [question, setQuestion] = useState('');
+  const done = Boolean(status.checkedIn);
+  const todayMood = Number(status.record?.mood ?? status.record?.moodScore) || null;
+
+  const ask = (text) => {
+    window.dispatchEvent(new CustomEvent(ASK_DP_EVENT, { detail: { question: text } }));
+  };
+
+  function submit(e) {
+    e.preventDefault();
+    ask(question.trim());
+    setQuestion('');
+  }
+
+  return (
+    <section className="animate-slide-up card flex flex-col p-5 sm:p-6" aria-labelledby="today-heading">
+      <div className="flex items-center justify-between gap-3">
+        <p className="marginalia">
+          {greeting()}, {name}
+        </p>
+        {status.streak > 0 && (
+          <span className="rounded-full bg-[var(--color-teal-soft)] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-[var(--color-teal-dark)]">
+            <span className="num">{status.streak}</span> {status.streak === 1 ? 'day' : 'days'}
+          </span>
+        )}
+      </div>
+
+      <h1 id="today-heading" className="font-display mt-2 text-[1.6rem] leading-tight sm:text-[2rem]">
+        {done ? "That's today done." : 'How is today, really?'}
+      </h1>
+
+      <div
+        className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:p-3"
+        role="group"
+        aria-label={done ? "Today's mood" : 'Pick how today feels to start your check-in'}
+      >
+        {MOOD_OPTIONS.map((m, i) => {
+          const hue = MOOD_HUE[i];
+          const picked = todayMood === m.value;
+          const dot = (
+            <span
+              aria-hidden="true"
+              className="h-8 w-8 rounded-full transition-transform duration-200 group-hover:scale-110 sm:h-10 sm:w-10"
+              style={{
+                background: status.loading ? 'var(--surface-3)' : hue,
+                opacity: done && !picked ? 0.35 : 1,
+                boxShadow: picked ? `0 0 0 3px #fff, 0 0 0 5px ${hue}` : 'none',
+              }}
+            />
+          );
+          const label = (
+            <span
+              className={`text-[0.6875rem] ${picked ? 'font-semibold text-[var(--color-ink)]' : 'text-[var(--color-ink-soft)]'}`}
+            >
+              {m.label}
+            </span>
+          );
+          return done || status.loading ? (
+            <span key={m.value} className="flex flex-col items-center gap-1.5 py-1.5" aria-current={picked || undefined}>
+              {dot}
+              {label}
+            </span>
+          ) : (
+            <Link
+              key={m.value}
+              to={`/checkin?mood=${m.value}`}
+              aria-label={`${m.label}. Start today's check-in`}
+              className="press group flex flex-col items-center gap-1.5 rounded-xl py-1.5 transition-colors hover:bg-[var(--surface-2)]"
+            >
+              {dot}
+              {label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {done ? (
+        <Link
+          to="/results"
+          state={{ record: status.record }}
+          className="mt-3 inline-flex items-center gap-1.5 self-start text-sm text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
+        >
+          Checked in. See today&apos;s thought
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </Link>
+      ) : (
+        <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
+          {status.error
+            ? "We couldn't reach the server, so we can't tell whether today is already done. Opening it again is safe."
+            : 'Tap one to start. It saves the day and your streak; everything after is optional.'}
+        </p>
+      )}
+
+      {/* Sends the question into the DP conversation rather than answering it
+          here, so there is one chat with one history, not two. */}
+      {/* Grows when the card is stretched beside the quick actions, so the ask
+          bar sits on the card's bottom edge instead of floating mid-card. */}
+      <div className="min-h-4 flex-1" aria-hidden="true" />
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-2 rounded-full border border-[var(--line-2)] bg-white py-1.5 pr-1.5 pl-4 transition-colors focus-within:border-[var(--color-teal)]"
+      >
+        <label htmlFor="home-ask" className="sr-only">
+          Ask DP anything
+        </label>
+        <input
+          id="home-ask"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Ask DP anything…"
+          autoComplete="off"
+          className="min-w-0 flex-1 bg-transparent py-1 text-sm outline-none placeholder:text-[var(--color-muted)]"
+        />
+        <VoiceInputButton size="sm" onTranscript={ask} />
+        <button
+          type="submit"
+          aria-label="Open DP"
+          className="press flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-teal-dark)] text-white"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
+      </form>
+    </section>
+  );
 }
 
 // ─── Carry on: the path already in progress ─────────────────────────────────
@@ -263,21 +341,6 @@ function StoryCard({ article }) {
   );
 }
 
-// ─── Skeleton while loading ─────────────────────────────────────────────────
-function PrimarySkeleton() {
-  return (
-    <div className="p-6 sm:p-8" role="status">
-      <span className="sr-only">Checking whether you have checked in today…</span>
-      <div aria-hidden="true">
-        <div className="h-2.5 w-16 rounded-full bg-[var(--surface-4)]" />
-        <div className="mt-5 h-7 w-3/4 rounded-lg bg-[var(--surface-3)]" />
-        <div className="mt-3 h-7 w-1/2 rounded-lg bg-[var(--surface-3)]" />
-        <div className="mt-6 h-9 w-36 rounded-full bg-[var(--surface-4)]" />
-      </div>
-    </div>
-  );
-}
-
 // ─── Landing page ───────────────────────────────────────────────────────────
 export default function Landing() {
   const session = useSession();
@@ -287,15 +350,13 @@ export default function Landing() {
   const [profileError, setProfileError] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, error: null });
-  const [streak, setStreak] = useState(0);
+  const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, streak: 0, error: null });
   // The one unfinished path, or null. Its own state rather than the whole
   // catalogue, so nothing else on this page has to know the paths exist.
   const [carryOn, setCarryOn] = useState(null);
-  // The most recent conversation with DP, or null. Same silent-failure rule as
-  // carryOn below it: if it never lands the page is what it was, minus a card.
-  // Practice and path counts for the numbers band. Both ship from the backend,
-  // so they come off the two catalogue requests this page already makes.
+  // Practice and path counts, and the grounding streak, for the quick actions
+  // and the numbers band. They come off the two catalogue requests this page
+  // already makes.
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
@@ -312,12 +373,13 @@ export default function Landing() {
     if (!session || !profile?.onboarded) return;
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
-      .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
-      .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, error: err }));
+      .then((data) =>
+        setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, streak: data.streak || 0, error: null }),
+      )
+      .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, streak: 0, error: err }));
     getGroundingCatalog()
       .then((data) => {
-        setStreak(data.streak || 0);
-        setCounts((c) => ({ ...c, practices: (data.techniques || []).length }));
+        setCounts((c) => ({ ...c, streak: data.streak || 0, practices: (data.techniques || []).length }));
       })
       .catch(() => {});
     getPaths()
@@ -383,8 +445,7 @@ export default function Landing() {
   }
 
   const first = profile.name.split(' ')[0];
-  const greet = greeting();
-  const sub = dailySubline();
+  const questionnaires = TEST_INDEX.filter((t) => t.available).length;
 
   // One essay leads each day and the next four sit beside it, so a week of
   // opening the app walks the whole shelf.
@@ -395,7 +456,7 @@ export default function Landing() {
   // outcomes: a prototype has none to report, and a mental-health app that
   // rounds up is the last place anyone should find an invented statistic.
   const stats = [
-    { value: TEST_INDEX.length, label: 'published questionnaires', to: '/assessments' },
+    { value: questionnaires, label: 'published questionnaires', to: '/assessments' },
     { value: counts.practices, label: 'grounding practices', to: '/grounding' },
     { value: counts.paths, label: 'guided paths', to: '/paths' },
     { value: PLATE_COUNT, label: 'inkblot plates', to: '/inkblot-test' },
@@ -407,176 +468,64 @@ export default function Landing() {
     <PageShell section="home" fit>
       <Header eyebrow="Home" />
 
-      {/* ═══════════════════════════════════════════ Hero greeting */}
-      <div className="animate-slide-up stack-block">
-        <p className="text-xs tracking-wide text-[var(--color-muted)]">
-          {todayDate()}
-        </p>
-        <h1 className="font-display mt-1.5 text-[1.85rem] leading-tight sm:text-[2.4rem]">
-          {greet.text}, {first}
-          <span className="ml-2 inline-block align-middle" aria-hidden="true">{greet.icon}</span>
-        </h1>
-        <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          {sub}
-        </p>
+      {/* ═══════════════════════════════════════════ Today and quick actions
+          One row from the laptop breakpoint up, stretched to one height, so
+          neither column ends early and leaves a hole beside the other. */}
+      <div className="stack-block grid gap-3 lg:grid-cols-[1.45fr_1fr] lg:items-stretch lg:gap-5">
+        <TodayCard name={first} status={status} />
+
+        <nav aria-label="Quick actions" className="grid grid-cols-2 gap-2.5 lg:grid-rows-2 lg:gap-3">
+          {ACTIONS.map((a, i) => (
+            <Link
+              key={a.to}
+              to={a.to}
+              className="press card animate-slide-up flex flex-col justify-between gap-4 p-4 sm:p-5"
+              style={{ animationDelay: `${60 + i * 40}ms` }}
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: a.bg, color: a.hue }}>
+                {a.icon}
+              </span>
+              <span>
+                <span className="block text-sm font-semibold">{a.label}</span>
+                <span className="mt-0.5 block text-xs text-[var(--color-muted)]">
+                  {a.sub({ ...counts, questionnaires, essays: ARTICLES.length })}
+                </span>
+              </span>
+            </Link>
+          ))}
+        </nav>
       </div>
 
-      {/* ═══════════════════════════════════════════ Today
-          Two columns from the laptop breakpoint up. The check-in is the one
-          thing this page exists to get someone to do, so it keeps the larger
-          column; the shortcuts that used to push it half a screen down now sit
-          beside it. Under `lg` this wrapper does nothing — no grid, no gap —
-          and the children keep the single-column order and the stack-block
-          rhythm they already had. */}
-      <div className="lg:grid lg:grid-cols-[1.55fr_1fr] lg:items-start lg:gap-6">
-
-      {/* Left column: the two things that are yours to do today. */}
-      <div>
-      <section className="animate-slide-up card stack-block overflow-hidden p-0" style={{ animationDelay: '60ms' }}>
-        {status.loading ? (
-          <PrimarySkeleton />
-        ) : status.checkedIn ? (
-          /* ─── Done state ─── */
-          <Link
-            to="/results"
-            state={{ record: status.record }}
-            className="press block p-6 sm:p-7 checkin-card-done"
-          >
-            {/* The streak used to sit here as a ring. It lives in the top bar
-                now, on every screen rather than only this one, so the card is
-                a single column and centres on its own axis. */}
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2.5">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-teal)]">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
-                </span>
-                <span className="marginalia">Checked in today</span>
-              </div>
-              <p className="font-display mt-3 text-[1.6rem] leading-tight sm:text-[1.9rem]">
-                That's today done.
-              </p>
-              <p className="mx-auto mt-2 max-w-md text-sm text-[var(--color-ink-soft)]">
-                Your thought for the day is still here whenever you want it.
-              </p>
-              <PlateStrip seed={status.record?.date} />
-              <span className="mt-4 inline-flex items-center gap-2 text-sm text-[var(--color-teal-dark)]">
-                See today's thought
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
-            </div>
-          </Link>
-        ) : (
-          /* ─── Not checked in ─── */
-          <Link
-            to="/checkin"
-            className="press block p-6 sm:p-8 checkin-card-active"
-          >
-            <span className="marginalia">Today</span>
-            <p className="font-display mt-3 text-[1.9rem] leading-[1.15] sm:text-[2.5rem]">
-              How is today
-              <br />
-              sitting?
-            </p>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              One tap saves the day and the streak. Everything after it is optional.
-            </p>
-
-            <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-teal)] px-5 py-2.5 text-sm font-medium text-white">
-              Start check-in
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
-
-            {status.error && (
-              <p className="mt-4 max-w-sm text-xs leading-relaxed text-[var(--color-muted)]">
-                We couldn&apos;t reach the server, so we can&apos;t tell whether today is already
-                done. Opening it again is safe.
-              </p>
-            )}
-          </Link>
-        )}
-      </section>
-
-      {/* ═══════════════════════════════════════════ Carry on
-          Under the check-in rather than in the right-hand column: these two
-          are the same kind of thing — the day's work, and the week's — while
-          the right column is shortcuts. It also evens the two columns out,
-          which putting it on the right did not. */}
+      {/* ═══════════════════════════════════════════ Where you left off */}
       {carryOn && (
-        <section className="animate-slide-up stack-block" style={{ animationDelay: '210ms' }}>
+        <section className="animate-slide-up stack-block" style={{ animationDelay: '180ms' }}>
           <h2 className="home-section-title">Where you left off</h2>
           <CarryOn path={carryOn.path} progress={carryOn.progress} />
         </section>
       )}
 
-      </div>{/* /left column */}
-
-      {/* The right-hand column on a laptop; the next blocks in the scroll on
-          a phone. `lg:mt-6` matches the check-in card's own stack-block so
-          the two columns start on the same line. */}
-      <div className="lg:mt-6">
-
-      {/* ═══════════════════════════════════════════ Quick Actions Grid */}
-      <section className="animate-slide-up stack-block lg:mt-0" style={{ animationDelay: '120ms' }}>
-        <div className="quick-grid stagger">
-          {ACTIONS.map((a) => (
-            <Link key={a.to} to={a.to}>
-              <span
-                className="quick-icon"
-                style={{ background: a.bg, color: a.hue }}
-              >
-                {a.icon}
-              </span>
-              <span className="text-[0.6875rem] font-medium text-[var(--color-ink-soft)]">
-                {a.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════ Right Now — Feelings Row */}
-      <section className="animate-slide-up stack-block" style={{ animationDelay: '180ms' }}>
+      {/* ═══════════════════════════════════════════ Right now
+          For a bad moment rather than a day: straight to the practice that
+          fits. Four across on a laptop, where the row has the width. */}
+      <section className="animate-slide-up stack-block" style={{ animationDelay: '220ms' }}>
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="home-section-title">How are you feeling?</h2>
+          <h2 className="home-section-title">Right now, I feel…</h2>
           <Link to="/grounding" className="text-xs text-[var(--sec-calm-deep)] underline underline-offset-4">
             See all
           </Link>
         </div>
-        {/* Four tall cards rather than four chips in a scroller. Each one is a
-            wash of its own hue with a wave banked across the bottom — the
-            section's colours, unchanged, given room to read as a destination
-            you would choose rather than a tag you might tap by accident. */}
-        {/* Two up, at every width. These sit in the narrow right-hand column
-            from `lg`, and four across in there clipped every label. */}
-        <div className="mt-3 grid grid-cols-2 gap-2.5">
+        <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-3">
           {QUICK.map((q, i) => (
             <Link
               key={q.mood}
               to={q.to}
               className="feeling-card animate-pop press"
-              /* 70ms apart: enough to read as four things arriving rather than
-                 one block, short enough that the last one is not still coming
-                 in when a thumb is already moving toward the first. */
               style={{ '--fc-hue': q.hue, animationDelay: `${i * 70}ms` }}
             >
               <span className="feeling-card-wave" aria-hidden="true">
                 <svg viewBox="0 0 120 48" preserveAspectRatio="none" width="100%" height="100%">
-                  <path
-                    d="M0 30 C 22 10, 40 40, 62 24 S 100 8, 120 22 L120 48 L0 48 Z"
-                    fill={q.hue}
-                    opacity="0.22"
-                  />
-                  <path
-                    d="M0 38 C 24 22, 44 46, 66 33 S 102 20, 120 31 L120 48 L0 48 Z"
-                    fill={q.hue}
-                    opacity="0.14"
-                  />
+                  <path d="M0 30 C 22 10, 40 40, 62 24 S 100 8, 120 22 L120 48 L0 48 Z" fill={q.hue} opacity="0.22" />
+                  <path d="M0 38 C 24 22, 44 46, 66 33 S 102 20, 120 31 L120 48 L0 48 Z" fill={q.hue} opacity="0.14" />
                 </svg>
               </span>
               <span className="feeling-card-icon" aria-hidden="true" style={{ color: q.hue }}>
@@ -589,32 +538,6 @@ export default function Landing() {
           ))}
         </div>
       </section>
-
-      {/* ═══════════════════════════════════════════ Grounding streak badge */}
-      {streak > 0 && (
-        <div
-          className="animate-slide-up card stack-block flex items-center gap-4 px-5 py-4"
-          style={{ animationDelay: '240ms' }}
-        >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-lavender-soft)]">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--color-lavender)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
-          </span>
-          <div>
-            <p className="text-sm font-medium">
-              <span className="num text-xl text-[var(--sec-calm-deep)]">{streak}</span>
-              <span className="ml-2 text-[var(--color-ink-soft)]">
-                day{streak === 1 ? '' : 's'} of grounding
-              </span>
-            </p>
-            <p className="mt-0.5 text-xs text-[var(--color-muted)]">Keep it going. Consistency matters most.</p>
-          </div>
-        </div>
-      )}
-
-      </div>{/* /right column */}
-      </div>{/* /two-column wrapper */}
 
       {/* ═══════════════════════════════════════════ Worth reading
           Today's essay as a pull-quote card, and the next four as a list

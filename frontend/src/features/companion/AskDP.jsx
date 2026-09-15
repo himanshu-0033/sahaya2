@@ -20,8 +20,23 @@ import useDialogFocus from '../../shared/useDialogFocus.js';
 // pass `tabs={false}` to PageShell, which is the app's existing signal for "a
 // flow someone is inside", and a floating chat button over a form someone is
 // halfway through is an invitation to abandon it.
+// Any screen can open the conversation, optionally with a question already
+// typed, by dispatching this event. Home's "Ask DP anything" bar does; the
+// question is handed to ChatPanel, which sends it once the opener has landed.
+export const ASK_DP_EVENT = 'sahay:ask-dp';
+
 export default function AskDP() {
   const [open, setOpen] = useState(false);
+  const [question, setQuestion] = useState(null);
+
+  useEffect(() => {
+    const onAsk = (e) => {
+      setQuestion(e.detail?.question || null);
+      setOpen(true);
+    };
+    window.addEventListener(ASK_DP_EVENT, onAsk);
+    return () => window.removeEventListener(ASK_DP_EVENT, onAsk);
+  }, []);
   const [checkin, setCheckin] = useState(null);
   const { dialogRef, triggerRef } = useDialogFocus(open);
 
@@ -79,7 +94,15 @@ export default function AskDP() {
           aria-label="Chat with DP"
         >
           <div ref={dialogRef} className="w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-            <ChatPanel variant="overlay" checkin={checkin} onClose={() => setOpen(false)} />
+            <ChatPanel
+              variant="overlay"
+              checkin={checkin}
+              initialQuestion={question}
+              onClose={() => {
+                setOpen(false);
+                setQuestion(null);
+              }}
+            />
           </div>
         </div>
       )}

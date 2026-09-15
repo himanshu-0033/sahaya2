@@ -6,6 +6,7 @@
 // weighs more than all four of these together. These are simplified on
 // purpose, and aria-hidden: the heading and sentence on each card are the
 // content; the phone is illustration.
+import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
 
 const INK = '#14201a';
 const SOFT = '#5b6a62';
@@ -34,13 +35,8 @@ function Phone({ dark = false, children }) {
   );
 }
 
-const MOODS = [
-  ['Heavy', '#b4534b'],
-  ['Low', '#d08a4e'],
-  ['Steady', '#c9a43b'],
-  ['Good', '#5a9a6e'],
-  ['Bright', GREEN],
-];
+// The app's own scale and colours, so this picture and the real Home match.
+const MOODS = MOOD_OPTIONS.map((m, i) => [m.label, MOOD_HUE[i]]);
 
 function CheckInScreen() {
   return (

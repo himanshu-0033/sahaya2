@@ -5,7 +5,7 @@ import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import { SkeletonPanel } from '../../shared/Skeleton.jsx';
-import { MOOD_OPTIONS } from '../../shared/moods.js';
+import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
 import { hasRealWord } from '../../shared/words.js';
 import { useSession } from '../auth/useSession.js';
 import { getInkblotTest, getStatus, submitCheckin, submitInkblotTest } from '../../shared/api.js';
@@ -81,11 +81,6 @@ function Stages({ current }) {
   );
 }
 
-// The mood scale runs cool-to-warm rather than red-to-green. Green/red is the
-// grammar of pass and fail, and a low mood is not a failed check-in — the
-// point of the whole exercise is that any answer is a fine answer.
-const MOOD_HUE = ['#8fa3b8', '#a79cf0', '#58b6f5', '#5fd6bf', '#d9a55c'];
-
 // The plate step no longer collects three words, and the API still wants the
 // field. Three blanks is the shape it already accepts — it is exactly what
 // tapping "Nothing comes to mind" three times used to send.
@@ -97,7 +92,13 @@ export default function CheckIn() {
   const [searchParams] = useSearchParams();
   const onPlates = searchParams.get('stage') === 'plates';
 
-  const [mood, setMood] = useState(null);
+  // Home's mood row links here as /checkin?mood=4, so the tap made there is
+  // already selected. It is not saved until the button below is pressed, which
+  // is where the disclosure about who sees it sits.
+  const [mood, setMood] = useState(() => {
+    const picked = Number(searchParams.get('mood'));
+    return MOOD_OPTIONS.some((m) => m.value === picked) ? picked : null;
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
