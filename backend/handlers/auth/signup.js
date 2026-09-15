@@ -4,6 +4,7 @@ import { getResidents, appendRecord, removeRecords } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { signSessionToken } from '../../lib/auth.js';
 import { phonesMatch } from '../../lib/phone.js';
+import { isValidEmail, isValidPhone } from '../../lib/contact.js';
 import { invitedPlaceholders } from '../../lib/residents.js';
 
 function makeId() {
@@ -21,8 +22,11 @@ export default async function handler(req, res) {
   if (!name || !name.trim()) {
     return res.status(400).json({ error: 'Name is required' });
   }
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-    return res.status(400).json({ error: 'A valid email is required' });
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Enter a valid email address, like name@college.edu.' });
+  }
+  if (phone && phone.trim() && !isValidPhone(phone)) {
+    return res.status(400).json({ error: 'Enter a valid mobile number: 10 digits for India, starting with 6, 7, 8 or 9.' });
   }
   if (!password || password.length < 8) {
     return res.status(400).json({ error: 'Password must be at least 8 characters' });

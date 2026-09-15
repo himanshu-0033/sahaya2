@@ -3,6 +3,7 @@ import Button from '../../shared/Button.jsx';
 import { signup, login, requestPasswordReset } from '../../shared/api.js';
 import { decodeJwt, saveSession } from './session.js';
 import { COUNTRY_CODES } from '../../shared/countryCodes.js';
+import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
 export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'forgot'
@@ -40,6 +41,9 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!canSubmit) return;
+    // Caught here, before anything is sent. The server checks the same rules.
+    if (isSignup && !isValidEmail(email)) return setError(EMAIL_MESSAGE);
+    if (isSignup && phoneLocal.trim() && !isValidPhone(`${countryCode} ${phoneLocal}`)) return setError(PHONE_MESSAGE);
     setSubmitting(true);
     setError(null);
     try {
@@ -141,9 +145,12 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                   </select>
                   <input
                     autoFocus
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
                     value={phoneLocal}
-                    onChange={(e) => setPhoneLocal(e.target.value)}
-                    placeholder="98765 43210"
+                    onChange={(e) => setPhoneLocal(digitsOnly(e.target.value, countryCode === '+91' ? 10 : 15))}
+                    placeholder="9876543210"
                     className={`${inputClass} mt-0`}
                   />
                 </div>

@@ -3,6 +3,7 @@ import { getCheckins, getResidents, getAssessments, appendRecord } from '../../l
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
+import { isValidEmail } from '../../lib/contact.js';
 import { normalizeEmail, residentsForAdmin, sharedWithList } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
@@ -16,8 +17,8 @@ export default async function handler(req, res) {
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Name is required' });
     }
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-      return res.status(400).json({ error: 'A valid email is required' });
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Enter a valid email address, like name@college.edu.' });
     }
 
     const normalizedEmail = email.trim().toLowerCase();

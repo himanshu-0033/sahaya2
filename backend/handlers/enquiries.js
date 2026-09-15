@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { appendRecord, getEnquiries } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireAdminUser } from '../lib/auth.js';
-import { phoneDigits } from '../lib/phone.js';
+import { isValidEmail, isValidPhone } from '../lib/contact.js';
 import { clientKey, limiter } from '../lib/rate-limit.js';
 
 // "Bring this to our campus": the form on the landing page, for a college,
@@ -76,12 +76,11 @@ export default async function handler(req, res) {
     if (value.length > MAX_FIELD) return res.status(400).json({ error: 'One of the fields is too long.' });
   }
   const email = text(body.email).toLowerCase();
-  if (!/^\S+@\S+\.\S+$/.test(email) || email.length > MAX_FIELD) {
+  if (!isValidEmail(email) || email.length > MAX_FIELD) {
     return res.status(400).json({ error: 'Enter a valid email address.' });
   }
   const phone = text(body.phone);
-  const digits = phoneDigits(phone).length;
-  if (digits < 7 || digits > 15 || phone.length > 30) {
+  if (!isValidPhone(phone) || phone.length > 30) {
     return res.status(400).json({ error: 'Enter a valid phone number.' });
   }
   const message = text(body.message);

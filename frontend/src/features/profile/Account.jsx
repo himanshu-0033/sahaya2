@@ -12,6 +12,7 @@ import {
   stopSharingWith,
   changePassword,
 } from '../../shared/api.js';
+import { EMAIL_MESSAGE, PHONE_MESSAGE, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
 // Account: your details, who can see them, your password, and signing out.
 //
@@ -240,6 +241,10 @@ export default function Account() {
       setDetailsError('Your name cannot be blank.');
       return;
     }
+    if (editing === 'phone' && draft.trim() && !isValidPhone(draft)) {
+      setDetailsError(PHONE_MESSAGE);
+      return;
+    }
     setSavingDetails(true);
     setDetailsError(null);
     // The email goes back unchanged: it is the address sign-in matches on, so it
@@ -264,6 +269,10 @@ export default function Account() {
     e.preventDefault();
     const value = email.trim();
     if (!value) return;
+    if (!isValidEmail(value)) {
+      setFormError(EMAIL_MESSAGE);
+      return;
+    }
     setSaving(true);
     setFormError(null);
     shareWith(value)
@@ -336,7 +345,9 @@ export default function Account() {
         autoComplete={FIELDS[field].autoComplete}
         max={field === 'dob' ? new Date().toISOString().slice(0, 10) : undefined}
         value={draft}
-        onChange={(ev) => setDraft(ev.target.value)}
+        inputMode={field === 'phone' ? 'tel' : undefined}
+        // Digits, a leading +, spaces and dashes only: letters never reach the box.
+        onChange={(ev) => setDraft(field === 'phone' ? ev.target.value.replace(/[^\d+\s-]/g, '').slice(0, 20) : ev.target.value)}
         className={`${field === 'dob' ? 'input-soft ' : ''}${INPUT}`}
         autoFocus
       />

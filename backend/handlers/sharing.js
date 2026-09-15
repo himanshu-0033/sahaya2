@@ -2,6 +2,7 @@ import { getResidents, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
 import { addShare, assignedList, normalizeEmail, removeShare, sharedWithList } from '../lib/sharing.js';
+import { isValidEmail } from '../lib/contact.js';
 
 // The only endpoint that can create or remove a share.
 //
@@ -36,8 +37,8 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST' || req.method === 'DELETE') {
     const email = normalizeEmail((req.body || {}).email || req.query.email);
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-      return res.status(400).json({ error: 'A valid email address is required' });
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Enter a valid email address, like name@college.edu.' });
     }
     // Sharing with yourself is a no-op that would read as a second viewer on
     // your own screen.

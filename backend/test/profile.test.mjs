@@ -122,11 +122,17 @@ assert.equal(after.phone, '+91 98765 43210', 'a blank phone keeps the stored one
 assert.equal(after.createdAt, '2026-01-04T00:00:00.000Z', 'and the day they joined never moves');
 
 // --- a field is not storage ---------------------------------------------
-r = await call({ token: asha, body: { name: 'A'.repeat(5000), phone: '9'.repeat(400) } });
+r = await call({ token: asha, body: { name: 'A'.repeat(5000) } });
 assert.equal(r.statusCode, 200);
 after = await read('r-asha');
 assert.ok(after.name.length <= 120, 'the name is capped');
-assert.ok(after.phone.length <= 32, 'the number is capped');
+
+// --- a phone number is a phone number -----------------------------------
+for (const bad of ['9'.repeat(400), '12345', 'call me', '5876543210']) {
+  r = await call({ token: asha, body: { name: 'Asha', phone: bad } });
+  assert.equal(r.statusCode, 400, `"${bad.slice(0, 20)}" is refused as a phone number`);
+}
+assert.equal((await read('r-asha')).phone, '+91 98765 43210', 'none of them landed');
 
 fs.rmSync(DATA_DIR, { recursive: true, force: true });
 console.log('profile checks passed: email and phone cannot be claimed, dates are dates, blanks keep');

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../../shared/Button.jsx';
 import { COUNTRY_CODES } from '../../shared/countryCodes.js';
+import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
 // The account form asks for four things, and each one has to earn its place.
 //
@@ -27,6 +28,8 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
     phoneLocal: '',
     dob: '',
   });
+  // Caught here, before anything is sent. The server checks the same rules.
+  const [localError, setLocalError] = useState(null);
 
   const inputClass = dark
     ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-white/50 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
@@ -42,6 +45,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
     e.preventDefault();
     const { countryCode, phoneLocal, ...rest } = values;
     const phone = phoneLocal.trim() ? `${countryCode} ${phoneLocal.trim()}` : '';
+    if (!isValidEmail(rest.email)) return setLocalError(EMAIL_MESSAGE);
+    if (phone && !isValidPhone(phone)) return setLocalError(PHONE_MESSAGE);
+    setLocalError(null);
     onDone({ ...rest, phone });
   }
 
@@ -69,8 +75,10 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         <div>
           <label className={labelClass}>Email address</label>
           <input
+            type="email"
+            autoComplete="email"
             value={values.email}
-            onChange={(e) => set('email', e.target.value)}
+            onChange={(e) => set('email', e.target.value.trim())}
             className={inputClass}
           />
         </div>
@@ -94,9 +102,12 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
               ))}
             </select>
             <input
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
               value={values.phoneLocal}
-              onChange={(e) => set('phoneLocal', e.target.value)}
-              placeholder="98765 43210"
+              onChange={(e) => set('phoneLocal', digitsOnly(e.target.value, values.countryCode === '+91' ? 10 : 15))}
+              placeholder="9876543210"
               className={`${inputClass} mt-0`}
             />
           </div>
@@ -124,9 +135,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
           you invite them from your account.
         </p>
 
-        {error && (
-          <p className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
-            {error}
+        {(localError || error) && (
+          <p role="alert" className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+            {localError || error}
           </p>
         )}
 

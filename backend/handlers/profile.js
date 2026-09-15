@@ -4,6 +4,7 @@ import { requireGoogleUser } from '../lib/auth.js';
 import { publicResident } from '../lib/sanitize.js';
 import { invitedPlaceholders } from '../lib/residents.js';
 import { phonesMatch } from '../lib/phone.js';
+import { isValidPhone } from '../lib/contact.js';
 
 // Long enough for any real name or number, short enough that the field cannot
 // be used as storage. The same reasoning, and roughly the same ceiling, as the
@@ -61,6 +62,10 @@ export default async function handler(req, res) {
 
     const trimmedName = (name || '').trim().slice(0, MAX_NAME);
     const trimmedPhone = (phone || '').trim().slice(0, MAX_PHONE);
+    // Blank still means unchanged (see below); anything else has to be a number.
+    if ((phone || '').trim() && !isValidPhone(phone)) {
+      return res.status(400).json({ error: 'Enter a valid mobile number: 10 digits for India, starting with 6, 7, 8 or 9.' });
+    }
 
     // The email address on an existing record is not editable here, and the
     // field is ignored rather than refused so that a form posting the address

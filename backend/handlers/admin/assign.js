@@ -2,6 +2,7 @@ import { getResidents, upsertRecord } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireSuperAdmin } from '../../lib/auth.js';
 import { addShare, assignedList, normalizeEmail, removeShare, sharedWithList } from '../../lib/sharing.js';
+import { isValidEmail } from '../../lib/contact.js';
 
 // Assign a counsellor to a student, or take the assignment away. Super admin
 // only.
@@ -25,8 +26,8 @@ export default async function handler(req, res) {
   const residentId = body.residentId || req.query.residentId;
   const email = normalizeEmail(body.email || req.query.email);
   if (!residentId) return res.status(400).json({ error: 'residentId is required' });
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-    return res.status(400).json({ error: 'A valid counsellor email is required' });
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ error: 'Enter a valid email address, like name@college.edu.' });
   }
 
   const residents = await getResidents();

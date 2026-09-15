@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { submitEnquiry } from '../../shared/api.js';
+import { EMAIL_MESSAGE, PHONE_MESSAGE, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
 // For the person reading the landing page on behalf of a college, a hostel or
 // an organisation rather than for themselves. They have no account and should
@@ -60,6 +61,8 @@ export default function PartnerForm() {
   function send(e) {
     e.preventDefault();
     if (sending) return;
+    if (!isValidEmail(values.email)) return setError(EMAIL_MESSAGE);
+    if (!isValidPhone(values.phone)) return setError(PHONE_MESSAGE);
     setSending(true);
     setError(null);
     submitEnquiry(values)
