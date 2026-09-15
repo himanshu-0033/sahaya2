@@ -175,8 +175,8 @@ export default function InkblotTest() {
           <div className="mt-6 rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] p-5">
             <p className="marginalia">What this is not</p>
             <p className="mt-2.5 text-xs leading-relaxed text-[var(--color-muted)]">
-              DP Sahay AI keeps what you write, alongside your check-ins. Nobody else sees it unless you
-              have invited a counsellor to follow along.
+              DP Sahay AI keeps what you write, alongside your check-ins. Your counsellor and your
+              institution&apos;s administrator can see it.
               It does <span className="text-[var(--color-ink-soft)]">not</span> score your answers:
               a real Rorschach is administered one-to-one by a trained clinician and coded against
               a formal system, and this is a reflective exercise, not a clinical assessment or a

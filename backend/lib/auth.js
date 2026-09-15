@@ -114,12 +114,47 @@ export async function requireCaregiverUser(req, res) {
   });
 }
 
+// The super admin: the owner of the deployment, who sees every counsellor and
+// every student and assigns counsellors to students.
+//
+// This is a deliberate change to the consent model in lib/sharing.js, made by
+// the owner on 2026-09-15: a counsellor the super admin assigns can see that
+// student straight away, without the student inviting them. Students are told
+// so on every screen that used to promise otherwise, and an assigned counsellor
+// is listed on their account page as "Assigned by your institution".
+//
+// SUPER_ADMIN_EMAILS overrides the default, comma-separated like the others.
+const DEFAULT_SUPER_ADMINS = 'himanshumalik0033@gmail.com';
+
+export function isSuperAdmin(email) {
+  return parseAllowlist(process.env.SUPER_ADMIN_EMAILS || DEFAULT_SUPER_ADMINS).includes(
+    (email || '').toLowerCase(),
+  );
+}
+
+export function counsellorAllowlist() {
+  return parseAllowlist(process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS);
+}
+
+export async function requireSuperAdmin(req, res) {
+  const admin = await requireAdminUser(req, res);
+  if (!admin) return null;
+  if (!admin.superAdmin) {
+    res.status(403).json({ error: 'Only the super admin can do this.' });
+    return null;
+  }
+  return admin;
+}
+
 // The counsellor/admin console is a separate app with its own allowlist.
 // Falls back to CAREGIVER_EMAILS so a single-allowlist deployment keeps
 // working without extra configuration.
 export async function requireAdminUser(req, res) {
   const user = await requireGoogleUser(req, res);
   if (!user) return null;
+
+  // The super admin opens the console whether or not the allowlist names them.
+  if (isSuperAdmin(user.email)) return { ...user, superAdmin: true };
 
   return requireAllowlisted(user, res, {
     raw: process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS,

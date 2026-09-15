@@ -16,10 +16,14 @@
 // never heard of can read every mood entry, every written word, and every
 // risk screen in the system.
 //
-// The default is nobody. A resident who has shared with no one is visible to
-// no one: not to a counsellor on the allowlist, not to whoever invited them,
-// not to the person who deployed the app. Making that the default is the whole
-// point — consent that has to be withdrawn is not consent.
+// The default for a counsellor is nobody: being on the allowlist shows them no
+// one until a student shares with them or the super admin assigns them.
+//
+// ONE EXCEPTION, chosen by the owner on 2026-09-15: the super admin (see
+// isSuperAdmin in lib/auth.js) sees every resident, and a counsellor they assign
+// sees that resident at once, without the resident inviting them. Students are
+// told this wherever the app used to promise otherwise, and an assigned
+// counsellor is shown on their account page as assigned by the institution.
 
 export function normalizeEmail(email) {
   return (email || '').trim().toLowerCase();
@@ -53,6 +57,22 @@ export function visibleResidents(residents, viewerEmail) {
 export function recordsForResidents(records, residents) {
   const ids = new Set(residents.map((r) => r.id));
   return records.filter((record) => ids.has(record.residentId));
+}
+
+// The console's view of the two rules above: a super admin sees every
+// resident, everyone else sees the residents who share with them.
+export function canAdminView(resident, admin) {
+  return Boolean(admin?.superAdmin) || canView(resident, admin?.email);
+}
+
+export function residentsForAdmin(residents, admin) {
+  return admin?.superAdmin ? residents : visibleResidents(residents, admin?.email);
+}
+
+// Counsellors the super admin assigned, as opposed to ones the student invited.
+// A student cannot remove these from their own account.
+export function assignedList(resident) {
+  return Object.keys(resident?.assignedBy || {}).map(normalizeEmail);
 }
 
 export function addShare(resident, viewerEmail) {

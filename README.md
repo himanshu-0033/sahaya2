@@ -125,6 +125,16 @@ window of the same browser), and it never ships resident-facing code.
   lists those students under "Raised in chat", filterable by topic, with call
   and email on the student's page. It is word matching over the student's own
   lines, reaches only counsellors the student shared with, and is not a flag.
+- **Super admin**: the address in `SUPER_ADMIN_EMAILS` (default
+  himanshumalik0033@gmail.com) opens the counsellor console without being on
+  the allowlist, sees every student, and gets a Team page: each counsellor's
+  caseload (students, checked in today, needing a conversation, at risk now,
+  average mood), the students with no counsellor, and a form to assign one. An
+  assignment gives that counsellor access to the student immediately, is
+  recorded on the student's record, and shows on the student's account page as
+  "assigned by your institution", where the student cannot remove it. Every
+  screen that used to promise students "nobody sees this unless you share" now
+  says that their counsellor and the institution's administrator can.
 - **Enquiries**: the landing page ends with a "bring it to your campus" form
   for a college or organisation (enquiry type, name, phone, email,
   organisation, role, a message and how they heard about the app). It posts to

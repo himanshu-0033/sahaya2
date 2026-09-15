@@ -11,6 +11,8 @@ const FILTERS = [
   { key: 'flagged', label: 'Flagged' },
   { key: 'quiet', label: 'Quiet 3+ days' },
   { key: 'invited', label: 'Not joined' },
+  // Only meaningful to the super admin, whose rows carry `counsellors`.
+  { key: 'unassigned', label: 'No counsellor', superAdmin: true },
 ];
 
 const SORTS = [
@@ -67,6 +69,7 @@ export default function Residents() {
     const filtered = residents.filter((r) => {
       if (filter === 'flagged' && !r.flaggedRecently) return false;
       if (filter === 'invited' && r.onboarded) return false;
+      if (filter === 'unassigned' && (r.counsellors || []).length > 0) return false;
       if (filter === 'quiet') {
         const gap = daysSince(r.lastCheckIn?.date);
         if (!r.onboarded) return false;
@@ -202,7 +205,7 @@ export default function Residents() {
           className="input-soft min-w-[240px] flex-1"
         />
         <div className="flex gap-1 rounded-full bg-[var(--surface-2)] p-1 text-xs">
-          {FILTERS.map((f) => (
+          {FILTERS.filter((f) => !f.superAdmin || residents.some((r) => r.counsellors)).map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
@@ -244,9 +247,9 @@ export default function Residents() {
           <div className="card-soft rounded-2xl px-6 py-7">
             <h3 className="font-display text-xl">Nobody has shared with you yet.</h3>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              Being on the counsellor allowlist lets you open this console. It does not give you
-              access to anyone's check-ins, each person decides that for themselves, from the
-              &ldquo;Who can see this&rdquo; page in their own account.
+              Being on the counsellor allowlist lets you open this console. Students appear here
+              when the super admin assigns them to you, or when a student adds your address from
+              the &ldquo;Who can see this&rdquo; page in their own account.
             </p>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-muted)]">
               Ask the people you work with to add your address there. If you invite someone below,
@@ -270,6 +273,11 @@ export default function Residents() {
                 <div className="min-w-[180px] flex-1">
                   <p className="font-medium">{r.name}</p>
                   <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
+                  {r.counsellors && (
+                    <p className="mt-1 text-xs text-[var(--color-lavender-deep)]">
+                      {r.counsellors.length ? `Counsellor: ${r.counsellors.join(', ')}` : 'No counsellor yet'}
+                    </p>
+                  )}
 
                   {/* The reason, on the row. A risk screen brings its own
                       wording and outranks a check-in rule, so only one set

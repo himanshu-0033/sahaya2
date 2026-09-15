@@ -9,7 +9,7 @@ import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
-import { canView } from '../../lib/sharing.js';
+import { assignedList, canAdminView, sharedWithList } from '../../lib/sharing.js';
 import { topicLabel } from '../../lib/topics.js';
 import { LABELS as SAFETY_LABELS } from '../../lib/safety.js';
 
@@ -37,12 +37,20 @@ export default async function handler(req, res) {
   // Deliberately the same 404 either way. Distinguishing "no such person" from
   // "that person has not shared with you" would turn this endpoint into a way
   // to test whether a given account uses the app at all.
-  if (!resident || !canView(resident, admin.email)) {
+  if (!resident || !canAdminView(resident, admin)) {
     return res.status(404).json({ error: 'Resident not found' });
   }
 
   return res.status(200).json({
     resident: publicResident(resident),
+    // Who can see this person, for the super admin's assign controls.
+    counsellors: admin.superAdmin
+      ? sharedWithList(resident).map((email) => ({
+          email,
+          assigned: assignedList(resident).includes(email),
+          assignedAt: resident.assignedBy?.[email]?.at || null,
+        }))
+      : undefined,
     summary: summarizeResident(resident, checkins, { detailed: true, assessments, chatSessions }),
     history: historyFor(checkins, residentId),
     inkblotSessions: inkblotSessions

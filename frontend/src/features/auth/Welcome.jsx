@@ -324,7 +324,7 @@ export default function Welcome({ onSignedIn }) {
                 Built on PHQ-9, GAD-7 and WHO-5
               </a>
               <span aria-hidden="true">·</span>
-              <span>Nobody sees it unless you share</span>
+              <span>Seen only by your counsellor and administrator</span>
             </p>
           </div>
 
@@ -485,9 +485,9 @@ export default function Welcome({ onSignedIn }) {
               answer, and something to do with your breath when a night gets bad.
             </p>
             <p>
-              None of it is a diagnosis. Nobody sees any of it by default: you can invite a
-              counsellor to follow along, take that back from your account at any time, and delete
-              everything from inside the app.
+              None of it is a diagnosis. What you record is seen by your counsellor, who is
+              assigned by your institution, and by your institution&apos;s administrator. Nobody
+              else sees it unless you invite them from your account.
             </p>
           </div>
           <div className="mt-10 flex flex-col items-center gap-5">

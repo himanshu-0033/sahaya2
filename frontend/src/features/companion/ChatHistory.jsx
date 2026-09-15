@@ -71,8 +71,8 @@ export default function ChatHistory() {
       {sessions && sessions.length === 0 && (
         <div className="card stack-section p-6">
           <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
-            Nothing here yet. Conversations show up once you have talked to DP, and only you and
-            anyone you have invited to your account can read them.
+            Nothing here yet. Conversations show up once you have talked to DP. You, your
+            counsellor and your institution&apos;s administrator can read them.
           </p>
         </div>
       )}

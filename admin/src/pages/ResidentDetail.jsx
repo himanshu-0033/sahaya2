@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import MoodSparkline from '../components/MoodSparkline.jsx';
 import StatCard from '../components/StatCard.jsx';
 import FlagBadge from '../components/FlagBadge.jsx';
-import { getResident, logExport } from '../lib/api.js';
+import { assignCounsellor, getResident, logExport, unassignCounsellor } from '../lib/api.js';
 import { downloadCsv, toCsv } from '../lib/csv.js';
 import { formatDate, moodLabel, moodColor, daysSince } from '../lib/moods.js';
 
@@ -183,6 +183,87 @@ function ConcernBanner({ concerns, resident }) {
   );
 }
 
+// Super admin only: who can see this student, and assigning or removing a
+// counsellor. A counsellor the student invited is shown but cannot be removed
+// here; that share is the student's.
+function Counsellors({ residentId, initial }) {
+  const [list, setList] = useState(initial);
+  const [email, setEmail] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  function run(action, target) {
+    setBusy(true);
+    setError(null);
+    action({ residentId, email: target })
+      .then((res) => {
+        setList(res.counsellors);
+        setEmail('');
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setBusy(false));
+  }
+
+  return (
+    <section className="card-soft rounded-2xl p-6">
+      <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">Counsellors</h3>
+      {list.length === 0 ? (
+        <p className="mt-3 text-sm text-[var(--color-muted)]">No counsellor can see this student yet.</p>
+      ) : (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {list.map((c) => (
+            <li
+              key={c.email}
+              className="flex items-center gap-2 rounded-full bg-[var(--color-lavender-soft)] py-1 pr-1.5 pl-3 text-sm text-[var(--color-lavender-deep)]"
+            >
+              {c.email}
+              <span className="text-[10px] uppercase tracking-wider">{c.assigned ? 'assigned' : 'invited by student'}</span>
+              {c.assigned && (
+                <button
+                  type="button"
+                  onClick={() => run(unassignCounsellor, c.email)}
+                  disabled={busy}
+                  aria-label={`Remove ${c.email}`}
+                  className="rounded-full px-1.5 text-base leading-none hover:bg-white/60"
+                >
+                  ×
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (email.trim()) run(assignCounsellor, email.trim());
+        }}
+        className="mt-4 flex flex-wrap gap-2"
+      >
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="counsellor@college.edu"
+          className="input-soft min-w-[220px] flex-1"
+        />
+        <button
+          type="submit"
+          disabled={busy || !email.trim()}
+          className="rounded-full bg-[var(--color-lavender-deep)] px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+        >
+          Assign
+        </button>
+      </form>
+      {error && <p className="mt-2 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+      <p className="mt-3 text-xs text-[var(--color-muted)]">
+        An assigned counsellor sees this student at once. The student sees who was assigned on their
+        account page and cannot remove them.
+      </p>
+    </section>
+  );
+}
+
 function Field({ label, value }) {
   return (
     <div>
@@ -289,6 +370,8 @@ export default function ResidentDetail() {
               tone={data.summary.flaggedCount > 0 ? 'flag' : 'default'}
             />
           </div>
+
+          {data.counsellors && <Counsellors residentId={residentId} initial={data.counsellors} />}
 
           <section className="card-soft rounded-2xl p-6">
             <h3 className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-muted)]">

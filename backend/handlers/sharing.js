@@ -1,7 +1,7 @@
 import { getResidents, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
-import { addShare, normalizeEmail, removeShare, sharedWithList } from '../lib/sharing.js';
+import { addShare, assignedList, normalizeEmail, removeShare, sharedWithList } from '../lib/sharing.js';
 
 // The only endpoint that can create or remove a share.
 //
@@ -28,7 +28,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    return res.status(200).json({ sharedWith: sharedWithList(residents[idx]) });
+    return res.status(200).json({
+      sharedWith: sharedWithList(residents[idx]),
+      assigned: assignedList(residents[idx]),
+    });
   }
 
   if (req.method === 'POST' || req.method === 'DELETE') {
@@ -42,6 +45,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'That is your own address. You can always see your own check-ins.' });
     }
 
+    // A counsellor the institution assigned stays until the super admin changes
+    // it. The student is told this on their account page, beside the name.
+    if (req.method === 'DELETE' && assignedList(residents[idx]).includes(email)) {
+      return res.status(403).json({
+        error: 'This counsellor was assigned by your institution. Ask your administrator if you want a different one.',
+      });
+    }
+
     const sharedWith =
       req.method === 'POST' ? addShare(residents[idx], email) : removeShare(residents[idx], email);
 
@@ -51,7 +62,7 @@ export default async function handler(req, res) {
       updatedAt: new Date().toISOString(),
     });
 
-    return res.status(200).json({ sharedWith });
+    return res.status(200).json({ sharedWith, assigned: assignedList(residents[idx]) });
   }
 
   res.setHeader('Allow', 'GET, POST, DELETE, OPTIONS');

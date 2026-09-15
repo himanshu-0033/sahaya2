@@ -3,7 +3,7 @@ import { getCheckins, getResidents, getAssessments, appendRecord } from '../../l
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
-import { normalizeEmail, visibleResidents } from '../../lib/sharing.js';
+import { normalizeEmail, residentsForAdmin, sharedWithList } from '../../lib/sharing.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -59,8 +59,13 @@ export default async function handler(req, res) {
   ]);
   // Being on the allowlist got you through the door. It does not decide who
   // is in the room — only residents who have shared with this counsellor are.
-  const visible = visibleResidents(residents, admin.email);
-  return res.status(200).json({
-    residents: summarizeResidents(visible, checkins, { detailed: true, assessments }),
-  });
+  const visible = residentsForAdmin(residents, admin);
+  const rows = summarizeResidents(visible, checkins, { detailed: true, assessments });
+  // Only the super admin is shown who else can see each person; a counsellor
+  // has no business with a colleague's caseload.
+  if (admin.superAdmin) {
+    const byId = new Map(visible.map((r) => [r.id, r]));
+    for (const row of rows) row.counsellors = sharedWithList(byId.get(row.id));
+  }
+  return res.status(200).json({ residents: rows });
 }

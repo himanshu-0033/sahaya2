@@ -634,8 +634,8 @@ export default function AssessmentRun() {
                   ))}
                 </ul>
                 <p className="mt-4 text-xs leading-relaxed text-[var(--color-ink-soft)]">
-                  This result is saved to your account. If you have invited a counsellor to follow
-                  along, they can see it. Otherwise nobody can.
+                  This result is saved to your account. Your counsellor and your institution&apos;s
+                  administrator can see it.
                 </p>
               </div>
             )}
@@ -739,8 +739,8 @@ export default function AssessmentRun() {
             <p className="mt-8 text-xs leading-relaxed text-[var(--color-muted)]">
               A score places you in a range that a published questionnaire defines. It is not
               a diagnosis, it describes the last few weeks rather than you, and it can move a
-              lot with sleep, exams and illness. It is saved to your account, and shared with a
-              counsellor only if you have invited one.
+              lot with sleep, exams and illness. It is saved to your account, where your
+              counsellor and your institution&apos;s administrator can see it.
             </p>
 
             {/* Placed on the result rather than before the questions. Nobody
@@ -857,8 +857,8 @@ export default function AssessmentRun() {
             <p className="mt-7 text-xs leading-relaxed text-[var(--color-muted)]">
               Each score places you in a range that a published questionnaire defines. None of
               them is a diagnosis, they describe the last few weeks rather than you, and they can
-              move a lot with sleep, exams and illness. All three are saved to your account, and
-              shared with a counsellor only if you have invited one.
+              move a lot with sleep, exams and illness. All three are saved to your account, where
+              your counsellor and your institution&apos;s administrator can see them.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">

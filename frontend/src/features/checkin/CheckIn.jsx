@@ -494,9 +494,8 @@ export default function CheckIn() {
               "Nobody is grading this" was true about tone and misleading about
               mechanism. This says what actually happens. */}
           <p className="mt-5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
-            Saved to your account. Nobody else sees your mood, your answers or your words unless
-            you have invited a counsellor to follow along. You can do that, and undo it, from
-            your account.
+            Saved to your account. Your counsellor and your institution&apos;s administrator can see
+            your mood, your answers and your words. Your account page shows exactly who can.
           </p>
         </div>
       )}

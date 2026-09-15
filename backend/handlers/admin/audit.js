@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { getExportLog, appendExportLog, getResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
-import { canView, normalizeEmail } from '../../lib/sharing.js';
+import { canAdminView, normalizeEmail } from '../../lib/sharing.js';
 
 // A record of every CSV that left the console.
 //
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
       if (!residentId) return res.status(400).json({ error: 'residentId is required' });
       const residents = await getResidents();
       const resident = residents.find((r) => r.id === residentId);
-      if (!resident || !canView(resident, admin.email)) {
+      if (!resident || !canAdminView(resident, admin)) {
         return res.status(404).json({ error: 'Resident not found' });
       }
       subjectName = resident.name || null;

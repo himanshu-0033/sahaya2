@@ -119,9 +119,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         </div>
 
         <p className={`text-xs leading-relaxed ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`}>
-          Nobody sees your check-ins but you. If you later want a counsellor to
-          follow along, you invite them yourself from your account, and you can
-          stop sharing at any time.
+          Your institution&apos;s administrator can see your check-ins and assign
+          you a counsellor, who can see them too. Anyone else sees them only if
+          you invite them from your account.
         </p>
 
         {error && (

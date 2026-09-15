@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Residents from './pages/Residents.jsx';
 import ResidentDetail from './pages/ResidentDetail.jsx';
 import Enquiries from './pages/Enquiries.jsx';
+import Team from './pages/Team.jsx';
 import { clearSession, getSession } from './lib/session.js';
 import { getAdmin, SIGNED_OUT_EVENT } from './lib/api.js';
 
@@ -98,6 +99,7 @@ export default function App() {
         <Route path="/residents" element={<Residents />} />
         <Route path="/residents/:residentId" element={<ResidentDetail />} />
         <Route path="/enquiries" element={<Enquiries />} />
+        {admin.superAdmin && <Route path="/team" element={<Team />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AdminShell>

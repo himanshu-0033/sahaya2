@@ -74,6 +74,19 @@ export function logExport({ scope, residentId = null, rowCount = null }) {
   });
 }
 
+// Super admin: every counsellor's caseload, and assigning them to students.
+export function getTeam() {
+  return request('/api/admin/team');
+}
+
+export function assignCounsellor({ residentId, email }) {
+  return request('/api/admin/assign', { method: 'POST', body: JSON.stringify({ residentId, email }) });
+}
+
+export function unassignCounsellor({ residentId, email }) {
+  return request('/api/admin/assign', { method: 'DELETE', body: JSON.stringify({ residentId, email }) });
+}
+
 // What came in through the landing page's enquiry form.
 export function getEnquiries() {
   return request('/api/enquiries');

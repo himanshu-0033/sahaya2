@@ -7,6 +7,7 @@ const navItems = [
 ];
 
 export default function AdminShell({ admin, onSignOut, children }) {
+  const items = admin?.superAdmin ? [...navItems, { to: '/team', label: 'Team' }] : navItems;
   return (
     <div className="min-h-screen">
       {/* First stop for the keyboard, so a counsellor is not walked through
@@ -22,7 +23,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
             <div className="flex items-center gap-2">
               <h1 className="font-display text-xl">DP Sahay AI</h1>
               <span className="rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[var(--color-lavender-deep)]">
-                Counsellor
+                {admin?.superAdmin ? 'Super admin' : 'Counsellor'}
               </span>
             </div>
             <p className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--color-muted)]">
@@ -31,7 +32,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
           </div>
 
           <nav className="flex items-center gap-1 rounded-full bg-[var(--surface-2)] p-1 text-sm">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

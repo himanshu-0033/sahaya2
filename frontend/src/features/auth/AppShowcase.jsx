@@ -217,8 +217,8 @@ export default function AppShowcase({ onStart }) {
             Check-ins, questionnaires, grounding and a companion, in one app.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-[1rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-            21 published questionnaires. 13 grounding practices. 5 guided paths. Free, and nobody
-            sees any of it unless you ask them to.
+            21 published questionnaires. 13 grounding practices. 5 guided paths. Free, and seen
+            only by your counsellor and your institution&apos;s administrator.
           </p>
         </div>
 

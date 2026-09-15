@@ -559,6 +559,9 @@ export const ARTICLES = [
             p: 'Your counsellor. The console shows the people assigned to it, and for each person their check-ins, their inkblot sittings and their questionnaire results, newest first.',
           },
           {
+            p: 'Your institution\'s administrator. They can see every student\'s account, and they are the one who assigns you a counsellor. A counsellor they assign can see your account from that moment, and is listed on your account page as assigned by your institution.',
+          },
+          {
             p: 'That is the design of the app rather than an unfortunate side effect. DP Sahay AI was built for a hostel where somebody is responsible for the students in it, and a screening result nobody ever reads is not much use to anyone. But it does mean this is not a private diary and should not be treated as one.',
           },
           {

@@ -166,6 +166,8 @@ export default function Account() {
   );
 
   const [sharedWith, setSharedWith] = useState([]);
+  // Counsellors the institution assigned. Listed as such, and not removable here.
+  const [assigned, setAssigned] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -206,7 +208,10 @@ export default function Account() {
     setLoading(true);
     setLoadError(null);
     getSharing()
-      .then((data) => setSharedWith(data.sharedWith || []))
+      .then((data) => {
+        setSharedWith(data.sharedWith || []);
+        setAssigned(data.assigned || []);
+      })
       .catch((err) => setLoadError(err))
       .finally(() => setLoading(false));
   }, [session, reloadKey]);
@@ -399,7 +404,7 @@ export default function Account() {
           {section === 'details' && (
             <Panel
               title="Personal details"
-              sub="Only you, and anyone you choose under Who can see this, can see these."
+              sub="You, your counsellor and your institution's administrator can see these."
             >
               <DetailRow
                 label="Full name"
@@ -440,7 +445,7 @@ export default function Account() {
           {section === 'sharing' && (
             <Panel
               title="Who can see this"
-              sub="Your check-ins, questionnaire results and inkblot notes are yours. Invite a counsellor and they can follow along; remove them and they stop, straight away."
+              sub="Your institution's administrator can see your check-ins, questionnaire results, inkblot notes and chats, and assigns you a counsellor who can see them too. You can also invite someone yourself, and remove them whenever you like."
             >
               {loadError ? (
                 <div className="p-5 sm:px-7">
@@ -450,8 +455,8 @@ export default function Account() {
                 <p className="animate-pulse px-5 py-5 text-sm text-[var(--color-ink-soft)] sm:px-7">Loading…</p>
               ) : sharedWith.length === 0 ? (
                 <p className="border-b border-[var(--line-1)] px-5 py-5 text-sm leading-relaxed text-[var(--color-ink-soft)] sm:px-7">
-                  You have not shared with anyone. Everything you have written stays between you and
-                  this app.
+                  No counsellor yet. Your institution&apos;s administrator can still see your account,
+                  and will assign one.
                 </p>
               ) : (
                 <ul>
@@ -463,9 +468,16 @@ export default function Account() {
                       <div className="min-w-0">
                         <p className="truncate text-[0.9375rem] font-medium">{e}</p>
                         <p className="mt-0.5 text-xs text-[var(--color-muted)]">
-                          Can see your check-ins, questionnaire results and inkblot notes
+                          {assigned.includes(e)
+                            ? 'Assigned by your institution. Ask your administrator to change it.'
+                            : 'Invited by you. Can see your check-ins, questionnaire results and chats'}
                         </p>
                       </div>
+                      {assigned.includes(e) ? (
+                        <span className="shrink-0 rounded-full bg-[var(--color-teal-soft)] px-3 py-1.5 text-xs text-[var(--color-teal-dark)]">
+                          Your counsellor
+                        </span>
+                      ) : (
                       <button
                         type="button"
                         onClick={() => handleRemove(e)}
@@ -474,6 +486,7 @@ export default function Account() {
                       >
                         {removingEmail === e ? 'Stopping…' : 'Stop sharing'}
                       </button>
+                      )}
                     </li>
                   ))}
                 </ul>

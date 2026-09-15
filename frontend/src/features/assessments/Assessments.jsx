@@ -300,8 +300,8 @@ export default function Assessments() {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pb-2">
             <p className="max-w-md text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
-              Your answers and scores are saved to your account. Nobody else can see them unless
-              you invite a counsellor to follow along, and you can stop sharing whenever you like.
+              Your answers and scores are saved to your account. Your counsellor and your
+              institution&apos;s administrator can see them, and no one else unless you invite them.
               If something here worries you, please talk to a person rather than a score.
             </p>
             <CrisisContacts variant="link" />
