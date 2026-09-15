@@ -5,7 +5,7 @@ import PageShell from '../../layouts/PageShell.jsx';
 import LoadError from '../../shared/LoadError.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { useSession } from '../auth/useSession.js';
-import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths, getChatHistory } from '../../shared/api.js';
+import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
 import { pathPhoto, articlePhoto } from '../../shared/photos.js';
 import { accent } from '../../shared/accents.js';
 import { ARTICLES, TOPICS } from '../read/articles.js';
@@ -294,7 +294,6 @@ export default function Landing() {
   const [carryOn, setCarryOn] = useState(null);
   // The most recent conversation with DP, or null. Same silent-failure rule as
   // carryOn below it: if it never lands the page is what it was, minus a card.
-  const [lastTalk, setLastTalk] = useState(null);
   // Practice and path counts for the numbers band. Both ship from the backend,
   // so they come off the two catalogue requests this page already makes.
   const [counts, setCounts] = useState({});
@@ -320,12 +319,6 @@ export default function Landing() {
         setStreak(data.streak || 0);
         setCounts((c) => ({ ...c, practices: (data.techniques || []).length }));
       })
-      .catch(() => {});
-    // A fourth request on the home screen, for one card. It is deliberately
-    // the last one fired and it fails silently: if it never lands, the page
-    // is exactly what it was before, minus a nudge.
-    getChatHistory()
-      .then((data) => setLastTalk((data.sessions || [])[0] || null))
       .catch(() => {});
     getPaths()
       .then((data) => {
@@ -521,36 +514,6 @@ export default function Landing() {
         </section>
       )}
 
-      {/* The conversations were being kept from the day the companion shipped,
-          and a counsellor the resident invited could read them while the
-          resident had no way back to their own. This is the way back. Only the
-          most recent one, and only its opening line: a list of every bad night
-          on the screen you open first is not a feature. */}
-      {lastTalk && (
-        <section className="animate-slide-up stack-block" style={{ animationDelay: '240ms' }}>
-          <h2 className="home-section-title">What you said</h2>
-          <Link to="/talks" className="press card mt-4 block p-5">
-            <div className="flex items-center justify-between gap-3">
-              <span className="marginalia" style={{ color: 'var(--sec-home-deep)' }}>
-                Your talks with DP
-              </span>
-              <span className="text-xs text-[var(--color-muted)]">
-                <span className="num">{lastTalk.turns.length}</span>{' '}
-                {lastTalk.turns.length === 1 ? 'message' : 'messages'}
-              </span>
-            </div>
-            <p className="mt-2.5 line-clamp-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-              {lastTalk.turns.find((t) => t.role === 'user')?.content || 'You opened this one and did not say anything.'}
-            </p>
-            <span className="mt-3.5 inline-flex items-center gap-1.5 text-xs text-[var(--sec-home-deep)]">
-              Read them back
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
-          </Link>
-        </section>
-      )}
       </div>{/* /left column */}
 
       {/* The right-hand column on a laptop; the next blocks in the scroll on
