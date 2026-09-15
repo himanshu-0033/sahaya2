@@ -51,6 +51,23 @@ export function topicPhoto(topic) {
   return TOPIC_PHOTO[topic] || PHOTO.stillness;
 }
 
+// Seven articles over three topics put the same fountain pen on four cards in
+// a row once the home page started showing them side by side. So each article
+// gets its own, and the topic picture is the fallback for a new one.
+const ARTICLE_PHOTO = {
+  'the-inkblots-honestly': PHOTO.inkblot,
+  'why-a-long-exhale-works': PHOTO.water,
+  'which-technique-when': PHOTO.forest,
+  'what-a-score-means': PHOTO.tests,
+  'a-positive-screen-is-not-a-diagnosis': PHOTO.stillness,
+  'which-test-and-what-for': PHOTO.trail,
+  'where-your-answers-go': PHOTO.read,
+};
+
+export function articlePhoto(article) {
+  return ARTICLE_PHOTO[article.id] || topicPhoto(article.topic);
+}
+
 // The six grounding families. Reuses the set above rather than adding six more
 // files: these are 56px thumbnails beside a heading, not hero images, and a
 // dedicated photograph per family would be 400KB spent on something the eye

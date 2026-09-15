@@ -6,8 +6,11 @@ import LoadError from '../../shared/LoadError.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths, getChatHistory } from '../../shared/api.js';
-import { pathPhoto } from '../../shared/photos.js';
+import { pathPhoto, articlePhoto } from '../../shared/photos.js';
 import { accent } from '../../shared/accents.js';
+import { ARTICLES, TOPICS } from '../read/articles.js';
+import { SHELVES } from '../read/books.js';
+import { TEST_INDEX } from '../read/testIndex.js';
 
 // Home — redesigned with richer visual hierarchy.
 //
@@ -99,10 +102,13 @@ const SUBLINES = [
   'The streak is yours. No one else sees it.',
 ];
 
-function dailySubline() {
+function dayOfYear() {
   const d = new Date();
-  const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
-  return SUBLINES[dayOfYear % SUBLINES.length];
+  return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+}
+
+function dailySubline() {
+  return SUBLINES[dayOfYear() % SUBLINES.length];
 }
 
 // ─── Plate thumbnails ────────────────────────────────────────────────────────
@@ -230,6 +236,33 @@ function CarryOn({ path, progress }) {
   );
 }
 
+// ─── Worth reading: one essay as a pull-quote card ──────────────────────────
+//
+// The quote is a sentence from the essay itself, never a testimonial. There
+// are no user stories in this app to quote, and a named face saying the app
+// helped them would be invented.
+function StoryCard({ article }) {
+  const topic = TOPICS[article.topic] || TOPICS.calm;
+  return (
+    <Link to={`/read/${article.id}`} className="press block">
+      <span className="story-frame" style={{ '--ph-hue': topic.hue }}>
+        <span className="photo-head">
+          <img src={articlePhoto(article)} alt="" loading="lazy" decoding="async" />
+        </span>
+        <span className="story-quote">&ldquo;{article.pull}&rdquo;</span>
+      </span>
+      <span className="mt-3.5 flex flex-wrap gap-1.5">
+        <span className="story-chip" style={{ background: topic.deep }}>{topic.label}</span>
+        <span className="story-chip" style={{ background: 'var(--sec-read-deep)' }}>Reading</span>
+      </span>
+      <span className="font-display mt-3 block text-xl leading-snug sm:text-2xl">{article.title}</span>
+      <span className="mt-2 block text-xs text-[var(--color-muted)]">
+        <span className="num">{article.minutes}</span> min read
+      </span>
+    </Link>
+  );
+}
+
 // ─── Skeleton while loading ─────────────────────────────────────────────────
 function PrimarySkeleton() {
   return (
@@ -262,6 +295,9 @@ export default function Landing() {
   // The most recent conversation with DP, or null. Same silent-failure rule as
   // carryOn below it: if it never lands the page is what it was, minus a card.
   const [lastTalk, setLastTalk] = useState(null);
+  // Practice and path counts for the numbers band. Both ship from the backend,
+  // so they come off the two catalogue requests this page already makes.
+  const [counts, setCounts] = useState({});
 
   useEffect(() => {
     if (!session) return;
@@ -280,7 +316,10 @@ export default function Landing() {
       .then((data) => setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, error: null }))
       .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, error: err }));
     getGroundingCatalog()
-      .then((data) => setStreak(data.streak || 0))
+      .then((data) => {
+        setStreak(data.streak || 0);
+        setCounts((c) => ({ ...c, practices: (data.techniques || []).length }));
+      })
       .catch(() => {});
     // A fourth request on the home screen, for one card. It is deliberately
     // the last one fired and it fails silently: if it never lands, the page
@@ -296,6 +335,7 @@ export default function Landing() {
         const first = started[0];
         const path = first && (data.paths || []).find((p) => p.id === first.pathId);
         setCarryOn(path ? { path, progress: first } : null);
+        setCounts((c) => ({ ...c, paths: (data.paths || []).length }));
       })
       .catch(() => {});
   }, [session, profile]);
@@ -352,6 +392,23 @@ export default function Landing() {
   const first = profile.name.split(' ')[0];
   const greet = greeting();
   const sub = dailySubline();
+
+  // One essay leads each day and the next four sit beside it, so a week of
+  // opening the app walks the whole shelf.
+  const lead = dayOfYear() % ARTICLES.length;
+  const [featured, ...moreToRead] = Array.from({ length: 5 }, (_, i) => ARTICLES[(lead + i) % ARTICLES.length]);
+
+  // Every number here is counted from what the app holds. No users served, no
+  // outcomes: a prototype has none to report, and a mental-health app that
+  // rounds up is the last place anyone should find an invented statistic.
+  const stats = [
+    { value: TEST_INDEX.length, label: 'published questionnaires', to: '/assessments' },
+    { value: counts.practices, label: 'grounding practices', to: '/grounding' },
+    { value: counts.paths, label: 'guided paths', to: '/paths' },
+    { value: PLATE_COUNT, label: 'inkblot plates', to: '/inkblot-test' },
+    { value: ARTICLES.length, label: 'short essays', to: '/read' },
+    { value: SHELVES.reduce((n, s) => n + s.books.length, 0), label: 'books worth the time', to: '/read' },
+  ].filter((s) => s.value);
 
   return (
     <PageShell section="home" fit>
@@ -595,6 +652,66 @@ export default function Landing() {
 
       </div>{/* /right column */}
       </div>{/* /two-column wrapper */}
+
+      {/* ═══════════════════════════════════════════ Worth reading
+          Today's essay as a pull-quote card, and the next four as a list
+          beside it on a laptop, below it on a phone. */}
+      <section className="animate-slide-up stack-section" style={{ animationDelay: '270ms' }}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="home-section-title border-l-[3px] border-[var(--sec-read)] pl-3">Worth reading</h2>
+          <Link to="/read" className="text-xs text-[var(--sec-read-deep)] underline underline-offset-4">
+            See all
+          </Link>
+        </div>
+
+        <div className="mt-4 grid gap-7 lg:grid-cols-[1.55fr_1fr] lg:gap-6">
+          <StoryCard article={featured} />
+
+          <div>
+            <p className="marginalia">Also in Reading</p>
+            <ul className="mt-3 grid gap-3">
+              {moreToRead.map((a) => (
+                <li key={a.id}>
+                  <Link to={`/read/${a.id}`} className="press flex items-center gap-3.5">
+                    <span className="photo-head story-thumb" style={{ '--ph-hue': (TOPICS[a.topic] || TOPICS.calm).hue }}>
+                      <img src={articlePhoto(a)} alt="" loading="lazy" decoding="async" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium leading-snug">{a.title}</span>
+                      <span className="mt-1 block text-xs text-[var(--color-muted)]">
+                        <span className="num">{a.minutes}</span> min read
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ What is in here
+          Big numbers on a lavender band, each one a way in. */}
+      <section className="impact-band animate-slide-up stack-section" style={{ animationDelay: '300ms' }}>
+        <h2 className="font-display text-center text-[1.5rem] leading-tight text-[var(--sec-calm-deep)] sm:text-[1.9rem]">
+          Everything in here, counted
+        </h2>
+        <p className="mt-2 text-center text-sm text-[var(--color-ink)]">
+          Counted from what the app holds, not rounded up.
+        </p>
+        <ul className="mt-7 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3">
+          {stats.map((s) => (
+            <li key={s.label}>
+              <Link to={s.to} className="press block text-center">
+                <span className="impact-num num block">{s.value}</span>
+                <span className="mx-auto mt-2 block max-w-[9rem] text-sm leading-snug text-[var(--color-ink)]">
+                  {s.label}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="rule-fade stack-block" />
 

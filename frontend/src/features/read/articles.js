@@ -15,6 +15,11 @@
 //
 // `blocks` are a tiny format: { p } paragraph, { list } bullets, { note } an
 // aside that must not be missed, { practice } a link into a real technique.
+//
+// `pull` is the one sentence the home page sets in quotation marks. It is
+// copied word for word from the piece, and scripts/articles.test.mjs fails if
+// it ever stops being there: a quote the article does not contain is a
+// misquote.
 
 export const ARTICLES = [
   // ----------------------------------------------------------------- 1
@@ -25,6 +30,7 @@ export const ARTICLES = [
       'What Hermann Rorschach was actually measuring, why psychologists have argued about it for a century, and what ten symmetrical smudges can and cannot tell you.',
     topic: 'inkblot',
     minutes: 7,
+    pull: 'Content is the part everyone remembers and the part that matters least.',
     sections: [
       {
         heading: 'A perception experiment, not a personality decoder',
@@ -135,6 +141,7 @@ export const ARTICLES = [
       'Slow breathing is the one lever on your own nervous system that responds in seconds rather than weeks. Here is the mechanism, the evidence, and the parts that are weaker than people claim.',
     topic: 'calm',
     minutes: 6,
+    pull: 'Make the exhale longer than the inhale and you spend proportionally more time with the brake on.',
     sections: [
       {
         heading: 'Your heart rate is already following your breath',
@@ -222,6 +229,7 @@ export const ARTICLES = [
       'Thirteen practices is too many to choose from in a bad moment. This is the shorter version, sorted by what is actually happening to you.',
     topic: 'calm',
     minutes: 4,
+    pull: 'What you can reach for in a bad state is roughly what you have already rehearsed in a good one.',
     sections: [
       {
         heading: 'If your body is already racing',
@@ -296,6 +304,7 @@ export const ARTICLES = [
       'A number out of 21 is a summary of the last fortnight. It is not a diagnosis, not a verdict, and not a stable fact about you.',
     topic: 'tests',
     minutes: 5,
+    pull: 'A high score means the questions are worth taking to someone, and that is the whole of what it means.',
     sections: [
       {
         heading: 'What they were built for',
@@ -365,6 +374,7 @@ export const ARTICLES = [
       'The most misread thing about questionnaires: even an accurate screen is wrong more often than it is right, and the arithmetic behind that is worth ten minutes of your life.',
     topic: 'tests',
     minutes: 6,
+    pull: 'Treat it as a question rather than an answer.',
     sections: [
       {
         heading: 'Two numbers every screening test has',
@@ -441,6 +451,7 @@ export const ARTICLES = [
       'Twenty-one questionnaires is an unhelpful number to be offered when you are already not feeling well. Find the sentence below that sounds like yours.',
     topic: 'tests',
     minutes: 5,
+    pull: 'Twenty-one scores is not twenty-one times the insight.',
     sections: [
       {
         heading: 'Start with one',
@@ -528,6 +539,7 @@ export const ARTICLES = [
       'What DP Sahay AI stores when you finish a questionnaire, who can read it, and what happens if you answer one particular question.',
     topic: 'tests',
     minutes: 4,
+    pull: 'That is more than the result screen needs, and it is the kind of thing worth knowing before you answer rather than after.',
     sections: [
       {
         heading: 'What is kept',
@@ -593,7 +605,7 @@ export function getArticle(id) {
 // Topic drives the accent only. The reading section has one hue of its own;
 // these tint individual cards so a run of articles is scannable by subject.
 export const TOPICS = {
-  inkblot: { label: 'Inkblots', hue: 'var(--sec-inkblot)' },
-  calm: { label: 'Calm', hue: 'var(--sec-calm)' },
-  tests: { label: 'Questionnaires', hue: 'var(--sec-tests)' },
+  inkblot: { label: 'Inkblots', hue: 'var(--sec-inkblot)', deep: 'var(--sec-inkblot-deep)' },
+  calm: { label: 'Calm', hue: 'var(--sec-calm)', deep: 'var(--sec-calm-deep)' },
+  tests: { label: 'Questionnaires', hue: 'var(--sec-tests)', deep: 'var(--sec-tests-deep)' },
 };

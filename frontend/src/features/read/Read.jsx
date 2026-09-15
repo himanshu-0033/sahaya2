@@ -6,7 +6,7 @@ import { useSession } from '../auth/useSession.js';
 import { ARTICLES, TOPICS } from './articles.js';
 import { PAPERS, SHELVES } from './books.js';
 import { TEST_INDEX } from './testIndex.js';
-import { topicPhoto } from '../../shared/photos.js';
+import { articlePhoto } from '../../shared/photos.js';
 
 // The reading index.
 //
@@ -36,7 +36,7 @@ function ArticleCard({ article, index }) {
       style={{ animationDelay: `${Math.min(index, 8) * 45}ms`, '--ph-hue': topic.hue }}
     >
       <span className="photo-head">
-        <img src={topicPhoto(article.topic)} alt="" loading="lazy" decoding="async" />
+        <img src={articlePhoto(article)} alt="" loading="lazy" decoding="async" />
       </span>
       <div className="card-photo-body flex flex-1 flex-col">
       <div className="flex items-center gap-2.5">
@@ -225,7 +225,7 @@ export default function Read() {
       <section className="stack-section">
         <p className="marginalia">The questionnaires, one by one</p>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          What each one measures — and what it is bad at.
+          What each one measures, and what it is bad at.
         </p>
 
         <div className="mt-5 grid gap-6">

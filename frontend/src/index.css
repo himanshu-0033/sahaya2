@@ -1090,6 +1090,84 @@ p, li {
   color: var(--color-ink);
 }
 
+/* Worth reading: a photo and one sentence from the essay, side by side in a
+   frame washed with the topic hue. The quote sits on the pale end of the
+   wash, so ink on it clears AA whatever the hue. */
+.story-frame {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: 0.9rem;
+  padding: 0.55rem;
+  border-radius: 22px;
+  background: linear-gradient(120deg,
+    color-mix(in srgb, var(--ph-hue) 60%, #fff),
+    color-mix(in srgb, var(--ph-hue) 12%, #fff) 50%);
+}
+
+/* Unlayered, like .photo-head itself, so this beats its 16:7 band. */
+.story-frame > .photo-head {
+  aspect-ratio: auto;
+  min-height: 10rem;
+  border-radius: 16px;
+}
+
+.story-quote {
+  align-self: center;
+  padding: 0.75rem 0.75rem 0.75rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+@media (min-width: 640px) {
+  .story-frame > .photo-head { min-height: 12.5rem; }
+  .story-quote { font-size: 1rem; }
+}
+
+.story-chip {
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  color: #fff;
+}
+
+.photo-head.story-thumb {
+  width: 5.5rem;
+  aspect-ratio: 4 / 3;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+/* The numbers band. Soap-bubble circles are background layers rather than
+   elements, so there is nothing for a screen reader to trip over. Numbers
+   are the deep lavender, not white: white on this lavender is about 2:1. */
+.impact-band {
+  border-radius: 24px;
+  padding: 2.25rem 1.25rem 2.5rem;
+  background:
+    radial-gradient(circle at 5% 20%, rgb(255 255 255 / 0.55) 0 1.3rem, transparent 1.35rem),
+    radial-gradient(circle at 94% 14%, rgb(255 255 255 / 0.5) 0 1.6rem, transparent 1.65rem),
+    radial-gradient(circle at 33% 55%, rgb(255 255 255 / 0.4) 0 1rem, transparent 1.05rem),
+    radial-gradient(circle at 68% 80%, rgb(255 255 255 / 0.4) 0 1.2rem, transparent 1.25rem),
+    radial-gradient(circle at 96% 98%, rgb(255 255 255 / 0.5) 0 2.6rem, transparent 2.65rem),
+    radial-gradient(circle at 4% 93%, transparent 0 0.9rem, rgb(255 255 255 / 0.65) 0.95rem 1.25rem, transparent 1.3rem),
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--sec-calm) 34%, #fff),
+      color-mix(in srgb, var(--sec-calm) 22%, #fff));
+}
+
+.impact-num {
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--sec-calm-deep);
+}
+
+@media (min-width: 640px) {
+  .impact-num { font-size: 3.75rem; }
+}
+
 /* Checkin card gradient variant */
 .checkin-card-active {
   background: linear-gradient(135deg, rgba(111, 148, 125, 0.08) 0%, rgba(167, 156, 240, 0.06) 100%);
