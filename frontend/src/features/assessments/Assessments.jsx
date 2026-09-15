@@ -56,7 +56,7 @@ function InstrumentCard({ instrument, last, index }) {
     >
       <div className="flex items-start justify-between gap-4">
         {/* The acronym used to be the headline and the plain English the
-            footnote, so a shelf of these read as PHQ-9 / GAD-7 / UCLA-3 —
+            footnote, so a shelf of these read as PHQ-9 / GAD-7 / UCLA-3,
             a wall of codes to somebody who came here upset.
 
             Swapped, not renamed. Calling the PHQ-9 a "Depression Screener"
@@ -71,7 +71,7 @@ function InstrumentCard({ instrument, last, index }) {
         </div>
 
         {/* A previous result is shown as its band colour, not as a bare
-            number — 14 means nothing on its own, and "Moderate" in amber is
+            number, 14 means nothing on its own, and "Moderate" in amber is
             legible at a glance. */}
         {last && (
           <span
@@ -167,7 +167,7 @@ export default function Assessments() {
 
         {/* Two links rather than three paragraphs of caveat here. Someone who
             has come to take a questionnaire should not have to read an essay
-            first — but the two questions they will have afterwards are which
+            first, but the two questions they will have afterwards are which
             one to pick and how much to believe the number, so both are one
             tap away. */}
         <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
@@ -201,7 +201,7 @@ export default function Assessments() {
       {/* The set, above the shelf of twenty-one.
 
           A catalogue answers "which one do you want", and most people opening
-          this page cannot answer that — they want to know where they are, and
+          this page cannot answer that, they want to know where they are, and
           that takes three instruments, not one. So the common case gets a
           button and the library stays underneath it for everyone who does
           know what they came for. */}
@@ -216,7 +216,7 @@ export default function Assessments() {
             All three, in one sitting
           </span>
           <span className="mt-2 block text-sm leading-relaxed text-[var(--color-ink-soft)]">
-            {SET_IDS.map(labelFor).join(', ')} — low mood, worry and wellbeing. About six
+            {SET_IDS.map(labelFor).join(', ')}: low mood, worry and wellbeing. About six
             minutes, one set of results.
           </span>
         </span>

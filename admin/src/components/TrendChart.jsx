@@ -94,7 +94,7 @@ export default function TrendChart({ trend, selected, onSelect, height = 150 }) 
           ) : (
             <span className="text-[var(--color-muted)]">
               <span className="tabular-nums text-[var(--color-ink-soft)]">{total}</span> check-ins
-              over {shown.length} days — point at one, or arrow across
+              over {shown.length} days, point at one, or arrow across
             </span>
           )}
         </p>

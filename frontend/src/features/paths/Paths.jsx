@@ -168,7 +168,7 @@ export default function Paths() {
               <summary>Why a path asks you to take a questionnaire twice</summary>
               <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
                 Some paths suggest taking a questionnaire at the start and again at the end. That
-                is there to give you a before and after to look at — not to score the path or to
+                is there to give you a before and after to look at, not to score the path or to
                 score you. A week is a short time and these scales move several points on their
                 own, so a change is a snapshot of two particular days rather than evidence that
                 anything worked.

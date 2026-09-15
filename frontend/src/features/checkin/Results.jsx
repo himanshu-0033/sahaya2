@@ -202,7 +202,7 @@ export default function Results() {
           )}
 
           {/* What the ten plates came to, when they were part of this
-              sitting. Counts, not conclusions — the same line the inkblot
+              sitting. Counts, not conclusions, the same line the inkblot
               screen holds, and the reason it is a card of tallies rather than
               a reading. */}
           {inkblot && (
@@ -243,7 +243,7 @@ export default function Results() {
                     ))}
                   </div>
                   <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
-                    These are your own words, counted — not an interpretation of them.
+                    These are your own words, counted, not an interpretation of them.
                   </p>
                 </div>
               )}

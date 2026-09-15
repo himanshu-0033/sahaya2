@@ -42,7 +42,7 @@ export default class ErrorBoundary extends Component {
           <h1 className="font-display mt-3 text-3xl leading-tight">This screen stopped working.</h1>
 
           <p className="mt-5 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
-            The console failed to render — this is a fault in the console, not a statement about
+            The console failed to render. This is a fault in the console, not a statement about
             your residents.{' '}
             <strong className="font-medium text-[var(--color-ink)]">
               Do not read an empty screen as an empty caseload.

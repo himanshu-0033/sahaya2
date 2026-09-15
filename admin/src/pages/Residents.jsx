@@ -235,7 +235,7 @@ export default function Residents() {
       {visible.length === 0 ? (
         residents.length === 0 ? (
           /* An empty console is now the NORMAL first state, not a fault, and it
-             has to say so — otherwise the honest answer ("nobody has shared with
+             has to say so, otherwise the honest answer ("nobody has shared with
              you") is indistinguishable from a broken deployment, and every one
              of those becomes a support conversation. Two things get explained
              here because both surprise people: that access is granted by the
@@ -245,12 +245,12 @@ export default function Residents() {
             <h3 className="font-display text-xl">Nobody has shared with you yet.</h3>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
               Being on the counsellor allowlist lets you open this console. It does not give you
-              access to anyone's check-ins — each person decides that for themselves, from the
+              access to anyone's check-ins, each person decides that for themselves, from the
               &ldquo;Who can see this&rdquo; page in their own account.
             </p>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-muted)]">
               Ask the people you work with to add your address there. If you invite someone below,
-              they will appear here straight away — but once they sign in and create their real
+              they will appear here straight away, but once they sign in and create their real
               account, they are only visible again if they choose to share.
             </p>
           </div>
@@ -273,7 +273,7 @@ export default function Residents() {
 
                   {/* The reason, on the row. A risk screen brings its own
                       wording and outranks a check-in rule, so only one set
-                      shows — a row that lists everything at once is a row
+                      shows, a row that lists everything at once is a row
                       nobody reads. */}
                   {(r.riskScreen?.recent ? r.riskScreen.reasons : r.checkinFlagReasons)
                     ?.slice(0, 2)
@@ -296,7 +296,7 @@ export default function Residents() {
                       ? gap === 0
                         ? 'Today'
                         : `${gap}d ago`
-                      : '—'}
+                      : '-'}
                   </p>
                 </div>
 
@@ -304,7 +304,7 @@ export default function Residents() {
                   <p className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
                     Avg mood
                   </p>
-                  <p className="mt-0.5">{r.avgMoodRecent ?? '—'}</p>
+                  <p className="mt-0.5">{r.avgMoodRecent ?? '-'}</p>
                 </div>
 
                 <div className="w-20 text-xs text-[var(--color-ink-soft)]">
@@ -326,7 +326,7 @@ export default function Residents() {
       )}
 
       <p className="text-xs text-[var(--color-muted)]">
-        Exported files contain residents' personal details — store them the way your institution
+        Exported files contain residents' personal details. Store them the way your institution
         requires, and delete them when you no longer need them.
       </p>
     </div>

@@ -80,7 +80,7 @@ export default function DarkSignInHero({ onSignedIn }) {
 
       {/* The ambient field sits on the ground tone, under everything else.
           The feature butterfly is one layer up so it can pass in front of
-          the sculpture — but both are still beneath the content column,
+          the sculpture, but both are still beneath the content column,
           which carries its own z-index, so nothing ever drifts across the
           sign-in form or makes the copy harder to read. */}
       <Butterflies />

@@ -77,7 +77,7 @@ function RiskBanner({ risk, resident }) {
 
       <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
         A screening questionnaire says a conversation is needed. It does not say how likely
-        anything is — no instrument does that for an individual person
+        anything is: no instrument does that for an individual person
         {risk.totalFlagged > 1 && ` · ${risk.totalFlagged} flagged sittings in total`}.
       </p>
     </section>
@@ -187,7 +187,7 @@ function Field({ label, value }) {
   return (
     <div>
       <p className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">{label}</p>
-      <p className="mt-1 text-sm">{value || '—'}</p>
+      <p className="mt-1 text-sm">{value || '-'}</p>
     </div>
   );
 }
@@ -249,7 +249,7 @@ export default function ResidentDetail() {
           </div>
 
           {/* The cohort export has carried a handling warning for a while; this
-              one did not, and it is the more sensitive of the two — one named
+              one did not, and it is the more sensitive of the two, one named
               person's full history, their written words and the reasons they
               were flagged, in a file that leaves the console and lands in a
               downloads folder. */}
@@ -277,7 +277,7 @@ export default function ResidentDetail() {
             />
             <StatCard
               label="Avg mood, last 7"
-              value={data.summary.avgMoodRecent ?? '—'}
+              value={data.summary.avgMoodRecent ?? '-'}
               hint="Out of 5"
               tone="teal"
             />
@@ -369,7 +369,7 @@ export default function ResidentDetail() {
                             </span>
                           </td>
                           <td className="px-5 py-3 text-[var(--color-ink-soft)]">
-                            {(c.words || []).filter(Boolean).join(', ') || '—'}
+                            {(c.words || []).filter(Boolean).join(', ') || '-'}
                           </td>
                           <td className="px-5 py-3 text-xs text-[var(--color-flag-deep)]">
                             {c.flagged ? (c.flagReasons || []).join('; ') : ''}
@@ -447,7 +447,7 @@ export default function ResidentDetail() {
             <h3 className="font-display text-xl">Assessments</h3>
             {data.summary.lastAssessment && (
               <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-                Most recent: {data.summary.lastAssessment.instrumentName} —{' '}
+                Most recent: {data.summary.lastAssessment.instrumentName} ·{' '}
                 <span className="text-[var(--color-ink)]">
                   {data.summary.lastAssessment.band.label}
                 </span>
@@ -507,7 +507,7 @@ export default function ResidentDetail() {
                             </span>
                           )}
                           {/* The PHQ-9's unscored difficulty question. Same
-                              total, very different day — worth seeing next to
+                              total, very different day, worth seeing next to
                               the band rather than buried in the raw answers. */}
                           {a.followUp && (
                             <span className="mt-1 block text-xs text-[var(--color-muted)]">

@@ -7,7 +7,7 @@ export const MOOD_OPTIONS = [
 ];
 
 export function moodLabel(score) {
-  return MOOD_OPTIONS.find((m) => m.value === score)?.label || '—';
+  return MOOD_OPTIONS.find((m) => m.value === score)?.label || '-';
 }
 
 // Warm for low mood, teal for steady-and-up — matches the resident app's
@@ -19,7 +19,7 @@ export function moodColor(score) {
 }
 
 export function formatDate(iso) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });

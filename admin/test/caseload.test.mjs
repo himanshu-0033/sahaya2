@@ -66,7 +66,7 @@ assert.equal(asha.events[0].detail, 'ASQ');
 
 const bilal = rows.find((r) => r.id === 'r2');
 assert.equal(bilal.events[0].kind, 'checkin');
-assert.equal(bilal.events[0].detail, 'Low — tired, flat', 'mood label and words, not raw fields');
+assert.equal(bilal.events[0].detail, 'Low · tired, flat', 'mood label and words, not raw fields');
 
 // Someone known only from a flag list still gets a row, and is marked so the
 // page skips the fields it has no data for.

@@ -352,7 +352,7 @@ export default function GroundingPractice() {
             <div className="flex items-center gap-4">
               {/* Drawn only where the browser can actually speak, and sitting in
                   the header so it is reachable from the intro, mid-practice and
-                  after — muting has to be one tap from wherever you are. */}
+                  after, muting has to be one tap from wherever you are. */}
               {canSpeak && (
                 <button
                   type="button"
@@ -443,7 +443,7 @@ export default function GroundingPractice() {
             </div>
 
             <Button className="mt-8" onClick={start}>
-              Start — {formatDuration(technique.seconds)}
+              Start · {formatDuration(technique.seconds)}
             </Button>
 
             <div className="stack-section">
@@ -518,7 +518,7 @@ export default function GroundingPractice() {
               onClick={() => stop(false)}
               className="press stack-section text-xs text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
             >
-              Stop here — that still counts
+              Stop here. That still counts
             </button>
           </div>
         )}
@@ -609,7 +609,7 @@ export default function GroundingPractice() {
 
             <footer className="stack-section flex items-center justify-between gap-4 border-t border-[var(--color-ink)]/8 pt-5">
               <p className="text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
-                DP Sahay AI records that you practised and how settled you said you felt — never a score.
+                DP Sahay AI records that you practised and how settled you said you felt. Never a score.
               </p>
               <CrisisContacts variant="link" />
             </footer>

@@ -76,7 +76,7 @@ export function buildCaseload({
     ensure(f.residentId, f.residentName).events.push({
       kind: 'checkin',
       date: f.date,
-      detail: `${moodLabel(f.mood)} — ${(f.words || []).join(', ')}`,
+      detail: `${moodLabel(f.mood)} · ${(f.words || []).join(', ')}`,
       reasons: f.flagReasons || [],
     });
   }

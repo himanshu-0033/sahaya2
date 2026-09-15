@@ -167,7 +167,7 @@ export default function InkblotTest() {
             <p>
               The ten original Rorschach plates, one at a time, in the order they were published
               in. For each, write or say what it looks like to you. There is no right answer and
-              nothing to get through quickly — most people take ten to fifteen minutes.
+              nothing to get through quickly: most people take ten to fifteen minutes.
             </p>
             <p>You can skip any plate, and you can say more than one thing about a plate.</p>
           </div>
@@ -204,7 +204,7 @@ export default function InkblotTest() {
             className="press mt-8 w-full rounded-full py-4 font-medium text-[#07080a] transition-all duration-200 disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
             style={plates.length ? { background: 'var(--sec-inkblot)' } : undefined}
           >
-            Begin — ten plates
+            Begin · ten plates
           </button>
 
           <div className="mt-6 text-center">
@@ -272,7 +272,7 @@ export default function InkblotTest() {
 
             {plateTyped && !plateUsable && (
               <p className="mt-3 w-full text-sm text-[var(--color-ink-soft)]">
-                Say it in a word or two — &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
+                Say it in a word or two: &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
                 written now cannot be read back to you. Clearing the box skips this plate.
               </p>
             )}
@@ -365,7 +365,7 @@ export default function InkblotTest() {
                 ))}
               </div>
               <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
-                These are your own words, counted — not an interpretation of them.
+                These are your own words, counted, not an interpretation of them.
               </p>
             </div>
           )}

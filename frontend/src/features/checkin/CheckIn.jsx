@@ -75,7 +75,7 @@ function Stages({ current }) {
         ))}
       </div>
       <p className="marginalia mt-3">
-        {stages[current]} — step {current + 1} of {stages.length}
+        {stages[current]} · step {current + 1} of {stages.length}
       </p>
     </div>
   );
@@ -257,7 +257,7 @@ export default function CheckIn() {
           {platesError && plates.length === 0 && (
             <div className="mt-8">
               <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                The plates did not load. Today is saved and your three ranges are recorded —
+                The plates did not load. Today is saved and your three ranges are recorded,
                 only this last part is missing.
               </p>
               <button
@@ -289,7 +289,7 @@ export default function CheckIn() {
                   <p className="marginalia">Last part</p>
                   <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
                     The ten original Rorschach plates, in your own words, typed or spoken. No
-                    options this time and nothing scored — the questionnaires asked you to pick
+                    options this time and nothing scored, the questionnaires asked you to pick
                     from a list, and this is the part where you get to say something they had no
                     box for. Skip any plate, and stop whenever you like.
                   </p>
@@ -328,7 +328,7 @@ export default function CheckIn() {
 
                 {plateTyped && !plateUsable && (
                   <p className="mt-3 w-full text-sm text-[var(--color-ink-soft)]">
-                    Say it in a word or two — &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
+                    Say it in a word or two: &ldquo;a bat&rdquo;, &ldquo;two faces&rdquo;. What is
                     written now cannot be read back to you. Clearing the box skips this plate.
                   </p>
                 )}
@@ -376,7 +376,7 @@ export default function CheckIn() {
                 {/* The exit. Everything before this is already saved, so
                     leaving costs nothing and pretending otherwise would be the
                     only dishonest thing on the screen. What has been typed so
-                    far is dropped rather than half-filed — a three-plate
+                    far is dropped rather than half-filed, a three-plate
                     Rorschach is not a shorter Rorschach, it is a different
                     thing. */}
                 <button
@@ -384,7 +384,7 @@ export default function CheckIn() {
                   onClick={goToThought}
                   className="press mt-3 w-full rounded-full py-3 text-sm text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink-soft)]"
                 >
-                  Stop here — take me to my thought for the day
+                  Stop here and take me to my thought for the day
                 </button>
               </div>
             </div>
@@ -449,7 +449,7 @@ export default function CheckIn() {
           {/* What the whole sitting is, laid out before the button rather than
               discovered one screen at a time. Three questionnaires and ten
               plates is twenty minutes, and that is a thing people are entitled
-              to know while they can still decide — especially since the tap
+              to know while they can still decide, especially since the tap
               below is the only part that has to happen. */}
           <div className="animate-slide-up mt-8 rounded-2xl border border-[var(--line-2)] bg-[var(--surface-1)] p-5" style={{ animationDelay: '180ms' }}>
             <p className="marginalia">Then, if you have the time</p>
@@ -457,7 +457,7 @@ export default function CheckIn() {
               <li className="flex gap-3">
                 <span className="num shrink-0 text-[var(--color-muted)]">1</span>
                 <span>
-                  PHQ-9, GAD-7 and WHO-5, one after another — low mood, worry and wellbeing.
+                  PHQ-9, GAD-7 and WHO-5, one after another: low mood, worry and wellbeing.
                   About six minutes.
                 </span>
               </li>
@@ -489,13 +489,13 @@ export default function CheckIn() {
           </button>
 
           {/* The check-in had no disclosure at all, which made it the only
-              data-collecting flow in the app that did not have one — and the
+              data-collecting flow in the app that did not have one, and the
               only one that feeds the flagging rule in backend/lib/logic.js.
               "Nobody is grading this" was true about tone and misleading about
               mechanism. This says what actually happens. */}
           <p className="mt-5 text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
             Saved to your account. Nobody else sees your mood, your answers or your words unless
-            you have invited a counsellor to follow along — you can do that, and undo it, from
+            you have invited a counsellor to follow along. You can do that, and undo it, from
             your account.
           </p>
         </div>

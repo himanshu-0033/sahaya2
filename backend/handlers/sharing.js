@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     // Sharing with yourself is a no-op that would read as a second viewer on
     // your own screen.
     if (email === normalizeEmail(user.email)) {
-      return res.status(400).json({ error: 'That is your own address — you can always see your own check-ins.' });
+      return res.status(400).json({ error: 'That is your own address. You can always see your own check-ins.' });
     }
 
     const sharedWith =

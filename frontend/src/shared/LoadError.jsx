@@ -73,7 +73,7 @@ export default function LoadError({ error, onRetry, retrying = false }) {
 
       {offline && (
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-          This is usually temporary — we&apos;ll keep trying. Nothing you have done is lost.
+          This is usually temporary. We&apos;ll keep trying. Nothing you have done is lost.
         </p>
       )}
 

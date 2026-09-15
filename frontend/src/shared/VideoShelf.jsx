@@ -68,7 +68,7 @@ function VideoCard({ video, accentName }) {
             style={{ background: alpha(base, 0.12) }}
           >
             <span className="px-4 text-center text-xs text-[var(--color-muted)]">
-              Preview unavailable — tap to open
+              Preview unavailable · tap to open
             </span>
           </div>
         ) : (
@@ -120,11 +120,16 @@ export default function VideoShelf({ videos, accentName, title = 'Guided version
       <p className="marginalia">{title}</p>
       <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink-soft)]">
         If you would rather be talked through it than read it. These are other people's videos on
-        YouTube — nothing loads until you press play.
+        YouTube. Nothing loads until you press play.
       </p>
+      {/* Every practice ships four, so this is a two-by-two grid. If a list
+          ever arrives odd, the last video takes the full row rather than
+          leaving a hole beside it. */}
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        {videos.map((video) => (
-          <VideoCard key={video.id} video={video} accentName={accentName} />
+        {videos.map((video, i) => (
+          <div key={video.id} className={videos.length % 2 === 1 && i === videos.length - 1 ? 'sm:col-span-2' : ''}>
+            <VideoCard video={video} accentName={accentName} />
+          </div>
         ))}
       </div>
     </section>

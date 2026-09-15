@@ -150,7 +150,7 @@ export default function TabBar() {
     <>
       {/* ---------------------------- mobile: fixed bottom bar ------------ */}
       {/* Lifted off the bottom edge and rounded, rather than a full-width
-          slab welded to it — the phone shape the reference for this is built
+          slab welded to it, the phone shape the reference for this is built
           around. The padding below it is the safe-area inset plus a little, so
           it clears the home indicator instead of sitting under it. */}
       <nav

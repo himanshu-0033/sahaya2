@@ -42,7 +42,7 @@ export const PATHS = [
     // points. Anything smaller is inside the instrument's own noise.
     mcid: 4,
     closingCaveat:
-      'A week is a short time. GAD-7 scores move by several points on their own — with sleep, ' +
+      'A week is a short time. GAD-7 scores move by several points on their own: with sleep, ' +
       'exams, illness, or how the last hour went. A change here is a snapshot of two particular ' +
       'days, not a verdict on the week or on you.',
     days: [
@@ -65,13 +65,13 @@ export const PATHS = [
     closesWith: 'ais-8',
     mcid: null,
     closingCaveat:
-      'Sleep varies enormously night to night for reasons that have nothing to do with practice — ' +
+      'Sleep varies enormously night to night for reasons that have nothing to do with practice: ' +
       'noise, heat, caffeine, what is happening tomorrow. Five nights is far too short to say ' +
       'anything about your sleep in general.',
     days: [
       { title: 'The long exhale', note: 'Four rounds and no more. Do it lying down the first time.', technique: '4-7-8-breathing' },
       { title: 'Head to toe', note: 'You are not fixing anything here. Just visiting each part and reporting back.', technique: 'body-scan' },
-      { title: 'Let the day out of your shoulders', note: 'Squeeze hard first — it is the only way to feel the letting go.', technique: 'progressive-muscle-relaxation' },
+      { title: 'Let the day out of your shoulders', note: 'Squeeze hard first: it is the only way to feel the letting go.', technique: 'progressive-muscle-relaxation' },
       { title: 'Lying still on purpose', note: 'This one needs a voice. Put the phone face down and follow the recording.', technique: 'nsdr' },
       { title: 'Back to the breath', note: 'Day one again, now that your body knows the shape of it.', technique: '4-7-8-breathing' },
     ],
@@ -109,7 +109,7 @@ export const PATHS = [
     mcid: null,
     closingCaveat:
       'How you treat yourself is a long habit and six days is not long. If the number barely moves, ' +
-      'that is expected and is not a failure — the practice is the point, not the score.',
+      'that is expected and is not a failure: the practice is the point, not the score.',
     days: [
       { title: 'Three sentences', note: 'Name that it hurts, remember you are not the only one, then say something kind. Most people stall on the third.', technique: 'self-compassion-break' },
       { title: 'Something steadier', note: 'Arms crossed, tap slowly. It is the posture of being held.', technique: 'butterfly-hug' },

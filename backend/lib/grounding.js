@@ -85,6 +85,7 @@ export const TECHNIQUES = [
       { id: 'EN2ta7Z4d3s', title: 'Guided Cyclic Sighing (5 minutes)', channel: 'RESPIRE' },
       { id: 'rBdhqBGqiMc', title: 'Reduce Anxiety & Stress with the Physiological Sigh', channel: 'Andrew Huberman' },
       { id: '33zRGVGepiw', title: 'Double Inhale, Long Exhale Breath', channel: 'Ally Boothroyd | Sarovara Yoga' },
+      { id: 'gquBInSi1Vo', title: 'The Physiological Sigh (aka Cyclic Sighing): instructions and a 5-minute session', channel: 'Elizabeth Borelli' },
     ],
   },
   {
@@ -97,7 +98,7 @@ export const TECHNIQUES = [
     speed: 'steady',
     bestFor: ['Before an exam', 'Focus', 'When you cannot sit still'],
     why:
-      'Four equal sides means there is nothing to decide and nothing to get wrong — which is ' +
+      'Four equal sides means there is nothing to decide and nothing to get wrong, which is ' +
       'most of the point. Counting occupies the part of your attention that would otherwise be ' +
       'running the worry, and the even rhythm pulls breathing down out of the top of the chest.',
     evidence: {
@@ -126,7 +127,8 @@ export const TECHNIQUES = [
     videos: [
       { id: 'aDLOazk_JVQ', title: 'Box Breathing | 5 Minutes | Guided Breathing for Calm & Focus', channel: 'Recovery.com' },
       { id: 'oN8xV3Kb5-Q', title: '5 Minutes Box Breathing Relaxation Exercise (Beginner Pace)', channel: 'Hands-On Meditation' },
-      { id: 'zq07gbFLCAs', title: 'Guided Box Breathing — 5 Minute Meditation (5-5-5-5)', channel: 'Feeling Healing' },
+      { id: 'zq07gbFLCAs', title: 'Guided Box Breathing: 5 Minute Meditation (5-5-5-5)', channel: 'Feeling Healing' },
+      { id: 'tEmt1Znux58', title: 'Box breathing relaxation technique: how to calm feelings of stress or anxiety', channel: 'Sunnybrook Hospital' },
     ],
   },
   {
@@ -140,7 +142,7 @@ export const TECHNIQUES = [
     bestFor: ['Lying awake', 'Winding down', 'Anger that will not drop'],
     why:
       'The exhale is twice the inhale, which is the part that does the work. The seven-count hold ' +
-      'is mostly there to force the ratio — it is very hard to rush an out-breath you have been ' +
+      'is mostly there to force the ratio: it is very hard to rush an out-breath you have been ' +
       'holding for seven seconds. Weil, who popularised it, is firm that four cycles is the ' +
       'ceiling when you are starting out.',
     evidence: {
@@ -150,7 +152,7 @@ export const TECHNIQUES = [
         'rate variability and lowers self-reported arousal. The specific 4-7-8 count is a ' +
         'popularised protocol rather than one with its own randomised trial.',
       citation:
-        'Weil, A. — Breathing: The Master Key to Self Healing; Zaccaro et al. (2018), Front Hum Neurosci 12:353',
+        'Weil, A., Breathing: The Master Key to Self Healing; Zaccaro et al. (2018), Front Hum Neurosci 12:353',
       url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6137615/',
     },
     pacer: {
@@ -163,12 +165,13 @@ export const TECHNIQUES = [
       ],
     },
     cautions:
-      'Four rounds is the whole practice — do not push for more early on. Sit or lie down the ' +
+      'Four rounds is the whole practice. Do not push for more early on. Sit or lie down the ' +
       'first few times; the long hold can make people light-headed.',
     videos: [
       { id: 'YRPh_GaiL8s', title: 'How To Perform the 4-7-8 Breathing Exercise', channel: 'Andrew Weil, M.D.' },
       { id: 'Egr8iGBg8Oc', title: '4-7-8 Breathing: Health Benefits & Demonstration', channel: 'Andrew Weil, M.D.' },
       { id: 'yHsE4z1gba0', title: 'Guided 4-7-8 Breathing for Anxiety | Feel Calm In 5 Minutes', channel: 'Ksenia Love' },
+      { id: 'MxNSWdD89qI', title: 'Guided 4-7-8 Breathing to help reduce overwhelm, anxiety and panic', channel: 'The Rambling Psychologist' },
     ],
   },
 
@@ -183,7 +186,7 @@ export const TECHNIQUES = [
     speed: 'fast',
     bestFor: ['Spiralling thoughts', 'Panic', 'Feeling unreal or far away'],
     why:
-      'Anxiety runs on things that are not in the room — what might happen, what someone meant, ' +
+      'Anxiety runs on things that are not in the room: what might happen, what someone meant, ' +
       'what you should have said. Naming what is actually here forces attention outward, and ' +
       'counting down gives it a finish line. Say the things out loud if you can.',
     evidence: {
@@ -191,14 +194,14 @@ export const TECHNIQUES = [
       claim:
         'Standard sensory grounding, taught across trauma and anxiety care. A small study in ' +
         'nursing students found the share reporting high test anxiety fell from 23% to 4% after ' +
-        'using it — encouraging, but small and uncontrolled.',
+        'using it: encouraging, but small and uncontrolled.',
       citation: 'Widely taught in CBT and trauma-informed care',
       url: 'https://therapist.com/disorders/anxiety/grounding-techniques-for-anxiety/',
     },
     steps: [
       { label: '5', prompt: 'things you can see', hint: 'Look properly. The scuff on the wall counts.', count: 5, seconds: 40 },
       { label: '4', prompt: 'things you can feel', hint: 'Chair under you, cloth on your arms, air on your face.', count: 4, seconds: 35 },
-      { label: '3', prompt: 'things you can hear', hint: 'Go for the quiet ones — a fan, traffic, your own breath.', count: 3, seconds: 30 },
+      { label: '3', prompt: 'things you can hear', hint: 'Go for the quiet ones: a fan, traffic, your own breath.', count: 3, seconds: 30 },
       { label: '2', prompt: 'things you can smell', hint: 'If nothing, name two smells you like.', count: 2, seconds: 25 },
       { label: '1', prompt: 'thing you can taste', hint: 'Or one good thing about today.', count: 1, seconds: 20 },
     ],
@@ -220,7 +223,7 @@ export const TECHNIQUES = [
     bestFor: ['Feeling watched or unsafe', 'After a shock', 'Feeling far away'],
     why:
       'When you are braced for something, your eyes narrow and your head stops moving. Turning ' +
-      'slowly and actually letting your gaze rest on things is the opposite signal — it is what ' +
+      'slowly and actually letting your gaze rest on things is the opposite signal: it is what ' +
       'a body does when it has already decided the room is fine. Do not force it; you are giving ' +
       'your nervous system time to check, not telling it to relax.',
     evidence: {
@@ -228,7 +231,7 @@ export const TECHNIQUES = [
       claim:
         'A core practice in Somatic Experiencing and other body-based trauma therapies. Taught ' +
         'widely by clinicians; the individual exercise has not been isolated in a trial.',
-      citation: 'Levine, P. — Somatic Experiencing; Schwartz, A. — The Complex PTSD Workbook',
+      citation: 'Levine, P., Somatic Experiencing; Schwartz, A., The Complex PTSD Workbook',
       url: 'https://www.youtube.com/watch?v=tS6w03X8d-8',
     },
     steps: [
@@ -240,7 +243,9 @@ export const TECHNIQUES = [
     ],
     videos: [
       { id: 'tS6w03X8d-8', title: 'Orienting Practice: How To Bring Safety To Your Nervous System', channel: 'Rebecca Tolin Mind-Body Coaching' },
-      { id: 'LffzIPZUuUg', title: 'Tap into a deep sense of safety — The Robin, with Dr. Arielle Schwartz', channel: 'Therapy in a Nutshell' },
+      { id: 'LffzIPZUuUg', title: 'Tap into a deep sense of safety: The Robin, with Dr. Arielle Schwartz', channel: 'Therapy in a Nutshell' },
+      { id: 'SdH9hKaclpM', title: '5-Minute Somatic Exercise: Orientation | Quick Grounding Technique', channel: 'MoonRise Filippa' },
+      { id: 'XGYh1wPpOLA', title: 'What is orienting, and why is it so important?', channel: 'Irene Lyon' },
     ],
   },
 
@@ -255,7 +260,7 @@ export const TECHNIQUES = [
     speed: 'fast',
     bestFor: ['In a lecture', 'On a bus', 'Anywhere you cannot be seen doing it'],
     why:
-      'The most portable one here — nobody can tell you are doing it. Pressure through the soles ' +
+      'The most portable one here: nobody can tell you are doing it. Pressure through the soles ' +
       'of your feet is a strong, unambiguous signal from the edge of your body, and attention ' +
       'goes to strong signals. It also quietly answers the question a panicking body is asking, ' +
       'which is roughly "where am I".',
@@ -276,8 +281,9 @@ export const TECHNIQUES = [
     ],
     videos: [
       { id: 'dSWT33VaZHg', title: 'Grounding Exercise: Press Your Feet Into the Ground', channel: 'April Linville' },
-      { id: 'Txbun5WbDBg', title: 'Meditation — Feet on the Floor | Grounding Technique', channel: 'Wellbeing Therapy Solutions' },
-      { id: 'dd45b53yeuQ', title: 'Ground Through the Feet — A Simple Grounding Practice', channel: 'GROUNDED&NOURISHED' },
+      { id: 'Txbun5WbDBg', title: 'Meditation: Feet on the Floor | Grounding Technique', channel: 'Wellbeing Therapy Solutions' },
+      { id: 'dd45b53yeuQ', title: 'Ground Through the Feet: A Simple Grounding Practice', channel: 'GROUNDED&NOURISHED' },
+      { id: 'c0-ehKBUJFw', title: 'Quick Somatic Grounding Exercise: Find Your Feet', channel: 'Travis Goodman' },
     ],
   },
   {
@@ -290,7 +296,7 @@ export const TECHNIQUES = [
     speed: 'steady',
     bestFor: ['Crying and cannot stop', 'Overwhelm', 'Comfort when nobody is around'],
     why:
-      'Cross your arms over your chest, hands on opposite shoulders, and tap alternately — slow, ' +
+      'Cross your arms over your chest, hands on opposite shoulders, and tap alternately: slow, ' +
       'about one tap a second. It is two things at once: steady left-right input, and the posture ' +
       'of being held. It was developed for hurricane survivors in Mexico in 1998 and spread ' +
       'because it works on people who cannot manage anything more complicated.',
@@ -317,7 +323,7 @@ export const TECHNIQUES = [
       { id: 'RurqWg2Bcuo', title: 'Mindful Practice: Butterfly Hug', channel: 'Cork Kerry Community Healthcare' },
       { id: 'KKJ7PNOzsHU', title: 'The Butterfly Hug: Stress Reduction Technique', channel: 'Healbright' },
       { id: '2p5RG3gXRgM', title: 'Regulate Your Nervous System with The Butterfly Hug', channel: 're-origin' },
-      { id: 'm8k5qjCaMj8', title: 'The Butterfly Hug Method — for trauma, anxiety or hyper-arousal', channel: 'Dr Kelly Watkins' },
+      { id: 'm8k5qjCaMj8', title: 'The Butterfly Hug Method: for trauma, anxiety or hyper-arousal', channel: 'Dr Kelly Watkins' },
     ],
   },
   {
@@ -343,7 +349,7 @@ export const TECHNIQUES = [
       url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2427027/',
     },
     steps: [
-      { label: 'Hands', prompt: 'Make fists. Squeeze hard — five seconds.', hint: 'Then drop them completely.', seconds: 30 },
+      { label: 'Hands', prompt: 'Make fists. Squeeze hard for five seconds.', hint: 'Then drop them completely.', seconds: 30 },
       { label: 'Arms', prompt: 'Pull your forearms up toward your shoulders. Tense.', seconds: 30 },
       { label: 'Shoulders', prompt: 'Lift both shoulders toward your ears. Hold.', hint: 'This is where most of it lives.', seconds: 35 },
       { label: 'Face', prompt: 'Scrunch your whole face. Eyes, jaw, forehead.', hint: 'It looks ridiculous. Nobody is watching.', seconds: 30 },
@@ -352,10 +358,12 @@ export const TECHNIQUES = [
       { label: 'Feet', prompt: 'Curl your toes under, hard. Then let go.', seconds: 30 },
       { label: 'All of it', prompt: 'Sit still. Notice which parts are heavier than before.', hint: 'No need to do anything about the ones that are not.', seconds: 60 },
     ],
-    cautions: 'Skip any group that is injured or painful — go around it rather than through it.',
+    cautions: 'Skip any group that is injured or painful. Go around it rather than through it.',
     videos: [
       { id: '8pT_gHcgPd8', title: '5 Minutes Progressive Muscle Relaxation Meditation', channel: 'Happier TV' },
       { id: 'utGa6rqzs3g', title: 'Mindful Breathing: Progressive Muscle Relaxation', channel: 'American Lung Association' },
+      { id: '2IJUD-e14FY', title: 'Guided Progressive Muscle Relaxation', channel: 'Hospital for Special Surgery' },
+      { id: '1nZEdqcGVzo', title: 'How to do Progressive Muscle Relaxation', channel: 'Therapist Aid' },
     ],
   },
   {
@@ -367,7 +375,7 @@ export const TECHNIQUES = [
     speed: 'deep',
     bestFor: ['Winding down', 'Living entirely in your head', 'Trouble falling asleep'],
     why:
-      'Unlike the muscle release, you change nothing here — you just visit each part of yourself ' +
+      'Unlike the muscle release, you change nothing here: you just visit each part of yourself ' +
       'and report what is there. That distinction is the practice. Most of the benefit is in ' +
       'noticing a sensation without immediately deciding what to do about it.',
     evidence: {
@@ -392,20 +400,22 @@ export const TECHNIQUES = [
     videos: [
       { id: 'uqtIqCKjkuc', title: '10-Minute Body Scan Meditation', channel: 'Jess Yoga' },
       { id: 'v87BX0bJK8Y', title: 'NSDR Non Sleep Deep Rest | 10 Minute Yoga Nidra', channel: 'Yoga With Tim' },
+      { id: 'RUXyXnIOxtg', title: 'Guided meditation: Body scan', channel: 'Black Dog Institute' },
+      { id: 'dsmfIAyiois', title: '5 Min Guided Meditation Body Scan', channel: 'Candace Cabrera' },
     ],
   },
   {
     id: 'temperature',
     name: 'Cold water',
-    aka: 'TIPP — tip the temperature',
+    aka: 'TIPP: tip the temperature',
     family: 'body',
     tagline: 'Cold on your face. Thirty seconds. It is almost unfair how fast it works.',
     accent: 'sky',
     speed: 'fast',
     bestFor: ['Full panic', 'Rage', 'When nothing else is landing'],
     why:
-      'Cold water on the face — especially around the eyes and upper cheeks, while holding your ' +
-      'breath — triggers the mammalian dive reflex: heart rate drops, blood moves to the core. ' +
+      'Cold water on the face, especially around the eyes and upper cheeks, while holding your ' +
+      'breath, triggers the mammalian dive reflex: heart rate drops, blood moves to the core. ' +
       'It is a reflex, not a mood, which is why it still works when you are too far gone to ' +
       'concentrate on breathing. This is the emergency one.',
     evidence: {
@@ -414,22 +424,23 @@ export const TECHNIQUES = [
         'The T in DBT’s TIPP distress-tolerance skill. The dive reflex itself is well-established ' +
         'physiology; DBT as a whole has strong trial support, though the temperature skill has ' +
         'not been isolated in its own trial.',
-      citation: 'Linehan, M. — DBT Skills Training Manual (2nd ed., 2015)',
+      citation: 'Linehan, M., DBT Skills Training Manual (2nd ed., 2015)',
       url: 'https://www.youtube.com/watch?v=G8jJAvLEbiw',
     },
     steps: [
       { label: 'Get it', prompt: 'Cold water in a basin, or a cold pack, or a bottle from the fridge.', hint: 'Cold, not painful. No ice directly on skin.', seconds: 25 },
       { label: 'Breathe', prompt: 'Take a breath and hold it.', seconds: 10 },
-      { label: 'Dip', prompt: 'Cold on your face — eyes and upper cheeks. Hold about 30 seconds.', hint: 'Bend forward over the basin, or press the pack there.', seconds: 35 },
+      { label: 'Dip', prompt: 'Cold on your eyes and upper cheeks. Hold about 30 seconds.', hint: 'Bend forward over the basin, or press the pack there.', seconds: 35 },
       { label: 'Up', prompt: 'Come up. Breathe normally. Wait for it to land.', hint: 'Usually about twenty seconds.', seconds: 20 },
     ],
     cautions:
       'Do not use this if you have a heart condition, an eating disorder, low blood pressure, or take a beta ' +
-      'blocker — the dive reflex slows the heart, which is exactly the problem in those cases. Ask a doctor first.',
+      'blocker: the dive reflex slows the heart, which is exactly the problem in those cases. Ask a doctor first.',
     videos: [
       { id: 'G8jJAvLEbiw', title: 'How to Calm Down Fast with TIPP: "Tip Your Temperature"', channel: 'Dr. Kiki Fehling' },
       { id: 'Ku_s8hJRyyQ', title: 'The 30-Second Trick That Stops Panic Fast', channel: 'Doctor Ali Mattu' },
       { id: 'ZVHtjDgc_XU', title: 'Tip the Temperature: TIP DBT Skill', channel: 'DBT Skills from Experts' },
+      { id: 'VRWmzSts3H4', title: 'TIPP Therapy Skills: Temperature | Tools to Cool Emotions in Minutes', channel: 'Headspace' },
     ],
   },
 
@@ -444,8 +455,8 @@ export const TECHNIQUES = [
     speed: 'fast',
     bestFor: ['Rumination', 'The same thought on a loop', 'Trying to sleep'],
     why:
-      'Working memory is small and you only get one. A task that is genuinely a bit hard — not ' +
-      'boring, actually hard — occupies the same space the loop is running in. The point is not ' +
+      'Working memory is small and you only get one. A task that is genuinely a bit hard (not ' +
+      'boring, actually hard) occupies the same space the loop is running in. The point is not ' +
       'to get the answers right. Getting them slightly wrong works just as well.',
     evidence: {
       strength: 'clinical',
@@ -453,7 +464,7 @@ export const TECHNIQUES = [
         'Distraction and cognitive grounding are standard DBT distress-tolerance skills. The ' +
         'underlying working-memory competition is well established; the specific exercises are ' +
         'taught practice rather than individually trialled.',
-      citation: 'Linehan, M. — DBT Skills Training Manual (2nd ed., 2015)',
+      citation: 'Linehan, M., DBT Skills Training Manual (2nd ed., 2015)',
       url: 'https://www.youtube.com/watch?v=OoOtJV6NJUE',
     },
     steps: [
@@ -466,6 +477,7 @@ export const TECHNIQUES = [
       { id: '6lc72fOv57g', title: 'Counting Backwards Distraction Technique', channel: 'The Unstuck Initiative' },
       { id: 'OoOtJV6NJUE', title: 'Distress Tolerance: DBT Grounding and Distraction Techniques', channel: 'Psychotherapy Academy' },
       { id: 'NNYHFp33nuE', title: 'Grounding Techniques for Anxiety: 11 Practices to Try', channel: 'Priory' },
+      { id: 'E1GIg0tueWg', title: 'Anxiety Grounding Techniques: Finding Calm in Chaos', channel: 'American Academy of Pediatrics' },
     ],
   },
 
@@ -481,7 +493,7 @@ export const TECHNIQUES = [
     why:
       'Three moves, in order: name that this hurts, remember that suffering is not a personal ' +
       'defect, then say something kind. Most people manage the first two and stall on the third. ' +
-      'If it feels fake, that is normal and it still counts — you are practising a different ' +
+      'If it feels fake, that is normal and it still counts: you are practising a different ' +
       'reflex, not performing a feeling.',
     evidence: {
       strength: 'trial',
@@ -519,7 +531,7 @@ export const TECHNIQUES = [
     why:
       'Non-sleep deep rest is a guided body scan you do lying down, deliberately staying just the ' +
       'right side of awake. Unlike a nap it does not leave you groggy, and unlike scrolling it ' +
-      'actually returns something. Best done with audio — this one is a listen, not a read.',
+      'actually returns something. Best done with audio: this one is a listen, not a read.',
     evidence: {
       strength: 'trial',
       claim:
@@ -530,7 +542,7 @@ export const TECHNIQUES = [
     },
     steps: [
       { label: 'Lie down', prompt: 'Flat on your back if you can. Phone face down.', hint: 'Somewhere you will not be interrupted for twenty minutes.', seconds: 40 },
-      { label: 'Press play', prompt: 'Start one of the guided recordings below and follow the voice.', hint: 'The app cannot do this part — it needs someone talking.', seconds: 30 },
+      { label: 'Press play', prompt: 'Start one of the guided recordings below and follow the voice.', hint: 'The app cannot do this part. It needs someone talking.', seconds: 30 },
       { label: 'Stay awake', prompt: 'If you drift off, that is fine. Aim to stay just awake.', seconds: 30 },
     ],
     videos: [

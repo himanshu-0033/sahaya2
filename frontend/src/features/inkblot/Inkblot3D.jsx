@@ -140,7 +140,7 @@ function Plane({ rotateY = 0 }) {
 
         {/* Mirrored about y=115 and vertically compressed, the way a
             reflection foreshortens on a glossy floor. The mask sits on an
-            outer group so its coordinates stay in untransformed user space —
+            outer group so its coordinates stay in untransformed user space,
             SVG resolves mask after an element's own transform. */}
         <g mask="url(#m-reflect)">
           <g transform="translate(0,161) scale(1,-0.4)" opacity="0.5">

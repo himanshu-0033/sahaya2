@@ -37,7 +37,7 @@ function Metric({ label, value, hint, tone = 'default', visual, onClick, active 
     <>
       <p className="label-eyebrow">{label}</p>
       {/* The slot keeps its height whether or not there is a visual in it, and
-          whether that visual is a ring or a sparkline — otherwise the five
+          whether that visual is a ring or a sparkline, otherwise the five
           figures along the rail sit at five slightly different heights. */}
       <div className="mt-2 flex items-end justify-between gap-3">
         <p className={`font-display text-3xl leading-none tabular-nums ${toneClass}`}>{value}</p>
@@ -71,7 +71,7 @@ function Metric({ label, value, hint, tone = 'default', visual, onClick, active 
           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100'
         }`}
       >
-        {active ? 'Filtering — clear' : 'Filter the list'}
+        {active ? 'Filtering · clear' : 'Filter the list'}
       </span>
     </button>
   );
@@ -181,7 +181,7 @@ export default function Dashboard() {
         <div className="mt-6 rounded-2xl border border-[var(--color-lavender)]/30 bg-[var(--color-lavender-soft)] px-6 py-5">
           <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
             These figures cover the people who have shared their account with you, and right now
-            that is nobody — so everything below reads zero. This is not an error. Ask the people
+            that is nobody, so everything below reads zero. This is not an error. Ask the people
             you work with to add your address from &ldquo;Who can see this&rdquo; in their own
             account.
           </p>
@@ -253,7 +253,7 @@ export default function Dashboard() {
                 onClick={() => setDay(null)}
                 className="cursor-pointer rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-[11px] text-[var(--color-lavender-deep)] transition-colors hover:bg-[var(--color-lavender)]/25"
               >
-                Showing {formatDate(day)} — clear ✕
+                Showing {formatDate(day)} · clear ✕
               </button>
             )}
           </div>
@@ -293,7 +293,7 @@ export default function Dashboard() {
           <p className="mt-4 text-[11px] leading-relaxed text-[var(--color-muted)]">
             {moodTotal === 0
               ? 'No check-ins in this window.'
-              : `${moodTotal} check-ins — ${lowShare}% of them Heavy or Low.`}
+              : `${moodTotal} check-ins, and ${lowShare}% of them Heavy or Low.`}
           </p>
         </section>
       </div>
@@ -470,7 +470,7 @@ export default function Dashboard() {
           The console has warned counsellors to handle exports carefully for a
           while. A warning is a request; this is a record. It is shown rather
           than merely written, because an audit log nobody can read protects
-          nobody — and being visible is most of what makes it work.
+          nobody, and being visible is most of what makes it work.
 
           Collapsed, not hidden: it is a thing a counsellor consults, not
           something they read every morning, and <details> carries the

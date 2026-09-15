@@ -308,7 +308,7 @@ export const INSTRUMENTS = [
     wordingVerified: false,
     crisisItems: [0, 1, 2, 3],
     crisisMessage:
-      'You answered yes to at least one of these. Thank you for saying so — it is the hardest thing on this whole app to answer honestly. Please talk to someone today: a counsellor, someone you trust, or one of these numbers.',
+      'You answered yes to at least one of these. Thank you for saying so. It is the hardest thing on this whole app to answer honestly. Please talk to someone today: a counsellor, someone you trust, or one of these numbers.',
     items: [
       { text: 'In the past few weeks, have you wished you were dead?' },
       { text: 'In the past few weeks, have you felt that you or your family would be better off if you were dead?' },
@@ -330,12 +330,12 @@ export const INSTRUMENTS = [
       {
         max: 0,
         label: 'No screen triggered',
-        note: 'You answered no to all four. Nothing here needs acting on today — and this screen is here any time that changes.',
+        note: 'You answered no to all four. Nothing here needs acting on today, and this screen is here any time that changes.',
       },
       {
         max: 4,
         label: 'Positive screen',
-        note: 'At least one yes. This is not a diagnosis and it is not a verdict on you — it means the right next step is a conversation with a counsellor, soon.',
+        note: 'At least one yes. This is not a diagnosis and it is not a verdict on you. It means the right next step is a conversation with a counsellor, soon.',
       },
     ],
   },
@@ -366,7 +366,7 @@ export const INSTRUMENTS = [
     minutes: 2,
     scale: 'cssrs',
     license:
-      '© Research Foundation for Mental Hygiene, Inc. Free for non-profit, healthcare and research use — but permission must be requested from the Columbia Lighthouse Project (cssrs.columbia.edu) first',
+      '© Research Foundation for Mental Hygiene, Inc. Free for non-profit, healthcare and research use, but permission must be requested from the Columbia Lighthouse Project (cssrs.columbia.edu) first',
     citation: 'Posner et al. (2011), Am J Psychiatry 168(12):1266-77',
     // WITHHELD. The note above this instrument has said "do that before this
     // goes near real students" since it was written; the audience is now people
@@ -388,7 +388,7 @@ export const INSTRUMENTS = [
     reportsBandOnly: true,
     crisisItems: [0, 1, 2, 3, 4, 5],
     crisisMessage:
-      'You answered yes to at least one of these. Thank you for saying so. Please talk to someone today — a counsellor, someone you trust, or one of these numbers.',
+      'You answered yes to at least one of these. Thank you for saying so. Please talk to someone today: a counsellor, someone you trust, or one of these numbers.',
     items: [
       { text: 'In the past month, have you wished you were dead or wished you could go to sleep and not wake up?' },
       { text: 'In the past month, have you actually had any thoughts of killing yourself?' },
@@ -421,7 +421,7 @@ export const INSTRUMENTS = [
       {
         when: [{ items: [0, 1] }],
         label: 'Low risk',
-        note: 'Thoughts, without a plan or intent behind them. That is worth telling a counsellor about — it is also very common and very survivable.',
+        note: 'Thoughts, without a plan or intent behind them. That is worth telling a counsellor about. It is also very common and very survivable.',
       },
       {
         when: [{ items: [2] }, { items: [5] }],
@@ -432,7 +432,7 @@ export const INSTRUMENTS = [
         when: [{ items: [3, 4] }, { items: [5], followUp: 1 }],
         crisisLevel: 'acute',
         label: 'High risk',
-        note: 'This level means intent, a worked-out plan, or something recent. Please do not wait for an appointment — talk to someone today, using the numbers on this screen.',
+        note: 'This level means intent, a worked-out plan, or something recent. Please do not wait for an appointment. Talk to someone today, using the numbers on this screen.',
       },
     ],
   },
@@ -449,7 +449,7 @@ export const INSTRUMENTS = [
     wordingVerified: true,
     crisisItem: 8,
     crisisMessage:
-      'You said you have had thoughts of being better off dead or of hurting yourself. Thank you for answering honestly. Please talk to someone about that — today if you can.',
+      'You said you have had thoughts of being better off dead or of hurting yourself. Thank you for answering honestly. Please talk to someone about that, today if you can.',
     items: [
       { text: 'Little interest or pleasure in doing things' },
       { text: 'Feeling down, depressed, or hopeless' },
@@ -552,7 +552,7 @@ export const INSTRUMENTS = [
       { max: 28, label: 'Low wellbeing', note: 'A score at or below 28 is the usual cue to screen for depression.' },
       { max: 50, label: 'Below average', note: 'Lower than typical. Small daily changes tend to move this most.' },
       { max: 75, label: 'Moderate', note: 'A fairly ordinary fortnight.' },
-      { max: 100, label: 'Good', note: 'A good stretch — worth noticing what helped.' },
+      { max: 100, label: 'Good', note: 'A good stretch, worth noticing what helped.' },
     ],
   },
   {
@@ -832,7 +832,7 @@ export const INSTRUMENTS = [
       { max: 5, label: 'No insomnia', note: 'Sleep looks broadly fine.' },
       { max: 9, label: 'Mild insomnia', note: 'A score of 6 or more meets the screening threshold. Sleep timing is usually the first thing to fix.' },
       { max: 15, label: 'Moderate insomnia', note: 'Enough disruption to be worth raising with a doctor.' },
-      { max: 24, label: 'Severe insomnia', note: 'Please talk to a doctor about this — insomnia this heavy responds well to treatment.' },
+      { max: 24, label: 'Severe insomnia', note: 'Please talk to a doctor about this. Insomnia this heavy responds well to treatment.' },
     ],
   },
   {
@@ -916,7 +916,7 @@ export const INSTRUMENTS = [
     name: 'PHQ-15',
     fullName: 'Patient Health Questionnaire-15 (Somatic Symptom Scale)',
     domain: 'Body',
-    blurb: 'Physical symptoms — the aches and nausea that stress often shows up as.',
+    blurb: 'Physical symptoms: the aches and nausea that stress often shows up as.',
     minutes: 3,
     scale: 'phq15',
     license: 'Public domain (Pfizer released the PHQ family for free use)',
@@ -943,7 +943,7 @@ export const INSTRUMENTS = [
       { max: 4, label: 'Minimal', note: 'Few physical symptoms reported.' },
       { max: 9, label: 'Low', note: 'Some symptoms. Common during a stressful stretch.' },
       { max: 14, label: 'Medium', note: 'Enough to be worth mentioning to a doctor as well as a counsellor.' },
-      { max: 30, label: 'High', note: 'Please have these checked medically — physical symptoms deserve physical care, whatever else is going on.' },
+      { max: 30, label: 'High', note: 'Please have these checked medically. Physical symptoms deserve physical care, whatever else is going on.' },
     ],
   },
   {
@@ -989,7 +989,7 @@ export const INSTRUMENTS = [
     ],
     bands: [
       { max: 1, label: 'Below cut-off', note: 'Below the usual screening threshold.' },
-      { max: 5, label: 'At or above cut-off', note: 'Two or more yeses is the point at which the authors recommend a proper assessment. Eating difficulties respond well to early help — please talk to someone.' },
+      { max: 5, label: 'At or above cut-off', note: 'Two or more yeses is the point at which the authors recommend a proper assessment. Eating difficulties respond well to early help. Please talk to someone.' },
     ],
   },
   {
@@ -1013,7 +1013,7 @@ export const INSTRUMENTS = [
     ],
     bands: [
       { max: 23, label: 'Below cut-off', note: 'Social media use looks unproblematic on this scale.' },
-      { max: 30, label: 'At or above cut-off', note: 'At or above the commonly used cut-off of 24. Worth a look at where the hours go — this is a screen, not a diagnosis of anything.' },
+      { max: 30, label: 'At or above cut-off', note: 'At or above the commonly used cut-off of 24. Worth a look at where the hours go. This is a screen, not a diagnosis of anything.' },
     ],
   },
   {
@@ -1046,7 +1046,7 @@ export const INSTRUMENTS = [
     bands: [
       { max: 2.49, label: 'Low', note: 'You are harder on yourself than you would ever be on a friend. That is a learnable skill, not a fixed trait.' },
       { max: 3.5, label: 'Moderate', note: 'A fairly typical mix of kindness and criticism toward yourself.' },
-      { max: 5, label: 'High', note: 'You tend to treat yourself decently when things go wrong — that is protective, and worth keeping.' },
+      { max: 5, label: 'High', note: 'You tend to treat yourself decently when things go wrong. That is protective, and worth keeping.' },
     ],
   },
 ];

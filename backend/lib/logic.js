@@ -22,10 +22,10 @@ const THOUGHTS = [
   'Whatever today felt like, it does not decide tomorrow.',
   'Noticing how you feel is already the hard part done.',
   'You are more than your hardest days.',
-  'It is fine to ask for a hand — that is not weakness.',
+  'It is fine to ask for a hand. That is not weakness.',
   'Some days are for surviving, not thriving. Both count.',
   'You showed up today. That matters more than it feels like.',
-  'Feelings pass through — they are weather, not climate.',
+  'Feelings pass through. They are weather, not climate.',
   'You are not behind. You are exactly where you are.',
   'Being gentle with yourself is not the same as giving up.',
 ];

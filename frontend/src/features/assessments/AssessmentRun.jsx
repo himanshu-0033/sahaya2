@@ -450,7 +450,7 @@ export default function AssessmentRun() {
             <div key={step} className="mt-5 flex min-h-0 flex-1 flex-col">
               {onFollowUp ? (
                 <p className="animate-rise text-xs tracking-wide text-[var(--sec-tests-deep)]">
-                  One last question — it is not scored
+                  One last question. It is not scored
                 </p>
               ) : (
                 instrument.prompt && (
@@ -635,7 +635,7 @@ export default function AssessmentRun() {
                 </ul>
                 <p className="mt-4 text-xs leading-relaxed text-[var(--color-ink-soft)]">
                   This result is saved to your account. If you have invited a counsellor to follow
-                  along, they can see it — otherwise nobody can.
+                  along, they can see it. Otherwise nobody can.
                 </p>
               </div>
             )}
@@ -646,8 +646,8 @@ export default function AssessmentRun() {
 
             <div className="mt-6 flex flex-col items-center gap-7 sm:flex-row sm:items-center sm:gap-9">
               {/* Some scales have no total worth showing. On the C-SSRS the
-                  sum genuinely misleads — two yeses at the top of the scale
-                  is a milder pattern than one yes near the bottom — so it
+                  sum genuinely misleads, two yeses at the top of the scale
+                  is a milder pattern than one yes near the bottom, so it
                   reports the level and nothing that looks like a quantity. */}
               {!result.reportsBandOnly && (
                 <ScoreRing
@@ -683,7 +683,7 @@ export default function AssessmentRun() {
                     >
                       {change.label}
                     </span>{' '}
-                    since {formatWhen(previous.createdAt)} — you were {previous.band.label.toLowerCase()} then.
+                    since {formatWhen(previous.createdAt)}, you were {previous.band.label.toLowerCase()} then.
                   </p>
                 )}
               </div>
@@ -714,7 +714,7 @@ export default function AssessmentRun() {
                   ))}
                 </div>
                 <p className="mt-5 text-xs leading-relaxed text-[var(--color-muted)]">
-                  A steady total can still hide one thin strand — that is what these three
+                  A steady total can still hide one thin strand: that is what these three
                   are for.
                 </p>
               </div>
@@ -730,7 +730,7 @@ export default function AssessmentRun() {
                 <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
                   Printed on the {result.instrumentName} form but kept out of the total on
                   purpose. Two people can reach the same score with one of them still
-                  working and the other unable to leave a room — this is the part that
+                  working and the other unable to leave a room, this is the part that
                   tells them apart.
                 </p>
               </div>
@@ -758,7 +758,7 @@ export default function AssessmentRun() {
             </Link>
 
             {/* Only reachable inside a set when the answers brought back
-                helplines — every other result in a set advances on its own.
+                helplines, every other result in a set advances on its own.
                 So the way on is offered, never taken automatically: whoever
                 is reading a crisis screen decides when they are done with
                 it. */}
@@ -816,7 +816,7 @@ export default function AssessmentRun() {
             </h1>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-[var(--color-ink-soft)]">
               Three ranges, side by side. Low mood, worry and wellbeing move
-              somewhat independently — which is the reason for taking all three
+              somewhat independently, which is the reason for taking all three
               rather than reading one of them as the whole picture.
             </p>
 

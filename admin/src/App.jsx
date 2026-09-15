@@ -54,7 +54,7 @@ export default function App() {
     function onSignedOut() {
       setSession(null);
       setAdmin(null);
-      setNotice('Your session expired — please sign in again.');
+      setNotice('Your session expired. Please sign in again.');
     }
     window.addEventListener(SIGNED_OUT_EVENT, onSignedOut);
     return () => window.removeEventListener(SIGNED_OUT_EVENT, onSignedOut);

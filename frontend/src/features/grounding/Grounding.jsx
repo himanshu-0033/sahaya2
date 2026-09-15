@@ -46,14 +46,17 @@ function MoodPicker({ moods, active, onPick }) {
 // places — the duration pill and the "done" stamp — which is enough to tell
 // a breath exercise from a kindness one without giving every card its own
 // coloured background.
-function TechniqueCard({ technique, last, index }) {
+// `wide` is set on the last card of a group with an odd count, so a row of two
+// never ends on a card beside an empty hole: 1 fills the row, 3 is a pair and a
+// full-width card, and every group reads as even.
+function TechniqueCard({ technique, last, index, wide = false }) {
   const { base, deep } = accent(technique.accent);
 
   return (
     <Link
       to={`/grounding/${technique.id}`}
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
-      className="animate-slide-up card press flex flex-col p-5"
+      className={`animate-slide-up card press flex flex-col p-5 ${wide ? 'sm:col-span-2' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -183,7 +186,7 @@ export default function Grounding() {
           {suggested && (
             <section className="stack-block">
               <p className="text-sm text-[var(--color-ink-soft)]">
-                Start with the first one — they are in the order most people find useful.
+                Start with the first one. They are in the order most people find useful.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {suggested.map((technique, i) => (
@@ -191,6 +194,7 @@ export default function Grounding() {
                     key={technique.id}
                     technique={technique}
                     index={i}
+                    wide={suggested.length % 2 === 1 && i === suggested.length - 1}
                     last={lastByTechnique.get(technique.id)}
                   />
                 ))}
@@ -224,6 +228,7 @@ export default function Grounding() {
                       key={technique.id}
                       technique={technique}
                       index={i}
+                      wide={list.length % 2 === 1 && i === list.length - 1}
                       last={lastByTechnique.get(technique.id)}
                     />
                   ))}
@@ -238,7 +243,7 @@ export default function Grounding() {
             <p className="mt-3 text-xs leading-relaxed text-[var(--color-muted)]">
               Grounding techniques help you get through a bad hour. They do not treat anxiety,
               depression or trauma, and they are not a substitute for talking to someone. Each
-              practice states its evidence honestly —{' '}
+              practice states its evidence honestly:{' '}
               <span className="text-[var(--color-ink-soft)]">{EVIDENCE_LABEL.trial}</span> means a
               randomised trial exists;{' '}
               <span className="text-[var(--color-ink-soft)]">{EVIDENCE_LABEL.clinical}</span>{' '}

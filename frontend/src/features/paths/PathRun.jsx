@@ -308,7 +308,7 @@ export default function PathRun() {
 
           <p className="stack-block pb-2 text-xs leading-relaxed text-[var(--color-muted)]">
             A path is a way to practise, not a course of treatment. Do the days in any order, skip
-            what does not help, and come back whenever — nothing here is locked and a missed day
+            what does not help, and come back whenever: nothing here is locked and a missed day
             costs you nothing.
           </p>
         </>

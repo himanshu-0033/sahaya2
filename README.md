@@ -76,8 +76,7 @@ window of the same browser), and it never ships resident-facing code.
   side. Every technique carries its evidence at the strength it actually
   has (`trial`, `mechanism` or `clinical`), and the ones with real
   contraindications — cold water, and both breath-hold patterns — carry
-  caution text that the UI shows *before* the start button. Each links two
-  to four guided YouTube videos; all 40 ids were checked against YouTube's
+  caution text that the UI shows *before* the start button. Each links four guided YouTube videos; all 52 ids were checked against YouTube's
   oEmbed endpoint, and nothing loads from YouTube until someone presses
   play.
 - **Inkblot test** (`/inkblot-test`): ten abstract symmetric plates, one at

@@ -58,12 +58,12 @@ export default function PageShell({
       {/* First thing in the document, so it is the first thing Tab reaches.
           Without it, a keyboard or switch user arriving on any page had to
           walk the masthead, the crisis button and every tab before reaching
-          the content — on every navigation, on every screen. Invisible until
+          the content, on every navigation, on every screen. Invisible until
           focused, which is the whole trick: it costs a sighted user nothing.
 
           It lives here rather than in App because this is where there is
           something to skip. The five full-bleed flows that do not use this
-          shell — a running practice, a questionnaire — have no navigation
+          shell, a running practice, a questionnaire, have no navigation
           above their content, so a skip link on them would jump over nothing. */}
       <a href="#main" className="skip-link">
         Skip to content

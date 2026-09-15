@@ -68,7 +68,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
       </main>
 
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-[var(--color-muted)]">
-        Flags are a rule-based nudge to start a conversation — not a diagnosis, and not a
+        Flags are a rule-based nudge to start a conversation, not a diagnosis, and not a
         substitute for talking to the person.
       </footer>
     </div>

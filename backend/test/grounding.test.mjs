@@ -61,7 +61,8 @@ for (const t of TECHNIQUES) {
   // Every video id is the 11-character YouTube shape and names its channel.
   // These were checked against YouTube's oEmbed endpoint by hand; this only
   // catches typos and half-pasted urls.
-  assert.ok(t.videos.length > 0, `${t.id} links at least one guided video`);
+  // Exactly four, so the practice page shows them as an even two-by-two grid.
+  assert.equal(t.videos.length, 4, `${t.id} links four guided videos`);
   for (const v of t.videos) {
     assert.match(v.id, /^[A-Za-z0-9_-]{11}$/, `${t.id} video id "${v.id}" is a bare YouTube id`);
     assert.ok(v.title && v.channel, `${t.id} video ${v.id} credits its channel`);
