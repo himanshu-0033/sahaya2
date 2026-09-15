@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
-import PartnerForm from './PartnerForm.jsx';
 import AppShowcase, { Arrow } from './AppShowcase.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import Logo from '../../shared/Logo.jsx';
@@ -113,7 +112,6 @@ const FOOTER = [
     links: [
       ['Your account', '/account'],
       ['Caregiver access', '/caregiver'],
-      ['For institutions', '#partner'],
     ],
   },
 ];
@@ -159,13 +157,13 @@ function Heading({ children, className = '' }) {
   );
 }
 
-// A corner of the product over the photograph, so the hero shows what the app
+// A corner of the product under the photograph, so the hero shows what the app
 // is as well as how it should feel. aria-hidden: it is illustration, and read
 // aloud it would sound like somebody's real conversation.
 function ChatPeek() {
   const bubble = 'max-w-[88%] rounded-2xl px-3.5 py-2 text-[0.8125rem] leading-snug';
   return (
-    <div className="w-card w-full max-w-[19rem] p-4" aria-hidden="true">
+    <div className="w-card w-full p-4 sm:p-5" aria-hidden="true">
       <div className="flex items-center gap-2">
         <Logo size={22} glow={false} />
         <span className="text-[0.9375rem] font-semibold">DP</span>
@@ -250,7 +248,6 @@ export default function Welcome({ onSignedIn }) {
               ['#tools', 'Free tools'],
               ['#trust', 'Why trust it'],
               ['#approach', 'Our approach'],
-              ['#partner', 'For institutions'],
             ].map(([href, label]) => (
               <a key={href} href={href} className="transition-colors hover:text-[var(--w-accent-deep)]">
                 {label}
@@ -341,7 +338,7 @@ export default function Welcome({ onSignedIn }) {
                 </button>
               </div>
             ) : (
-              <div className="relative mx-auto max-w-md lg:mr-0 lg:max-w-none">
+              <div className="mx-auto flex max-w-md flex-col gap-4 lg:max-w-none">
                 <img
                   src={PHOTO.hero}
                   alt=""
@@ -349,11 +346,9 @@ export default function Welcome({ onSignedIn }) {
                   height="1200"
                   decoding="async"
                   fetchPriority="high"
-                  className="aspect-[4/5] w-full rounded-[1.75rem] object-cover shadow-[0_40px_80px_-40px_rgba(10,79,44,0.55)] lg:max-h-[40rem]"
+                  className="aspect-[4/3] w-full rounded-[1.75rem] object-cover shadow-[0_40px_80px_-40px_rgba(10,79,44,0.55)]"
                 />
-                <div className="absolute right-4 bottom-4 left-4 flex sm:right-auto lg:bottom-10 lg:-left-10">
-                  <ChatPeek />
-                </div>
+                <ChatPeek />
               </div>
             )}
           </div>
@@ -492,27 +487,10 @@ export default function Welcome({ onSignedIn }) {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------- partner */}
-      {/* For the reader who is here on behalf of a college or an organisation
-          rather than for themselves. After the approach, because the first
-          thing a welfare officer asks is who sees the students' answers. */}
-      <section id="partner" className="scroll-mt-20 py-20 sm:py-24" style={{ background: 'var(--w-band)' }}>
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
-          <div className="lg:pt-6">
-            <Pill>For institutions</Pill>
-            <Heading className="mt-6">Bring it to your campus.</Heading>
-            <p className="mt-5 max-w-md text-[1rem] leading-relaxed" style={SOFT}>
-              Tell us about your college, hostel or organisation and how you would like to look
-              after the people in it. We will get in touch to talk it through.
-            </p>
-            <p className="mt-4 max-w-md text-[0.875rem] leading-relaxed" style={SOFT}>
-              Your counsellors see only the students who choose to share with them. That does not
-              change for an institution.
-            </p>
-          </div>
-          <PartnerForm />
-        </div>
-      </section>
+      {/* The "bring it to your campus" enquiry form sat here. It is off the
+          page for now; PartnerForm.jsx, /api/enquiries and the console's
+          Enquiries page are all still in place, so putting it back is this
+          one section. */}
 
       {/* ------------------------------------------------------------ footer */}
       <footer className="text-white" style={{ background: 'var(--w-forest)' }}>
