@@ -7,9 +7,10 @@ import { normalizeEmail } from '../../lib/sharing.js';
 //
 // Everyone who opens the panel, apart from the super admin, is asked once on
 // their first sign-in and the answer is kept here, on a record keyed by their
-// email. It is a designation shown on their dashboard and on the Team page; it
-// does not change which students they can see, which is still decided by
-// assignment and sharing (lib/sharing.js).
+// email. It decides what they see: a counsellor, the students assigned to them
+// or who invited them; a manager, how each counsellor's caseload is doing and no
+// individual student (see requireStudentAccess and requireTeamAccess in
+// lib/auth.js).
 export const ROLES = ['counsellor', 'manager'];
 
 export default async function handler(req, res) {
@@ -34,6 +35,7 @@ export default async function handler(req, res) {
   const existing = (await getStaff()).find((s) => s.id === email);
   const now = new Date().toISOString();
   await upsertRecord('staff', { id: email }, {
+    ...existing,
     id: email,
     email,
     name: admin.name || existing?.name || '',

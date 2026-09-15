@@ -186,9 +186,9 @@ export default function SignIn({ onSignedIn, notice }) {
               </form>
 
               <p className="mt-5 text-xs leading-relaxed text-[var(--color-muted)]">
-                Being on the allowlist opens the admin panel. On your first sign-in you choose
-                counsellor or manager. You see the students assigned to you or who invited you;
-                the super admin sees everyone.
+                The super admin adds who may sign in. On your first sign-in you choose counsellor
+                or manager: counsellors see their own students, managers see counsellor
+                performance.
               </p>
             </div>
           </div>

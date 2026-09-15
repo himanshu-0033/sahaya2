@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getCheckins, getResidents, getAssessments, appendRecord } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
-import { requireAdminUser } from '../../lib/auth.js';
+import { requireStudentAccess } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
 import { isValidEmail } from '../../lib/contact.js';
 import { normalizeEmail, residentsForAdmin, sharedWithList } from '../../lib/sharing.js';
@@ -9,7 +9,7 @@ import { normalizeEmail, residentsForAdmin, sharedWithList } from '../../lib/sha
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
 
-  const admin = await requireAdminUser(req, res);
+  const admin = await requireStudentAccess(req, res);
   if (!admin) return;
 
   if (req.method === 'POST') {

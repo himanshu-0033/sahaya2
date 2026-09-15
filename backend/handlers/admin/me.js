@@ -1,7 +1,5 @@
 import { applyCors } from '../../lib/cors.js';
 import { requireAdminUser } from '../../lib/auth.js';
-import { getStaff } from '../../lib/store.js';
-import { normalizeEmail } from '../../lib/sharing.js';
 
 // The console calls this right after sign-in so it can show "not on the
 // allowlist" up front instead of failing on every dashboard request.
@@ -17,10 +15,7 @@ export default async function handler(req, res) {
 
   // null until they have said whether they are a counsellor or a manager; the
   // panel asks on that first sign-in. The super admin is never asked.
-  const staff = admin.superAdmin
-    ? null
-    : (await getStaff()).find((s) => s.id === normalizeEmail(admin.email));
-  const role = admin.superAdmin ? 'super_admin' : staff?.role || null;
+  const role = admin.role || null;
 
   return res.status(200).json({
     admin: {

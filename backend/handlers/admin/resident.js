@@ -6,7 +6,7 @@ import {
   getChatSessions,
 } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
-import { requireAdminUser } from '../../lib/auth.js';
+import { requireStudentAccess } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
 import { assignedList, canAdminView, sharedWithList } from '../../lib/sharing.js';
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const admin = await requireAdminUser(req, res);
+  const admin = await requireStudentAccess(req, res);
   if (!admin) return;
 
   const { residentId } = req.query;

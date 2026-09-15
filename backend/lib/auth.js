@@ -1,5 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
+import { getStaff } from './store.js';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
@@ -136,6 +137,30 @@ export function counsellorAllowlist() {
   return parseAllowlist(process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS);
 }
 
+// Managers see counsellor performance and nothing about individual students;
+// counsellors see the students assigned to them or who invited them. An
+// allowlisted account that has not chosen yet is treated as a counsellor, which
+// is what every console account was before roles existed.
+export async function requireStudentAccess(req, res) {
+  const admin = await requireAdminUser(req, res);
+  if (!admin) return null;
+  if (admin.role === 'manager') {
+    res.status(403).json({ error: 'Managers see counsellor performance, not individual students.' });
+    return null;
+  }
+  return admin;
+}
+
+export async function requireTeamAccess(req, res) {
+  const admin = await requireAdminUser(req, res);
+  if (!admin) return null;
+  if (!admin.superAdmin && admin.role !== 'manager') {
+    res.status(403).json({ error: 'Only managers and the super admin see the team.' });
+    return null;
+  }
+  return admin;
+}
+
 export async function requireSuperAdmin(req, res) {
   const admin = await requireAdminUser(req, res);
   if (!admin) return null;
@@ -153,12 +178,19 @@ export async function requireAdminUser(req, res) {
   const user = await requireGoogleUser(req, res);
   if (!user) return null;
 
-  // The super admin opens the console whether or not the allowlist names them.
-  if (isSuperAdmin(user.email)) return { ...user, superAdmin: true };
+  // The super admin opens the panel whether or not the allowlist names them.
+  if (isSuperAdmin(user.email)) return { ...user, superAdmin: true, role: 'super_admin' };
 
-  return requireAllowlisted(user, res, {
-    raw: process.env.ADMIN_EMAILS || process.env.CAREGIVER_EMAILS,
-    roleLabel: 'counsellor',
-    envLabel: 'ADMIN_EMAILS',
+  // Everyone else is let in by the ADMIN_EMAILS allowlist or by the super admin
+  // adding them as staff from the Team page, and carries the role they chose on
+  // their first sign-in (null until then).
+  const email = (user.email || '').toLowerCase();
+  const staff = (await getStaff()).find((s) => s.id === email);
+  if (staff) return { ...user, superAdmin: false, role: staff.role || null };
+  if (counsellorAllowlist().includes(email)) return { ...user, superAdmin: false, role: null };
+  res.status(403).json({
+    error: `${user.email || 'This account'} does not have access to the admin panel yet. Ask the super admin to add this address on the Team page.`,
   });
+  return null;
+
 }

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { appendRecord, getEnquiries } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
-import { requireAdminUser } from '../lib/auth.js';
+import { requireSuperAdmin } from '../lib/auth.js';
 import { isValidEmail, isValidPhone } from '../lib/contact.js';
 import { clientKey, limiter } from '../lib/rate-limit.js';
 
@@ -10,8 +10,8 @@ import { clientKey, limiter } from '../lib/rate-limit.js';
 // account.
 //
 // POST is open, because the person filling it in has no session and should not
-// need one to ask a question. GET is the counsellor console, behind the same
-// allowlist as the rest of it. An enquiry is an organisation's contact details,
+// need one to ask a question. GET is the super admin only: an enquiry is an
+// institution's contact details, not something every counsellor needs. An enquiry is an organisation's contact details,
 // not a resident's data, so it is not behind anyone's share.
 //
 // The lists below are the values the form offers. They are stored as the words
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
   if (applyCors(req, res)) return;
 
   if (req.method === 'GET') {
-    const admin = await requireAdminUser(req, res);
+    const admin = await requireSuperAdmin(req, res);
     if (!admin) return;
     const all = await getEnquiries();
     return res.status(200).json({

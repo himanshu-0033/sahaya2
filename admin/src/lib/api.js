@@ -37,6 +37,15 @@ export function login({ identifier, password }) {
   });
 }
 
+// Super admin: who may sign in to the admin panel.
+export function addStaff(email) {
+  return request('/api/admin/staff', { method: 'POST', body: JSON.stringify({ email }) });
+}
+
+export function removeStaff(email) {
+  return request('/api/admin/staff', { method: 'DELETE', body: JSON.stringify({ email }) });
+}
+
 // Counsellor or manager, asked once on first sign-in.
 export function setRole(role) {
   return request('/api/admin/role', { method: 'POST', body: JSON.stringify({ role }) });

@@ -103,13 +103,24 @@ export default function App() {
           the sign-in and access-check screens are not routed, and they keep
           the document title set in index.html. */}
       <RouteChrome />
+      {/* What each role can open. The server enforces the same split; this only
+          keeps people from being sent to pages that would refuse them. */}
       <Routes>
-        <Route path="/" element={<Dashboard admin={admin} />} />
-        <Route path="/residents" element={<Residents />} />
-        <Route path="/residents/:residentId" element={<ResidentDetail />} />
-        <Route path="/enquiries" element={<Enquiries />} />
-        {admin.superAdmin && <Route path="/team" element={<Team />} />}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {admin.role === 'manager' ? (
+          <>
+            <Route path="/" element={<Team admin={admin} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Dashboard admin={admin} />} />
+            <Route path="/residents" element={<Residents />} />
+            <Route path="/residents/:residentId" element={<ResidentDetail />} />
+            {admin.superAdmin && <Route path="/enquiries" element={<Enquiries />} />}
+            {admin.superAdmin && <Route path="/team" element={<Team admin={admin} />} />}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        )}
       </Routes>
     </AdminShell>
   );

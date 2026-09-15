@@ -2,14 +2,21 @@ import { NavLink } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import ProfileMenu from './ProfileMenu.jsx';
 
-const navItems = [
-  { to: '/', label: 'Dashboard', end: true },
-  { to: '/residents', label: 'Residents' },
-  { to: '/enquiries', label: 'Enquiries' },
-];
+// What each role's navigation holds. A manager has one page: counsellor
+// performance. A counsellor has their dashboard and their students. The super
+// admin has everything.
+function navFor(admin) {
+  if (admin?.role === 'manager') return [{ to: '/', label: 'Counsellor performance', end: true }];
+  const items = [
+    { to: '/', label: 'Dashboard', end: true },
+    { to: '/residents', label: 'Students' },
+  ];
+  if (admin?.superAdmin) items.push({ to: '/enquiries', label: 'Enquiries' }, { to: '/team', label: 'Team' });
+  return items;
+}
 
 export default function AdminShell({ admin, onSignOut, children }) {
-  const items = admin?.superAdmin ? [...navItems, { to: '/team', label: 'Team' }] : navItems;
+  const items = navFor(admin);
   return (
     <div className="min-h-screen">
       {/* First stop for the keyboard, so a counsellor is not walked through

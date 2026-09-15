@@ -1,11 +1,12 @@
 import { getCheckins, getResidents, getAssessments, getChatSessions, getStaff } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
-import { counsellorAllowlist, requireSuperAdmin } from '../../lib/auth.js';
+import { counsellorAllowlist, requireTeamAccess } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
 import { sharedWithList } from '../../lib/sharing.js';
 
 // Every counsellor, and how the students each of them looks after are doing.
-// Super admin only.
+// The super admin and managers. A manager gets the figures and never a student's
+// name: the lists of students are left out of what they are sent.
 //
 // A counsellor is anyone on the console allowlist, and anyone a student has
 // shared with or been assigned to: the second group can exist without the
@@ -17,7 +18,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const admin = await requireSuperAdmin(req, res);
+  const admin = await requireTeamAccess(req, res);
   if (!admin) return;
 
   const [residents, checkins, assessments, chatSessions, staff] = await Promise.all([
@@ -34,7 +35,8 @@ export default async function handler(req, res) {
     summarizeResidents(residents, checkins, { assessments, chatSessions }).map((s) => [s.id, s]),
   );
 
-  const emails = new Set(allowlist);
+  const staffEmails = staff.map((s) => s.id);
+  const emails = new Set([...allowlist, ...staffEmails]);
   for (const r of residents) for (const e of sharedWithList(r)) emails.add(e);
 
   const counsellors = [...emails]
@@ -49,7 +51,9 @@ export default async function handler(req, res) {
         // Counsellor or manager, as they said on first sign-in; null if they
         // have not signed in yet.
         role: roleOf.get(email) || null,
-        canOpenConsole: allowlist.includes(email),
+        canOpenConsole: allowlist.includes(email) || staffEmails.includes(email),
+        // Added from the Team page, so the super admin can also take it away there.
+        addedFromPanel: staffEmails.includes(email),
         students: students.length,
         assigned: residents.filter((r) => r.assignedBy?.[email]).length,
         checkedInToday: students.filter((s) => s.lastCheckIn?.date === today).length,
@@ -68,8 +72,13 @@ export default async function handler(req, res) {
     })
     .sort((a, b) => Number(b.flaggedRecently) - Number(a.flaggedRecently) || (a.name || '').localeCompare(b.name || ''));
 
+  if (!admin.superAdmin) {
+    return res.status(200).json({ counsellors, unassignedCount: unassigned.length });
+  }
+
   return res.status(200).json({
     counsellors,
+    unassignedCount: unassigned.length,
     unassigned,
     students: residents
       .filter((r) => r.onboarded)

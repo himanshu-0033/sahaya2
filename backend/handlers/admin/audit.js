@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { getExportLog, appendExportLog, getResidents } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
-import { requireAdminUser } from '../../lib/auth.js';
+import { requireStudentAccess } from '../../lib/auth.js';
 import { canAdminView, normalizeEmail } from '../../lib/sharing.js';
 
 // A record of every CSV that left the console.
@@ -26,7 +26,7 @@ import { canAdminView, normalizeEmail } from '../../lib/sharing.js';
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
 
-  const admin = await requireAdminUser(req, res);
+  const admin = await requireStudentAccess(req, res);
   if (!admin) return;
 
   if (req.method === 'GET') {

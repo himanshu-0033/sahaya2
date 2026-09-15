@@ -28,6 +28,8 @@ const { default: teamHandler } = await import('../handlers/admin/team.js');
 const { default: meHandler } = await import('../handlers/admin/me.js');
 const { default: sharingHandler } = await import('../handlers/sharing.js');
 const { default: roleHandler } = await import('../handlers/admin/role.js');
+const { default: staffHandler } = await import('../handlers/admin/staff.js');
+const { default: overviewHandler } = await import('../handlers/admin/overview.js');
 
 function fakeRes() {
   return {
@@ -53,6 +55,8 @@ const SUPER = { sub: 'owner', email: 'himanshumalik0033@gmail.com' };
 const COUNSELLOR = { sub: 'c1', email: 'counsellor@example.test' };
 const OTHER = { sub: 'c2', email: 'other@example.test' };
 const STUDENT = { sub: 'student-1', email: 'student@example.test' };
+// Not on the allowlist: only the super admin can let this one in.
+const STAFFER = { sub: 's1', email: 'himanshumalikiitkgp28@gmail.com' };
 
 const now = new Date().toISOString();
 await appendRecord('residents', { id: 'student-1', name: 'Asha', email: STUDENT.email, onboarded: true, sharedWith: [], createdAt: now });
@@ -67,15 +71,39 @@ res = await call(meHandler, { as: COUNSELLOR });
 assert.equal(res.body.admin.superAdmin, false, 'an allowlisted counsellor is not a super admin');
 assert.equal(res.body.admin.role, null, 'and is asked their role on first sign-in');
 
+// --- who gets in: the allowlist, or the super admin adding them ---------
+res = await call(meHandler, { as: STAFFER });
+assert.equal(res.statusCode, 403, 'an address nobody added cannot open the panel');
+res = await call(staffHandler, { method: 'POST', as: COUNSELLOR, body: { email: STAFFER.email } });
+assert.equal(res.statusCode, 403, 'only the super admin adds staff');
+res = await call(staffHandler, { method: 'POST', as: SUPER, body: { email: STAFFER.email } });
+assert.equal(res.statusCode, 201);
+res = await call(meHandler, { as: STAFFER });
+assert.equal(res.statusCode, 200, 'once added, they are in');
+assert.equal(res.body.admin.role, null, 'and are asked their role');
+
 // --- counsellor or manager ----------------------------------------------
-res = await call(roleHandler, { method: 'POST', as: OTHER, body: { role: 'wizard' } });
+res = await call(roleHandler, { method: 'POST', as: STAFFER, body: { role: 'wizard' } });
 assert.equal(res.statusCode, 400, 'only counsellor or manager');
-res = await call(roleHandler, { method: 'POST', as: OTHER, body: { role: 'manager' } });
+res = await call(roleHandler, { method: 'POST', as: STAFFER, body: { role: 'manager' } });
 assert.equal(res.statusCode, 200);
-res = await call(meHandler, { as: OTHER });
+res = await call(meHandler, { as: STAFFER });
 assert.equal(res.body.admin.role, 'manager', 'the answer is kept');
 res = await call(roleHandler, { method: 'POST', as: SUPER, body: { role: 'counsellor' } });
 assert.equal(res.statusCode, 400, 'the super admin keeps the super admin role');
+
+// A manager sees counsellor performance and never a student.
+res = await call(teamHandler, { as: STAFFER });
+assert.equal(res.statusCode, 200, 'a manager reads the team');
+assert.equal(res.body.students, undefined, 'without the list of students');
+assert.equal(res.body.unassigned, undefined, 'or the names of students without a counsellor');
+assert.equal(typeof res.body.unassignedCount, 'number', 'only how many there are');
+for (const handler of [residentsHandler, overviewHandler]) {
+  res = await call(handler, { as: STAFFER });
+  assert.equal(res.statusCode, 403, 'a manager cannot open student records');
+}
+res = await call(residentHandler, { as: STAFFER, query: { residentId: 'student-2' } });
+assert.equal(res.statusCode, 403);
 
 // --- what each sees -------------------------------------------------------
 res = await call(residentsHandler, { as: SUPER });
@@ -89,7 +117,7 @@ assert.equal(res.body.residents[0]?.counsellors, undefined);
 res = await call(assignHandler, { method: 'POST', as: COUNSELLOR, body: { residentId: 'student-1', email: COUNSELLOR.email } });
 assert.equal(res.statusCode, 403, 'a counsellor cannot assign themselves a student');
 res = await call(teamHandler, { as: COUNSELLOR });
-assert.equal(res.statusCode, 403, 'nor read the team page');
+assert.equal(res.statusCode, 403, 'nor read the team page, which is for managers');
 
 res = await call(assignHandler, { method: 'POST', as: SUPER, body: { residentId: 'student-1', email: 'Counsellor@Example.test' } });
 assert.equal(res.statusCode, 200);
@@ -124,6 +152,12 @@ assert.equal(res.statusCode, 200);
 const stored = (await getResidents()).find((r) => r.id === 'student-1');
 assert.deepEqual(stored.sharedWith, [], 'unassigning takes the access away');
 assert.deepEqual(stored.assignedBy, {});
+
+// Taking staff access away closes the panel to them again.
+res = await call(staffHandler, { method: 'DELETE', as: SUPER, body: { email: STAFFER.email } });
+assert.equal(res.statusCode, 200);
+res = await call(meHandler, { as: STAFFER });
+assert.equal(res.statusCode, 403, 'removed staff are out');
 
 fs.rmSync(DATA_DIR, { recursive: true, force: true });
 console.log('super admin checks passed: sees everyone, assigns, and nobody else can');

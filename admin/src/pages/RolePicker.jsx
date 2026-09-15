@@ -3,13 +3,14 @@ import Logo from '../components/Logo.jsx';
 import { setRole } from '../lib/api.js';
 
 // Asked once, on someone's first sign-in to the admin panel: are they a
-// counsellor or a manager? The answer is their designation on the dashboard and
-// on the super admin's Team page. The super admin is never asked.
+// counsellor or a manager? It decides what they see. A counsellor gets their own
+// students; a manager gets counsellor performance and no individual student. The
+// super admin is never asked.
 const CHOICES = [
   {
     role: 'counsellor',
     title: 'Counsellor',
-    body: 'I talk to students, follow up on flags and risk screens, and keep in touch with the people assigned to me.',
+    body: 'I follow up with students. I will see the students assigned to me or who invited me: their check-ins, flags and risk screens.',
     icon: (
       <>
         <path d="M4 5h16v11H9l-5 4Z" />
@@ -20,7 +21,7 @@ const CHOICES = [
   {
     role: 'manager',
     title: 'Manager',
-    body: 'I oversee the team and the numbers: who is being looked after, who is not, and how the caseload is moving.',
+    body: "I oversee the counsellors. I will see how each counsellor's caseload is doing, and not individual students.",
     icon: (
       <>
         <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
@@ -71,8 +72,7 @@ export default function RolePicker({ admin, onChosen, onSignOut }) {
           Welcome{admin?.name && admin.name !== admin.email ? `, ${admin.name.split(' ')[0]}` : ''}. What is your role?
         </h1>
         <p className="mt-3 text-[0.9375rem] text-[var(--color-ink-soft)]">
-          This is how you will be shown to the super admin and on your dashboard. It does not change
-          which students you can see.
+          This decides what your dashboard shows, and how the super admin sees you on the team.
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
