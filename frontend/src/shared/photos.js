@@ -23,6 +23,8 @@ export const PHOTO = {
   forest: '/photos/forest.jpg',
   night: '/photos/night.jpg',
   trail: '/photos/trail.jpg',
+  // The landing page's hero: the forest photograph, re-cropped tall.
+  hero: '/photos/hero.jpg',
 };
 
 // The five paths ship from the backend, so their pictures are matched here by

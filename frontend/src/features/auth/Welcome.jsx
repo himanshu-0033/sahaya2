@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
+import PartnerForm from './PartnerForm.jsx';
+import AppShowcase, { Arrow } from './AppShowcase.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import Logo from '../../shared/Logo.jsx';
 import { PHOTO } from '../../shared/photos.js';
@@ -9,299 +11,179 @@ import { getSession } from './session.js';
 
 // The page a stranger lands on.
 //
-// Before this, sahaya2.vercel.app served the sign-in screen. It is a
-// good-looking door and it was the whole site: it never said what the app
-// does, never showed a feature, and asked for a Google account before it had
-// earned one. Everything a landing page is for had nowhere to go.
+// Rebuilt to the structure of a working Indian mental-health service's site:
+// a green announcement strip, a white header with one pill, a hero that leads
+// with the name beside a large photograph, the app's screens on coloured
+// cards, a grid of the free tools, one "not sure where to begin" card, the
+// numbers, the approach, and a dark green footer that carries the helplines.
 //
-// Built to the structure of the wedding-planner reference — sticky header with
-// one pill CTA, a hero with a stat row under it, centred section headers over
-// card grids, alternating cream and band backgrounds, a four-column footer.
-// That template is selling a service to someone who is happy; this is offering
-// a screening tool to someone who may not be. So the structure is copied and
-// the tone is not: no stock smiles, no five-star rows, no urgency.
+// Three things from that reference were left out on purpose. Its user counts
+// ("1,80,000+ people"): this app cannot measure that and should not claim it,
+// so the numbers here count what is in the box. Its star-rated testimonials:
+// inventing reviews for a mental-health tool is not a thing worth doing. And
+// its clinical-network claims, which are theirs and not this app's.
 //
-// The hero has since been rebuilt against a reference in the right trade — an
-// actual mental-health app's site rather than a wedding planner's. Three things
-// came from it. The hero shows the product mid-conversation instead of an
-// artefact from inside it. The ask sits under the sentence that earns it,
-// leaving the far column to the picture. And the instruments are named above
-// the fold, because provenance is what answers "why should I trust this" and it
-// was six sections down, below everything it should have been vouching for.
+// One ask per screen. The 1-minute check is the primary action because it
+// needs nothing from the visitor; signing in is always the secondary one, and
+// the header pill keeps it one tap away from anywhere on the page.
 //
-// Sign-in is unchanged and untouched. DarkSignInHero still owns the whole auth
-// flow; this page simply stands in front of it, and every call to action swaps
-// it in. Nothing about a working login was risked to add a landing page.
-
-const SERVICES = [
-  {
-    title: 'The daily check-in',
-    photo: PHOTO.stillness,
-    body: 'One tap says how today feels, and that is the whole obligation. It takes about thirty seconds and it keeps your streak.',
-    meta: 'About 30 seconds',
-    icon: (
-      <>
-        <circle cx="12" cy="12" r="8" />
-        <path d="M12 8v4l2.5 2.5" />
-      </>
-    ),
-  },
-  {
-    title: 'The real questionnaires',
-    photo: PHOTO.tests,
-    body: 'PHQ-9, GAD-7, WHO-5 and eighteen more. The published instruments a clinic uses, each with its citation and licence on the page.',
-    meta: 'Twenty-one, about 6 minutes for the core three',
-    icon: (
-      <>
-        <rect x="4" y="3" width="16" height="18" rx="2.5" />
-        <path d="M8.5 9h7M8.5 13h7M8.5 17h4" />
-      </>
-    ),
-  },
-  {
-    title: 'The ten plates',
-    photo: PHOTO.inkblot,
-    body: 'The original Rorschach plates, in your own words, typed or spoken. Nothing is scored. You get your own words counted back, never interpreted.',
-    meta: 'About 10 minutes',
-    icon: (
-      <>
-        <path d="M12 3c-4 3-6.5 6-6.5 9.5A6.5 6.5 0 0 0 12 19a6.5 6.5 0 0 0 6.5-6.5C18.5 9 16 6 12 3Z" />
-      </>
-    ),
-  },
-];
+// Sign-in is unchanged. GoogleSignInButton and PasswordAuthForm still own the
+// whole flow; every "sign in" on this page swaps them into the hero.
 
 const TOOLS = [
   {
-    title: 'Grounding, not meditation',
-    body: 'Thirteen practices for a bad ten minutes: cyclic sighing, temperature, body scan. Most are under three minutes.',
-    tags: ['Panicking', 'Anxious', 'Spiralling', 'Low'],
-    tone: 'rose',
+    title: 'Questionnaires',
+    body: 'PHQ-9, GAD-7, WHO-5 and eighteen more published screens, each with its citation and licence on the page.',
+    to: '/read/which-test-and-what-for',
+  },
+  {
+    title: 'Grounding practices',
+    body: 'Thirteen for a bad ten minutes: cyclic sighing, box breathing, 5-4-3-2-1, a body scan.',
+    to: '/read/which-technique-when',
+  },
+  {
+    title: 'Guided paths',
+    body: 'Five multi-day paths for background anxiety, sleep, a spinning head, self-compassion and exams.',
+    signIn: true,
+  },
+  {
+    title: 'Daily check-in',
+    body: 'One tap says how today feels. About thirty seconds, and it keeps your streak.',
+    signIn: true,
   },
   {
     title: 'DP, the companion',
-    body: 'A short conversation, not a form. It knows how you said today felt, and it says plainly that it is not a therapist.',
-    tags: ['Always one tap away', 'Crisis contacts built in'],
+    body: 'A short conversation, typed or spoken, with crisis contacts built in. Not a therapist.',
+    signIn: true,
   },
   {
-    title: 'Seven-day paths',
-    body: 'A small thing to do each day for a week, when one exercise is not the shape of the problem.',
-    tags: ['Sleep', 'Worry', 'Low mood'],
-    tone: 'rose',
-  },
-  {
-    title: 'A counsellor, if you want one',
-    body: 'You can invite someone to follow along, and you can undo it from your account at any time. Nobody sees anything until you do.',
-    tags: ['Off by default', 'Reversible'],
+    title: 'Reading',
+    body: 'Plain essays on what a score means, what it does not, and where your answers go.',
+    to: '/read',
   },
 ];
 
+const STARTING_POINTS = [
+  ['What the PHQ-9 measures', '/read/tests/phq-9'],
+  ['What the GAD-7 measures', '/read/tests/gad-7'],
+  ['Which test, and what for', '/read/which-test-and-what-for'],
+  ['Why a long exhale works', '/read/why-a-long-exhale-works'],
+];
+
+// Counts of what is in the box, never of people. See the note at the top.
 const STATS = [
-  { n: '21', label: 'Published instruments' },
-  { n: '13', label: 'Grounding practices' },
-  { n: '10', label: 'Rorschach plates' },
-  { n: '0', label: 'Ads, ever' },
+  { n: '21', label: 'published questionnaires' },
+  { n: '13', label: 'grounding practices' },
+  { n: '5', label: 'guided paths' },
+  { n: '0', label: 'ads, ever' },
 ];
 
 const FOOTER = [
   {
-    head: 'The app',
+    head: 'Free tools',
     links: [
-      ['Daily check-in', '/checkin'],
-      ['Questionnaires', '/assessments'],
-      ['The ten plates', '/inkblot-test'],
-      ['Grounding', '/grounding'],
+      ['1-minute check', '/check'],
+      ['Reading', '/read'],
+      ['Which test, and what for', '/read/which-test-and-what-for'],
+      ['Which technique, when', '/read/which-technique-when'],
+      ['Why a long exhale works', '/read/why-a-long-exhale-works'],
+    ],
+  },
+  {
+    head: 'Questionnaires',
+    links: [
+      ['PHQ-9 depression screen', '/read/tests/phq-9'],
+      ['GAD-7 anxiety screen', '/read/tests/gad-7'],
+      ['WHO-5 wellbeing index', '/read/tests/who-5'],
+      ['K10 distress scale', '/read/tests/k10'],
+      ['PSS-10 stress scale', '/read/tests/pss-10'],
     ],
   },
   {
     head: 'Read',
     links: [
-      ['Which test, and what for', '/read/which-test-and-what-for'],
+      ['What a score means', '/read/what-a-score-means'],
       ['A positive screen is not a diagnosis', '/read/a-positive-screen-is-not-a-diagnosis'],
       ['Where your answers go', '/read/where-your-answers-go'],
       ['The inkblots, honestly', '/read/the-inkblots-honestly'],
     ],
   },
   {
-    head: 'Who can see it',
+    head: 'About',
     links: [
       ['Your account', '/account'],
       ['Caregiver access', '/caregiver'],
+      ['For institutions', '#partner'],
     ],
   },
 ];
 
-// The hero visual: the product, mid-conversation.
-//
-// Three overlapped Rorschach plates stood here. They are the most distinctive
-// thing the app owns and also the least representative of using it — an
-// ambiguous clinical artefact, asking a stranger to decode something before
-// anything on the page has said what it is for. A conversation explains itself
-// on sight, and it is the part someone actually opens on a Tuesday. The plates
-// keep their own card in "What's inside", under the sentence that explains them.
-//
-// aria-hidden, and deliberately: this is a picture of the product, not a
-// transcript. Read aloud it would sound like somebody's real conversation, and
-// the paragraph beside it already says what the app does.
-function ChatMockup() {
-  const bubble = 'max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.8125rem] leading-relaxed';
+// Written out here rather than taken from CrisisContacts, because the footer
+// reads as a sentence with the numbers inline, not as the dialog's list.
+const FOOTER_LINES = [
+  ['Emergency', '112', null],
+  ['iCall (TISS)', '9152987821', 'Mon to Sat, 8am to 10pm'],
+  ['Vandrevala Foundation', '1860-2662-345', '24/7'],
+  ['AASRA', '9820466726', '24/7'],
+];
 
+const tel = (n) => `tel:${n.replace(/[^\d+]/g, '')}`;
+
+const PRIMARY =
+  'press inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-opacity hover:opacity-90';
+const SECONDARY =
+  'press inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] px-7 py-3.5 text-[0.9375rem] font-semibold transition-colors hover:bg-[var(--w-accent-wash)]';
+const GREEN_FILL = { background: 'var(--w-accent-deep)' };
+const GREEN_LINE = { borderColor: 'var(--w-accent-deep)', color: 'var(--w-accent-deep)' };
+const SOFT = { color: 'var(--w-ink-soft)' };
+
+function Pill({ children }) {
   return (
-    <div className="mx-auto w-full max-w-sm" aria-hidden="true">
-      <div className="w-card overflow-hidden">
-        <div
-          className="flex items-center gap-2.5 border-b px-5 py-3.5"
-          style={{ borderColor: 'var(--w-line)' }}
-        >
-          <Logo size={26} glow={false} />
-          <span className="font-display text-[1.05rem] leading-none">DP</span>
-
-          {/* The streak rides in the bar rather than on a pill overlapping the
-              card's lower rim, where it sat on top of the mic — and where, being
-              absolutely positioned past the right edge, it was one more thing
-              that could widen the document on a narrow screen. */}
-          <span
-            className="ml-auto flex items-center gap-1.5 rounded-full py-1 pr-2.5 pl-1"
-            style={{ background: 'var(--w-accent-wash)' }}
-          >
-            <span
-              className="flex h-4 w-4 items-center justify-center rounded-full"
-              style={{ background: 'var(--w-accent-deep)' }}
-            >
-              <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-            </span>
-            <span className="text-[0.6875rem] font-medium whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
-              4 days
-            </span>
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-2.5 px-5 py-5">
-          {/* What the check-in handed over — the two halves of the app, shown
-              joined up rather than described as separate features. */}
-          <div className="mb-1 flex flex-wrap items-center gap-1.5">
-            <span className="text-[0.6875rem]" style={{ color: 'var(--w-ink-soft)' }}>
-              You said
-            </span>
-            {['tired', 'flat'].map((w) => (
-              <span
-                key={w}
-                className="rounded-full px-2.5 py-0.5 text-[0.75rem]"
-                style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-              >
-                {w}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex justify-start">
-            <span className={bubble} style={{ background: 'var(--w-accent-wash)', color: 'var(--w-ink)' }}>
-              You wrote &lsquo;tired&rsquo; and &lsquo;flat&rsquo; today. What is sitting heaviest?
-            </span>
-          </div>
-
-          <div className="flex justify-end">
-            <span className={bubble} style={{ background: 'var(--w-accent-deep)', color: '#fff' }}>
-              exams mostly. and i am not sleeping
-            </span>
-          </div>
-
-          <div className="flex justify-start">
-            <span className={bubble} style={{ background: 'var(--w-accent-wash)', color: 'var(--w-ink)' }}>
-              That is a lot to hold at once. How long has the sleep been like this?
-            </span>
-          </div>
-        </div>
-
-        {/* The composer, mic included — you can say it out loud instead. */}
-        <div
-          className="flex items-center gap-2 border-t px-4 py-3"
-          style={{ borderColor: 'var(--w-line)' }}
-        >
-          <span
-            className="min-w-0 flex-1 truncate rounded-full border px-3.5 py-2 text-[0.75rem]"
-            style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink-soft)' }}
-          >
-            Say as much or as little as you like…
-          </span>
-          <span
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-            style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="9" y="3" width="6" height="11" rx="3" />
-              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0" />
-              <path d="M12 18v3" />
-            </svg>
-          </span>
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-function Ornament() {
-  return (
-    <div className="w-ornament" aria-hidden="true">
-      <svg viewBox="-14 -14 28 28" width="15" height="15" fill="var(--w-accent)">
-        <path d="M0,-11 C-5,-11 -8,-6 -6,-2 C-4,2 -9,4 -7,8 C-5,11 -2,10 0,12 Z" />
-        <path d="M0,-11 C-5,-11 -8,-6 -6,-2 C-4,2 -9,4 -7,8 C-5,11 -2,10 0,12 Z" transform="scale(-1,1)" />
-      </svg>
-    </div>
-  );
-}
-
-function Icon({ children }) {
-  return (
-    <span
-      className="flex h-14 w-14 items-center justify-center rounded-full"
-      style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-      aria-hidden="true"
+    <p
+      className="inline-block rounded-full border px-4 py-1.5 text-[0.6875rem] font-medium tracking-[0.18em] uppercase"
+      style={{ borderColor: 'var(--w-line-2)' }}
     >
-      <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {children}
-      </svg>
-    </span>
+      {children}
+    </p>
   );
 }
 
-function SectionHead({ eyebrow, title, sub }) {
+function Heading({ children, className = '' }) {
   return (
-    <div className="flex flex-col items-center gap-4 text-center">
-      <p className="w-eyebrow">{eyebrow}</p>
-      <h2
-        className="font-display text-[2rem] leading-[1.14] sm:text-[2.6rem]"
-        style={{ textWrap: 'balance' }}
-      >
-        {title}
-      </h2>
-      <Ornament />
-      {sub && (
-        <p className="max-w-xl text-[0.9375rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-          {sub}
-        </p>
-      )}
+    <h2
+      className={`text-[2rem] leading-[1.1] font-bold tracking-[-0.02em] sm:text-[2.75rem] ${className}`}
+      style={{ textWrap: 'balance' }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+// A corner of the product over the photograph, so the hero shows what the app
+// is as well as how it should feel. aria-hidden: it is illustration, and read
+// aloud it would sound like somebody's real conversation.
+function ChatPeek() {
+  const bubble = 'max-w-[88%] rounded-2xl px-3.5 py-2 text-[0.8125rem] leading-snug';
+  return (
+    <div className="w-card w-full max-w-[19rem] p-4" aria-hidden="true">
+      <div className="flex items-center gap-2">
+        <Logo size={22} glow={false} />
+        <span className="text-[0.9375rem] font-semibold">DP</span>
+        <span
+          className="ml-auto rounded-full px-2.5 py-0.5 text-[0.6875rem] font-medium"
+          style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
+        >
+          4-day streak
+        </span>
+      </div>
+      <div className="mt-3 flex flex-col gap-2">
+        <span className={`${bubble} self-start`} style={{ background: 'var(--w-accent-wash)' }}>
+          What is sitting heaviest today?
+        </span>
+        <span className={`${bubble} self-end text-white`} style={GREEN_FILL}>
+          exams mostly. and i am not sleeping
+        </span>
+      </div>
     </div>
   );
 }
@@ -310,22 +192,21 @@ export default function Welcome({ onSignedIn }) {
   const [signingIn, setSigningIn] = useState(false);
   const navigate = useNavigate();
 
-  // This page owns the `/welcome` URL now, so it also owns what happens after
-  // a successful sign-in: go to the dashboard. The `onSignedIn` prop is kept
-  // for any caller that still wants to handle it itself.
+  // This page owns the `/welcome` URL, so it also owns what happens after a
+  // successful sign-in: go to the dashboard. The `onSignedIn` prop is kept for
+  // any caller that still wants to handle it itself.
   const handleSignedIn = (next) => {
     if (onSignedIn) onSignedIn(next);
     else navigate('/', { replace: true });
   };
 
-  // Someone who is already signed in has no business on the sign-in page —
-  // arriving here from a bookmark or the back button should land on the app.
+  // Someone who is already signed in has no business on the sign-in page.
   if (!onSignedIn && getSession()) return <Navigate to="/" replace />;
 
-  // The panel replaces the hero's button row, which is near the top of a long
-  // page — and two of the three buttons that open it are the sticky header and
-  // the closing CTA at the very bottom. Without this, signing in from either
-  // one swaps in a form a full screen away and looks like nothing happened.
+  // The sign-in panel replaces the hero photograph, at the top of a long page,
+  // and most of the buttons that open it are further down. Without the scroll,
+  // signing in from lower down swaps in a form a screen away and looks like
+  // nothing happened.
   const go = () => {
     setSigningIn(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -333,122 +214,118 @@ export default function Welcome({ onSignedIn }) {
 
   return (
     <div className="welcome min-h-screen">
+      {/* ------------------------------------------------------------- strip */}
+      <div className="text-white" style={{ background: 'var(--w-forest)' }}>
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-4 px-5 py-2 sm:justify-between sm:px-8">
+          <p className="hidden text-[0.8125rem] sm:block">
+            Free, with no ads: 21 questionnaires, 13 grounding practices and a companion one tap
+            away.
+          </p>
+          <Link
+            to="/check"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1 text-[0.6875rem] font-semibold tracking-[0.14em] whitespace-nowrap uppercase transition-colors hover:bg-white/10"
+          >
+            Take the 1-minute check
+            <Arrow size={12} />
+          </Link>
+        </div>
+      </div>
+
       {/* ------------------------------------------------------------ header */}
       <header
         className="sticky top-0 z-40 border-b backdrop-blur-md"
-        // The page's own ground, not pink-50. This tint and the two Logo
-        // overrides below were the last of the blush palette the page was first
-        // built in: the ground went sage precisely so the green mark would stop
-        // reading as a foreign object, and a pink bar over a sage page under a
-        // pink logo was the same two-brand problem the other way round.
-        style={{ borderColor: 'var(--w-line)', background: 'rgba(244,247,243,0.88)' }}
+        style={{ borderColor: 'var(--w-line)', background: 'rgba(255,255,255,0.92)' }}
       >
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
-          <span className="flex items-center gap-2.5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
+          <a href="#top" className="flex items-center gap-2" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
-            <span className="font-display text-[1.2rem] leading-none">
+            <span className="text-[1.3rem] leading-none font-bold tracking-[-0.02em]" style={{ color: 'var(--w-accent-deep)' }}>
               DP Sahay
-              <span className="ml-1.5 text-[0.78em]" style={{ color: 'var(--w-accent-deep)' }}>
-                AI
-              </span>
             </span>
-          </span>
+          </a>
 
-          <nav className="hidden items-center gap-7 text-sm md:flex" style={{ color: 'var(--w-ink-soft)' }}>
-            <a href="#inside" className="transition-colors hover:text-[var(--w-ink)]">What&apos;s inside</a>
-            <a href="#tools" className="transition-colors hover:text-[var(--w-ink)]">Tools</a>
-            <a href="#trust" className="transition-colors hover:text-[var(--w-ink)]">Why trust it</a>
-            <a href="#privacy" className="transition-colors hover:text-[var(--w-ink)]">Privacy</a>
+          <nav aria-label="On this page" className="hidden items-center gap-7 text-[0.9375rem] lg:flex">
+            {[
+              ['#inside', 'Inside the app'],
+              ['#tools', 'Free tools'],
+              ['#trust', 'Why trust it'],
+              ['#approach', 'Our approach'],
+              ['#partner', 'For institutions'],
+            ].map(([href, label]) => (
+              <a key={href} href={href} className="transition-colors hover:text-[var(--w-accent-deep)]">
+                {label}
+              </a>
+            ))}
           </nav>
 
-          <button
-            type="button"
-            onClick={go}
-            className="press shrink-0 rounded-full px-5 py-2.5 text-sm font-medium text-white transition-colors"
-            style={{ background: 'var(--w-accent-deep)' }}
-          >
+          <button type="button" onClick={go} className={`${PRIMARY} shrink-0 px-5 py-2.5`} style={GREEN_FILL}>
             Sign in
+            <Arrow size={14} />
           </button>
         </div>
       </header>
 
       {/* -------------------------------------------------------------- hero */}
-      <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-20">
-        {/* Two columns: everything that says what this is on the left — the
-            headline, the sentence under it and the plates — and the one thing
-            you can act on, the sign-in, alone on the right.
-
-            Natural DOM order, so it needs no row-reverse: the left column is
-            first in the markup, which is also the order it stacks in on a
-            phone and the order a screen reader meets it in. The picture ends
-            the left column rather than opening it, so the sentence that
-            explains the plates is read before the plates. */}
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-14">
-          <div className="w-full lg:w-[55%]">
-            <p className="w-eyebrow">You matter to us</p>
+      <section id="top" className="mx-auto max-w-6xl scroll-mt-40 px-5 pt-12 pb-20 sm:px-8 sm:pt-16 lg:pb-24">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
+          <div>
+            <Pill>You matter to us</Pill>
             <h1
-              className="font-display mt-5 text-[2.6rem] leading-[1.08] sm:text-[3.6rem]"
-              style={{ textWrap: 'balance' }}
+              className="mt-6 text-[3.5rem] leading-[0.95] font-bold tracking-[-0.035em] sm:text-[5.25rem]"
+              style={{ color: 'var(--w-accent-deep)' }}
             >
-              A minute a day, and a real look at how you are.
+              DP Sahay
+              <span className="ml-2 align-top text-[0.34em] tracking-normal">AI</span>
             </h1>
-            <p
-              className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed"
-              style={{ color: 'var(--w-ink-soft)' }}
-            >
-              A daily check-in that takes thirty seconds, the same questionnaires a clinic uses,
-              and something to do when a night gets bad. Free, and nobody sees any of it unless
-              you ask them to.
+            <p className="mt-6 max-w-lg text-[1.25rem] leading-snug">
+              A minute a day, and a real look at how you are.
+            </p>
+            <p className="mt-4 flex max-w-lg gap-2.5 text-[0.9375rem] leading-relaxed" style={SOFT}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--w-accent-deep)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
+                <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
+                <path d="M11 18.5h2" />
+              </svg>
+              <span>
+                <strong className="font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
+                  Start with the free check
+                </strong>
+                : five questions, no account, nothing saved. The app adds a 30-second daily
+                check-in and the questionnaires a clinic uses.
+              </span>
             </p>
 
-            {/* The ask sits under the sentence that earns it, rather than in a
-                panel across the gutter. The picture of the product has the
-                other column now, and a hero whose only actionable thing was
-                over there left the headline with nothing beneath it. */}
-            {/* The first thing offered asks for nothing. Every version of this
-                page before it led with "sign in", which put a Google account
-                between a stranger and the first useful thing the app does. The
-                questionnaire behind this button stores nothing and needs no
-                account, so the ask can wait until after it has been worth
-                something. Signing in is still here, one line down, for the
-                people who came back on purpose. */}
             {!signingIn && (
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link
-                  to="/check"
-                  className="press rounded-full px-7 py-3.5 text-center text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
-                  style={{ background: 'var(--w-accent-deep)' }}
-                >
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link to="/check" className={PRIMARY} style={GREEN_FILL}>
                   Take the 1-minute check
+                  <Arrow />
                 </Link>
-                <button
-                  type="button"
-                  onClick={go}
-                  className="press rounded-full border px-7 py-3.5 text-[0.9375rem] font-medium transition-colors"
-                  style={{ borderColor: 'var(--w-line-2)', color: 'var(--w-ink)' }}
-                >
+                <button type="button" onClick={go} className={SECONDARY} style={GREEN_LINE}>
                   Sign in
+                  <Arrow />
                 </button>
               </div>
             )}
 
-            <p className="mt-5 text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
-              The check needs no account and saves nothing. The app is free, takes no card, and
-              you can delete everything from your account page.
+            <p className="mt-7 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.8125rem]" style={SOFT}>
+              <span>No account for the check</span>
+              <span aria-hidden="true">·</span>
+              <a href="#trust" className="underline-offset-4 hover:underline" style={{ color: 'var(--w-accent-deep)' }}>
+                Built on PHQ-9, GAD-7 and WHO-5
+              </a>
+              <span aria-hidden="true">·</span>
+              <span>Nobody sees it unless you share</span>
             </p>
           </div>
 
-          {/* The right column: the product, and — the moment it is asked for —
-              the door. The form takes the mockup's place, so signing in changes
-              the contents of a panel that was already there. */}
-          <div className="w-full lg:w-[45%]">
+          {/* The photograph, and the moment it is asked for, the door. The
+              form takes the picture's place, so signing in changes a panel
+              that was already there rather than pushing the page around. */}
+          <div>
             {signingIn ? (
               <div className="w-card mx-auto max-w-md p-6 sm:p-7">
                 <GoogleSignInButton onSignedIn={handleSignedIn} />
-                <div
-                  className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide"
-                  style={{ color: 'var(--w-ink-soft)' }}
-                >
+                <div className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide" style={SOFT}>
                   <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
                   or use email
                   <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
@@ -458,258 +335,253 @@ export default function Welcome({ onSignedIn }) {
                   type="button"
                   onClick={() => setSigningIn(false)}
                   className="mt-4 w-full text-center text-[0.75rem] underline underline-offset-4"
-                  style={{ color: 'var(--w-ink-soft)' }}
+                  style={SOFT}
                 >
                   Back
                 </button>
               </div>
             ) : (
-              <ChatMockup />
+              <div className="relative mx-auto max-w-md lg:mr-0 lg:max-w-none">
+                <img
+                  src={PHOTO.hero}
+                  alt=""
+                  width="900"
+                  height="1200"
+                  decoding="async"
+                  fetchPriority="high"
+                  className="aspect-[4/5] w-full rounded-[1.75rem] object-cover shadow-[0_40px_80px_-40px_rgba(10,79,44,0.55)] lg:max-h-[40rem]"
+                />
+                <div className="absolute right-4 bottom-4 left-4 flex sm:right-auto lg:bottom-10 lg:-left-10">
+                  <ChatPeek />
+                </div>
+              </div>
             )}
           </div>
         </div>
-
-        {/* The stat row, in the reference's position under the hero. Counts of
-            what is in the box — not "10,000 users helped", which this cannot
-            measure and should not claim. */}
-        <div
-          className="mt-16 grid grid-cols-2 gap-8 border-t pt-10 sm:grid-cols-4"
-          style={{ borderColor: 'var(--w-line)' }}
-        >
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="font-display text-[2.4rem] leading-none" style={{ color: 'var(--w-accent-deep)' }}>
-                {s.n}
-              </p>
-              <p className="mt-2 text-[0.8125rem]" style={{ color: 'var(--w-ink-soft)' }}>
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Names the instruments where the reference names its clinicians and
-            its trials: immediately, before the ask. The provenance of these
-            questionnaires is the strongest claim this page has and it was six
-            sections down, below the fold, behind everything it should have been
-            vouching for. The full row and the licences stay in "Why trust it". */}
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
-          <span className="w-eyebrow">Built on</span>
-          {['PHQ-9', 'GAD-7', 'WHO-5'].map((n) => (
-            <span key={n} className="font-display text-[1.15rem]" style={{ color: 'var(--w-ink-soft)' }}>
-              {n}
-            </span>
-          ))}
-          <a
-            href="#trust"
-            className="text-[0.8125rem] underline underline-offset-4 transition-colors hover:text-[var(--w-ink)]"
-            style={{ color: 'var(--w-ink-soft)' }}
-          >
-            and eighteen more
-          </a>
-        </div>
       </section>
 
-      {/* ------------------------------------------------------------ inside */}
-      <section id="inside" className="scroll-mt-20 py-20 sm:py-25" style={{ background: 'var(--w-band)' }}>
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <SectionHead
-            eyebrow="What's inside"
-            title="One sitting, three parts."
-            sub="You can stop after the first. The check-in is saved the moment you tap, and everything after it is optional."
-          />
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {SERVICES.map((s) => (
-              <div key={s.title} className="w-card flex flex-col items-center overflow-hidden text-center">
-                {/* The picture runs to the card's own edge and the icon rides
-                    up over its lower rim — so the page keeps the icon
-                    vocabulary it uses everywhere without stacking a glyph and
-                    a photograph as two separate things. */}
-                <span className="photo-head">
-                  <img src={s.photo} alt="" loading="lazy" decoding="async" />
-                </span>
-                <div className="-mt-7 flex flex-col items-center gap-4 px-8 pb-8">
-                <span className="icon-ring"><Icon>{s.icon}</Icon></span>
-                <h3 className="font-display text-[1.4rem] leading-snug">{s.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-                  {s.body}
-                </p>
-                <p className="mt-auto pt-2 text-[0.8125rem] font-medium" style={{ color: 'var(--w-lav)' }}>
-                  {s.meta}
-                </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div style={{ background: 'var(--w-band)' }}>
+        <AppShowcase onStart={go} />
+      </div>
 
       {/* ------------------------------------------------------------- tools */}
-      <section id="tools" className="scroll-mt-20 py-20 sm:py-25">
+      <section id="tools" className="scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <SectionHead
-            eyebrow="Everything else"
-            title="For the days that are not a check-in."
-            sub="A bad ten minutes is not the same problem as a bad fortnight, and they do not want the same tool."
-          />
+          <div className="mx-auto max-w-3xl text-center">
+            <Heading>
+              Free tools for a hard day,{' '}
+              <span style={{ color: 'var(--w-accent-deep)' }}>built on published instruments</span>
+            </Heading>
+            <p className="mx-auto mt-5 max-w-2xl text-[1rem] leading-relaxed" style={SOFT}>
+              The questionnaires a clinic uses, practices for the next ten minutes, and paths for
+              the next week. All free, and every one says what it is and what it is not.
+            </p>
+          </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {TOOLS.map((t) => (
-              <div key={t.title} className="w-card flex flex-col gap-3 p-7">
-                <h3 className="font-display text-[1.35rem] leading-snug">{t.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-                  {t.body}
-                </p>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {t.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full px-3 py-1 text-[0.75rem]"
-                      // Warm where the tag is a feeling, cool where it is a
-                      // property of the product. Two kinds of thing, two tints.
-                      style={
-                        t.tone === 'rose'
-                          ? { background: 'var(--w-lav-wash)', color: 'var(--w-lav)' }
-                          : { background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }
-                      }
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {TOOLS.map((t) => {
+              const inner = (
+                <>
+                  <h3 className="text-[1.2rem] font-semibold">{t.title}</h3>
+                  <p className="mt-2 text-[0.875rem] leading-relaxed" style={SOFT}>
+                    {t.body}
+                  </p>
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[0.875rem] font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
+                    {t.signIn ? 'Sign in to start' : 'Explore'}
+                    <Arrow size={14} />
+                  </span>
+                </>
+              );
+              const cls = 'w-card flex flex-col p-6 text-left sm:p-7';
+              return t.signIn ? (
+                <button key={t.title} type="button" onClick={go} className={`${cls} cursor-pointer`}>
+                  {inner}
+                </button>
+              ) : (
+                <Link key={t.title} to={t.to} className={cls}>
+                  {inner}
+                </Link>
+              );
+            })}
+          </div>
+
+          <p className="mt-12 text-center text-[0.8125rem]" style={SOFT}>
+            Popular starting points:
+          </p>
+          <div className="mt-3 flex flex-wrap justify-center gap-2.5">
+            {STARTING_POINTS.map(([label, to]) => (
+              <Link
+                key={to}
+                to={to}
+                className="rounded-full px-4 py-2 text-[0.8125rem] font-medium transition-[filter] hover:brightness-95"
+                style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
+              >
+                {label}
+              </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- begin */}
+      <section className="border-t px-5 py-20 sm:px-8 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
+        <div className="w-card mx-auto max-w-2xl px-6 py-11 text-center sm:px-12">
+          <h2 className="text-[1.75rem] font-bold tracking-[-0.02em] sm:text-[2rem]">Not sure where to begin?</h2>
+          <p className="mx-auto mt-3 max-w-lg text-[0.9375rem] leading-relaxed" style={SOFT}>
+            Answer five quick questions about the last two weeks. You get a score and what it
+            means, with no sign-up, and nothing is saved.
+          </p>
+          <Link to="/check" className={`${PRIMARY} mt-7`} style={GREEN_FILL}>
+            Start the 1-minute check
+          </Link>
+          <p className="mt-5 text-[0.75rem]" style={SOFT}>
+            Based on the WHO-5 Well-Being Index · a screen, not a diagnosis
+          </p>
         </div>
       </section>
 
       {/* ------------------------------------------------------------- trust */}
-      {/* The reference puts an "As featured in" logo row here. This has no
-          press, and inventing testimonials for a mental-health tool is not a
-          thing worth doing — so the social proof is the provenance of the
-          instruments, which is a stronger claim and needs nobody's consent. */}
-      <section id="trust" className="scroll-mt-20 py-20 sm:py-25" style={{ background: 'var(--w-band)' }}>
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <SectionHead
-            eyebrow="Why trust the numbers"
-            title="These are the published instruments, not our quiz."
-            sub="Each one carries its full name, its citation and its licence on the page where you take it. A score places you in a range that the instrument's authors defined. It is never a diagnosis, and it describes a few weeks rather than you."
-          />
+      <section id="trust" className="scroll-mt-20 border-t py-20 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
+        <div className="mx-auto max-w-6xl px-5 text-center sm:px-8">
+          <Pill>Why trust it</Pill>
+          <Heading className="mt-6">The real instruments, not our quiz</Heading>
 
-          <div className="mt-11 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-center">
-            {['PHQ-9', 'GAD-7', 'WHO-5', 'C-SSRS', 'PSS-10', 'UCLA-3', 'MSPSS'].map((n) => (
-              <span key={n} className="font-display text-[1.35rem]" style={{ color: 'var(--w-ink-soft)' }}>
-                {n}
-              </span>
-            ))}
-          </div>
-
-          <p
-            className="mx-auto mt-10 max-w-2xl text-center text-[0.8125rem] leading-relaxed"
-            style={{ color: 'var(--w-ink-soft)' }}
-          >
-            DP Sahay AI is a reflective prototype, not a medical device, and nothing in it is a
-            diagnosis. If you are in danger right now, please use the crisis contacts rather than
-            the app.
-          </p>
-        </div>
-      </section>
-
-      {/* ----------------------------------------------------------- privacy */}
-      {/* Answering the objection that actually stops sign-ups, before the ask
-          rather than after it. */}
-      <section id="privacy" className="scroll-mt-20 py-20 sm:py-25">
-        <div className="mx-auto max-w-3xl px-5 sm:px-8">
-          <SectionHead eyebrow="Privacy" title="Who can see this." />
-
-          <div className="mt-11 flex flex-col gap-5">
-            {[
-              ['Nobody, by default.', 'Your words, your mood and your scores are yours. No counsellor, no warden, no parent sees them until you invite one.'],
-              ['Invitations are yours to undo.', 'If you have invited someone to follow along, you can take it back from your account page, and it takes effect immediately.'],
-              ['You can delete everything.', 'The whole account, from inside the app. Not a support ticket.'],
-            ].map(([head, body]) => (
-              <div key={head} className="w-card p-6">
-                <h3 className="font-display text-[1.25rem]">{head}</h3>
-                <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-                  {body}
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+            {STATS.map((s) => (
+              <div key={s.label} className="w-card px-4 py-7">
+                <p className="text-[2.4rem] leading-none font-bold tracking-[-0.02em] sm:text-[2.75rem]" style={{ color: 'var(--w-accent-deep)' }}>
+                  {s.n}
                 </p>
+                <p className="mt-2 text-[0.875rem]">{s.label}</p>
               </div>
             ))}
           </div>
+
+          <p className="mx-auto mt-10 max-w-3xl text-[0.875rem] leading-relaxed" style={SOFT}>
+            PHQ-9 · GAD-7 · WHO-5 · K10 · PSS-10 · UCLA-3 · MSPSS and more, each carrying its full
+            name, citation and licence on the page where you take it. A score places you in a range
+            the instrument&apos;s authors defined. It describes a few weeks, not you.
+          </p>
         </div>
       </section>
 
-      {/* --------------------------------------------------------------- cta */}
-      <section className="px-5 pb-20 sm:px-8">
-        <div
-          className="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-3xl px-6 py-14 text-center"
-          style={{ background: 'var(--w-accent-wash)', border: '1px solid var(--w-line)' }}
-        >
-          <p className="w-eyebrow">Start here</p>
-          <h2 className="font-display text-[2rem] leading-tight sm:text-[2.5rem]" style={{ textWrap: 'balance' }}>
-            How is today sitting?
-          </h2>
-          <p className="max-w-md text-[0.9375rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-            Thirty seconds, and you will have a thought for the day and one day on your streak.
-          </p>
-          <button
-            type="button"
-            onClick={go}
-            className="press mt-2 rounded-full px-8 py-3.5 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90"
-            style={{ background: 'var(--w-accent-deep)' }}
-          >
-            Sign in to start
-          </button>
-          <div className="mt-1">
+      {/* ---------------------------------------------------------- approach */}
+      <section id="approach" className="scroll-mt-20 border-t py-20 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
+        <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
+          <Pill>Our approach</Pill>
+          <Heading className="mt-6">A prompt for reflection, never a verdict</Heading>
+          <div className="mt-8 flex flex-col gap-5 text-[1.0625rem] leading-relaxed" style={SOFT}>
+            <p>
+              A bad ten minutes is not the same problem as a bad fortnight, and they do not want the
+              same tool. So this is a check-in for today, a questionnaire when you want a straighter
+              answer, and something to do with your breath when a night gets bad.
+            </p>
+            <p>
+              None of it is a diagnosis. Nobody sees any of it by default: you can invite a
+              counsellor to follow along, take that back from your account at any time, and delete
+              everything from inside the app.
+            </p>
+          </div>
+          <div className="mt-10 flex flex-col items-center gap-5">
+            <button type="button" onClick={go} className={`${PRIMARY} px-8 py-4`} style={GREEN_FILL}>
+              Sign in to start
+              <Arrow />
+            </button>
             <CrisisContacts variant="link" />
           </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------------------ footer */}
-      <footer className="border-t py-14" style={{ borderColor: 'var(--w-line)', background: 'var(--w-band)' }}>
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="flex flex-col gap-4">
-              <span className="flex items-center gap-2.5">
-                <Logo size={28} glow={false} />
-                <span className="font-display text-[1.15rem] leading-none">DP Sahay AI</span>
-              </span>
-              <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
-                A quiet minute, once a day, and the real instruments when you want a straighter
-                answer.
-              </p>
-            </div>
+      {/* ----------------------------------------------------------- partner */}
+      {/* For the reader who is here on behalf of a college or an organisation
+          rather than for themselves. After the approach, because the first
+          thing a welfare officer asks is who sees the students' answers. */}
+      <section id="partner" className="scroll-mt-20 py-20 sm:py-24" style={{ background: 'var(--w-band)' }}>
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[2fr_3fr] lg:gap-16">
+          <div className="lg:pt-6">
+            <Pill>For institutions</Pill>
+            <Heading className="mt-6">Bring it to your campus.</Heading>
+            <p className="mt-5 max-w-md text-[1rem] leading-relaxed" style={SOFT}>
+              Tell us about your college, hostel or organisation and how you would like to look
+              after the people in it. We will get in touch to talk it through.
+            </p>
+            <p className="mt-4 max-w-md text-[0.875rem] leading-relaxed" style={SOFT}>
+              Your counsellors see only the students who choose to share with them. That does not
+              change for an institution.
+            </p>
+          </div>
+          <PartnerForm />
+        </div>
+      </section>
 
+      {/* ------------------------------------------------------------ footer */}
+      <footer className="text-white" style={{ background: 'var(--w-forest)' }}>
+        <div className="mx-auto max-w-6xl px-5 pt-20 pb-10 sm:px-8">
+          <p className="max-w-2xl text-[1.35rem] leading-snug font-medium sm:text-[1.6rem]">
+            A quiet minute a day, the real questionnaires when you want a straighter answer, and a
+            companion to talk it through. Free, in one app.
+          </p>
+
+          {/* The helplines on every visit, with the numbers written out and
+              tappable rather than behind a button. */}
+          <div className="mt-10 max-w-3xl rounded-2xl px-6 py-5 text-[0.875rem] leading-relaxed" style={{ background: 'rgba(255,255,255,0.07)' }}>
+            <p>
+              In crisis or thinking about suicide? You are not alone. Call{' '}
+              <a href={tel('1800-599-0019')} className="font-semibold underline-offset-4 hover:underline">
+                KIRAN 1800-599-0019
+              </a>{' '}
+              <span style={{ color: 'var(--w-forest-soft)' }}>(Govt. of India, 24/7, toll-free)</span>.
+            </p>
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              {FOOTER_LINES.map(([name, number, note]) => (
+                <span key={number}>
+                  <a href={tel(number)} className="font-semibold underline-offset-4 hover:underline">
+                    {name} {number}
+                  </a>
+                  {note && <span style={{ color: 'var(--w-forest-soft)' }}> ({note})</span>}
+                </span>
+              ))}
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {FOOTER.map((col) => (
-              <div key={col.head} className="flex flex-col gap-3">
-                <p className="font-display text-[1.05rem]">{col.head}</p>
-                <ul className="flex flex-col gap-2.5">
-                  {col.links.map(([label, to]) => (
-                    <li key={to}>
-                      <Link
-                        to={to}
-                        className="text-sm transition-colors hover:text-[var(--w-ink)]"
-                        style={{ color: 'var(--w-ink-soft)' }}
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
+              <div key={col.head}>
+                <p className="text-[1rem] font-semibold">{col.head}</p>
+                <ul className="mt-4 flex flex-col gap-2.5">
+                  {col.links.map(([label, to]) => {
+                    const cls = 'text-[0.875rem] transition-colors hover:text-white';
+                    const style = { color: 'var(--w-forest-soft)' };
+                    return (
+                      <li key={to}>
+                        {to.startsWith('#') ? (
+                          <a href={to} className={cls} style={style}>{label}</a>
+                        ) : (
+                          <Link to={to} className={cls} style={style}>{label}</Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
           </div>
 
           <div
-            className="mt-12 flex flex-col gap-3 border-t pt-7 text-[0.75rem] sm:flex-row sm:items-center sm:justify-between"
-            style={{ borderColor: 'var(--w-line)', color: 'var(--w-ink-soft)' }}
+            className="mt-16 flex flex-col items-start gap-6 border-t pt-8 sm:flex-row sm:items-center sm:justify-between"
+            style={{ borderColor: 'rgba(255,255,255,0.18)' }}
           >
-            <p>DP Sahay AI is a reflective prototype, not a medical device.</p>
-            <p>
-              In danger right now? Call KIRAN <span className="whitespace-nowrap">1800-599-0019</span>,
-              free and open around the clock. Emergency: 112.
+            <span className="inline-flex items-center gap-2.5 rounded-md border border-white/40 px-4 py-2.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+                <Logo size={20} glow={false} />
+              </span>
+              <span className="text-[1.05rem] font-semibold">DP Sahay AI</span>
+            </span>
+            <p className="text-[0.8125rem]" style={{ color: 'var(--w-forest-soft)' }}>
+              A reflective prototype, not a medical device.
+            </p>
+            <p className="text-[0.75rem] tracking-[0.14em] uppercase" style={{ color: 'var(--w-forest-soft)' }}>
+              © {new Date().getFullYear()} DP Sahay AI
             </p>
           </div>
         </div>

@@ -20,6 +20,7 @@ Each was fetched at 800×450, entropy-cropped, q=72.
 | `forest.jpg` | `photo-1418065460487-3e41a6c84dc5` | Mist over a pine forest |
 | `night.jpg` | `photo-1519681393784-d120267933ba` | Night sky over snowy peaks |
 | `trail.jpg` | `photo-1476231682828-37e571bc172f` | Road curving through forest, from above |
+| `hero.jpg` | `photo-1418065460487-3e41a6c84dc5` | Mist over a pine forest, fetched at 900×1200 for the landing hero |
 
 To re-fetch any of them:
 

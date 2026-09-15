@@ -114,6 +114,12 @@ window of the same browser), and it never ships resident-facing code.
   lists those students under "Raised in chat", filterable by topic, with call
   and email on the student's page. It is word matching over the student's own
   lines, reaches only counsellors the student shared with, and is not a flag.
+- **Enquiries**: the landing page ends with a "bring it to your campus" form
+  for a college or organisation (enquiry type, name, phone, email,
+  organisation, role, a message and how they heard about the app). It posts to
+  `/api/enquiries` with no account, behind a per-client rate limit and a hidden
+  field that drops bot submissions; the counsellor console reads them on its
+  Enquiries page.
 - **Caregiver access**: any signed-in Google account can check in as a
   resident, but the caregiver dashboard additionally checks the signed-in
   email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See

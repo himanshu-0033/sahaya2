@@ -234,6 +234,14 @@ export function submitQuickCheck(answers) {
   });
 }
 
+// The landing page's "bring it to your campus" form. Needs no account.
+export function submitEnquiry(values) {
+  return request('/api/enquiries', {
+    method: 'POST',
+    body: JSON.stringify(values),
+  });
+}
+
 export function getAssessmentCatalog() {
   return request('/api/assessments');
 }

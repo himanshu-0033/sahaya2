@@ -1,6 +1,7 @@
 import { getInstrument, instrumentDetail } from '../lib/instruments.js';
 import { scoreInstrument } from '../lib/scoring.js';
 import { applyCors } from '../lib/cors.js';
+import { clientKey, limiter } from '../lib/rate-limit.js';
 
 // One questionnaire, to anybody, with no account and nothing kept.
 //
@@ -29,32 +30,7 @@ const PUBLIC_INSTRUMENT = 'who-5';
 // A public POST with no session behind it. Scoring is pure arithmetic and
 // touches no storage, so the exposure is CPU rather than data, but an open
 // endpoint still gets found.
-//
-// ponytail: per-instance counters, same as the agent's chat limiter. Several
-// serverless instances do not share this map, so the real ceiling is
-// (instances x MAX_PER_WINDOW). It stops a runaway client, which is the actual
-// failure to defend against here.
-const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 20;
-const hits = new Map();
-
-function clientKey(req) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length > 0) return forwarded.split(',')[0].trim();
-  return req.socket?.remoteAddress || 'unknown';
-}
-
-function overLimit(key) {
-  const now = Date.now();
-  const rec = hits.get(key);
-  if (!rec || now > rec.reset) {
-    if (hits.size > 5000) hits.clear();
-    hits.set(key, { n: 1, reset: now + WINDOW_MS });
-    return false;
-  }
-  rec.n += 1;
-  return rec.n > MAX_PER_WINDOW;
-}
+const overLimit = limiter({ max: 20 });
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;

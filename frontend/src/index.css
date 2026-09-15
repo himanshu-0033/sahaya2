@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "./styles/design-tokens.css";
 
@@ -791,30 +791,36 @@ p, li {
 /* Every value below is measured against the cream ground: ink 11.1:1,  */
 /* sage 5.8:1, gold 4.8:1. The reference's own gold was 2.7:1 and would */
 /* have failed on the eyebrow it is used for.                           */
-/* The sign-in room, in the same sage as the app behind it. Every value below
-   was measured: the palette's own primary, #a8c3b0, is 1.75:1 on the ground,
-   so it is a FILL and an ornament here, never a letter. Anything that has to
-   be read uses the deep step. */
+/* The landing room: a white ground and one deep green, after a working
+   Indian mental-health service's site. Every value below was measured. The
+   light green is a FILL, never a letter; anything that has to be read uses the
+   deep step, and the forest ground carries only white or the forest-soft grey.
+   color-scheme is light here because the app sets dark on the document, which
+   would otherwise paint this page's radios and checkboxes near-black. */
 .welcome {
   --w-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  color-scheme: light;
 
-  --w-cream: #f4f7f3;
-  --w-band: #e8efe9;
+  --w-cream: #ffffff;
+  --w-band: #f4f8f5;
   --w-card: #ffffff;
-  --w-ink: #2f4036;      /* 10.2:1 on cream, 11.6:1 on a card */
-  --w-ink-soft: #526057; /* 6.1:1 on cream                    */
+  --w-ink: #14201a;      /* 16.8:1 on white                   */
+  --w-ink-soft: #4a5750; /* 7.6:1 on white, 7.1:1 on the band */
 
-  --w-accent: #a8c3b0;      /* fills and ornaments only — 1.8:1, never text */
-  --w-accent-deep: #4a6857; /* 5.7:1 as text, 6.2:1 as a fill under white   */
-  --w-accent-wash: #e2ece5;
+  --w-accent: #a7d7ba;      /* fills only, never text                        */
+  --w-accent-deep: #0b6b3a; /* 6.6:1 as text on white, 5.7:1 on the wash     */
+  --w-accent-wash: #e3f1e8;
+
+  --w-forest: #0a4f2c;      /* strip and footer: white 9.7:1                 */
+  --w-forest-soft: #c9d8cf; /* secondary text on forest: 6.8:1               */
 
   /* The second family. Two badge tints do a job here: one marks a tag that
      names a feeling, the other a tag that names a feature. */
   --w-lav: #6d28d9;      /* 6.5:1 on cream */
   --w-lav-wash: #ede9fe;
 
-  --w-line: rgba(47, 64, 54, 0.1);
-  --w-line-2: rgba(47, 64, 54, 0.17);
+  --w-line: rgba(20, 32, 26, 0.1);
+  --w-line-2: rgba(20, 32, 26, 0.18);
 
   background: var(--w-cream);
   color: var(--w-ink);
@@ -836,7 +842,8 @@ p, li {
 }
 
 @media (hover: hover) {
-  a.w-card:hover {
+  a.w-card:hover,
+  button.w-card:hover {
     transform: translateY(-3px);
     box-shadow:
       0 1px 2px rgba(47, 64, 54, 0.05),
@@ -850,7 +857,7 @@ p, li {
   letter-spacing: 0.22em;
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--w-lav);
+  color: var(--w-accent-deep);
 }
 
 /* The section ornament: two hairlines with the mark between them. Same
@@ -870,9 +877,54 @@ p, li {
   background: var(--w-line-2);
 }
 
+/* The enquiry form's fields: one rule under each, the way a paper form reads.
+   The global rule above drops the outline on every input, checkboxes and radios
+   included, so these carry their own focus treatment rather than none. */
+.w-field {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--w-line-2);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+  color: var(--w-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.welcome .w-field:focus {
+  outline: none;
+  border-bottom-color: var(--w-accent-deep);
+  box-shadow: 0 1px 0 var(--w-accent-deep);
+}
+
+textarea.w-field {
+  border: 1px solid var(--w-line-2);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  resize: vertical;
+}
+
+.welcome textarea.w-field:focus {
+  border-color: var(--w-accent-deep);
+  box-shadow: 0 0 0 1px var(--w-accent-deep);
+}
+
+.w-choice {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  accent-color: var(--w-accent-deep);
+}
+
+.welcome .w-choice:focus-visible {
+  outline: 2px solid var(--w-accent-deep);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .w-card { transition: none; }
-  a.w-card:hover { transform: none; }
+  a.w-card:hover, button.w-card:hover { transform: none; }
 }
 
 /* ================================================================== */

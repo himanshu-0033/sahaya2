@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/residents', label: 'Residents' },
+  { to: '/enquiries', label: 'Enquiries' },
 ];
 
 export default function AdminShell({ admin, onSignOut, children }) {

@@ -20,6 +20,7 @@ import previewHandler from '../handlers/preview.js';
 import groundingHandler from '../handlers/grounding.js';
 import chatLogHandler from '../handlers/chat-log.js';
 import pathsHandler from '../handlers/paths.js';
+import enquiriesHandler from '../handlers/enquiries.js';
 import signupHandler from '../handlers/auth/signup.js';
 import loginHandler from '../handlers/auth/login.js';
 import forgotHandler from '../handlers/auth/forgot.js';
@@ -52,6 +53,9 @@ export const routes = {
   '/api/grounding': groundingHandler,
   '/api/chat-log': chatLogHandler,
   '/api/paths': pathsHandler,
+  // POST is public: an organisation asking about the app has no account.
+  // GET is the counsellor console reading them back.
+  '/api/enquiries': enquiriesHandler,
   '/api/auth/signup': signupHandler,
   '/api/auth/login': loginHandler,
   '/api/auth/forgot': forgotHandler,

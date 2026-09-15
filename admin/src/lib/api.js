@@ -74,6 +74,11 @@ export function logExport({ scope, residentId = null, rowCount = null }) {
   });
 }
 
+// What came in through the landing page's enquiry form.
+export function getEnquiries() {
+  return request('/api/enquiries');
+}
+
 export function getExportLog() {
   return request('/api/admin/audit');
 }

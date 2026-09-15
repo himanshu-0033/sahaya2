@@ -69,6 +69,7 @@ const INDEXED = [
   'groundingSessions',
   'pathProgress',
   'exportLog',
+  'enquiries',
 ];
 
 async function ensureIndexes(client) {
@@ -278,5 +279,6 @@ export const getChatSessions = () => readAll('chatSessions');
 // own documents there is no such limit, and silently discarding the oldest
 // audit records was never the behaviour anybody wanted from an audit log.
 export const getExportLog = () => readAll('exportLog');
+export const getEnquiries = () => readAll('enquiries');
 
 export const appendExportLog = (entry) => appendRecord('exportLog', entry);
