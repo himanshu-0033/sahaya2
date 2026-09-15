@@ -196,10 +196,10 @@ export function resetPassword({ token, password }) {
   return request('/api/auth/reset', { method: 'POST', body: JSON.stringify({ token, password }) });
 }
 
-export function saveChatLog({ startedAt, messages, flagged }) {
+export function saveChatLog({ startedAt, messages, flagged, topic }) {
   return request('/api/chat-log', {
     method: 'POST',
-    body: JSON.stringify({ startedAt, messages, flagged }),
+    body: JSON.stringify({ startedAt, messages, flagged, topic }),
   });
 }
 

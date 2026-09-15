@@ -20,3 +20,15 @@ export function firstLine(session) {
   if (!said) return 'You opened this one and did not say anything.';
   return said.content;
 }
+
+// The topics a student can tap when a conversation opens. The ids match
+// backend/lib/topics.js, which is what files the conversation under one; the
+// line is sent as the student's first message, so DP hears it the same way it
+// would have heard it typed.
+export const TOPICS = [
+  { id: 'study', label: 'Study pressure', says: 'It is about study pressure.' },
+  { id: 'relationship', label: 'Relationships', says: 'It is about a relationship.' },
+  { id: 'placement', label: 'Placements', says: 'It is about placements.' },
+  { id: 'family', label: 'Family', says: 'It is about my family.' },
+  { id: 'other', label: 'Something else', says: 'It is something else.' },
+];

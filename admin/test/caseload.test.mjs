@@ -7,7 +7,7 @@
 //
 // buildCaseload is pure over plain arrays, so nothing here touches the API.
 import assert from 'node:assert/strict';
-import { buildCaseload, rank } from '../src/lib/caseload.js';
+import { buildCaseload, rank, raisedInChat } from '../src/lib/caseload.js';
 
 const screened = {
   id: 'r1',
@@ -94,6 +94,20 @@ assert.deepEqual(
   twice[0].events.map((e) => e.date),
   ['2026-09-09', '2026-09-02'],
 );
+
+// A chat topic lands on the student's row as an event, and a student known
+// only from a chat still gets a row, ranked below every flag.
+const chatted = buildCaseload({
+  needsAttention: [flagged],
+  recentConcerns: [
+    { residentId: 'r2', residentName: 'Bilal', topic: 'family', label: 'Family', date: '2026-09-11' },
+    { residentId: 'r7', residentName: 'Fatima', topic: 'placement', label: 'Placements', date: '2026-09-12' },
+  ],
+});
+assert.deepEqual(chatted.map((r) => r.id), ['r2', 'r7'], 'a check-in flag outranks a chat topic');
+assert.equal(raisedInChat(chatted[0], 'family'), true);
+assert.equal(raisedInChat(chatted[0], 'placement'), false, 'filtered by the topic asked for');
+assert.equal(chatted[1].events[0].detail, 'Placements');
 
 // An empty overview must not throw — a console nobody has shared with is the
 // normal first state, not a fault.

@@ -84,6 +84,62 @@ function RiskBanner({ risk, resident }) {
   );
 }
 
+// What the student has brought to DP lately, and the way to reach them about
+// it. Sits under the risk banner, never above it: a topic is a reason to get in
+// touch, not an alarm.
+function ConcernBanner({ concerns, resident }) {
+  if (!concerns?.length) return null;
+
+  return (
+    <section className="rounded-2xl border border-[var(--color-lavender)]/40 bg-[var(--color-lavender-soft)] p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-xl text-[var(--color-lavender-deep)]">Raised in chat</p>
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {concerns.map((c) => (
+              <li
+                key={c.topic}
+                className="rounded-full bg-[var(--color-cream-soft)] px-3 py-1 text-xs text-[var(--color-ink-soft)]"
+              >
+                {c.label}
+                <span className="text-[var(--color-muted)]">
+                  {' '}
+                  · {c.conversations} {c.conversations === 1 ? 'chat' : 'chats'} · {ago(c.at.slice(0, 10))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {resident.phone && (
+            <a
+              href={`tel:${resident.phone}`}
+              className="whitespace-nowrap rounded-full bg-[var(--color-lavender-deep)] px-4 py-2 text-sm font-medium text-white"
+            >
+              Call {resident.phone}
+            </a>
+          )}
+          {resident.email && (
+            <a
+              href={`mailto:${resident.email}`}
+              className="whitespace-nowrap rounded-full border border-[var(--color-lavender-deep)] px-4 py-2 text-sm text-[var(--color-lavender-deep)]"
+            >
+              Email
+            </a>
+          )}
+        </div>
+      </div>
+      <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+        Worked out from the words the student used, or the topic they tapped, over the last 14
+        days. It says what they talked about, not how serious it is.{' '}
+        <a href="#conversations" className="underline underline-offset-2">
+          Read the conversations
+        </a>
+      </p>
+    </section>
+  );
+}
+
 function Field({ label, value }) {
   return (
     <div>
@@ -163,6 +219,7 @@ export default function ResidentDetail() {
           )}
 
           <RiskBanner risk={data.summary.riskScreen} resident={data.resident} />
+          <ConcernBanner concerns={data.summary.concerns} resident={data.resident} />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
@@ -430,7 +487,7 @@ export default function ResidentDetail() {
               that opens with somebody's conversations already unrolled invites
               reading them because they are there, rather than because there is
               a reason to. */}
-          <section>
+          <section id="conversations" className="scroll-mt-6">
             <h3 className="font-display text-xl">Companion conversations</h3>
             {!data.chatSessions || data.chatSessions.length === 0 ? (
               <p className="mt-3 text-sm text-[var(--color-muted)]">
@@ -445,6 +502,14 @@ export default function ResidentDetail() {
                       <span className="text-[var(--color-muted)]">
                         {c.turns.length} {c.turns.length === 1 ? 'message' : 'messages'}
                       </span>
+                      {(c.topicLabels || []).map((label) => (
+                        <span
+                          key={label}
+                          className="rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-xs text-[var(--color-lavender-deep)]"
+                        >
+                          {label}
+                        </span>
+                      ))}
                       {c.flagged && (
                         <span className="rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
                           Safety screen fired

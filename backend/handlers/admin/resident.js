@@ -10,6 +10,7 @@ import { requireAdminUser } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
 import { canView } from '../../lib/sharing.js';
+import { topicLabel } from '../../lib/topics.js';
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
 
   return res.status(200).json({
     resident: publicResident(resident),
-    summary: summarizeResident(resident, checkins, { detailed: true, assessments }),
+    summary: summarizeResident(resident, checkins, { detailed: true, assessments, chatSessions }),
     history: historyFor(checkins, residentId),
     inkblotSessions: inkblotSessions
       .filter((s) => s.residentId === residentId)
@@ -55,6 +56,7 @@ export default async function handler(req, res) {
     // is a 404 before any of this is read.
     chatSessions: chatSessions
       .filter((c) => c.residentId === residentId)
-      .sort((a, b) => b.startedAt.localeCompare(a.startedAt)),
+      .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+      .map((c) => ({ ...c, topicLabels: (c.topics || []).map(topicLabel) })),
   });
 }

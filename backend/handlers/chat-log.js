@@ -1,6 +1,7 @@
 import { getChatSessions, upsertRecord } from '../lib/store.js';
 import { applyCors } from '../lib/cors.js';
 import { requireGoogleUser } from '../lib/auth.js';
+import { isTopic, topicsFor } from '../lib/topics.js';
 
 // The companion's transcripts, kept so a counsellor the resident has already
 // let in can read what has been going on between check-ins.
@@ -68,7 +69,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { startedAt, messages, flagged } = req.body || {};
+  const { startedAt, messages, flagged, topic } = req.body || {};
 
   if (typeof startedAt !== 'string' || !startedAt || Number.isNaN(Date.parse(startedAt))) {
     return res.status(400).json({ error: 'startedAt must be an ISO timestamp' });
@@ -103,6 +104,12 @@ export default async function handler(req, res) {
     flagged: Boolean(flagged),
     turns: messages.map((m) => ({ role: m.role, content: m.content })),
   };
+  // What the student said it is about, if they tapped a topic, and what the
+  // conversation turned out to be about. An unknown topic is dropped rather
+  // than refused: this save is fire-and-forget on the client, and a 400 here
+  // would lose the whole transcript over a label.
+  record.topic = isTopic(topic) ? topic : null;
+  record.topics = topicsFor({ chosen: record.topic, turns: record.turns });
 
   await upsertRecord('chatSessions', { id: record.id }, record);
 

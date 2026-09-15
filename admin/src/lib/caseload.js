@@ -15,6 +15,10 @@ export function hasScreen(row) {
   return Boolean(row.riskScreen) || row.events.some((e) => e.kind === 'screen');
 }
 
+export function raisedInChat(row, topic = null) {
+  return row.events.some((e) => e.kind === 'concern' && (!topic || e.topic === topic));
+}
+
 export function isAcute(row) {
   return (
     (row.riskScreen?.recent && row.riskScreen.level === 'acute') ||
@@ -38,6 +42,7 @@ export function buildCaseload({
   quietest = [],
   recentFlags = [],
   recentRiskScreens = [],
+  recentConcerns = [],
 } = {}) {
   const rows = new Map();
 
@@ -70,6 +75,18 @@ export function buildCaseload({
       date: f.date,
       detail: `${moodLabel(f.mood)} — ${(f.words || []).join(', ')}`,
       reasons: f.flagReasons || [],
+    });
+  }
+
+  // What a student brought to the companion. Not a flag: a row with only these
+  // ranks with the check-in events, below anything a screen or a check-in said.
+  for (const c of recentConcerns) {
+    ensure(c.residentId, c.residentName).events.push({
+      kind: 'concern',
+      date: c.date,
+      topic: c.topic,
+      detail: c.label,
+      reasons: [],
     });
   }
 

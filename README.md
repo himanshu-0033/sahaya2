@@ -107,6 +107,13 @@ window of the same browser), and it never ships resident-facing code.
   as "no measurable change" rather than as a direction. A path is described
   throughout as a way to practise, never as a course of treatment.
 
+- **Raised in chat**: a chat with DP can open on a topic chip (study pressure,
+  relationships, placements, family, something else), or the student just
+  talks. When the transcript is saved, `backend/lib/topics.js` files it under
+  the topic they tapped plus any whose words they used. The counsellor console
+  lists those students under "Raised in chat", filterable by topic, with call
+  and email on the student's page. It is word matching over the student's own
+  lines, reaches only counsellors the student shared with, and is not a flag.
 - **Caregiver access**: any signed-in Google account can check in as a
   resident, but the caregiver dashboard additionally checks the signed-in
   email against `CAREGIVER_EMAILS`, a comma-separated allowlist. See

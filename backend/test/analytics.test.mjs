@@ -137,4 +137,39 @@ assert.equal(quiet.totals.atRisk, 0);
 assert.equal(quiet.totals.acuteRisk, 0);
 assert.deepEqual(quiet.recentRiskScreens, []);
 
+// ------------------------------------------------------- raised in chat
+const chat = (residentId, daysAgo, topics) => ({
+  id: `${residentId}:${daysAgo}`,
+  residentId,
+  startedAt: iso(daysAgo),
+  updatedAt: iso(daysAgo),
+  topics,
+});
+const chats = [
+  chat('r1', 1, ['study', 'family']),
+  chat('r1', 3, ['study']),
+  chat('r2', 2, ['placement']),
+  chat('r2', 30, ['family']),
+  chat('r1', 0, []),
+];
+
+const asha = summarizeResident(resident, [], { chatSessions: chats });
+assert.deepEqual(
+  asha.concerns.map((c) => [c.topic, c.conversations]),
+  [['study', 2], ['family', 1]],
+  'one entry per topic, counting conversations',
+);
+assert.equal(asha.concerns[0].label, 'Study pressure');
+assert.equal(asha.flaggedRecently, false, 'talking about exams is not a risk flag');
+
+const talked = buildOverview([resident, other], [], { chatSessions: chats });
+assert.equal(talked.totals.raisedInChat, 2, 'counted by student, not by conversation');
+assert.deepEqual(
+  talked.recentConcerns.map((c) => `${c.residentName}:${c.topic}`).sort(),
+  ['Asha:family', 'Asha:study', 'Bilal:placement'],
+  'a family chat from 30 days ago has aged out',
+);
+assert.equal(talked.topics.length, 5, 'every section is listed, even when empty');
+assert.deepEqual(quiet.recentConcerns, [], 'no chats, no concerns');
+
 console.log('analytics checks passed — risk screens reach the counsellor console');

@@ -5,7 +5,7 @@ import MoodSparkline from '../components/MoodSparkline.jsx';
 import TrendChart from '../components/TrendChart.jsx';
 import { Monogram, Ring, Spark } from '../components/Spark.jsx';
 import { getOverview, getExportLog } from '../lib/api.js';
-import { buildCaseload, hasScreen } from '../lib/caseload.js';
+import { buildCaseload, hasScreen, raisedInChat } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
 
 // The four lists the overview endpoint returns are merged into one caseload in
@@ -16,6 +16,7 @@ import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
 const SEGMENTS = [
   { key: 'attention', label: 'Needs a conversation' },
   { key: 'risk', label: 'Risk screens' },
+  { key: 'chat', label: 'Raised in chat' },
   { key: 'quiet', label: 'Quiet 3+ days' },
   { key: 'all', label: 'Everyone here' },
 ];
@@ -85,6 +86,8 @@ export default function Dashboard() {
   const [exports, setExports] = useState([]);
   const [segment, setSegment] = useState('attention');
   const [day, setDay] = useState(null);
+  // Which topic the "Raised in chat" segment is narrowed to. Null is all of them.
+  const [topic, setTopic] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -104,8 +107,13 @@ export default function Dashboard() {
 
   const visible = useMemo(() => {
     const bySegment = caseload.filter((r) => {
-      if (segment === 'attention') return Boolean(r.attention) || Boolean(r.sparse);
+      // A student known only from a chat is a sparse row too, but talking about
+      // exams is not a flag and does not belong under "Needs a conversation".
+      if (segment === 'attention') {
+        return Boolean(r.attention) || (r.sparse && r.events.some((e) => e.kind !== 'concern'));
+      }
       if (segment === 'risk') return hasScreen(r);
+      if (segment === 'chat') return raisedInChat(r, topic);
       if (segment === 'quiet') return (daysSince(r.lastCheckIn?.date) ?? 99) >= QUIET_DAYS;
       return true;
     });
@@ -113,7 +121,7 @@ export default function Dashboard() {
     return bySegment.filter(
       (r) => r.lastCheckIn?.date === day || r.events.some((e) => e.date === day),
     );
-  }, [caseload, segment, day]);
+  }, [caseload, segment, day, topic]);
 
   if (loading) return <p className="text-sm text-[var(--color-muted)]">Loading…</p>;
   if (error) return <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>;
@@ -144,7 +152,11 @@ export default function Dashboard() {
         ? `${totals.flaggedResidents} ${
             totals.flaggedResidents === 1 ? 'person is' : 'people are'
           } worth a conversation today.`
-        : 'Nothing is flagged today.';
+        : totals.raisedInChat > 0
+          ? `Nothing is flagged. ${totals.raisedInChat} ${
+              totals.raisedInChat === 1 ? 'student' : 'students'
+            } raised something with DP.`
+          : 'Nothing is flagged today.';
 
   function toggleSegment(key) {
     setSegment((current) => (current === key ? 'all' : key));
@@ -176,7 +188,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="rail mt-8 rounded-2xl border border-[var(--line-1)] sm:grid-cols-2 lg:grid-cols-5">
+      <div className="rail mt-8 rounded-2xl border border-[var(--line-1)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Metric
           label="Positive risk screens"
           value={totals.atRisk}
@@ -196,6 +208,15 @@ export default function Dashboard() {
           visual={<Spark values={trend.map((d) => d.flagged)} tone="var(--color-flag)" />}
           onClick={() => toggleSegment('attention')}
           active={segment === 'attention'}
+        />
+        <Metric
+          label="Raised in chat"
+          value={totals.raisedInChat}
+          hint="Students who talked to DP about something, last 14 days"
+          tone="lavender"
+          visual={<Ring value={totals.raisedInChat} max={totals.onboarded} />}
+          onClick={() => toggleSegment('chat')}
+          active={segment === 'chat'}
         />
         <Metric
           label={`Quiet ${QUIET_DAYS}+ days`}
@@ -313,13 +334,41 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* The topics as sections: pick one to see the students who brought it
+            to DP. Every topic is listed even at zero, so an empty one reads as
+            "nobody" rather than as missing. */}
+        {segment === 'chat' && (
+          <div className="mt-4 flex flex-wrap gap-1.5 text-xs">
+            {[{ id: null, label: 'All topics' }, ...data.topics].map((t) => {
+              const count = caseload.filter((r) => raisedInChat(r, t.id)).length;
+              return (
+                <button
+                  key={t.id || 'all'}
+                  type="button"
+                  onClick={() => setTopic(t.id)}
+                  aria-pressed={topic === t.id}
+                  className={`cursor-pointer rounded-full border px-3 py-1.5 transition-colors ${
+                    topic === t.id
+                      ? 'border-[var(--color-lavender-deep)] bg-[var(--color-lavender-soft)] text-[var(--color-lavender-deep)]'
+                      : 'border-[var(--line-2)] text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
+                  }`}
+                >
+                  {t.label} <span className="tabular-nums text-[var(--color-muted)]">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {visible.length === 0 ? (
           <p className="mt-6 text-sm text-[var(--color-muted)]">
             {day
               ? `Nobody in this segment has anything on ${formatDate(day)}.`
               : segment === 'attention'
                 ? 'Nobody is flagged right now.'
-                : 'Nobody matches this filter.'}
+                : segment === 'chat'
+                  ? 'Nobody has raised this with DP in the last 14 days.'
+                  : 'Nobody matches this filter.'}
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-[var(--line-1)] border-y border-[var(--line-1)]">
@@ -356,10 +405,12 @@ export default function Dashboard() {
                               className={`rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${
                                 e.kind === 'screen'
                                   ? 'bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
-                                  : 'bg-[var(--surface-2)] text-[var(--color-muted)]'
+                                  : e.kind === 'concern'
+                                    ? 'bg-[var(--color-lavender-soft)] text-[var(--color-lavender-deep)]'
+                                    : 'bg-[var(--surface-2)] text-[var(--color-muted)]'
                               }`}
                             >
-                              {e.kind === 'screen' ? 'Screen' : 'Check-in'}
+                              {e.kind === 'screen' ? 'Screen' : e.kind === 'concern' ? 'Chat' : 'Check-in'}
                             </span>
                             <span className="text-[var(--color-ink-soft)]">{e.detail}</span>
                             <span className="text-[var(--color-muted)]">{formatDate(e.date)}</span>
@@ -388,9 +439,13 @@ export default function Dashboard() {
                       {r.trend?.length > 0 && (
                         <MoodSparkline history={r.trend} height={30} barWidth={7} />
                       )}
-                      {r.sparse ? (
+                      {r.sparse && !r.events.some((e) => e.kind !== 'concern') ? (
+                        <span className="whitespace-nowrap rounded-full bg-[var(--color-lavender-soft)] px-3 py-1 text-xs text-[var(--color-lavender-deep)]">
+                          Raised in chat
+                        </span>
+                      ) : r.sparse ? (
                         <span className="whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-3 py-1 text-xs text-[var(--color-flag-deep)]">
-                          {r.events[0]?.kind === 'screen' ? 'Risk screen' : 'Flagged earlier'}
+                          {hasScreen(r) ? 'Risk screen' : 'Flagged earlier'}
                         </span>
                       ) : (
                         <FlagBadge resident={r} />

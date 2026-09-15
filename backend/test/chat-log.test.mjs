@@ -136,5 +136,33 @@ for (const [body, what] of rejects) {
 const countBefore = (await getChatSessions()).length;
 assert.equal(countBefore, 3, 'nothing rejected was written');
 
+// --- what the conversation is about ------------------------------------
+const topicsOf = async (body, sub) => {
+  const r = await post(body, { sub });
+  assert.equal(r.statusCode, 200);
+  return (await getChatSessions()).find((c) => c.id === r.body.id);
+};
+const said = (...lines) => [TURN[0], ...lines.map((content) => ({ role: 'user', content }))];
+
+let c = await topicsOf({ startedAt, messages: said('My exams are next week and placements start after') }, 't1');
+assert.deepEqual(c.topics, ['study', 'placement'], 'detected from what the student said');
+assert.equal(c.topic, null, 'nothing was tapped');
+
+c = await topicsOf({ startedAt, messages: said('hard to explain'), topic: 'other' }, 't2');
+assert.deepEqual(c.topics, ['other'], 'a tapped "something else" still reaches the console');
+
+c = await topicsOf({ startedAt, messages: said('hard to explain', 'my parents keep fighting'), topic: 'other' }, 't2');
+assert.deepEqual(c.topics, ['family'], '"something else" gives way once the real topic turns up');
+
+c = await topicsOf({ startedAt, messages: said('an example of my own'), topic: 'wizard' }, 't3');
+assert.equal(c.topic, null, 'an unknown topic is dropped, not refused');
+assert.deepEqual(c.topics, [], '"example" is not "exam"');
+
+c = await topicsOf(
+  { startedAt, messages: [{ role: 'assistant', content: 'How are exams and family?' }, { role: 'user', content: 'ok' }], topics: ['study'] },
+  't4',
+);
+assert.deepEqual(c.topics, [], "only the student's words are matched, and topics are never taken from the body");
+
 fs.rmSync(DATA_DIR, { recursive: true, force: true });
 console.log('chat-log checks passed — the session names the record, and nothing else does');

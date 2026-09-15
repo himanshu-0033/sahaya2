@@ -3,7 +3,7 @@ import { sendChat, saveChatLog, getChatHistory } from '../../shared/api.js';
 import Logo from '../../shared/Logo.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import { speak, stopSpeaking } from '../../shared/speech.js';
-import { when, firstLine } from './talks.js';
+import { when, firstLine, TOPICS } from './talks.js';
 
 // The agent and the chat log both stop a conversation at 24 turns. A reply
 // adds two, so from 23 on there is no room for one that would still be saved.
@@ -71,6 +71,9 @@ export default function ChatPanel({
   // conversation an update of one record rather than a new one.
   const startedAt = useRef(new Date().toISOString());
   const flaggedRef = useRef(false);
+  // The topic the student tapped, if they tapped one. Kept for the life of the
+  // conversation so every save files it under the same one.
+  const topicRef = useRef(null);
   // Whether the turn being answered arrived by voice. A ref rather than state
   // because it is read after an await, by which point state from the closure is
   // a render behind. It is what decides whether the reply is spoken: talk to
@@ -130,6 +133,7 @@ export default function ChatPanel({
   function resume(session) {
     startedAt.current = session.startedAt;
     flaggedRef.current = Boolean(session.flagged);
+    topicRef.current = session.topic || null;
     setMessages(session.turns.map((t) => ({ role: t.role, content: t.content })));
     setError(null);
     setView('chat');
@@ -138,6 +142,7 @@ export default function ChatPanel({
   function startNew() {
     startedAt.current = new Date().toISOString();
     flaggedRef.current = false;
+    topicRef.current = null;
     setMessages([]);
     setView('chat');
     openConversation();
@@ -176,6 +181,7 @@ export default function ChatPanel({
         startedAt: startedAt.current,
         messages: full.map((m) => ({ role: m.role, content: m.content })),
         flagged: flaggedRef.current,
+        topic: topicRef.current,
       }).catch(() => {});
     } catch (err) {
       setError(err.message);
@@ -194,6 +200,13 @@ export default function ChatPanel({
     spokenTurnRef.current = false;
     setDraft('');
     void ask(text);
+  }
+
+  function pickTopic(topic) {
+    stopSpeaking();
+    spokenTurnRef.current = false;
+    topicRef.current = topic.id;
+    void ask(topic.says);
   }
 
   function hear(transcript) {
@@ -373,6 +386,27 @@ export default function ChatPanel({
         )}
       </div>
 
+      {/* Only under the opener, before anything has been said. A way in for
+          someone who does not know how to start, never a form to fill in: the
+          box below still works, and typing skips these entirely. */}
+      {messages.length === 1 && !busy && !initialQuestion && (
+        <div className="mt-3">
+          <p className="text-xs text-[var(--color-muted)]">Pick one if it helps, or just type.</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {TOPICS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => pickTopic(t)}
+                className="press rounded-full border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-teal)] hover:text-[var(--color-ink)]"
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <p className="text-xs text-[var(--color-flag-deep)]" role="alert">
@@ -437,7 +471,7 @@ export default function ChatPanel({
       <p className="mt-3 text-[0.6875rem] leading-relaxed text-[var(--color-ink-soft)]">
         {isMock
           ? 'Scripted preview. No AI model is connected yet. Not a therapist, and not a crisis service.'
-          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above. This conversation is saved to your account, and anyone you have shared your account with can read it.'}
+          : 'DP Sahay AI is not a therapist and not a crisis service. If you need urgent help, use the crisis contacts above. This conversation is saved to your account, and anyone you have shared your account with can read it and see what it is about.'}
       </p>
     </div>
   );

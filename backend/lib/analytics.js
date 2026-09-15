@@ -10,6 +10,8 @@
 // `flaggedRecently` now means "check-ins OR a positive risk screen", and the
 // screen sorts to the top of every list it appears in.
 
+import { TOPICS, topicLabel } from './topics.js';
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function isoDay(offsetFromToday = 0) {
@@ -59,6 +61,32 @@ function riskScreenFor(assessments, residentId) {
   };
 }
 
+// What a student has brought to the companion lately, one entry per topic,
+// newest first. The same two weeks as a risk screen, for the same reason: long
+// enough to still be on the list after a weekend, short enough that a student
+// who talked about exams in March is not still a "study pressure" case in May.
+function recentChats(chatSessions) {
+  const since = Date.now() - RISK_WINDOW_DAYS * DAY_MS;
+  return chatSessions.filter(
+    (c) => (c.topics || []).length > 0 && new Date(c.updatedAt || c.startedAt).getTime() >= since,
+  );
+}
+
+function concernsFor(chatSessions, residentId) {
+  const byTopic = new Map();
+  for (const c of recentChats(chatSessions)) {
+    if (c.residentId !== residentId) continue;
+    const at = c.updatedAt || c.startedAt;
+    for (const topic of c.topics) {
+      const entry = byTopic.get(topic) || { topic, label: topicLabel(topic), conversations: 0, at };
+      entry.conversations += 1;
+      if (at > entry.at) entry.at = at;
+      byTopic.set(topic, entry);
+    }
+  }
+  return [...byTopic.values()].sort((a, b) => b.at.localeCompare(a.at));
+}
+
 // Exported because the check-in endpoint returns it now: the streak is what
 // the resident sees at the end of a check-in, in the place the dinner-pass
 // code used to occupy.
@@ -88,7 +116,11 @@ export function historyFor(checkins, residentId) {
 
 // One row per resident: who they are, plus how their check-ins have been
 // going. `detailed` adds the contact fields a counsellor needs to reach out.
-export function summarizeResident(resident, checkins, { detailed = false, assessments = [] } = {}) {
+export function summarizeResident(
+  resident,
+  checkins,
+  { detailed = false, assessments = [], chatSessions = [] } = {},
+) {
   const history = historyFor(checkins, resident.id);
   const last = history[history.length - 1] || null;
   const recent = history.slice(-7);
@@ -142,6 +174,7 @@ export function summarizeResident(resident, checkins, { detailed = false, assess
     checkinFlaggedRecently: checkinFlagRecently,
     checkinFlagReasons,
     riskScreen,
+    concerns: concernsFor(chatSessions, resident.id),
     assessmentCount: mine.length,
     lastAssessment,
     avgMoodRecent: round1(average(recent.map((c) => c.moodScore))),
@@ -189,7 +222,11 @@ export function summarizeResidents(residents, checkins, options) {
 
 // Whole-cohort picture for the dashboard: today's participation, who needs a
 // conversation, and how mood has moved over the last two weeks.
-export function buildOverview(residents, checkins, { trendDays = 14, assessments = [] } = {}) {
+export function buildOverview(
+  residents,
+  checkins,
+  { trendDays = 14, assessments = [], chatSessions = [] } = {},
+) {
   const today = isoDay(0);
   const summaries = summarizeResidents(residents, checkins, { detailed: false, assessments });
 
@@ -246,6 +283,20 @@ export function buildOverview(residents, checkins, { trendDays = 14, assessments
       reasons: a.flagReasons || [],
     }));
 
+  // Who raised what with the companion, one entry per student per topic, so
+  // the dashboard can list the students under each topic without a student who
+  // talked about placements five times turning up five times.
+  const recentConcerns = residents
+    .flatMap((r) =>
+      concernsFor(chatSessions, r.id).map((c) => ({
+        residentId: r.id,
+        residentName: r.name,
+        ...c,
+        date: c.at.slice(0, 10),
+      })),
+    )
+    .sort((a, b) => b.at.localeCompare(a.at));
+
   const atRisk = summaries.filter((s) => s.riskScreen && s.riskScreen.recent);
 
   return {
@@ -260,6 +311,7 @@ export function buildOverview(residents, checkins, { trendDays = 14, assessments
       atRisk: atRisk.length,
       acuteRisk: atRisk.filter((s) => s.riskScreen.level === 'acute').length,
       assessmentsTaken: assessments.length,
+      raisedInChat: new Set(recentConcerns.map((c) => c.residentId)).size,
       totalCheckIns: checkins.length,
       avgMoodToday: round1(
         average(checkins.filter((c) => c.date === today).map((c) => c.moodScore)),
@@ -269,6 +321,8 @@ export function buildOverview(residents, checkins, { trendDays = 14, assessments
     moodDistribution,
     recentFlags,
     recentRiskScreens,
+    recentConcerns,
+    topics: TOPICS.map(({ id, label }) => ({ id, label })),
     needsAttention: summaries.filter((s) => s.flaggedRecently).slice(0, 8),
     quietest: summaries
       .filter((s) => s.onboarded && !s.flaggedRecently)
