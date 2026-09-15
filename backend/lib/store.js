@@ -70,6 +70,7 @@ const INDEXED = [
   'pathProgress',
   'exportLog',
   'enquiries',
+  'staff',
 ];
 
 async function ensureIndexes(client) {
@@ -280,5 +281,7 @@ export const getChatSessions = () => readAll('chatSessions');
 // audit records was never the behaviour anybody wanted from an audit log.
 export const getExportLog = () => readAll('exportLog');
 export const getEnquiries = () => readAll('enquiries');
+// Admin panel users and their designation: counsellor or manager.
+export const getStaff = () => readAll('staff');
 
 export const appendExportLog = (entry) => appendRecord('exportLog', entry);

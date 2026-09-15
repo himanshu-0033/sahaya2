@@ -1,4 +1,4 @@
-import { getCheckins, getResidents, getAssessments, getChatSessions } from '../../lib/store.js';
+import { getCheckins, getResidents, getAssessments, getChatSessions, getStaff } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { counsellorAllowlist, requireSuperAdmin } from '../../lib/auth.js';
 import { summarizeResidents } from '../../lib/analytics.js';
@@ -20,12 +20,14 @@ export default async function handler(req, res) {
   const admin = await requireSuperAdmin(req, res);
   if (!admin) return;
 
-  const [residents, checkins, assessments, chatSessions] = await Promise.all([
+  const [residents, checkins, assessments, chatSessions, staff] = await Promise.all([
     getResidents(),
     getCheckins(),
     getAssessments(),
     getChatSessions(),
+    getStaff(),
   ]);
+  const roleOf = new Map(staff.map((s) => [s.id, s.role]));
   const allowlist = counsellorAllowlist();
   const today = new Date().toISOString().slice(0, 10);
   const summaries = new Map(
@@ -44,6 +46,9 @@ export default async function handler(req, res) {
       return {
         email,
         name: own?.name || null,
+        // Counsellor or manager, as they said on first sign-in; null if they
+        // have not signed in yet.
+        role: roleOf.get(email) || null,
         canOpenConsole: allowlist.includes(email),
         students: students.length,
         assigned: residents.filter((r) => r.assignedBy?.[email]).length,

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { assignCounsellor, getTeam } from '../lib/api.js';
 import PeoplePicker from '../components/PeoplePicker.jsx';
+import { ROLE_LABEL } from '../lib/roles.js';
 
 // The super admin's page: every counsellor and how the students each of them
 // looks after are doing, the students nobody has yet, and the form that assigns
@@ -116,10 +117,11 @@ export default function Team() {
           <p className="mt-3 text-sm text-[var(--color-muted)]">No counsellors yet.</p>
         ) : (
           <div className="card-soft mt-4 overflow-x-auto rounded-2xl">
-            <table className="w-full min-w-[720px] text-sm">
+            <table className="w-full min-w-[820px] text-sm">
               <thead>
                 <tr className="text-left text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
-                  <th className="px-4 py-3">Counsellor</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Students</th>
                   <th className="px-4 py-3">Checked in today</th>
                   <th className="px-4 py-3">Need a conversation</th>
@@ -137,6 +139,13 @@ export default function Team() {
                         <span className="ml-2 rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag-deep)]">
                           Not on allowlist
                         </span>
+                      )}
+                    </td>
+                    <td className={cell}>
+                      {c.role ? (
+                        <span className="rounded-full bg-[#e3efeb] px-2.5 py-0.5 text-xs font-medium text-[#1f4d47]">{ROLE_LABEL[c.role]}</span>
+                      ) : (
+                        <span className="text-xs text-[var(--color-muted)]">Not signed in yet</span>
                       )}
                     </td>
                     <td className={`${cell} tabular-nums`}>

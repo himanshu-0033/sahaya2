@@ -27,6 +27,7 @@ const { default: assignHandler } = await import('../handlers/admin/assign.js');
 const { default: teamHandler } = await import('../handlers/admin/team.js');
 const { default: meHandler } = await import('../handlers/admin/me.js');
 const { default: sharingHandler } = await import('../handlers/sharing.js');
+const { default: roleHandler } = await import('../handlers/admin/role.js');
 
 function fakeRes() {
   return {
@@ -61,8 +62,20 @@ await appendRecord('residents', { id: 'student-2', name: 'Bilal', email: 'bilal@
 let res = await call(meHandler, { as: SUPER });
 assert.equal(res.statusCode, 200, 'the owner opens the console without being on the allowlist');
 assert.equal(res.body.admin.superAdmin, true);
+assert.equal(res.body.admin.role, 'super_admin');
 res = await call(meHandler, { as: COUNSELLOR });
 assert.equal(res.body.admin.superAdmin, false, 'an allowlisted counsellor is not a super admin');
+assert.equal(res.body.admin.role, null, 'and is asked their role on first sign-in');
+
+// --- counsellor or manager ----------------------------------------------
+res = await call(roleHandler, { method: 'POST', as: OTHER, body: { role: 'wizard' } });
+assert.equal(res.statusCode, 400, 'only counsellor or manager');
+res = await call(roleHandler, { method: 'POST', as: OTHER, body: { role: 'manager' } });
+assert.equal(res.statusCode, 200);
+res = await call(meHandler, { as: OTHER });
+assert.equal(res.body.admin.role, 'manager', 'the answer is kept');
+res = await call(roleHandler, { method: 'POST', as: SUPER, body: { role: 'counsellor' } });
+assert.equal(res.statusCode, 400, 'the super admin keeps the super admin role');
 
 // --- what each sees -------------------------------------------------------
 res = await call(residentsHandler, { as: SUPER });

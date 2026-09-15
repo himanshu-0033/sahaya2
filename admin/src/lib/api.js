@@ -37,6 +37,11 @@ export function login({ identifier, password }) {
   });
 }
 
+// Counsellor or manager, asked once on first sign-in.
+export function setRole(role) {
+  return request('/api/admin/role', { method: 'POST', body: JSON.stringify({ role }) });
+}
+
 // Confirms the signed-in account is on the counsellor allowlist.
 export function getAdmin() {
   return request('/api/admin/me');

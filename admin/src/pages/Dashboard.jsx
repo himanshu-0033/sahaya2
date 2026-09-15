@@ -7,6 +7,7 @@ import { Monogram, Ring, Spark } from '../components/Spark.jsx';
 import { getOverview, getExportLog } from '../lib/api.js';
 import { buildCaseload, hasScreen, raisedInChat } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
+import { roleLabel } from '../lib/roles.js';
 
 // The console's first screen: one sentence saying what needs doing, six figures
 // that double as filters, the fortnight's check-ins beside the month's moods,
@@ -160,7 +161,7 @@ function EventRow({ event, residentId }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ admin }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -245,9 +246,15 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-up">
       <header>
-        <p className="inline-block rounded-full border border-[var(--line-2)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
-          {formatDate(data.today)}
-        </p>
+        {/* The date, and who this dashboard belongs to. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="inline-block rounded-full border border-[var(--line-2)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-soft)]">
+            {formatDate(data.today)}
+          </p>
+          <p className="inline-block rounded-full bg-[#1f4d47] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+            {roleLabel(admin)} dashboard
+          </p>
+        </div>
         <h2 className="font-display mt-4 max-w-2xl text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.12]" style={{ textWrap: 'balance' }}>
           {lede}
         </h2>

@@ -28,7 +28,7 @@ export default function AdminShell({ admin, onSignOut, children }) {
             <div>
               <p className="font-display text-xl leading-none">DP Sahay AI</p>
               <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--color-muted)]">
-                Admin console
+                Admin panel
               </p>
             </div>
           </div>

@@ -29,6 +29,7 @@ import passwordHandler from '../handlers/auth/password.js';
 import caregiverResidentsHandler from '../handlers/caregiver/residents.js';
 import caregiverResidentHandler from '../handlers/caregiver/resident.js';
 import adminMeHandler from '../handlers/admin/me.js';
+import adminRoleHandler from '../handlers/admin/role.js';
 import adminOverviewHandler from '../handlers/admin/overview.js';
 import adminResidentsHandler from '../handlers/admin/residents.js';
 import adminResidentHandler from '../handlers/admin/resident.js';
@@ -66,6 +67,8 @@ export const routes = {
   '/api/caregiver/residents': caregiverResidentsHandler,
   '/api/caregiver/resident': caregiverResidentHandler,
   '/api/admin/me': adminMeHandler,
+  // Counsellor or manager, chosen once on first sign-in to the admin panel.
+  '/api/admin/role': adminRoleHandler,
   '/api/admin/overview': adminOverviewHandler,
   '/api/admin/residents': adminResidentsHandler,
   '/api/admin/resident': adminResidentHandler,

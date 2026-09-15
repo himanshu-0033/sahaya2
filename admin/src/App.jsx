@@ -8,6 +8,7 @@ import Residents from './pages/Residents.jsx';
 import ResidentDetail from './pages/ResidentDetail.jsx';
 import Enquiries from './pages/Enquiries.jsx';
 import Team from './pages/Team.jsx';
+import RolePicker from './pages/RolePicker.jsx';
 import { clearSession, getSession } from './lib/session.js';
 import { getAdmin, SIGNED_OUT_EVENT } from './lib/api.js';
 
@@ -88,6 +89,14 @@ export default function App() {
     );
   }
 
+  // Everyone but the super admin says once whether they are a counsellor or a
+  // manager, before their dashboard.
+  if (!admin.superAdmin && !admin.role) {
+    return (
+      <RolePicker admin={admin} onChosen={(role) => setAdmin({ ...admin, role })} onSignOut={handleSignOut} />
+    );
+  }
+
   return (
     <AdminShell admin={admin} onSignOut={handleSignOut}>
       {/* Title, scroll and focus on navigation. Mounted in this branch only —
@@ -95,7 +104,7 @@ export default function App() {
           the document title set in index.html. */}
       <RouteChrome />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Dashboard admin={admin} />} />
         <Route path="/residents" element={<Residents />} />
         <Route path="/residents/:residentId" element={<ResidentDetail />} />
         <Route path="/enquiries" element={<Enquiries />} />

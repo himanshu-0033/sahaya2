@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { roleLabel } from '../lib/roles.js';
 
 // The signed-in counsellor, as an avatar in the top-right corner, with who they
 // are and the way out behind it.
@@ -78,7 +79,7 @@ export default function ProfileMenu({ admin, onSignOut }) {
             {name && <p className="truncate text-sm font-semibold">{name}</p>}
             <p className="truncate text-xs text-[var(--color-muted)]">{admin?.email}</p>
             <span className="mt-2 inline-block rounded-full bg-[var(--color-lavender-soft)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-lavender-deep)]">
-              {admin?.superAdmin ? 'Super admin' : 'Counsellor'}
+              {roleLabel(admin)}
             </span>
           </div>
           <button

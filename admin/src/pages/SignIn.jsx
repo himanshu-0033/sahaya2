@@ -4,7 +4,7 @@ import Logo from '../components/Logo.jsx';
 import { login } from '../lib/api.js';
 import { decodeJwt, saveSession } from '../lib/session.js';
 
-// The door to the counsellor console.
+// The door to the admin panel.
 //
 // Built to the same shape as the resident app's landing page, a name set large
 // beside a photograph, but for the other side of the app: it says what the
@@ -48,7 +48,7 @@ export default function SignIn({ onSignedIn, notice }) {
         <div>
           <p className="font-display text-xl leading-none">DP Sahay AI</p>
           <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--color-muted)]">
-            Admin console
+            Admin panel
           </p>
         </div>
       </header>
@@ -56,13 +56,16 @@ export default function SignIn({ onSignedIn, notice }) {
       <main className="mx-auto grid max-w-6xl items-center gap-12 px-6 pt-4 pb-16 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pt-10">
         {/* ─────────────────────────────── what the console is for */}
         <section className="animate-fade-up">
-          <p className="inline-block rounded-full border border-[var(--line-3)] px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
-            For counsellors
-          </p>
+          <div className="flex items-center gap-3">
+            <Logo size={52} glow={false} />
+            <p className="inline-block rounded-full border border-[var(--line-3)] px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--color-ink-soft)]">
+              Staff only
+            </p>
+          </div>
           <h1 className="font-display mt-6 text-[3.4rem] leading-[0.95] tracking-[-0.02em] sm:text-[4.75rem]" style={{ color: DEEP }}>
             DP Sahay
             <span className="ml-2 align-top font-sans text-[0.22em] font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--color-lavender-deep)' }}>
-              Console
+              Admin panel
             </span>
           </h1>
           <p className="mt-6 max-w-lg text-[1.25rem] leading-snug text-[var(--color-ink)]">
@@ -75,10 +78,10 @@ export default function SignIn({ onSignedIn, notice }) {
             </svg>
             <span>
               <strong className="font-semibold" style={{ color: DEEP }}>
-                Each counsellor sees their own students
+                Everyone sees their own students
               </strong>
-              : the ones assigned to them or who invited them. Risk screens come first, and every
-              export is logged.
+              : the ones assigned to them or who invited them, and the super admin sees all of them.
+              Risk screens come first, and every export is logged.
             </span>
           </p>
 
@@ -119,9 +122,9 @@ export default function SignIn({ onSignedIn, notice }) {
 
           <div className="relative mx-auto w-full max-w-md py-0 lg:py-14">
             <div className="rounded-3xl border border-[var(--line-1)] bg-white/95 p-7 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)] backdrop-blur sm:p-8">
-              <h2 className="font-display text-[1.75rem] leading-tight">Sign in to the console</h2>
+              <h2 className="font-display text-[1.75rem] leading-tight">Sign in to the admin panel</h2>
               <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                Use the account your counsellor access is registered under.
+                Use the account your admin panel access is registered under.
               </p>
 
               {notice && (
@@ -183,8 +186,9 @@ export default function SignIn({ onSignedIn, notice }) {
               </form>
 
               <p className="mt-5 text-xs leading-relaxed text-[var(--color-muted)]">
-                Being on the allowlist opens the console. Counsellors see the students assigned to
-                them or who invited them; the super admin sees everyone.
+                Being on the allowlist opens the admin panel. On your first sign-in you choose
+                counsellor or manager. You see the students assigned to you or who invited you;
+                the super admin sees everyone.
               </p>
             </div>
           </div>
