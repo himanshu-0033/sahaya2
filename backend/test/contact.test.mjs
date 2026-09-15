@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import * as server from '../lib/contact.js';
 import * as form from '../../frontend/src/shared/contact.js';
+import * as consoleForm from '../../admin/src/lib/contact.js';
 
 const EMAILS = [
   ['himanshumalik0033@gmail.com', true],
@@ -33,7 +34,7 @@ const PHONES = [
   ['', false],
 ];
 
-for (const impl of [server, form]) {
+for (const impl of [server, form, consoleForm]) {
   for (const [value, ok] of EMAILS) assert.equal(impl.isValidEmail(value), ok, `email "${value}"`);
   for (const [value, ok, why = ''] of PHONES) assert.equal(impl.isValidPhone(value), ok, `phone "${value}" ${why}`);
 }

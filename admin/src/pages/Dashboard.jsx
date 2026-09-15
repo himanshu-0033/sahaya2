@@ -381,11 +381,11 @@ export default function Dashboard() {
                     className="group grid gap-4 px-2 py-4 transition-colors hover:bg-[var(--surface-1)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
                   >
                     <div className="flex min-w-0 gap-3">
-                      <Monogram name={r.name} />
+                      <Monogram name={r.name || r.email} />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
                           <p className="font-medium transition-colors group-hover:text-[var(--color-lavender-deep)]">
-                            {r.name}
+                            {r.name || r.email || 'Unnamed student'}
                           </p>
                           {r.email && (
                             <p className="text-xs text-[var(--color-muted)]">{r.email}</p>

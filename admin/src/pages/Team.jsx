@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { assignCounsellor, getTeam } from '../lib/api.js';
+import PeoplePicker from '../components/PeoplePicker.jsx';
 
 // The super admin's page: every counsellor and how the students each of them
 // looks after are doing, the students nobody has yet, and the form that assigns
@@ -12,8 +13,8 @@ import { assignCounsellor, getTeam } from '../lib/api.js';
 export default function Team() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [studentId, setStudentId] = useState('');
-  const [email, setEmail] = useState('');
+  const [counsellor, setCounsellor] = useState(null);
+  const [student, setStudent] = useState(null);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState(null);
   const [formError, setFormError] = useState(null);
@@ -30,16 +31,14 @@ export default function Team() {
 
   function assign(e) {
     e.preventDefault();
-    if (!studentId || !email.trim()) return;
+    if (!student || !counsellor) return;
     setSaving(true);
     setNote(null);
     setFormError(null);
-    assignCounsellor({ residentId: studentId, email: email.trim() })
+    assignCounsellor({ residentId: student.id, email: counsellor.email })
       .then(() => {
-        const student = data.students.find((s) => s.id === studentId);
-        setNote(`${email.trim()} can now see ${student?.name || 'this student'}.`);
-        setStudentId('');
-        setEmail('');
+        setNote(`${counsellor.name || counsellor.email} can now see ${student.name || student.email}.`);
+        setStudent(null);
         return load();
       })
       .catch((err) => setFormError(err.message))
@@ -65,51 +64,43 @@ export default function Team() {
 
       <section className="card-soft rounded-2xl p-6">
         <h3 className="font-display text-xl">Assign a counsellor</h3>
-        <form onSubmit={assign} className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">Student</span>
-            <select
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              className="input-soft mt-1 w-full"
-              required
-            >
-              <option value="">Choose a student</option>
-              {data.students.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name} ({s.email})
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-wider text-[var(--color-muted)]">
-              Counsellor email
-            </span>
-            {/* A native datalist: the known counsellors to pick from, and still
-                room to type a new address. */}
-            <input
-              type="email"
-              list="counsellor-emails"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="counsellor@college.edu"
-              className="input-soft mt-1 w-full"
-              required
+        {/* Counsellor on one side, student on the other, each found by typing
+            part of a name or an email. */}
+        <form onSubmit={assign} className="mt-5">
+          <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-start">
+            <PeoplePicker
+              label="Counsellor"
+              placeholder="Type a counsellor's name or email"
+              people={data.counsellors.map((c) => ({ id: c.email, name: c.name, email: c.email }))}
+              selected={counsellor}
+              onSelect={setCounsellor}
+              allowNew
             />
-            <datalist id="counsellor-emails">
-              {data.counsellors.map((c) => (
-                <option key={c.email} value={c.email} />
-              ))}
-            </datalist>
-          </label>
-          <button
-            type="submit"
-            disabled={saving || !studentId || !email.trim()}
-            className="rounded-full bg-[var(--color-lavender-deep)] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40"
-          >
-            {saving ? 'Assigning…' : 'Assign'}
-          </button>
+            <span
+              aria-hidden="true"
+              className="hidden h-[3.25rem] items-center self-end text-[var(--color-lavender-deep)] md:flex"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </span>
+            <PeoplePicker
+              label="Student"
+              placeholder="Type a student's name or email"
+              people={data.students}
+              selected={student}
+              onSelect={setStudent}
+            />
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="submit"
+              disabled={saving || !student || !counsellor}
+              className="rounded-full bg-[var(--color-lavender-deep)] px-6 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+            >
+              {saving ? 'Assigning…' : 'Assign counsellor'}
+            </button>
+          </div>
         </form>
         {note && <p className="mt-3 text-sm text-[var(--color-teal-dark)]" role="status">{note}</p>}
         {formError && <p className="mt-3 text-sm text-[var(--color-flag-deep)]" role="alert">{formError}</p>}
@@ -140,7 +131,8 @@ export default function Team() {
                 {data.counsellors.map((c) => (
                   <tr key={c.email} className="border-t border-[var(--line-1)]">
                     <td className="px-4 py-3">
-                      <span className="font-medium">{c.email}</span>
+                      <span className="font-medium">{c.name || c.email}</span>
+                      {c.name && <span className="ml-2 text-xs text-[var(--color-muted)]">{c.email}</span>}
                       {!c.canOpenConsole && (
                         <span className="ml-2 rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag-deep)]">
                           Not on allowlist
@@ -181,7 +173,7 @@ export default function Team() {
             {data.unassigned.map((s) => (
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
                 <Link to={`/residents/${encodeURIComponent(s.id)}`} className="min-w-0">
-                  <span className="font-medium">{s.name}</span>
+                  <span className="font-medium">{s.name || s.email || 'Unnamed student'}</span>
                   <span className="ml-2 text-xs text-[var(--color-muted)]">{s.email}</span>
                   {s.flaggedRecently && (
                     <span className="ml-2 rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag-deep)]">
@@ -192,7 +184,7 @@ export default function Team() {
                 <button
                   type="button"
                   onClick={() => {
-                    setStudentId(s.id);
+                    setStudent({ id: s.id, name: s.name, email: s.email });
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="rounded-full border border-[var(--color-lavender-deep)] px-3 py-1 text-xs text-[var(--color-lavender-deep)]"

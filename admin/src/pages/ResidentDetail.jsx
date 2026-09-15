@@ -314,7 +314,7 @@ export default function ResidentDetail() {
         <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 className="font-display text-3xl">{data.resident.name}</h2>
+              <h2 className="font-display text-3xl">{data.resident.name || data.resident.email || 'Unnamed student'}</h2>
               <p className="mt-1 text-sm text-[var(--color-muted)]">{data.resident.email}</p>
             </div>
             <div className="flex items-center gap-3">
@@ -479,8 +479,9 @@ export default function ResidentDetail() {
                     <summary className="flex cursor-pointer flex-wrap items-center gap-3 text-sm">
                       <span>{formatDate(s.date)}</span>
                       <span className="text-[var(--color-muted)]">
-                        {s.summary.respondedCount} of {s.summary.plateCount} plates ·{' '}
-                        {s.summary.wordCount} words
+                        {s.summary
+                          ? `${s.summary.respondedCount} of ${s.summary.plateCount} plates · ${s.summary.wordCount} words`
+                          : `${(s.responses || []).filter((r) => r.text).length} plates answered`}
                       </span>
                       {s.flagged && <FlagBadge />}
                     </summary>
@@ -491,7 +492,7 @@ export default function ResidentDetail() {
                       </p>
                     )}
 
-                    {s.summary.recurring.length > 0 && (
+                    {s.summary?.recurring?.length > 0 && (
                       <p className="mt-3 text-xs text-[var(--color-muted)]">
                         Repeated across plates:{' '}
                         {s.summary.recurring.map((r) => `${r.word} (×${r.plates})`).join(', ')}
@@ -499,7 +500,7 @@ export default function ResidentDetail() {
                     )}
 
                     <ul className="mt-4 space-y-3">
-                      {s.responses
+                      {(s.responses || [])
                         .filter((r) => r.text)
                         .map((r) => (
                           <li key={r.plateId} className="border-t border-[var(--line-1)] pt-3">
@@ -532,7 +533,7 @@ export default function ResidentDetail() {
               <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
                 Most recent: {data.summary.lastAssessment.instrumentName} ·{' '}
                 <span className="text-[var(--color-ink)]">
-                  {data.summary.lastAssessment.band.label}
+                  {data.summary.lastAssessment.band?.label || 'No band recorded'}
                 </span>
                 {!data.summary.lastAssessment.reportsBandOnly &&
                   ` (${data.summary.lastAssessment.score}/${data.summary.lastAssessment.maxScore})`}
@@ -578,7 +579,7 @@ export default function ResidentDetail() {
                           )}
                         </td>
                         <td className="px-5 py-3">
-                          <span className="text-[var(--color-ink-soft)]">{a.band.label}</span>
+                          <span className="text-[var(--color-ink-soft)]">{a.band?.label || 'No band recorded'}</span>
                           {a.flagged && (
                             <span className="ml-2 whitespace-nowrap rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[10px] text-[var(--color-flag-deep)]">
                               {a.riskLevel === 'acute' ? 'At risk now' : 'Flagged'}

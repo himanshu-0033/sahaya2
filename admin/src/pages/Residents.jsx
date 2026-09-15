@@ -271,7 +271,7 @@ export default function Residents() {
                 className="card-soft flex flex-wrap items-center gap-4 rounded-2xl px-5 py-4 transition-colors hover:border-[var(--color-lavender)]/40"
               >
                 <div className="min-w-[180px] flex-1">
-                  <p className="font-medium">{r.name}</p>
+                  <p className="font-medium">{r.name || r.email || 'Unnamed student'}</p>
                   <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
                   {r.counsellors && (
                     <p className="mt-1 text-xs text-[var(--color-lavender-deep)]">

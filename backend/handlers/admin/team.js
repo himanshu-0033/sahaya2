@@ -39,8 +39,11 @@ export default async function handler(req, res) {
     .map((email) => {
       const students = residents.filter((r) => sharedWithList(r).includes(email)).map((r) => summaries.get(r.id));
       const moods = students.map((s) => s.avgMoodRecent).filter((m) => m != null);
+      // A counsellor who also has an account in the app has a name there.
+      const own = residents.find((r) => (r.email || '').toLowerCase() === email);
       return {
         email,
+        name: own?.name || null,
         canOpenConsole: allowlist.includes(email),
         students: students.length,
         assigned: residents.filter((r) => r.assignedBy?.[email]).length,

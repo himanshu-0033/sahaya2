@@ -278,7 +278,7 @@ export function buildOverview(
     count: checkins.filter((c) => c.date >= since && c.moodScore === value).length,
   }));
 
-  const residentName = new Map(residents.map((r) => [r.id, r.name]));
+  const residentName = new Map(residents.map((r) => [r.id, r.name || r.email]));
   const recentFlags = checkins
     .filter((c) => c.flagged)
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -320,7 +320,7 @@ export function buildOverview(
     .flatMap((r) =>
       concernsFor(chatSessions, r.id).map((c) => ({
         residentId: r.id,
-        residentName: r.name,
+        residentName: r.name || r.email || 'Unknown',
         ...c,
         date: c.at.slice(0, 10),
       })),
@@ -333,7 +333,7 @@ export function buildOverview(
     if (!s.chatSafety) continue;
     recentRiskScreens.push({
       residentId: s.id,
-      residentName: s.name,
+      residentName: s.name || s.email || 'Unknown',
       instrumentId: 'chat',
       instrumentName: 'Chat with DP',
       level: 'positive',

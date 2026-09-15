@@ -75,7 +75,11 @@ export function Ring({ value, max, tone = 'var(--color-lavender)', size = 34 }) 
 // a triage list is not something a counsellor wants over their shoulder on a
 // shared screen. Initials carry the same rhythm out of data that actually
 // exists, and the tint is derived from the name so a person keeps the same one.
-export function Monogram({ name = '', size = 36 }) {
+export function Monogram({ name, size = 36 }) {
+  // String(), not a default parameter: a default covers undefined, and MongoDB
+  // hands back a missing name as null. That crashed the whole dashboard the
+  // first time a super admin could see accounts created without one.
+  name = String(name || '');
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
