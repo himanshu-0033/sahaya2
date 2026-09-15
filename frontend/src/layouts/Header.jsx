@@ -18,7 +18,9 @@ import { useSession } from '../features/auth/useSession.js';
 // that has a shortcut worth putting there. It is a slot rather than a fixed
 // button because this masthead is on every page, and a Tests button on the
 // Tests page would be a link to where you already are.
-export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
+// `streak` is off on Home, where the day card carries the streak itself; two of
+// the same badge a few pixels apart read as two different numbers.
+export default function Header({ eyebrow = 'Daily check-in', leading = null, streak = true }) {
   const session = useSession();
   const profile = session?.profile;
   // /account already holds the whole profile — name, email, who it is shared
@@ -27,15 +29,17 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
   return (
     <header className="flex items-center justify-between gap-3 pt-2 pb-1 md:hidden">
       <div className="flex min-w-0 items-center gap-3">
-        <Link to="/" className="press group flex shrink-0 items-center gap-2.5">
+        {/* min-w-0 and truncate, so on a narrow phone the name gives way rather
+            than the controls on the right being drawn on top of it. */}
+        <Link to="/" className="press group flex min-w-0 items-center gap-2">
           <Logo size={26} />
-          <span className="block">
+          <span className="block min-w-0">
             {/* "DP Sahay" carries the weight and "AI" is set back, because
                 the two halves are doing different jobs: one is the name, the
                 other is a disclosure. Running them at the same weight would
                 make "AI" look like part of the word. */}
-            <span className="font-display block text-[1.2rem] leading-none sm:text-[1.3rem]">
-              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)]">AI</span>
+            <span className="font-display block truncate text-[1.2rem] leading-none sm:text-[1.3rem]">
+              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)] max-[399px]:hidden">AI</span>
             </span>
             <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
               {eyebrow}
@@ -44,15 +48,15 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null }) {
         </Link>
         {leading}
       </div>
-      <div className="flex shrink-0 items-center gap-3">
-        <StreakBadge />
-        <CrisisContacts variant="link" />
+      <div className="flex shrink-0 items-center gap-2">
+        {streak && <StreakBadge compact />}
+        <CrisisContacts variant="link" compact />
         {profile && (
           <Link
             to="/account"
             aria-label="Your account"
             title={profile.name || 'Your account'}
-            className="press flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
+            className="press flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
           >
             {profile.picture ? (
               <img src={profile.picture} alt="" className="h-full w-full object-cover" />

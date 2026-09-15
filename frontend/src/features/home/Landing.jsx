@@ -4,6 +4,7 @@ import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import LoadError from '../../shared/LoadError.jsx';
 import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
+import StreakBadge from '../../shared/StreakBadge.jsx';
 import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
 import { ASK_DP_EVENT } from '../companion/AskDP.jsx';
 import DarkAccountHero from '../auth/DarkAccountHero.jsx';
@@ -146,11 +147,10 @@ function TodayCard({ name, status }) {
         <p className="marginalia">
           {greeting()}, {name}
         </p>
-        {status.streak > 0 && (
-          <span className="rounded-full bg-[var(--color-teal-soft)] px-2.5 py-1 text-xs font-medium whitespace-nowrap text-[var(--color-teal-dark)]">
-            <span className="num">{status.streak}</span> {status.streak === 1 ? 'day' : 'days'}
-          </span>
-        )}
+        {/* The same badge as the header on every other screen, so the streak
+            looks like one thing wherever it appears. The header leaves it off
+            here, so it is shown once. */}
+        <StreakBadge label />
       </div>
 
       <h1 id="today-heading" className="font-display mt-2 text-[1.6rem] leading-tight sm:text-[2rem]">
@@ -466,7 +466,7 @@ export default function Landing() {
 
   return (
     <PageShell section="home" fit>
-      <Header eyebrow="Home" />
+      <Header eyebrow="Home" streak={false} />
 
       {/* ═══════════════════════════════════════════ Today and quick actions
           One row from the laptop breakpoint up, stretched to one height, so

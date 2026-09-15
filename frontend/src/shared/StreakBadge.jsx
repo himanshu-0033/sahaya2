@@ -14,7 +14,10 @@ import { useSession } from '../features/auth/useSession.js';
 // on the exact day someone is least able to take one.
 export const CHECKIN_EVENT = 'sahaya:checkin';
 
-export default function StreakBadge({ className = '' }) {
+// `label` adds the word after the number ("🔥 4 days"), for the one place with
+// room to say it: the day card on Home.
+// `compact` is the phone header, where every pixel beside the name counts.
+export default function StreakBadge({ className = '', label = false, compact = false }) {
   const session = useSession();
   const [streak, setStreak] = useState(0);
   const [checkedIn, setCheckedIn] = useState(true);
@@ -66,12 +69,12 @@ export default function StreakBadge({ className = '' }) {
           ? `Check-in streak: ${days}`
           : `Check-in streak: ${days}. Today's check-in is not done yet.`
       }
-      className={`press flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--color-amber)]/40 bg-[var(--color-amber)]/12 px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-amber)]/70 ${className}`}
+      className={`press flex shrink-0 items-center rounded-full border border-[var(--color-amber)]/40 bg-[var(--color-amber)]/12 ${compact ? 'gap-1 px-2 py-1 text-xs' : 'gap-1.5 px-2.5 py-1.5 text-sm'} font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-amber)]/70 ${className}`}
     >
-      <span aria-hidden="true" className="text-base leading-none">
+      <span aria-hidden="true" className={`${compact ? 'text-sm' : 'text-base'} leading-none`}>
         🔥
       </span>
-      <span className="leading-none tabular-nums">{streak}</span>
+      <span className="leading-none tabular-nums">{label ? days : streak}</span>
     </Link>
   );
 }

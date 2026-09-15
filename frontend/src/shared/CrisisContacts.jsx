@@ -94,7 +94,9 @@ function Lifebuoy({ size = 16 }) {
 
 // Some pages still pass `dark`. The trigger is a solid red now, which reads the
 // same on either ground, so it is simply ignored.
-export default function CrisisContacts({ variant = 'button' }) {
+// `compact` is for the phone header, where three controls share 360 pixels: under
+// 400px wide the pill reads "Help", still solid red with the lifebuoy.
+export default function CrisisContacts({ variant = 'button', compact = false }) {
   const [open, setOpen] = useState(false);
   const { dialogRef, triggerRef } = useDialogFocus(open);
 
@@ -119,13 +121,23 @@ export default function CrisisContacts({ variant = 'button' }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className={`press inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_rgba(180,35,24,0.7)] transition-[filter] hover:brightness-110 ${
+        aria-label={compact ? 'Get help now' : undefined}
+        className={`press inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full ${compact ? 'px-3' : 'px-4'} py-2.5 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_rgba(180,35,24,0.7)] transition-[filter] hover:brightness-110 ${
           variant === 'button' ? 'w-full px-5 py-3' : 'shrink-0'
         }`}
         style={{ background: C.red }}
       >
         <Lifebuoy />
-        {variant === 'button' ? 'Need help right now? Crisis contacts' : 'Get help now'}
+        {variant === 'button' ? (
+          'Need help right now? Crisis contacts'
+        ) : compact ? (
+          <>
+            <span className="min-[400px]:hidden">Help</span>
+            <span className="hidden min-[400px]:inline">Get help now</span>
+          </>
+        ) : (
+          'Get help now'
+        )}
       </button>
 
       {/* Portalled to <body>. Any ancestor with a backdrop blur or a
