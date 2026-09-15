@@ -13,7 +13,6 @@ import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } fro
 import { pathPhoto } from '../../shared/photos.js';
 import { accent } from '../../shared/accents.js';
 import { ARTICLES } from '../read/articles.js';
-import { SHELVES } from '../read/books.js';
 import { TEST_INDEX } from '../read/testIndex.js';
 
 // Home.
@@ -103,8 +102,6 @@ const ACTIONS = [
     ),
   },
 ];
-
-const PLATE_COUNT = 10;
 
 function greeting() {
   const h = new Date().getHours();
@@ -326,9 +323,8 @@ export default function Landing() {
   // The one unfinished path, or null. Its own state rather than the whole
   // catalogue, so nothing else on this page has to know the paths exist.
   const [carryOn, setCarryOn] = useState(null);
-  // Practice and path counts, and the grounding streak, for the quick actions
-  // and the numbers band. They come off the two catalogue requests this page
-  // already makes.
+  // Practice and path counts, and the grounding streak, for the quick actions.
+  // They come off the two catalogue requests this page already makes.
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
@@ -419,18 +415,6 @@ export default function Landing() {
   const first = profile.name.split(' ')[0];
   const questionnaires = TEST_INDEX.filter((t) => t.available).length;
 
-  // Every number here is counted from what the app holds. No users served, no
-  // outcomes: a prototype has none to report, and a mental-health app that
-  // rounds up is the last place anyone should find an invented statistic.
-  const stats = [
-    { value: questionnaires, label: 'published questionnaires', to: '/assessments' },
-    { value: counts.practices, label: 'grounding practices', to: '/grounding' },
-    { value: counts.paths, label: 'guided paths', to: '/paths' },
-    { value: PLATE_COUNT, label: 'inkblot plates', to: '/inkblot-test' },
-    { value: ARTICLES.length, label: 'short essays', to: '/read' },
-    { value: SHELVES.reduce((n, s) => n + s.books.length, 0), label: 'books worth the time', to: '/read' },
-  ].filter((s) => s.value);
-
   return (
     <PageShell section="home" fit>
       <Header eyebrow="Home" streak={false} />
@@ -504,29 +488,6 @@ export default function Landing() {
             </Link>
           ))}
         </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════ What is in here
-          Big numbers on a lavender band, each one a way in. */}
-      <section className="impact-band animate-slide-up stack-section" style={{ animationDelay: '300ms' }}>
-        <h2 className="font-display text-center text-[1.5rem] leading-tight text-[var(--sec-calm-deep)] sm:text-[1.9rem]">
-          Everything in here, counted
-        </h2>
-        <p className="mt-2 text-center text-sm text-[var(--color-ink)]">
-          Counted from what the app holds, not rounded up.
-        </p>
-        <ul className="mt-7 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3">
-          {stats.map((s) => (
-            <li key={s.label}>
-              <Link to={s.to} className="press block text-center">
-                <span className="impact-num num block">{s.value}</span>
-                <span className="mx-auto mt-2 block max-w-[9rem] text-sm leading-snug text-[var(--color-ink)]">
-                  {s.label}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
       </section>
 
       <div className="rule-fade stack-block" />

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
@@ -7,6 +8,7 @@ import { ARTICLES, TOPICS } from './articles.js';
 import { PAPERS, SHELVES } from './books.js';
 import { TEST_INDEX } from './testIndex.js';
 import { articlePhoto } from '../../shared/photos.js';
+import { getGroundingCatalog, getPaths } from '../../shared/api.js';
 
 // The reading index.
 //
@@ -15,7 +17,9 @@ import { articlePhoto } from '../../shared/photos.js';
 // is not ready to be measured should still have a reason to be here, and
 // somewhere to go that is not a questionnaire.
 //
-// No fetch, no loading state, no error state. The articles ship with the app.
+// The articles ship with the app, so nothing here waits on the network except
+// two numbers in the band at the foot of the page, the practice and path
+// counts, and the band simply leaves out a number it could not get.
 
 // Grouped by domain, in the order the instruments are declared, so this list
 // and the Tests tab present the questionnaires in the same sequence.
@@ -25,6 +29,9 @@ const DOMAINS = TEST_INDEX.reduce((groups, test) => {
   else groups.push([test.domain, [test]]);
   return groups;
 }, []);
+
+// The ten Rorschach plates. A fixed set, so a constant rather than a fetch.
+const PLATE_COUNT = 10;
 
 function dayOfYear() {
   const d = new Date();
@@ -102,6 +109,18 @@ function ArticleCard({ article, index }) {
 export default function Read() {
   const navigate = useNavigate();
   const session = useSession();
+  // Practice and path counts for the numbers band. They live on the server.
+  const [counts, setCounts] = useState({});
+
+  useEffect(() => {
+    if (!session) return;
+    getGroundingCatalog()
+      .then((data) => setCounts((c) => ({ ...c, practices: (data.techniques || []).length })))
+      .catch(() => {});
+    getPaths()
+      .then((data) => setCounts((c) => ({ ...c, paths: (data.paths || []).length })))
+      .catch(() => {});
+  }, [session]);
 
   if (!session) {
     navigate('/');
@@ -116,6 +135,19 @@ export default function Read() {
   const [featured, ...others] = order;
   const nextFour = others.slice(0, 4);
   const moreEssays = others.slice(4);
+
+  // Every number in the band is counted from what the app holds. No users
+  // served, no outcomes: a prototype has none to report, and a mental-health
+  // app that rounds up is the last place anyone should find an invented
+  // statistic. Essays and books are on this page, so those two jump down it.
+  const stats = [
+    { value: TEST_INDEX.filter((t) => t.available).length, label: 'published questionnaires', to: '/assessments' },
+    { value: counts.practices, label: 'grounding practices', to: '/grounding' },
+    { value: counts.paths, label: 'guided paths', to: '/paths' },
+    { value: PLATE_COUNT, label: 'inkblot plates', to: '/inkblot-test' },
+    { value: ARTICLES.length, label: 'short essays', href: '#essays' },
+    { value: SHELVES.reduce((n, s) => n + s.books.length, 0), label: 'books worth the time', href: '#books' },
+  ].filter((s) => s.value);
 
   return (
     <PageShell section="read" width="wide">
@@ -133,7 +165,7 @@ export default function Read() {
 
       {/* Worth reading. Today's essay as a pull-quote card, and the next four
           as a list beside it on a laptop, below it on a phone. */}
-      <section className="animate-slide-up stack-section" style={{ animationDelay: '60ms' }}>
+      <section id="essays" className="animate-slide-up stack-section scroll-mt-24" style={{ animationDelay: '60ms' }}>
         <h2 className="home-section-title border-l-[3px] border-[var(--sec-read)] pl-3">Worth reading</h2>
 
         <div className="mt-4 grid gap-7 lg:grid-cols-[1.55fr_1fr] lg:gap-6">
@@ -181,7 +213,7 @@ export default function Read() {
           reads one of them gets more out of it than out of anything we could
           write. Shelved rather than listed flat: "I cannot sleep and my chest
           is tight" and "something happened to me" do not want the same book. */}
-      <section className="stack-section">
+      <section id="books" className="stack-section scroll-mt-24">
         <p className="marginalia">Books, if you want to go further</p>
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">
           Not a syllabus. Six shelves, and the reason each one is here.
@@ -332,6 +364,42 @@ export default function Read() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Everything in here, counted. Big numbers on a lavender band, each one
+          a way in. */}
+      <section className="impact-band animate-slide-up stack-section">
+        <h2 className="font-display text-center text-[1.5rem] leading-tight text-[var(--sec-calm-deep)] sm:text-[1.9rem]">
+          Everything in here, counted
+        </h2>
+        <p className="mt-2 text-center text-sm text-[var(--color-ink)]">
+          Counted from what the app holds, not rounded up.
+        </p>
+        <ul className="mt-7 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3">
+          {stats.map((s) => {
+            const figure = (
+              <>
+                <span className="impact-num num block">{s.value}</span>
+                <span className="mx-auto mt-2 block max-w-[9rem] text-sm leading-snug text-[var(--color-ink)]">
+                  {s.label}
+                </span>
+              </>
+            );
+            return (
+              <li key={s.label}>
+                {s.href ? (
+                  <a href={s.href} className="press block text-center">
+                    {figure}
+                  </a>
+                ) : (
+                  <Link to={s.to} className="press block text-center">
+                    {figure}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <div className="card stack-section p-6">
