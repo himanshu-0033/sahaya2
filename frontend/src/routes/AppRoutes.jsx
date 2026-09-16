@@ -11,8 +11,8 @@ import { SkeletonText } from '../shared/Skeleton.jsx';
 // Every screen used to be imported at the top of this file, which meant one
 // bundle containing all of them. A stranger opening the landing page
 // downloaded the running questionnaire, the grounding player, the check-in,
-// the account page and the entire reading corpus — the essays, the 23
-// questionnaire dossiers and the item text for all of them — to look at a page
+// the account page and the entire reading corpus (the essays, the 23
+// questionnaire dossiers and the item text for all of them) to look at a page
 // that uses none of it. That is the wrong thing to send someone on a hostel
 // connection before they have decided whether they want the app at all.
 //
