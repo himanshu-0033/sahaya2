@@ -77,6 +77,8 @@ const STATS = [
   { n: '0', label: 'ads, ever' },
 ];
 
+const SIGN_IN = 'sign-in';
+
 const FOOTER = [
   {
     head: 'Free tools',
@@ -110,7 +112,9 @@ const FOOTER = [
   {
     head: 'About',
     links: [
-      ['Your account', '/account'],
+      // Not a link: the reader is signed out, so /account would only bounce
+      // them back to this page. Opens the sign-in panel instead.
+      ['Your account', SIGN_IN],
       ['Caregiver access', '/caregiver'],
     ],
   },
@@ -556,7 +560,9 @@ export default function Welcome({ onSignedIn }) {
                     const style = { color: 'var(--w-forest-soft)' };
                     return (
                       <li key={to}>
-                        {to.startsWith('#') ? (
+                        {to === SIGN_IN ? (
+                          <button type="button" onClick={go} className={`${cls} cursor-pointer`} style={style}>{label}</button>
+                        ) : to.startsWith('#') ? (
                           <a href={to} className={cls} style={style}>{label}</a>
                         ) : (
                           <Link to={to} className={cls} style={style}>{label}</Link>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import LoadError from '../../shared/LoadError.jsx';
@@ -363,6 +364,11 @@ export default function Account() {
       </div>
     </form>
   );
+
+  // Signed out, this page had nothing to show but an empty card headed "You"
+  // and a Sign out button. It is linked from the landing page's footer, so a
+  // stranger could reach it; send them to the door instead.
+  if (!session) return <Navigate to="/welcome" replace />;
 
   return (
     <PageShell section="home" width="wide">

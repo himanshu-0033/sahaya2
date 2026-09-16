@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
@@ -30,23 +30,18 @@ function Field({ label, children }) {
   );
 }
 
+// Public, like the rest of the reading section. See the note in Read.jsx.
 export default function ReadTest() {
   const { instrumentId } = useParams();
-  const navigate = useNavigate();
   const session = useSession();
-
-  if (!session) {
-    navigate('/');
-    return null;
-  }
 
   const note = getTestNote(instrumentId);
   const meta = TEST_INDEX.find((t) => t.id === instrumentId);
 
   if (!note || !meta) {
     return (
-      <PageShell section="read" width="narrow">
-        <Header eyebrow="Read" />
+      <PageShell section="read" width="narrow" tabs={Boolean(session)}>
+        <Header eyebrow="Read" standalone={!session} />
         <div className="stack-block">
           <h1 className="font-display text-2xl">No notes on that questionnaire.</h1>
           <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read-deep)]">
@@ -58,8 +53,8 @@ export default function ReadTest() {
   }
 
   return (
-    <PageShell section="read" width="narrow">
-      <Header eyebrow="Read" />
+    <PageShell section="read" width="narrow" tabs={Boolean(session)}>
+      <Header eyebrow="Read" standalone={!session} />
 
       <article className="animate-slide-up">
         <Link

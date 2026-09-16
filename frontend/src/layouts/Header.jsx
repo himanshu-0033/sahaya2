@@ -20,14 +20,18 @@ import { useSession } from '../features/auth/useSession.js';
 // Tests page would be a link to where you already are.
 // `streak` is off on Home, where the day card carries the streak itself; two of
 // the same badge a few pixels apart read as two different numbers.
-export default function Header({ eyebrow = 'Daily check-in', leading = null, streak = true }) {
+// `standalone` keeps the masthead on at laptop width. It is normally hidden
+// there because the sidebar carries the wordmark, but a page rendered without
+// the sidebar (a signed-out article) then had no masthead at all, and so no
+// wordmark, no crisis link and no way back to the landing page.
+export default function Header({ eyebrow = 'Daily check-in', leading = null, streak = true, standalone = false }) {
   const session = useSession();
   const profile = session?.profile;
   // /account already holds the whole profile — name, email, who it is shared
   // with, and sign out. It was only reachable from a footer link called "Who
   // can see this", which nobody reads as "my account".
   return (
-    <header className="flex items-center justify-between gap-3 pt-2 pb-1 md:hidden">
+    <header className={`flex items-center justify-between gap-3 pt-2 pb-1 ${standalone ? '' : 'md:hidden'}`}>
       <div className="flex min-w-0 items-center gap-3">
         {/* min-w-0 and truncate, so on a narrow phone the name gives way rather
             than the controls on the right being drawn on top of it. */}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
@@ -106,8 +106,12 @@ function ArticleCard({ article, index }) {
   );
 }
 
+// Public on purpose. Reading is the one section that stores nothing and asks
+// nothing, and the landing page's footer links straight into it, so bouncing a
+// signed-out visitor back to `/` made every one of those links look broken.
+// The tab bar and the DP button stay hidden until there is a session, so a
+// stranger gets the article rather than the app's navigation.
 export default function Read() {
-  const navigate = useNavigate();
   const session = useSession();
   // Practice and path counts for the numbers band. They live on the server.
   const [counts, setCounts] = useState({});
@@ -121,11 +125,6 @@ export default function Read() {
       .then((data) => setCounts((c) => ({ ...c, paths: (data.paths || []).length })))
       .catch(() => {});
   }, [session]);
-
-  if (!session) {
-    navigate('/');
-    return null;
-  }
 
   // One essay leads each day and the next four sit beside it, so a week of
   // opening this page walks the whole shelf. The rest follow as cards, so no
@@ -150,8 +149,8 @@ export default function Read() {
   ].filter((s) => s.value);
 
   return (
-    <PageShell section="read" width="wide">
-      <Header eyebrow="Read" />
+    <PageShell section="read" width="wide" tabs={Boolean(session)}>
+      <Header eyebrow="Read" standalone={!session} />
 
       <div className="animate-slide-up stack-block">
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">

@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
@@ -62,23 +62,18 @@ function Block({ block, hue }) {
   return null;
 }
 
+// Public, like the rest of the reading section. See the note in Read.jsx.
 export default function ReadArticle() {
   const { articleId } = useParams();
-  const navigate = useNavigate();
   const session = useSession();
-
-  if (!session) {
-    navigate('/');
-    return null;
-  }
 
   const article = getArticle(articleId);
   const topic = TOPICS[article?.topic] || TOPICS.calm;
 
   if (!article) {
     return (
-      <PageShell section="read" width="narrow">
-        <Header eyebrow="Read" />
+      <PageShell section="read" width="narrow" tabs={Boolean(session)}>
+        <Header eyebrow="Read" standalone={!session} />
         <div className="stack-block">
           <h1 className="font-display text-2xl">That piece isn’t here.</h1>
           <Link to="/read" className="press mt-5 inline-block text-sm text-[var(--sec-read-deep)]">
@@ -90,8 +85,8 @@ export default function ReadArticle() {
   }
 
   return (
-    <PageShell section="read" width="narrow">
-      <Header eyebrow="Read" />
+    <PageShell section="read" width="narrow" tabs={Boolean(session)}>
+      <Header eyebrow="Read" standalone={!session} />
 
       <article className="animate-slide-up">
         <Link
