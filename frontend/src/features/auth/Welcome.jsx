@@ -252,7 +252,7 @@ export default function Welcome({ onSignedIn }) {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
           <a href="#top" className="flex items-center gap-2" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
-            <span className="text-[1.3rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
+            <span className="text-[1.25rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
               DP Sahay
             </span>
           </a>
@@ -351,7 +351,7 @@ export default function Welcome({ onSignedIn }) {
                 <button
                   type="button"
                   onClick={() => setSigningIn(false)}
-                  className="mt-4 w-full text-center text-[0.75rem] underline underline-offset-4"
+                  className="mt-4 w-full text-center text-[0.8125rem] underline underline-offset-4"
                   style={SOFT}
                 >
                   Back
@@ -397,7 +397,7 @@ export default function Welcome({ onSignedIn }) {
             {TOOLS.map((t) => {
               const inner = (
                 <>
-                  <h3 className="text-[1.2rem] font-semibold">{t.title}</h3>
+                  <h3 className="text-[1.25rem] font-semibold">{t.title}</h3>
                   <p className="mt-2 text-[0.875rem] leading-relaxed" style={SOFT}>
                     {t.body}
                   </p>
@@ -449,7 +449,7 @@ export default function Welcome({ onSignedIn }) {
           <Link to="/check" className={`${PRIMARY} mt-7`} style={GREEN_FILL}>
             Start the 1-minute check
           </Link>
-          <p className="mt-5 text-[0.75rem]" style={SOFT}>
+          <p className="mt-5 text-[0.8125rem]" style={SOFT}>
             Based on the WHO-5 Well-Being Index · a screen, not a diagnosis
           </p>
         </div>
@@ -464,7 +464,7 @@ export default function Welcome({ onSignedIn }) {
           <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
             {STATS.map((s) => (
               <div key={s.label} className="w-card px-4 py-7">
-                <p className="text-[2.4rem] leading-none font-bold tracking-[-0.02em] sm:text-[2.75rem]" style={{ color: 'var(--w-accent-deep)' }}>
+                <p className="text-[2rem] leading-none font-bold tracking-[-0.02em] sm:text-[2.75rem]" style={{ color: 'var(--w-accent-deep)' }}>
                   {s.n}
                 </p>
                 <p className="mt-2 text-[0.875rem]">{s.label}</p>
@@ -515,7 +515,7 @@ export default function Welcome({ onSignedIn }) {
       {/* ------------------------------------------------------------ footer */}
       <footer className="text-white" style={{ background: 'var(--w-forest)' }}>
         <div className="mx-auto max-w-6xl px-5 pt-20 pb-10 sm:px-8">
-          <p className="max-w-2xl text-[1.35rem] leading-snug font-medium sm:text-[1.6rem]">
+          <p className="max-w-2xl text-[1.25rem] leading-snug font-medium sm:text-[1.75rem]">
             A quiet minute a day, the real questionnaires when you want a straighter answer, and a
             companion to talk it through. Free, in one app.
           </p>
@@ -591,7 +591,7 @@ export default function Welcome({ onSignedIn }) {
             <p className="text-[0.8125rem]" style={{ color: 'var(--w-forest-soft)' }}>
               A reflective prototype, not a medical device.
             </p>
-            <p className="text-[0.75rem] tracking-[0.14em] uppercase" style={{ color: 'var(--w-forest-soft)' }}>
+            <p className="text-[0.6875rem] tracking-[0.14em] uppercase" style={{ color: 'var(--w-forest-soft)' }}>
               © {new Date().getFullYear()} DP Sahay AI
             </p>
           </div>
