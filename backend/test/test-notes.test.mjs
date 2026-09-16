@@ -17,6 +17,7 @@ import { INSTRUMENTS, resolveItems, resolveFollowUp } from '../lib/instruments.j
 import { scoreInstrument } from '../lib/scoring.js';
 import { TEST_NOTES } from '../../frontend/src/features/read/testNotes.js';
 import { TEST_INDEX } from '../../frontend/src/features/read/testIndex.js';
+import { buildRows } from '../../scripts/sync-tests.mjs';
 
 const instrumentIds = INSTRUMENTS.map((i) => i.id);
 const noteIds = Object.keys(TEST_NOTES);
@@ -118,6 +119,23 @@ for (const instrument of INSTRUMENTS) {
   );
 }
 
+// --------------------------------------------------- bands strictly ascending
+// The reading page prints a range beside each band label, and it works those
+// ranges out the only way it can: a band runs from one past the previous
+// band's max up to its own. That is correct exactly while the maxes ascend
+// strictly. A duplicate or an out-of-order max would render as a backwards or
+// empty range on the page ("15 to 14") while the scorer carried on working
+// fine, so nothing else in this suite would catch it.
+for (const instrument of INSTRUMENTS) {
+  const maxes = instrument.bands.map((b) => b.max).filter((m) => m != null);
+  for (let i = 1; i < maxes.length; i += 1) {
+    assert.ok(
+      maxes[i] > maxes[i - 1],
+      `${instrument.id}: band maxes must ascend strictly, got ${maxes.join(', ')}`,
+    );
+  }
+}
+
 // ------------------------------------------------------ every band reachable
 // A band nobody can land in is a bug that no amount of reading catches: the
 // rules are ordered and overlapping, so one clause quietly shadowing another
@@ -172,16 +190,10 @@ for (const instrument of INSTRUMENTS.filter(ruleBanded)) {
 // testIndex.js is generated from these same instruments. If someone edits an
 // instrument and forgets to run `npm run sync:tests`, the reading section
 // silently shows a stale name or item count - so compare them field by field.
-const expectedIndex = INSTRUMENTS.map((i) => ({
-  id: i.id,
-  name: i.name,
-  fullName: i.fullName,
-  domain: i.domain,
-  itemCount: i.items.length,
-  minutes: i.minutes,
-  wordingVerified: Boolean(i.wordingVerified),
-  available: i.licenceCleared !== false,
-}));
+// buildRows is the generator's own row builder, imported rather than copied.
+// A second copy here would drift from the generator the first time a field is
+// added, and then agree with itself while disagreeing with the file on disk.
+const expectedIndex = buildRows();
 
 assert.deepEqual(
   TEST_INDEX,

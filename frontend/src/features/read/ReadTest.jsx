@@ -30,6 +30,123 @@ function Field({ label, children }) {
   );
 }
 
+// The answer scale, as the chips a person will actually tap, with the number
+// each one is worth. The score is the sum of those numbers and nothing else,
+// which is worth being able to see rather than take on trust.
+function Options({ options }) {
+  return (
+    <ul className="mt-3 flex flex-wrap gap-1.5">
+      {options.map((o) => (
+        <li
+          key={o.value}
+          className="rounded-full border border-[var(--line-2)] px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
+        >
+          <span className="num text-[var(--color-muted)]">{o.value}</span>
+          <span className="ml-1.5">{o.label}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// Every question, in order, exactly as the app asks them.
+//
+// This is the section the page was missing. An explainer that describes a
+// questionnaire in five paragraphs and never shows it asks someone to decide
+// whether to answer nine questions about themselves without seeing the nine
+// questions, which is the one thing they most obviously need.
+//
+// Items are omitted only where the licence to reproduce them has not come
+// back, which is the same reason the app does not administer those.
+function Questions({ meta }) {
+  if (!meta.items) return null;
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-[1.3rem] leading-snug">The questions</h2>
+      {meta.prompt && (
+        <p className="mt-3 text-[1.02rem] leading-[1.75] text-[var(--color-ink-soft)]">
+          {meta.prompt}
+        </p>
+      )}
+      {meta.options && <Options options={meta.options} />}
+
+      <ol className="mt-5 grid gap-3.5">
+        {meta.items.map((item, i) => {
+          const crisis = meta.crisisItems?.includes(i);
+          return (
+            <li key={item.text} className="flex gap-3">
+              <span className="num mt-0.5 w-5 shrink-0 text-sm text-[var(--color-muted)]">
+                {i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[1.02rem] leading-[1.6]">{item.text}</span>
+                {(item.reverse || Number.isInteger(item.dependsOn) || crisis) && (
+                  <span className="mt-1.5 block text-xs leading-relaxed text-[var(--color-muted)]">
+                    {item.reverse && 'Scored in reverse: agreeing with it lowers the total. '}
+                    {Number.isInteger(item.dependsOn) &&
+                      `Asked only if question ${item.dependsOn + 1} was answered yes. `}
+                    {crisis &&
+                      'Answering anything but the lowest option puts crisis contacts on your screen and flags the result for your counsellor, whatever the total comes to.'}
+                  </span>
+                )}
+                {item.options && <Options options={item.options} />}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+// The band table, built from the same `bands` the scorer uses, so a page that
+// explains the thresholds cannot disagree with the code that applies them.
+//
+// Bands carry an upper bound and no lower one, because the scorer walks them in
+// order and takes the first one a score fits. Rendering them needs the gaps
+// filled in, which is what `from` does here.
+function Bands({ meta }) {
+  if (!meta.bands || meta.bands.every((b) => b.max == null)) return null;
+  return (
+    <section className="mt-10">
+      <h2 className="font-display text-[1.3rem] leading-snug">What each score is called</h2>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted)]">
+        {meta.higherIsBetter
+          ? 'A higher score is a better result on this one.'
+          : 'A higher score means more of what the questionnaire asks about.'}{' '}
+        These are the names its authors gave the ranges. They are labels for a range, not
+        diagnoses.
+      </p>
+      <ul className="mt-4 grid gap-2.5">
+        {meta.bands.map((band, i) => {
+          const prev = i > 0 ? meta.bands[i - 1].max : null;
+          const from = prev == null ? null : prev + 1;
+          const range =
+            i === 0
+              ? `${band.max} or less`
+              : i === meta.bands.length - 1
+                ? `${from} or more`
+                : `${from} to ${band.max}`;
+          return (
+            <li
+              key={band.label}
+              className="rounded-2xl border border-[var(--line-1)] bg-[var(--surface-1)] px-4 py-3"
+            >
+              <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <span className="num text-sm text-[var(--color-ink)]">{range}</span>
+                <span className="text-sm font-semibold">{band.label}</span>
+              </p>
+              {band.note && (
+                <p className="mt-1 text-xs leading-relaxed text-[var(--color-muted)]">{band.note}</p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 // Public, like the rest of the reading section. See the note in Read.jsx.
 export default function ReadTest() {
   const { instrumentId } = useParams();
@@ -37,6 +154,9 @@ export default function ReadTest() {
 
   const note = getTestNote(instrumentId);
   const meta = TEST_INDEX.find((t) => t.id === instrumentId);
+  // The rest of the same domain, so a page about the PHQ-9 is one tap from the
+  // other mood questionnaires rather than a dead end back to the index.
+  const related = TEST_INDEX.filter((t) => t.domain === meta?.domain && t.id !== instrumentId);
 
   if (!note || !meta) {
     return (
@@ -99,10 +219,23 @@ export default function ReadTest() {
                 {note.cutoffs}
               </p>
             </div>
+            {/* The licence belongs on the page for the same reason the item
+                wording warning does: it is the reason some questionnaires can
+                be offered here and others only described. */}
+            {meta.license && (
+              <div className="sm:col-span-2">
+                <p className="marginalia">Licence</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+                  {meta.license}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         <Field label="What it measures">{note.measures}</Field>
+        <Questions meta={meta} />
+        <Bands meta={meta} />
         <Field label="Where it came from">{note.origin}</Field>
         <Field label="How to read your score">{note.reading}</Field>
         <Field label="What it cannot tell you">{note.limits}</Field>
@@ -127,6 +260,27 @@ export default function ReadTest() {
             differ from the published version, which is fine for reflection and not good enough for
             research.
           </p>
+        )}
+
+        {related.length > 0 && (
+          <section className="mt-10">
+            <h2 className="font-display text-[1.3rem] leading-snug">
+              The others in {meta.domain.toLowerCase()}
+            </h2>
+            <ul className="mt-4 grid gap-2">
+              {related.map((t) => (
+                <li key={t.id}>
+                  <Link
+                    to={`/read/tests/${t.id}`}
+                    className="press flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5 rounded-2xl border border-[var(--line-1)] px-4 py-3 transition-colors hover:border-[var(--line-4)]"
+                  >
+                    <span className="text-sm font-semibold">{t.name}</span>
+                    <span className="text-xs text-[var(--color-muted)]">{t.blurb}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         <section className="mt-12 border-t border-[var(--line-1)] pt-6">
