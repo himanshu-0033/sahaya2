@@ -250,7 +250,7 @@ export default function Welcome({ onSignedIn }) {
         style={{ borderColor: 'var(--w-line)', background: 'rgba(255,255,255,0.92)' }}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
-          <a href="#top" className="flex items-center gap-2" aria-label="DP Sahay AI, back to top">
+          <a href="#top" className="flex items-center gap-2 transition-opacity hover:opacity-70" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
             <span className="text-[1.25rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
               DP Sahay
@@ -351,7 +351,7 @@ export default function Welcome({ onSignedIn }) {
                 <button
                   type="button"
                   onClick={() => setSigningIn(false)}
-                  className="mt-4 w-full text-center text-[0.8125rem] underline underline-offset-4"
+                  className="mt-4 w-full cursor-pointer text-center text-[0.8125rem] underline underline-offset-4 transition-opacity hover:opacity-70"
                   style={SOFT}
                 >
                   Back

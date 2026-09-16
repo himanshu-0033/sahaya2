@@ -228,7 +228,7 @@ export default function AppShowcase({ onStart }) {
           {SCREENS.map((s) => (
             <article
               key={s.title}
-              className="flex h-[36rem] w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] px-6 pt-7 text-white sm:w-auto"
+              className="group flex h-[36rem] w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] px-6 pt-7 text-white sm:w-auto"
               style={{ background: s.bg }}
             >
               <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em]">{s.eyebrow}</p>
@@ -241,7 +241,20 @@ export default function AppShowcase({ onStart }) {
                   </span>
                 ))}
               </div>
-              <div aria-hidden="true" className="mt-6 flex flex-1">
+              {/* The phone is clipped by the card's overflow-hidden, so hover
+                  raises it and shows more of the screen. Deliberately NOT the
+                  lift that a.w-card and button.w-card get: these cards are
+                  articles, nothing happens when you click one, and a card that
+                  rises under the cursor is a promise of a click target. This
+                  moves the picture instead, which reads as the card being
+                  alive rather than as an invitation.
+
+                  hover: in Tailwind v4 already carries @media (hover: hover),
+                  so a touch device never gets a stuck hover state. */}
+              <div
+                aria-hidden="true"
+                className="mt-6 flex flex-1 transition-transform duration-500 ease-out group-hover:-translate-y-3 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0"
+              >
                 <Phone dark={s.dark}>{s.screen}</Phone>
               </div>
             </article>
