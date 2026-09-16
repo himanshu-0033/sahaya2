@@ -213,7 +213,7 @@ export default function AppShowcase({ onStart }) {
     <section id="inside" className="scroll-mt-20 py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-[2rem] font-bold leading-[1.1] tracking-[-0.02em] sm:text-[2.9rem]" style={{ textWrap: 'balance' }}>
+          <h2 className="text-[2rem] font-bold leading-[1.1] tracking-[-0.02em] sm:text-[2.75rem]" style={{ textWrap: 'balance' }}>
             Check-ins, questionnaires, grounding and a companion, in one app.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-[1rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
@@ -231,9 +231,9 @@ export default function AppShowcase({ onStart }) {
               className="flex h-[36rem] w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] px-6 pt-7 text-white sm:w-auto"
               style={{ background: s.bg }}
             >
-              <p className="text-[0.625rem] font-semibold uppercase tracking-[0.18em]">{s.eyebrow}</p>
-              <h3 className="mt-2.5 text-[1.7rem] font-bold leading-[1.05] tracking-[-0.01em]">{s.title}</h3>
-              <p className="mt-2.5 text-[0.8125rem] leading-relaxed">{s.body}</p>
+              <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em]">{s.eyebrow}</p>
+              <h3 className="mt-2.5 text-[1.5rem] font-bold leading-[1.1] tracking-[-0.02em]">{s.title}</h3>
+              <p className="mt-2.5 text-[0.9375rem] leading-relaxed">{s.body}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {s.tags.map((t) => (
                   <span key={t} className="rounded-full border border-white/50 px-2.5 py-0.5 text-[0.6875rem] font-medium">

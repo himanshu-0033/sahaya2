@@ -67,6 +67,7 @@ const STARTING_POINTS = [
   ['What the GAD-7 measures', '/read/tests/gad-7'],
   ['Which test, and what for', '/read/which-test-and-what-for'],
   ['Why a long exhale works', '/read/why-a-long-exhale-works'],
+  ['Sleep is not only a symptom', '/read/sleep-is-not-only-a-symptom'],
 ];
 
 // Counts of what is in the box, never of people. See the note at the top.
@@ -106,6 +107,8 @@ const FOOTER = [
       ['What a score means', '/read/what-a-score-means'],
       ['A positive screen is not a diagnosis', '/read/a-positive-screen-is-not-a-diagnosis'],
       ['Where your answers go', '/read/where-your-answers-go'],
+      ['Sleep is not only a symptom', '/read/sleep-is-not-only-a-symptom'],
+      ['Your phone, and the numbers', '/read/your-phone-and-the-numbers'],
       ['The inkblots, honestly', '/read/the-inkblots-honestly'],
     ],
   },
@@ -469,7 +472,7 @@ export default function Welcome({ onSignedIn }) {
             ))}
           </div>
 
-          <p className="mx-auto mt-10 max-w-3xl text-[0.875rem] leading-relaxed" style={SOFT}>
+          <p className="mx-auto mt-10 max-w-3xl text-[0.9375rem] leading-relaxed" style={SOFT}>
             PHQ-9 · GAD-7 · WHO-5 · K10 · PSS-10 · UCLA-3 · MSPSS and more, each carrying its full
             name, citation and licence on the page where you take it. A score places you in a range
             the instrument&apos;s authors defined. It describes a few weeks, not you.
@@ -583,7 +586,7 @@ export default function Welcome({ onSignedIn }) {
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
                 <Logo size={20} glow={false} />
               </span>
-              <span className="text-[1.05rem] font-semibold">DP Sahay AI</span>
+              <span className="text-[1.0625rem] font-semibold">DP Sahay AI</span>
             </span>
             <p className="text-[0.8125rem]" style={{ color: 'var(--w-forest-soft)' }}>
               A reflective prototype, not a medical device.

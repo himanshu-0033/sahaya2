@@ -597,6 +597,210 @@ export const ARTICLES = [
     ],
     sources: [],
   },
+
+  // ----------------------------------------------------------------- 8
+  {
+    id: 'sleep-is-not-only-a-symptom',
+    title: 'Sleep is not only a symptom',
+    standfirst:
+      'Bad sleep was treated for decades as something anxiety and depression did to you. The trials that fixed the sleep first, and then measured the mood, changed which way the arrow points.',
+    topic: 'calm',
+    minutes: 6,
+    pull: 'Fix the sleep and the mood moves, which means the sleep was never only a symptom.',
+    sections: [
+      {
+        heading: 'Which way the arrow points',
+        blocks: [
+          {
+            p: 'If you are anxious or low, you will probably also be sleeping badly. That much has never been in doubt. The question that mattered was the direction: is the bad sleep a by-product of the anxiety, or is it feeding it?',
+          },
+          {
+            p: 'You cannot settle that by asking people, because both are true at once in anyone you ask. You settle it by taking a group of people, improving the sleep of half of them at random, leaving the other half alone, and then measuring the mood of both. That has now been done, many times, and the answer is not ambiguous.',
+          },
+          {
+            p: 'Fix the sleep and the mood moves, which means the sleep was never only a symptom.',
+          },
+        ],
+      },
+      {
+        heading: 'What the trials found',
+        blocks: [
+          {
+            p: 'Scott and colleagues (2021) pooled 65 randomised trials, 72 separate interventions and 8,608 people. Improving sleep produced a medium-sized improvement in overall mental health (g = 0.53), in depression (0.63), in anxiety (0.51) and in rumination (0.49), and a smaller one in stress (0.42).',
+          },
+          {
+            p: 'The more interesting number is not any of those. It is that the effect scaled: the trials that improved sleep the most improved mental health the most. A dose-response relationship like that is one of the stronger signals available that you are looking at a cause rather than a coincidence.',
+          },
+        ],
+      },
+      {
+        heading: 'The one that was run on students',
+        blocks: [
+          {
+            p: 'Freeman and colleagues (2017) recruited 3,755 university students across 26 UK universities who said they had insomnia, and randomly gave half of them a structured online course of cognitive behavioural therapy for insomnia. It is the largest randomised trial of a psychological treatment ever run.',
+          },
+          {
+            p: 'At ten weeks the sleep effect was large (Cohen’s d = 1.11). The effects on paranoia (0.19) and on hallucinations (0.24) were small, and the trial showed that the sleep improvement was what carried them. Small, but real, and in a direction nobody had demonstrated before: the sleep was doing something to the symptoms rather than the other way round.',
+          },
+          {
+            note: 'Worth holding both halves of that. A d of 1.11 on sleep is a big result. A d of 0.19 on paranoia is a small one. An article that quotes only the first number is selling you something.',
+          },
+        ],
+      },
+      {
+        heading: 'What was actually tested, and what was not',
+        blocks: [
+          {
+            p: 'What those trials gave people was cognitive behavioural therapy for insomnia: a structured course over weeks that changes when you go to bed, what you do when you cannot sleep, and what you believe about the consequences of a bad night. It is a treatment with a syllabus.',
+          },
+          {
+            p: 'What was not tested is a list of sleep hygiene tips. The leaflet version, no caffeine after four and keep the room dark, performs poorly on its own in trials, and it is not what produced any of the numbers above. Being told to sleep better is not an intervention.',
+          },
+          {
+            p: 'The Athens Insomnia Scale in this app will tell you whether your sleep looks like insomnia. It cannot tell you why, and the why decides everything: a noisy hostel, caffeine, a phone in bed, sleep apnoea and anxiety all produce the same score and want completely different answers.',
+          },
+        ],
+      },
+      {
+        heading: 'Tonight, though',
+        blocks: [
+          {
+            p: 'None of this is a reason to do nothing until you can get a course of therapy. Two of the practices here are aimed squarely at a body that will not settle, and both are meant to be done lying down, with no requirement that you fall asleep at the end of them.',
+          },
+          { practice: 'nsdr', label: 'Non-sleep deep rest' },
+          { practice: 'progressive-muscle-relaxation', label: 'Progressive muscle relaxation' },
+          {
+            p: 'And if the sleep has been bad for more than a few weeks and the daytime is suffering for it, that is the thing to raise with your counsellor first, ahead of the mood. It is the one that has been shown to move the others.',
+          },
+        ],
+      },
+    ],
+    sources: [
+      {
+        label: 'Scott, A. J. et al. (2021). Sleep Medicine Reviews 60, 101556.',
+        detail: 'Meta-analysis of 65 randomised trials of sleep improvement and mental health.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/34607184/',
+      },
+      {
+        label: 'Freeman, D. et al. (2017). The Lancet Psychiatry 4(10), 749–758.',
+        detail: 'The OASIS trial: digital CBT for insomnia in 3,755 university students.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/28888927/',
+      },
+      {
+        label: 'Soldatos, C. R. et al. (2000). J Psychosom Res 48(6), 555–560.',
+        detail: 'The Athens Insomnia Scale, the sleep questionnaire this app offers.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/11033374/',
+      },
+    ],
+  },
+
+  // ----------------------------------------------------------------- 9
+  {
+    id: 'your-phone-and-the-numbers',
+    title: 'Your phone, and what the numbers actually say',
+    standfirst:
+      'The research on screens and mood is weaker and stranger than either side of the argument admits. Here is what the largest studies found, and why the two phone questionnaires in this app ask about something else entirely.',
+    topic: 'tests',
+    minutes: 6,
+    pull: 'The average across three hundred thousand teenagers is not a fact about you.',
+    sections: [
+      {
+        heading: 'The headline is smaller than the headlines',
+        blocks: [
+          {
+            p: 'Orben and Przybylski (2019) took three large datasets covering more than 350,000 adolescents in the UK and the US and asked how much of a young person’s wellbeing is explained by how much technology they use. The answer was at most 0.4 per cent.',
+          },
+          {
+            p: 'For scale, they pointed out that the association was about the same size as the one for regularly eating potatoes. That comparison was not a joke at the reader’s expense. It was the point: an association can be real, statistically significant across hundreds of thousands of people, and still be far too small to tell any individual anything useful.',
+          },
+          {
+            p: 'The more uncomfortable half of that paper is how they got there. They counted the defensible ways the same data could be analysed and found more than 600 million of them, then ran them all. Depending on the choices, the same datasets produce a harmful effect, a protective one, or nothing. Which is why two honest researchers can read the same evidence and come to opposite conclusions in public.',
+          },
+        ],
+      },
+      {
+        heading: 'Why that does not settle your case',
+        blocks: [
+          {
+            p: 'The average across three hundred thousand teenagers is not a fact about you. It is a fact about the middle of a very wide distribution, and it is perfectly consistent with the phone doing nothing to most people and a great deal to some.',
+          },
+          {
+            p: 'There is direct evidence for that reading. Orben, Przybylski and Blakemore (2022) followed 84,000 people aged 10 to 80 and found the link between social media use and life satisfaction was not constant with age: it was most negative in early adolescence, and it landed at different ages for boys and girls, with a second window around 19.',
+          },
+          {
+            note: 'So the useful question is not whether screen time is bad, which is a question about populations. It is whether yours is costing you anything, which is a question about you and is answerable tonight.',
+          },
+        ],
+      },
+      {
+        heading: 'Which is what the questionnaires here ask',
+        blocks: [
+          {
+            p: 'Neither phone questionnaire in this app asks how many hours you spend. Both ask about cost.',
+          },
+          {
+            list: [
+              'The SAS-SV asks about disruption: work you missed, the difficulty of stopping, how you feel without the phone, what the use has pushed out of your day.',
+              'The BSMAS asks six questions mapped onto the components proposed for any behavioural addiction: how much of your thinking it takes up, whether you use it to change how you feel, whether it takes more than it used to, what happens when you stop, what it conflicts with, and whether you have tried to cut down and gone back.',
+            ],
+          },
+          {
+            p: 'That is a better question than hours, because hours are not the thing that hurts. Three hours that displaced nothing is not the same as forty minutes that were supposed to be sleep.',
+          },
+        ],
+      },
+      {
+        heading: 'And their cut-offs are weaker than they look',
+        blocks: [
+          {
+            p: 'The SAS-SV thresholds, 31 for men and 33 for women, come from one sample of Korean adolescents in 2013. Phones in 2013 did not have the feeds phones have now, and nothing about that sample makes it the right reference for a student in India today.',
+          },
+          {
+            p: 'The BSMAS is more honest still: it has no agreed threshold at all. Both 19 and 24 appear in the literature. That gap is not sloppiness, it is a field that has not decided where the line is, and an app that picked one for you would be inventing precision it does not have.',
+          },
+          {
+            p: 'Whether smartphone addiction is a real clinical entity is itself unsettled, and the argument is not close to over. What the items describe is a habit that has started costing you something, and that is worth noticing under any name at all.',
+          },
+        ],
+      },
+      {
+        heading: 'The mechanism with the best evidence is dull',
+        blocks: [
+          {
+            p: 'Of all the routes from a phone to a worse week, the one with the strongest supporting evidence is the least dramatic: displacement. The phone is not doing something to your brain so much as taking the hours that were going to be sleep.',
+          },
+          {
+            p: 'That matters because the sleep end of the chain is very well evidenced. Improving sleep improves mood, in randomised trials, with the size of the improvement tracking the size of the sleep gain. The essay in this section called Sleep is not only a symptom covers those trials.',
+          },
+          {
+            p: 'Be clear that this is two well-tested links joined by a plausible one. Phone to lost sleep is less directly tested than lost sleep to worse mood. But if you are going to change one thing about your phone on the strength of the evidence rather than the headlines, the hour before bed is the defensible place to spend the effort.',
+          },
+        ],
+      },
+    ],
+    sources: [
+      {
+        label: 'Orben, A. & Przybylski, A. K. (2019). Nature Human Behaviour 3, 173–182.',
+        detail: 'Specification curve analysis of adolescent wellbeing and technology use.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/30944443/',
+      },
+      {
+        label: 'Orben, A., Przybylski, A. K., Blakemore, S.-J. & Kievit, R. A. (2022). Nature Communications 13, 1649.',
+        detail: 'Windows of developmental sensitivity to social media.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/35347142/',
+      },
+      {
+        label: 'Kwon, M. et al. (2013). PLoS ONE 8(12), e83558.',
+        detail: 'Development and validation of the SAS-SV.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/24391787/',
+      },
+      {
+        label: 'Andreassen, C. S. et al. (2016). Psychology of Addictive Behaviors 30(2), 252–262.',
+        detail: 'The Bergen Social Media Addiction Scale.',
+        url: 'https://pubmed.ncbi.nlm.nih.gov/26999354/',
+      },
+    ],
+  },
 ];
 
 export const ARTICLE_IDS = ARTICLES.map((a) => a.id);
