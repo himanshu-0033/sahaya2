@@ -8,12 +8,6 @@ import { getStatus } from '../../shared/api.js';
 import { bandColor, bandTint } from '../assessments/bands.js';
 import { AFTER_CHECKIN, SET_IDS, clearSetResults, readSetResults, setStartHref } from '../assessments/testSet.js';
 
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(`${iso}T00:00:00`);
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-}
-
 // What used to sit here was the dinner pass: a ticket with an SH-MMDD-XXXX
 // code, drawn with a perforation and everything, to be shown at a hostel
 // dining hall.
