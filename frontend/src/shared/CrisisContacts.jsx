@@ -72,12 +72,12 @@ const tel = (number) => `tel:${number.replace(/[^\d+]/g, '')}`;
 // below clears 4.5:1: ink 16.8:1 and soft 7.6:1 on white, white on the red
 // 6.6:1 and on the green 6.6:1.
 const C = {
-  ink: '#14201a',
-  soft: '#4a5750',
+  ink: '#141b2d',
+  soft: '#4b5566',
   line: '#dfe5e1',
   row: '#f5f7f6',
   red: '#b42318',
-  green: '#0b6b3a',
+  green: '#1f2d52',
 };
 
 function Lifebuoy({ size = 16 }) {
@@ -215,7 +215,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
                       <a
                         key={h.id}
                         href={tel(h.number)}
-                        className="press flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 transition-colors hover:border-[#0b6b3a]"
+                        className="press flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 transition-colors hover:border-[#1f2d52]"
                         style={{ background: C.row, borderColor: C.line }}
                       >
                         <span className="min-w-0">

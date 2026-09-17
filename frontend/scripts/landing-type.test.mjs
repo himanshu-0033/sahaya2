@@ -18,7 +18,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 // Eleven roles, thirteen numbers. The hero spends two of them on one role
-// because a wordmark at 84px on a laptop is 56px on a phone.
+// because a wordmark at 68px on a laptop is 52px on a phone. It came down from
+// 84px when the first question moved into the hero column beside it: the
+// wordmark and the question now share the height, and the question is the
+// thing to answer.
 const PAGE = new Map([
   [0.6875, 'micro: uppercase labels, pills, the copyright line'],
   [0.8125, 'meta: the announcement strip, captions, chips, fine print'],
@@ -31,8 +34,8 @@ const PAGE = new Map([
   [1.75, 'sub-heading'],
   [2, 'section heading, phone'],
   [2.75, 'section heading, laptop'],
-  [3.5, 'hero wordmark, phone'],
-  [5.25, 'hero wordmark, laptop'],
+  [3.25, 'hero wordmark, phone'],
+  [4.25, 'hero wordmark, laptop'],
 ]);
 
 // The phone mockup in AppShowcase is a picture of the app, not reading matter.

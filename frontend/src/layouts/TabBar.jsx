@@ -168,9 +168,9 @@ export default function TabBar() {
           className="flex items-stretch justify-around rounded-[1.6rem] border border-[var(--line-2)] px-2"
           style={{
             height: 'var(--tabbar-h)',
-            background: 'rgba(253, 242, 248, 0.92)',
+            background: 'rgba(250, 251, 252, 0.92)',
             backdropFilter: 'blur(18px)',
-            boxShadow: '0 14px 34px -16px rgba(47, 64, 54, 0.45)',
+            boxShadow: '0 14px 34px -16px rgba(20, 27, 45, 0.4)',
           }}
         >
           {TABS.map((tab) => {
@@ -229,7 +229,7 @@ export default function TabBar() {
       <nav
         aria-label="Main"
         className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-[var(--line-1)] px-4 py-5 md:flex"
-        style={{ background: 'rgba(253, 242, 248, 0.72)', backdropFilter: 'blur(18px)' }}
+        style={{ background: 'rgba(250, 251, 252, 0.8)', backdropFilter: 'blur(18px)' }}
       >
         <Link to="/" className="press group flex shrink-0 items-center gap-2.5 px-2">
           <Logo size={24} />

@@ -137,7 +137,7 @@ export default function VoiceInputButton({
         aria-pressed={listening}
         className={`flex ${box} shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-40 ${
           listening
-            ? 'border-[var(--color-teal)] bg-[var(--color-teal)] text-white'
+            ? 'border-[var(--color-teal)] bg-[var(--color-teal)] text-[var(--color-ink)]'
             : 'border-[var(--color-teal)]/30 bg-[var(--color-teal-soft)] text-[var(--color-teal-dark)] hover:border-[var(--color-teal)]/60'
         }`}
         style={listening ? { animation: 'soft-pulse 1.6s ease-in-out infinite' } : undefined}

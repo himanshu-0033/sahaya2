@@ -3,16 +3,18 @@
 
 /* === PRIMITIVES === */
 :root {
-  --primitive-color-sage-50: #f4f7f3;
-  --primitive-color-sage-100: #e8efe9;
-  --primitive-color-sage-400: #a8c3b0;
-  --primitive-color-sage-500: #6f947d;
-  --primitive-color-sage-600: #526057;
-  --primitive-color-sage-700: #4a6857;
-  --primitive-color-sage-900: #2f4036;
+  --primitive-color-mist-50: #f5f6f8;
+  --primitive-color-mist-100: #eceff4;
+  --primitive-color-ink-600: #4b5566;
+  --primitive-color-ink-900: #141b2d;
+  --primitive-color-midnight-700: #1f2d52;
+  --primitive-color-marigold-400: #f2a93b;
+  --primitive-color-marigold-800: #8a4f00;
+  --primitive-color-lake-600: #2f6b8a;
+  --primitive-color-lake-700: #245670;
   --primitive-color-pink-300: #f2789f;
   --primitive-color-pink-600: #b83a63;
-  --primitive-color-gray-500: #616976;
+  --primitive-color-gray-500: #5c6574;
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-amber-700: #8a5716;
   --primitive-color-violet-400: #a79cf0;
@@ -26,9 +28,9 @@
   --primitive-color-mint-300: #8fd6b4;
   --primitive-color-mint-700: #2c7d59;
   --primitive-color-paper-100: #f4f2ee;
-  --primitive-channel-ink: 47 64 54;
-  --primitive-channel-paper: 244 247 243;
-  --primitive-channel-sage: 168 195 176;
+  --primitive-channel-ink: 20 27 45;
+  --primitive-channel-paper: 245 246 248;
+  --primitive-channel-marigold: 242 169 59;
   --primitive-channel-violet: 167 156 240;
   --primitive-channel-coral: 239 128 100;
   --primitive-channel-sky: 88 182 245;
@@ -37,14 +39,14 @@
 
 /* === SEMANTIC === */
 :root {
-  --color-cream: #f4f7f3;
-  --color-cream-soft: #e8efe9;
-  --color-ink: #2f4036;
-  --color-ink-soft: #526057;
-  --color-muted: #616976;
-  --color-teal: #6f947d;
-  --color-teal-dark: #4a6857;
-  --color-teal-soft: rgb(var(--primitive-channel-sage) / 0.14);
+  --color-cream: #f5f6f8;
+  --color-cream-soft: #eceff4;
+  --color-ink: #141b2d;
+  --color-ink-soft: #4b5566;
+  --color-muted: #5c6574;
+  --color-teal: #f2a93b;
+  --color-teal-dark: #1f2d52;
+  --color-teal-soft: rgb(var(--primitive-channel-marigold) / 0.16);
   --color-amber: #d9a55c;
   --color-lavender: #a79cf0;
   --color-lavender-soft: rgb(var(--primitive-channel-violet) / 0.16);
@@ -57,13 +59,13 @@
   --color-rose-soft: rgb(var(--primitive-channel-rose) / 0.16);
   --color-amber-deep: #8a5716;
   --color-rose-deep: #b83a63;
-  --sec-home: #6f947d;
+  --sec-home: #2f6b8a;
   --sec-paths: #e0a3d5;
   --sec-calm: #a79cf0;
   --sec-tests: #58b6f5;
   --sec-inkblot: #d9a55c;
   --sec-read: #8fd6b4;
-  --sec-home-deep: #4a6857;
+  --sec-home-deep: #245670;
   --sec-paths-deep: #a3468f;
   --sec-calm-deep: #5546c0;
   --sec-tests-deep: #1a6da6;

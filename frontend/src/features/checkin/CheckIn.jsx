@@ -496,7 +496,7 @@ export default function CheckIn() {
               type="button"
               disabled={!mood || submitting}
               onClick={() => handleMood(true)}
-              className="press w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
+              className="press w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[#e39a2c] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
             >
               {submitting === 'test' ? 'Saving…' : 'Check in and begin the test'}
             </button>

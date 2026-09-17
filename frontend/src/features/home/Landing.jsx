@@ -154,7 +154,7 @@ function TodayCard({ name, status }) {
       {done ? (
         <>
           {status.record?.thought && (
-            <div className="mt-4 rounded-2xl border border-[var(--line-1)] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:px-5 sm:py-4">
+            <div className="mt-4 rounded-2xl border border-[var(--line-1)] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(20,27,45,0.05)] sm:px-5 sm:py-4">
               <p className="marginalia">Thought for today</p>
               <blockquote className="font-display mt-2 text-[1.1rem] leading-snug sm:text-[1.3rem]">
                 <span aria-hidden="true" className="mr-1 text-[var(--color-amber)]">
@@ -178,7 +178,7 @@ function TodayCard({ name, status }) {
       ) : (
         <>
           <div
-            className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:p-3"
+            className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(20,27,45,0.05)] sm:p-3"
             role="group"
             aria-label="Pick how today feels to start your check-in"
           >

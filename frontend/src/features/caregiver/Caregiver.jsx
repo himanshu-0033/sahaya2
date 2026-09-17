@@ -137,7 +137,7 @@ export default function Caregiver() {
                 <button
                   type="submit"
                   disabled={addSaving}
-                  className="rounded-lg bg-[var(--color-teal)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  className="rounded-lg bg-[var(--color-teal)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] disabled:opacity-50"
                 >
                   {addSaving ? 'Adding…' : 'Add'}
                 </button>

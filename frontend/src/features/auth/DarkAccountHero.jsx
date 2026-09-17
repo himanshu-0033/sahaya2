@@ -9,7 +9,7 @@ export default function DarkAccountHero({ name, email, onDone, saving, error }) 
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 70% 55% at 50% -5%, rgba(3,132,111,0.16), transparent 65%), radial-gradient(ellipse 50% 40% at 85% 20%, rgba(141,132,201,0.14), transparent 70%)',
+            'radial-gradient(ellipse 70% 55% at 50% -5%, rgba(242,169,59,0.14), transparent 65%), radial-gradient(ellipse 50% 40% at 85% 20%, rgba(47,107,138,0.18), transparent 70%)',
         }}
         aria-hidden="true"
       />

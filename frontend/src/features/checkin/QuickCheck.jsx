@@ -6,6 +6,7 @@ import LoadError from '../../shared/LoadError.jsx';
 import Odometer from '../../shared/Odometer.jsx';
 import Tick from '../../shared/Tick.jsx';
 import { getQuickCheck, submitQuickCheck } from '../../shared/api.js';
+import { startFrom } from './quickStart.js';
 
 // The door that asks for nothing.
 //
@@ -67,11 +68,9 @@ export default function QuickCheck() {
     getQuickCheck()
       .then((data) => {
         setInstrument(data.instrument);
-        const options = data.instrument.items[0]?.options || [];
-        if (options.some((o) => o.value === first) && data.instrument.items.length > 1) {
-          setAnswers([first]);
-          setIndex(1);
-        }
+        const start = startFrom(data.instrument, first);
+        setAnswers(start.answers);
+        setIndex(start.index);
       })
       .catch(setError)
       .finally(() => setLoading(false));

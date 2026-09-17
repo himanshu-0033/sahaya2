@@ -20,7 +20,7 @@ export default function Button({
   };
   const variants = {
     primary:
-      'bg-[var(--color-teal)] text-[#07080a] hover:bg-[var(--color-teal-dark)] disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]',
+      'bg-[var(--color-teal)] text-[#07080a] hover:bg-[#e39a2c] disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]',
     secondary:
       'border border-[var(--line-2)] bg-[var(--surface-1)] text-[var(--color-ink)] hover:border-[var(--line-4)] hover:bg-[var(--surface-3)] disabled:opacity-40',
   };

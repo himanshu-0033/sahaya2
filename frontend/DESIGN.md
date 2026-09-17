@@ -1,12 +1,15 @@
-# DP Sahay: soft, photographic, green
+# DP Sahay: midnight, marigold, photographs
 
-The resident app, the landing page and the free check share one light, soft
-world: white and pale sage grounds, rounded cards with soft shadows tinted to
-the brand green, full-colour photography, and a calm colour per section.
+One light world across the landing page, the free check and the resident app:
+a cool off-white ground, midnight blue as the brand, one marigold accent, and
+full-colour photography.
 
-A one-ink "printed form" redesign was tried in September 2026 and rolled back
-the same day: without the photographs and the colour it read as cold and
-official. Keep that in mind before stripping either out again.
+Two earlier directions are recorded here because both were rejected and the
+reasons still apply. A one-ink "printed form" look (white paper, one green ink,
+square boxes, duotone photos) read as cold and official. Before that, the
+landing hero laid the question card over the photograph, which read as
+amateur. Keep the photographs, keep the colour, and do not cover an image with
+a panel.
 
 The admin console (`admin/`) is its own app and is not covered here.
 
@@ -16,41 +19,61 @@ Values live in `tokens.json` (generated into `src/styles/design-tokens.css`)
 and, for the landing page and the check, in the `.welcome` block of
 `src/index.css`.
 
-| Role | Token | Use |
-| --- | --- | --- |
-| Brand green | `--w-accent-deep` `#0b6b3a` | Primary buttons, headings on the landing page, the ticked state |
-| Forest | `--w-forest` `#0a4f2c` | The announcement strip and the landing footer |
-| Wash | `--w-accent-wash` `#e3f1e8` | Chips, selected answers |
-| App ground | `--color-cream` `#f4f7f3` | Behind every signed-in page |
-| Section hues | `--sec-home`, `--sec-calm`, `--sec-paths`, `--sec-tests`, `--sec-read`, `--sec-inkblot` | Wayfinding: the tab, a page's wash, small markers |
+| Role | Token | Value | Use |
+| --- | --- | --- | --- |
+| Midnight | `--w-accent-deep`, `--color-teal-dark` | `#1f2d52` | The brand: primary buttons, headings, links. White text on it reads 13.5:1 |
+| Marigold | `--w-accent`, `--color-teal` | `#f2a93b` | The one accent, a fill and never a letter (2:1 against white). Ticks, the strip button, selected answers. Ink on it reads 8.6:1 |
+| Marigold wash | `--w-accent-wash` | `#fdf0da` | Behind ink or midnight text |
+| Ink | `--w-ink`, `--color-ink` | `#141b2d` | Reading text, and the strip and footer grounds |
+| Ink soft | `--w-ink-soft`, `--color-ink-soft` | `#4b5566` | Secondary text |
+| Ground | `--w-cream` / `--color-cream` | `#fafbfc` / `#f5f6f8` | The page behind the cards |
+| Band | `--w-band`, `--color-cream-soft` | `#eef1f5` / `#eceff4` | Section bands |
+| Lake | `--sec-home` | `#2f6b8a` | Home's section colour |
+| Alarm | red `#b42318` | | The crisis control and emergency lines only |
 
-Every hue has a `-deep` step for text. `scripts/contrast.test.mjs` checks each
-one at 4.5:1 on the app ground and on a white card.
+The other section hues (`--sec-calm`, `--sec-paths`, `--sec-tests`,
+`--sec-read`, `--sec-inkblot`) and the five mood hues stay as they are: they
+are wayfinding and a scale, not decoration. `scripts/contrast.test.mjs` checks
+every `-deep` token and accent at 4.5:1 on the app ground and on a white card.
 
 Photographs are full colour (`src/shared/photos.js`, self-hosted), with a light
-wash of the section hue on in-app cards (`.photo-head`). The landing hero uses
-the misty forest.
+wash of the section hue on in-app cards (`.photo-head`).
 
 ## Type
 
-Plus Jakarta Sans, self-hosted from `public/fonts/` as one variable file per
-subset (SIL OFL). 600 to 700 for headings with slight negative tracking, 500
-for buttons, 400 for body. The landing page's sizes are a fixed scale enforced
-by `scripts/landing-type.test.mjs`.
+Funnel Display for headings, Funnel Sans for everything else (Dicotype, SIL
+OFL), self-hosted from `public/fonts/` as one variable file per subset. `h1`,
+`h2`, `h3` and `.font-display` take Display; the rest take Sans. Headings run
+600 to 700 with slight negative tracking. The landing page's sizes are a fixed
+scale enforced by `scripts/landing-type.test.mjs`.
 
 ## Shape and depth
 
 - Cards: 18 to 28px radius (`.card`, `.w-card`); buttons and chips are pills.
-- Depth is the Soft UI Evolution shadow: a 1px contact shadow plus a wide
-  diffused one tinted with the ink or the green, never pure black.
-- The landing showcase cards are full gradients in the section colours, with a
-  drawn phone inside.
+- Depth is a 1px contact shadow plus a wide diffused one tinted with the ink,
+  never pure black.
+- The landing showcase cards are full-bleed gradients: two midnight, one lake,
+  one marigold. The marigold card carries ink text, not white.
+
+## The landing hero
+
+Split: the left column holds the wordmark, the one-line promise and the free
+check's real first question, answerable on the spot; the right column is the
+photograph at the column's full height, with nothing over it. Ticking an
+answer fills the box in marigold, draws the tick and opens `/check` on question
+two with that answer kept. `startFrom` in
+`src/features/checkin/quickStart.js` owns that hand-off and is tested by
+`scripts/quick-start.test.mjs`: 0 is a real answer, anything the instrument
+does not offer is refused, and a one-item check never skips past its end.
+
+Below it the tools are a bento of six cells, two carrying photographs, rather
+than six identical cards.
 
 ## Components worth knowing
 
 | Piece | Where | Notes |
 | --- | --- | --- |
-| First question card | `FirstQuestion` in `features/auth/Welcome.jsx` | The real WHO-5 item 1 over the hero photo; ticking carries the answer into `/check` |
+| First question card | `FirstQuestion` in `features/auth/Welcome.jsx` | The hero's action |
 | Tick box | `shared/Tick.jsx`, `.f-tick`, `.soft-option` | A parent with `data-ticked="true"` fills it and draws the tick |
 | Count roll | `shared/Odometer.jsx` | Rolls to its value once `go` is true |
 | Reveal | `shared/useReveal.js` | `data-reveal` on a section, `.reveal-item` on what rises |
@@ -63,7 +86,7 @@ by `scripts/landing-type.test.mjs`.
 - The landing page and the free check are seen rarely, so they arrive: the hero
   rises in order, the photograph opens top down while settling from a slight
   zoom, sections rise as they scroll into view (once), the counts roll, the
-  showcase phones slide up out of their cards, and a new question rises 6px.
+  showcase phones slide up, and a new question rises 6px.
 - The app is opened daily, so it keeps to feedback: press scale, hover lifts on
   pointer devices, dialogs that arrive in 240ms.
 - Transform, opacity and clip-path only. Hover motion is gated to fine

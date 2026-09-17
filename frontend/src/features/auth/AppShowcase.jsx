@@ -9,10 +9,12 @@
 import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
 import useReveal from '../../shared/useReveal.js';
 
-const INK = '#14201a';
-const SOFT = '#5b6a62';
-const GREEN = '#0b6b3a';
-const WASH = '#e3f1e8';
+// The palette's inks, so the drawn phones and the real app agree.
+const INK = '#141b2d';
+const SOFT = '#5c6574';
+const MIDNIGHT = '#1f2d52';
+const WASH = '#e9edf5';
+const MARIGOLD = '#f2a93b';
 
 function Phone({ dark = false, children }) {
   return (
@@ -22,7 +24,7 @@ function Phone({ dark = false, children }) {
     >
       <div
         className="flex items-center justify-between px-4 pt-2 text-[0.5rem] font-semibold"
-        style={{ color: dark ? '#e8efe9' : INK }}
+        style={{ color: dark ? '#e7ebf3' : INK }}
       >
         <span>9:41</span>
         <span className="h-3.5 w-14 rounded-full bg-[#0b0f0d]" />
@@ -46,7 +48,7 @@ function CheckInScreen() {
         <p className="text-[0.5rem] font-semibold uppercase tracking-[0.14em]" style={{ color: SOFT }}>
           Good evening
         </p>
-        <span className="rounded-full px-2 py-0.5 text-[0.5rem] font-semibold" style={{ background: WASH, color: GREEN }}>
+        <span className="rounded-full px-2 py-0.5 text-[0.5rem] font-semibold" style={{ background: '#fdf0da', color: INK }}>
           4 days
         </span>
       </div>
@@ -85,7 +87,7 @@ function PathsScreen() {
   return (
     <>
       <p className="text-[0.8rem] font-bold" style={{ color: INK }}>Paths</p>
-      <div className="mt-2 rounded-xl p-2.5 text-white" style={{ background: 'linear-gradient(150deg, #1f7a78, #134e4a)' }}>
+      <div className="mt-2 rounded-xl p-2.5 text-white" style={{ background: 'linear-gradient(150deg, #2f6b8a, #1c4159)' }}>
         <p className="text-[0.4375rem] font-semibold uppercase tracking-[0.14em]">In progress</p>
         <p className="mt-1 text-[0.6875rem] font-bold leading-tight">Seven days of breathwork</p>
         <div className="mt-2 h-1 rounded-full bg-white/30">
@@ -100,10 +102,10 @@ function PathsScreen() {
             className="flex h-5 w-5 items-center justify-center rounded-full text-[0.5rem] font-semibold"
             style={
               d < 3
-                ? { background: GREEN, color: '#fff' }
+                ? { background: MIDNIGHT, color: '#fff' }
                 : d === 3
-                  ? { border: `1.5px solid ${GREEN}`, color: GREEN }
-                  : { background: '#e6ece8', color: SOFT }
+                  ? { border: `1.5px solid ${MIDNIGHT}`, color: MIDNIGHT }
+                  : { background: '#e7eaf0', color: SOFT }
             }
           >
             {d}
@@ -126,7 +128,7 @@ function ChatScreen() {
   return (
     <>
       <div className="flex items-center gap-1.5 border-b pb-2" style={{ borderColor: '#e1e8e3' }}>
-        <span className="h-4 w-4 rounded-full" style={{ background: GREEN }} />
+        <span className="h-4 w-4 rounded-full" style={{ background: MARIGOLD }} />
         <span className="text-[0.6875rem] font-bold" style={{ color: INK }}>DP</span>
       </div>
       <div className="mt-2.5 flex flex-col gap-2">
@@ -135,18 +137,18 @@ function ChatScreen() {
         </span>
         <div className="flex flex-wrap gap-1">
           {['Study pressure', 'Placements', 'Family'].map((t) => (
-            <span key={t} className="rounded-full border px-2 py-0.5 text-[0.4375rem]" style={{ borderColor: '#cfdcd4', color: SOFT }}>
+            <span key={t} className="rounded-full border px-2 py-0.5 text-[0.4375rem]" style={{ borderColor: '#d3d9e4', color: SOFT }}>
               {t}
             </span>
           ))}
         </div>
-        <span className={`${bubble} self-end text-white`} style={{ background: GREEN }}>
+        <span className={`${bubble} self-end text-white`} style={{ background: MIDNIGHT }}>
           exams mostly. and i am not sleeping
         </span>
         <span className={`${bubble} self-start`} style={{ background: WASH, color: INK }}>
           That is a lot to hold at once. How long has the sleep been like this?
         </span>
-        <span className={`${bubble} self-end text-white`} style={{ background: GREEN }}>
+        <span className={`${bubble} self-end text-white`} style={{ background: MIDNIGHT }}>
           about two weeks
         </span>
       </div>
@@ -179,7 +181,7 @@ const SCREENS = [
     title: 'How is today, really?',
     body: 'One tap, about thirty seconds, and a streak that counts the days you showed up.',
     tags: ['Mood', 'Streak', '30 seconds'],
-    bg: 'linear-gradient(165deg, #0f7a45 0%, #0a4f2c 100%)',
+    bg: 'linear-gradient(165deg, #2c3f70 0%, #16203a 100%)',
     screen: <CheckInScreen />,
   },
   {
@@ -187,7 +189,7 @@ const SCREENS = [
     title: 'Walk it, day by day.',
     body: 'Five short paths for background anxiety, sleep, a spinning head, self-compassion and exams.',
     tags: ['Anxiety', 'Sleep', 'Exams'],
-    bg: 'linear-gradient(165deg, #1f7a78 0%, #134e4a 100%)',
+    bg: 'linear-gradient(165deg, #3a7fa0 0%, #1d4a63 100%)',
     screen: <PathsScreen />,
   },
   {
@@ -195,7 +197,8 @@ const SCREENS = [
     title: 'Say what is going on.',
     body: 'A short conversation that knows how today felt. Not a therapist, and it says so.',
     tags: ['Voice', 'Private', 'Crisis contacts'],
-    bg: 'linear-gradient(165deg, #b45309 0%, #7c2d12 100%)',
+    bg: 'linear-gradient(165deg, #f6b757 0%, #e08a1b 100%)',
+    onLight: true,
     screen: <ChatScreen />,
   },
   {
@@ -203,7 +206,7 @@ const SCREENS = [
     title: 'Breathe it down.',
     body: 'Thirteen practices for a bad ten minutes. Most take under three.',
     tags: ['Box breathing', '5-4-3-2-1', 'Body scan'],
-    bg: 'linear-gradient(165deg, #1f2937 0%, #0b1220 100%)',
+    bg: 'linear-gradient(165deg, #232838 0%, #101420 100%)',
     screen: <GroundingScreen />,
     dark: true,
   },
@@ -239,7 +242,9 @@ export default function AppShowcase({ onStart }) {
           {SCREENS.map((s, i) => (
             <article
               key={s.title}
-              className="reveal-item group flex h-[36rem] w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] px-6 pt-7 text-white shadow-[0_30px_60px_-34px_rgba(10,40,25,0.55)] sm:w-auto"
+              className={`reveal-item group flex h-[36rem] w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-[1.75rem] px-6 pt-7 shadow-[0_30px_60px_-34px_rgba(20,27,45,0.5)] sm:w-auto ${
+                s.onLight ? 'text-[#141b2d]' : 'text-white'
+              }`}
               style={{ background: s.bg, '--i': i + 1 }}
             >
               <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em]">{s.eyebrow}</p>
@@ -247,7 +252,7 @@ export default function AppShowcase({ onStart }) {
               <p className="mt-2.5 text-[0.9375rem] leading-relaxed">{s.body}</p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {s.tags.map((t) => (
-                  <span key={t} className="rounded-full border border-white/50 px-2.5 py-0.5 text-[0.6875rem] font-medium">
+                  <span key={t} className={`rounded-full border px-2.5 py-0.5 text-[0.6875rem] font-medium ${s.onLight ? 'border-[#141b2d]/35' : 'border-white/50'}`}>
                     {t}
                   </span>
                 ))}
@@ -278,7 +283,7 @@ export default function AppShowcase({ onStart }) {
             className="press inline-flex items-center gap-2 rounded-full px-8 py-4 text-[0.9375rem] font-semibold text-white transition-opacity hover:opacity-90"
             style={{ background: 'var(--w-accent-deep)' }}
           >
-            Get started, it is free
+            Sign in to start
             <Arrow />
           </button>
         </div>

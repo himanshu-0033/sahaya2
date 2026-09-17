@@ -26,10 +26,9 @@ import { useId } from 'react';
 // second definition wins in every browser, so one of them silently loses its
 // gradient.
 //
-// `from`/`to` default to the green the mark has always been, so every existing
-// caller is untouched. The landing page overrides them: the mark is otherwise
-// the only green object on a pink page, which reads as a foreign object rather
-// than a logo.
+// `from`/`to` default to the palette's marigold running into amber, so every
+// caller follows the brand without passing colours. A page that needs the mark
+// in another ink passes its own pair.
 
 // The lines, in draw order. Kept out of the component so the favicon and any
 // future still can be generated from the same source rather than a copy that
@@ -68,8 +67,8 @@ export default function Logo({
   size = 30,
   glow = true,
   className,
-  from = '#7df3b4',
-  to = '#2fb87c',
+  from = '#f2ad48',
+  to = '#c26a0c',
   thinking = false,
 }) {
   const uid = useId().replace(/:/g, '');

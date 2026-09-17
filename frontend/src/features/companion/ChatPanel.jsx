@@ -40,7 +40,7 @@ function Helplines({ items }) {
       role="region"
       aria-label="Crisis contacts"
       className="mt-2 rounded-2xl border-2 bg-white p-3"
-      style={{ borderColor: '#b42318', color: '#14201a', colorScheme: 'light' }}
+      style={{ borderColor: '#b42318', color: '#141b2d', colorScheme: 'light' }}
     >
       <p className="text-[0.8125rem] font-bold" style={{ color: '#b42318' }}>
         Talk to a person now
@@ -51,7 +51,7 @@ function Helplines({ items }) {
             key={h.number}
             href={telHref(h.number)}
             className="press rounded-xl px-3 py-2 text-white"
-            style={{ background: i === 0 ? '#b42318' : '#0b6b3a' }}
+            style={{ background: i === 0 ? '#b42318' : '#1f2d52' }}
           >
             <span className="block text-[0.6875rem] leading-tight font-semibold">
               Call {h.name.split(/[,(]/)[0].trim()}
@@ -68,8 +68,8 @@ function Helplines({ items }) {
               href={telHref(h.number)}
               className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-xs hover:bg-[#f5f7f6]"
             >
-              <span className="min-w-0" style={{ color: '#4a5750' }}>{h.name}</span>
-              <span className="shrink-0 font-bold whitespace-nowrap tabular-nums" style={{ color: '#0b6b3a' }}>
+              <span className="min-w-0" style={{ color: '#4b5566' }}>{h.name}</span>
+              <span className="shrink-0 font-bold whitespace-nowrap tabular-nums" style={{ color: '#1f2d52' }}>
                 {h.number}
               </span>
             </a>

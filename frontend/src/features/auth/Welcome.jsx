@@ -38,16 +38,25 @@ import { getSession } from './session.js';
 // Ticking an answer is the first answer of the check: /check opens on question
 // two with it kept.
 
+// Six tools, six cells, two of them carrying a photograph: a grid of six
+// identical white cards is the shape every landing page of this kind has, and
+// it flattens the two that people actually arrive for.
 const TOOLS = [
   {
     title: 'Questionnaires',
     body: 'PHQ-9, GAD-7, WHO-5 and eighteen more published screens, each with its citation and licence on the page.',
     to: '/read/which-test-and-what-for',
+    photo: PHOTO.tests,
+    span: 'sm:col-span-2 lg:row-span-2',
+    feature: true,
   },
   {
     title: 'Grounding practices',
     body: 'Thirteen for a bad ten minutes: cyclic sighing, box breathing, 5-4-3-2-1, a body scan.',
     to: '/read/which-technique-when',
+    photo: PHOTO.calm,
+    span: 'sm:col-span-2',
+    feature: true,
   },
   {
     title: 'Guided paths',
@@ -63,11 +72,13 @@ const TOOLS = [
     title: 'DP, the companion',
     body: 'A short conversation, typed or spoken, with crisis contacts built in. Not a therapist.',
     signIn: true,
+    span: 'sm:col-span-2',
   },
   {
     title: 'Reading',
     body: 'Plain essays on what a score means, what it does not, and where your answers go.',
     to: '/read',
+    span: 'sm:col-span-4',
   },
 ];
 
@@ -153,10 +164,7 @@ const tel = (n) => `tel:${n.replace(/[^\d+]/g, '')}`;
 
 const PRIMARY =
   'press inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-opacity hover:opacity-90';
-const SECONDARY =
-  'press inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] px-7 py-3.5 text-[0.9375rem] font-semibold transition-colors hover:bg-[var(--w-accent-wash)]';
 const GREEN_FILL = { background: 'var(--w-accent-deep)' };
-const GREEN_LINE = { borderColor: 'var(--w-accent-deep)', color: 'var(--w-accent-deep)' };
 const SOFT = { color: 'var(--w-ink-soft)' };
 
 function Pill({ children }) {
@@ -188,7 +196,7 @@ const TICK_HOLD_MS = 340;
 // The free check's first question, on a card of its own. While it loads the
 // card keeps its shape with blank answers rather than showing a spinner; if it
 // cannot load, the card offers the check by its own name.
-function FirstQuestion({ instrument, failed }) {
+function FirstQuestion({ instrument, failed, onSignIn }) {
   const navigate = useNavigate();
   const [ticked, setTicked] = useState(null);
   const timer = useRef(0);
@@ -209,16 +217,17 @@ function FirstQuestion({ instrument, failed }) {
   }
 
   return (
-    <div className="w-card hero-rise p-5 shadow-[0_24px_60px_-28px_rgba(10,79,44,0.45)] sm:p-6" style={{ '--d': '520ms' }} aria-busy={!item}>
-      <div className="flex items-center justify-between gap-3">
-        <span
-          className="rounded-full px-3 py-1 text-[0.6875rem] font-semibold"
-          style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-        >
-          {instrument ? instrument.fullName : 'WHO-5'}
-        </span>
+    <div
+      className="w-card hero-rise p-5 shadow-[0_24px_60px_-28px_rgba(20,27,45,0.35)] sm:p-6"
+      style={{ '--d': '260ms' }}
+      aria-busy={!item}
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-[0.9375rem] font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
+          Start with the free check
+        </p>
         {instrument && (
-          <span className="text-[0.6875rem] font-medium tabular-nums" style={SOFT}>
+          <span className="text-[0.8125rem] font-medium tabular-nums" style={SOFT}>
             1 of {instrument.items.length}
           </span>
         )}
@@ -236,7 +245,7 @@ function FirstQuestion({ instrument, failed }) {
           <p className="mt-4 text-[0.8125rem]" style={SOFT}>
             {instrument ? instrument.prompt : ' '}
           </p>
-          <p id="first-question" className="mt-1 text-[1.25rem] leading-snug font-bold tracking-[-0.01em]" style={{ textWrap: 'balance' }}>
+          <p id="first-question" className="mt-1 text-[1.25rem] leading-snug font-bold tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
             {item ? item.text : ' '}
           </p>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2" aria-hidden={!item || undefined}>
@@ -255,6 +264,18 @@ function FirstQuestion({ instrument, failed }) {
               </li>
             ))}
           </ul>
+          <p className="mt-4 border-t pt-3 text-[0.8125rem] leading-relaxed" style={{ ...SOFT, borderColor: 'var(--w-line)' }}>
+            Five questions, no account, nothing saved.{' '}
+            <button
+              type="button"
+              onClick={onSignIn}
+              className="cursor-pointer font-semibold underline underline-offset-4 hover:opacity-80"
+              style={{ color: 'var(--w-accent-deep)' }}
+            >
+              Sign in
+            </button>{' '}
+            for the daily check-in and the questionnaires a clinic uses.
+          </p>
         </div>
       )}
     </div>
@@ -318,7 +339,8 @@ export default function Welcome({ onSignedIn }) {
           </p>
           <Link
             to="/check"
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1 text-[0.6875rem] font-semibold tracking-[0.14em] whitespace-nowrap uppercase transition-colors hover:bg-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[0.6875rem] font-semibold tracking-[0.14em] whitespace-nowrap uppercase transition-[filter] hover:brightness-95"
+            style={{ background: 'var(--w-accent)', color: 'var(--w-ink)' }}
           >
             Take the 1-minute check
             <Arrow size={12} />
@@ -366,66 +388,39 @@ export default function Welcome({ onSignedIn }) {
 
       {/* -------------------------------------------------------------- hero */}
       <section id="top" className="mx-auto max-w-6xl scroll-mt-40 px-5 pt-12 pb-20 sm:px-8 sm:pt-16 lg:pb-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
-          <div>
+        <div className="grid items-stretch gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
+          <div className="flex flex-col justify-center">
             <div className="hero-rise" style={{ '--d': '0ms' }}>
               <Pill>You matter to us</Pill>
             </div>
             <h1
-              className="hero-rise mt-6 text-[3.5rem] leading-[0.95] font-bold tracking-[-0.035em] sm:text-[5.25rem]"
+              className="hero-rise mt-5 text-[3.25rem] leading-[0.95] font-bold tracking-[-0.035em] sm:text-[4.25rem]"
               style={{ color: 'var(--w-accent-deep)', '--d': '80ms' }}
             >
               DP Sahay
               <span className="ml-2 align-top text-[0.34em] tracking-normal">AI</span>
             </h1>
-            <p className="hero-rise mt-6 max-w-lg text-[1.25rem] leading-snug" style={{ '--d': '160ms' }}>
+            <p className="hero-rise mt-4 max-w-lg text-[1.25rem] leading-snug" style={{ '--d': '160ms' }}>
               A minute a day, and a real look at how you are.
             </p>
-            <p className="hero-rise mt-4 flex max-w-lg gap-2.5 text-[0.9375rem] leading-relaxed" style={{ ...SOFT, '--d': '220ms' }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--w-accent-deep)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
-                <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
-                <path d="M11 18.5h2" />
-              </svg>
-              <span>
-                <strong className="font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
-                  Start with the free check
-                </strong>
-                : five questions, no account, nothing saved. The app adds a 30-second daily
-                check-in and the questionnaires a clinic uses.
-              </span>
-            </p>
 
+            {/* The check itself is the hero's action: the real first question of
+                the WHO-5, answerable here. A button that says "take the check"
+                is a promise; the question is the thing. */}
             {!signingIn && (
-              <div className="hero-rise mt-9 flex flex-wrap gap-3" style={{ '--d': '300ms' }}>
-                <Link to="/check" className={PRIMARY} style={GREEN_FILL}>
-                  Take the 1-minute check
-                  <Arrow />
-                </Link>
-                <button type="button" onClick={go} className={SECONDARY} style={GREEN_LINE}>
-                  Sign in
-                  <Arrow />
-                </button>
+              <div className="mt-8">
+                <FirstQuestion instrument={instrument} failed={failed} onSignIn={go} />
               </div>
             )}
-
-            <p className="hero-rise mt-7 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.8125rem]" style={{ ...SOFT, '--d': '380ms' }}>
-              <span>No account for the check</span>
-              <span aria-hidden="true">·</span>
-              <a href="#trust" className="underline-offset-4 hover:underline" style={{ color: 'var(--w-accent-deep)' }}>
-                Built on PHQ-9, GAD-7 and WHO-5
-              </a>
-              <span aria-hidden="true">·</span>
-              <span>Seen only by your counsellor and administrator</span>
-            </p>
           </div>
 
-          {/* The photograph with the first question laid over its lower edge,
-              and the moment it is asked for, the door. The sign-in form takes
-              their place, so signing in changes a panel that was already there
+          {/* The photograph stands on its own, at the height of the column
+              beside it. Nothing is laid over it. The sign-in form takes its
+              place, so signing in changes a panel that was already there
               rather than pushing the page around. */}
-          <div>
+          <div className="flex">
             {signingIn ? (
-              <div className="w-card dialog-in mx-auto max-w-md p-6 sm:p-7">
+              <div className="w-card dialog-in mx-auto w-full max-w-md self-center p-6 sm:p-7">
                 <GoogleSignInButton onSignedIn={handleSignedIn} />
                 <div className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide" style={SOFT}>
                   <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
@@ -443,21 +438,16 @@ export default function Welcome({ onSignedIn }) {
                 </button>
               </div>
             ) : (
-              <div className="relative mx-auto max-w-md lg:max-w-none">
-                <div className="photo-reveal overflow-hidden rounded-[1.75rem] shadow-[0_40px_80px_-40px_rgba(10,79,44,0.55)]">
-                  <img
-                    src={PHOTO.hero}
-                    alt=""
-                    width="900"
-                    height="1200"
-                    decoding="async"
-                    fetchPriority="high"
-                    className="aspect-[16/11] w-full object-cover"
-                  />
-                </div>
-                <div className="relative -mt-24 px-3 sm:-mt-28 sm:px-6">
-                  <FirstQuestion instrument={instrument} failed={failed} />
-                </div>
+              <div className="photo-reveal mx-auto w-full overflow-hidden rounded-[1.75rem] shadow-[0_40px_80px_-40px_rgba(20,27,45,0.45)]">
+                <img
+                  src={PHOTO.hero}
+                  alt=""
+                  width="900"
+                  height="1200"
+                  decoding="async"
+                  fetchPriority="high"
+                  className="h-full min-h-[22rem] w-full object-cover lg:min-h-[30rem]"
+                />
               </div>
             )}
           </div>
@@ -482,11 +472,26 @@ export default function Welcome({ onSignedIn }) {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-5 sm:grid-cols-4">
             {TOOLS.map((t, i) => {
               const inner = (
                 <>
-                  <h3 className="text-[1.25rem] font-semibold">{t.title}</h3>
+                  {t.photo && (
+                    <span className="-mx-6 -mt-6 mb-5 block overflow-hidden sm:-mx-7 sm:-mt-7">
+                      <img
+                        src={t.photo}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${
+                          t.feature && t.span.includes('row-span-2') ? 'h-56 lg:h-72' : 'h-40'
+                        }`}
+                      />
+                    </span>
+                  )}
+                  <h3 className={t.feature ? 'text-[1.5rem] font-bold tracking-[-0.02em]' : 'text-[1.25rem] font-semibold'}>
+                    {t.title}
+                  </h3>
                   <p className="mt-2 text-[0.875rem] leading-relaxed" style={SOFT}>
                     {t.body}
                   </p>
@@ -496,7 +501,7 @@ export default function Welcome({ onSignedIn }) {
                   </span>
                 </>
               );
-              const cls = 'reveal-item w-card flex flex-col p-6 text-left sm:p-7';
+              const cls = `reveal-item w-card group flex flex-col overflow-hidden p-6 text-left sm:p-7 ${t.span || 'sm:col-span-2'}`;
               const order = { '--i': i + 1 };
               return t.signIn ? (
                 <button key={t.title} type="button" onClick={go} className={`${cls} cursor-pointer`} style={order}>
@@ -537,7 +542,7 @@ export default function Welcome({ onSignedIn }) {
             means, with no sign-up, and nothing is saved.
           </p>
           <Link to="/check" className={`${PRIMARY} mt-7`} style={GREEN_FILL}>
-            Start the 1-minute check
+            Take the 1-minute check
           </Link>
           <p className="mt-5 text-[0.8125rem]" style={SOFT}>
             Based on the WHO-5 Well-Being Index · a screen, not a diagnosis
