@@ -262,7 +262,14 @@ export default function AppShowcase({ onStart }) {
       {/* One ruled table from tablet up, four columns on a laptop. On a phone
           the same columns are a row you swipe, and the scroll lives on this
           container, never on the page. */}
-      <div className="-mx-5 mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-0 sm:overflow-visible sm:border-t-[1.5px] sm:border-l-[1.5px] sm:border-[var(--spot)] sm:px-0 sm:pb-0 lg:grid-cols-4">
+      {/* Focusable so the row can be scrolled from a keyboard on a phone,
+          where nothing inside it takes focus. */}
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label="Inside the app"
+        className="-mx-5 mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-3 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-0 sm:overflow-visible sm:border-t-[1.5px] sm:border-l-[1.5px] sm:border-[var(--spot)] sm:px-0 sm:pb-0 lg:grid-cols-4"
+      >
         {SCREENS.map((s, i) => (
           <article
             key={s.title}

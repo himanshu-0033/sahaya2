@@ -206,7 +206,7 @@ function FirstQuestion({ instrument, failed }) {
           </Link>
         </div>
       ) : (
-        <div role="group" aria-labelledby="first-question" className="min-w-0">
+        <div role="group" aria-labelledby="first-question" aria-busy={!item} className="min-w-0">
           <div className="px-4 pt-5 pb-4 sm:px-6 sm:pt-6">
             <p className="text-[0.9375rem]" style={SOFT}>
               {instrument ? instrument.prompt : ' '}
@@ -216,7 +216,9 @@ function FirstQuestion({ instrument, failed }) {
             </p>
           </div>
 
-          <ul className="f-rows border-t border-[var(--rule)]">
+          {/* Blank rows while the questionnaire loads are the shape of the form,
+              not controls, so assistive tech is not handed six empty buttons. */}
+          <ul className="f-rows border-t border-[var(--rule)]" aria-hidden={!item || undefined}>
             {(item?.options || Array.from({ length: 6 }, (_, i) => ({ value: i, label: '' }))).map((option) => (
               <li key={option.value}>
                 <button

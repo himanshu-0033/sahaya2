@@ -281,16 +281,16 @@ export default function ChatPanel({
     <div
       className={`rounded-3xl border border-[var(--line-2)] p-5 ${
         variant === 'overlay'
-          ? 'bg-[var(--color-cream)] shadow-[0_30px_80px_-32px_rgba(0,0,0,0.45)]'
+          ? 'border-t-4 border-t-[var(--spot)] bg-[var(--color-cream)] shadow-[0_24px_60px_-24px_rgba(7,63,34,0.45)]'
           : 'bg-[var(--surface-2)] shadow-[0_30px_80px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl'
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[0.6875rem] tracking-[0.22em] text-[var(--color-muted)] uppercase">
+          <p className="f-label">
             {variant === 'overlay' ? 'DP' : 'Talk it through'}
           </p>
-          <h3 className="mt-1 font-display text-xl">
+          <h3 className="f-title mt-1 text-xl">
             {view === 'history'
               ? 'Your past talks.'
               : variant === 'overlay' ? 'Say what is going on.' : 'A moment to reflect'}

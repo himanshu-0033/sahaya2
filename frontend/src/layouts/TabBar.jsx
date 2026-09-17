@@ -176,7 +176,12 @@ export default function TabBar() {
               key={tab.to}
               to={tab.to}
               aria-current={i === active ? 'page' : undefined}
-              className="flex flex-1 flex-col items-center justify-center gap-1 border-l border-[var(--rule)] text-[var(--color-ink-soft)] transition-colors duration-150 first:border-l-0 active:bg-[var(--paper-tint)]"
+              // Focused, a tab is lifted over the ink so its ring is not painted
+              // underneath it. The inked tab also drops its own label while
+              // lifted, because the white one on the ink is already there.
+              className={`flex flex-1 flex-col items-center justify-center gap-1 border-l border-[var(--rule)] text-[var(--color-ink-soft)] transition-colors duration-150 first:border-l-0 focus-visible:relative focus-visible:z-10 focus-visible:outline-offset-[-5px] active:bg-[var(--paper-tint)] ${
+                i === active ? 'focus-visible:text-transparent focus-visible:outline-white' : ''
+              }`}
             >
               <TabIcon tab={tab} active={false} />
               <span className="f-label text-[0.75rem]" style={{ color: 'inherit' }}>
@@ -242,24 +247,26 @@ export default function TabBar() {
           <div className="mb-3">
             <CrisisContacts variant="link" />
           </div>
+          {/* The streak badge is a link of its own, so it sits beside the
+              account link rather than inside it: an <a> inside an <a> is
+              invalid HTML, and React said so on every page. */}
           {profile && (
-            <Link
-              to="/account"
-              className="flex items-center gap-3 border border-[var(--rule)] px-2 py-2 transition-colors hover:border-[var(--spot)] hover:bg-[var(--paper-tint)]"
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border border-[var(--spot)] bg-[var(--paper-tint)] text-sm font-semibold text-[var(--spot)]">
-                {profile.picture ? (
-                  <img src={profile.picture} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  (profile.name || '?').charAt(0).toUpperCase()
-                )}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm">{profile.name || 'Your account'}</span>
-                <span className="marginalia block">Account</span>
-              </span>
+            <div className="flex items-center gap-2 border border-[var(--rule)] py-2 pr-2 pl-2 transition-colors focus-within:border-[var(--spot)] hover:border-[var(--spot)]">
+              <Link to="/account" className="flex min-w-0 flex-1 items-center gap-3 hover:text-[var(--spot)]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border border-[var(--spot)] bg-[var(--paper-tint)] text-sm font-semibold text-[var(--spot)]">
+                  {profile.picture ? (
+                    <img src={profile.picture} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    (profile.name || '?').charAt(0).toUpperCase()
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm">{profile.name || 'Your account'}</span>
+                  <span className="marginalia block">Account</span>
+                </span>
+              </Link>
               <StreakBadge />
-            </Link>
+            </div>
           )}
         </div>
       </nav>

@@ -1684,6 +1684,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Every control already answers a press by moving (.press, .f-btn), so the
+   browser's grey tap flash would be a second, uglier answer to the same tap.
+   manipulation drops the double-tap-to-zoom wait without disabling pinch. */
+a,
+button,
+[role='button'],
+label,
+summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes ink-roll {
   from { clip-path: inset(-10% 100% -10% 0); }
   to { clip-path: inset(-10% 0 -10% 0); }
