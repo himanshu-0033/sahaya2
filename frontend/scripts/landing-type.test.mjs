@@ -17,22 +17,20 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-// Eleven roles, twelve numbers. The hero spends two of them on one role
-// because a wordmark at 84px on a laptop is 56px on a phone. There is no 11px
-// step any more: on the printed sheet the small capitals are field labels, set
-// condensed at 13px by .f-label in index.css, which is narrower than the wide
-// 11px capitals were and can actually be read.
+// Eleven roles, thirteen numbers. The hero spends two of them on one role
+// because a wordmark at 84px on a laptop is 56px on a phone.
 const PAGE = new Map([
-  [0.8125, 'meta: the strip, footnotes, citations, tags'],
-  [0.875, 'small: stat labels, starting points, row actions'],
-  [0.9375, 'body small: supporting prose, footer links, nav'],
-  [1, 'body: section intros, answer options'],
+  [0.6875, 'micro: uppercase labels, pills, the copyright line'],
+  [0.8125, 'meta: the announcement strip, captions, chips, fine print'],
+  [0.875, 'small: UI copy, footer links, stat labels'],
+  [0.9375, 'body small: supporting prose and buttons'],
+  [1, 'body: section intros'],
   [1.0625, 'body large: the approach paragraphs'],
-  [1.25, 'lead: hero subtitle, tool titles, the footer lede, the header wordmark'],
-  [1.5, 'title: the showcase columns, the hero tagline'],
-  [1.75, 'sub-heading: the tear-off slip, the printed question on a phone'],
-  [2, 'section heading and boxed digits, phone'],
-  [2.75, 'section heading and boxed digits, laptop'],
+  [1.25, 'lead: hero subtitle, card titles, the footer lede'],
+  [1.5, 'card title: the showcase cards'],
+  [1.75, 'sub-heading'],
+  [2, 'section heading, phone'],
+  [2.75, 'section heading, laptop'],
   [3.5, 'hero wordmark, phone'],
   [5.25, 'hero wordmark, laptop'],
 ]);
@@ -41,7 +39,7 @@ const PAGE = new Map([
 // It is aria-hidden, it runs from 7px to 18px, and its sizes are chosen to keep
 // a miniature looking like a screenshot rather than to be read. Forcing it onto
 // the page scale would break the illusion and help nobody.
-const MOCKUP = new Set([0.4375, 0.5, 0.5625, 0.625, 0.6875, 0.75, 0.8, 1.1]);
+const MOCKUP = new Set([0.4375, 0.5, 0.5625, 0.625, 0.75, 0.8, 1.1]);
 
 const FILES = [
   ['src/features/auth/Welcome.jsx', PAGE],

@@ -8,7 +8,7 @@
 // `base` and `bright` are light: they were drawn to glow on a dark ground, and
 // they still do exactly the right thing as an orb, a gradient, a ring stroke or
 // a tint. What they cannot do any more is carry a letter. The app's ground is
-// white paper and a pale green tint now, and every one of these lands between 1.5:1 and 2.3:1 against it
+// #f4f7f3 now, and every one of these lands between 1.5:1 and 2.3:1 against it
 // and the floor is 4.5:1. That is the same class of bug as the section
 // greys that got fixed, one layer further in.
 //
@@ -17,7 +17,7 @@
 // changed, because nothing is wrong with them where they are used as light.
 // Text takes `deep`; everything that is a fill keeps `base` and `bright`.
 const ACCENTS = {
-  teal: { base: '#1fae95', bright: '#5fd6bf', deep: '#0d7563' },
+  teal: { base: '#1fae95', bright: '#5fd6bf', deep: '#0f7e6b' },
   sky: { base: '#58b6f5', bright: '#8fd0ff', deep: '#1a6da6' },
   lavender: { base: '#a79cf0', bright: '#c4bcff', deep: '#5546c0' },
   amber: { base: '#d9a55c', bright: '#f0c68a', deep: '#8a5716' },

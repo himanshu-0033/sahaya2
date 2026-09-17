@@ -58,7 +58,7 @@ function SettledPicker({ value, onChange, accentName }) {
             type="button"
             onClick={() => onChange(selected ? null : option.value)}
             aria-pressed={selected}
-            className="press rounded-[2px] border px-4 py-2.5 text-sm transition-colors duration-200"
+            className="press rounded-full border px-4 py-2.5 text-sm transition-colors duration-200"
             style={{
               borderColor: selected ? base : 'var(--line-4)',
               background: selected ? alpha(base, 0.16) : 'transparent',
@@ -187,7 +187,7 @@ function StepRunner({ steps, accentName, running, speakAloud, onFinish }) {
           type="button"
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={index === 0}
-          className="press rounded-[2px] border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-30"
+          className="press rounded-full border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-30"
         >
           Back
         </button>
@@ -196,7 +196,7 @@ function StepRunner({ steps, accentName, running, speakAloud, onFinish }) {
           onClick={() =>
             index < steps.length - 1 ? setIndex(index + 1) : finishRef.current?.()
           }
-          className="press rounded-[2px] border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
+          className="press rounded-full border border-[var(--line-2)] px-5 py-2 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
         >
           {index < steps.length - 1 ? 'Next' : 'Done'}
         </button>
@@ -358,7 +358,7 @@ export default function GroundingPractice() {
                   type="button"
                   onClick={toggleVoice}
                   aria-pressed={voice}
-                  className="press flex items-center gap-1.5 rounded-[2px] border px-3 py-1.5 text-[0.6875rem] transition-colors"
+                  className="press flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.6875rem] transition-colors"
                   style={{
                     borderColor: voice ? alpha(colors.base, 0.45) : 'var(--line-2)',
                     background: voice ? alpha(colors.base, 0.16) : 'transparent',
@@ -401,7 +401,7 @@ export default function GroundingPractice() {
 
             <div className="mt-6 flex flex-wrap gap-2">
               <span
-                className="rounded-[2px] px-3 py-1.5 text-xs"
+                className="rounded-full px-3 py-1.5 text-xs"
                 style={{ background: alpha(colors.base, 0.18), color: colors.deep }}
               >
                 {formatDuration(technique.seconds)}
@@ -409,7 +409,7 @@ export default function GroundingPractice() {
               {technique.bestFor.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-[2px] border border-[var(--color-ink)]/12 px-3 py-1.5 text-xs text-[var(--color-ink-soft)]"
+                  className="rounded-full border border-[var(--color-ink)]/12 px-3 py-1.5 text-xs text-[var(--color-ink-soft)]"
                 >
                   {tag}
                 </span>
@@ -455,7 +455,7 @@ export default function GroundingPractice() {
                 style={{ borderColor: alpha(colors.base, 0.2) }}
               >
                 <span
-                  className="inline-block rounded-[2px] px-3 py-1 text-[0.6875rem]"
+                  className="inline-block rounded-full px-3 py-1 text-[0.6875rem]"
                   style={{ background: alpha(colors.base, 0.18), color: colors.deep }}
                 >
                   {EVIDENCE_LABEL[technique.evidence.strength]}

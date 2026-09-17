@@ -71,12 +71,15 @@ export default function AskDP() {
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
           aria-label="Chat with DP"
-          className="press fab-anchor fixed right-5 z-40 flex items-center gap-2 border-[1.5px] border-[var(--spot)] bg-[var(--paper)] py-2 pr-4 pl-2.5 transition-colors hover:bg-[var(--paper-tint)] md:right-7"
-          style={{ boxShadow: '0 10px 24px -14px rgba(7, 63, 34, 0.55)' }}
+          className="press fab-anchor fixed right-5 z-40 flex items-center gap-2 rounded-full border border-[var(--color-teal)]/35 py-2.5 pr-4 pl-3 backdrop-blur-xl transition-colors hover:border-[var(--color-teal)]/70 md:right-7"
+          style={{
+            background: 'rgba(255, 255, 255, 0.92)',
+            boxShadow: '0 18px 44px -18px rgba(0,0,0,0.95), 0 0 0 1px rgba(47,184,124,0.08)',
+          }}
         >
-          <Logo size={26} glow={false} />
+          <Logo size={26} />
           <span className="text-left leading-none">
-            <span className="f-title block text-[1.05rem] leading-none text-[var(--spot)]">DP</span>
+            <span className="font-display block text-[1.05rem] leading-none">DP</span>
             <span className="marginalia mt-1 block">ASK</span>
           </span>
         </button>

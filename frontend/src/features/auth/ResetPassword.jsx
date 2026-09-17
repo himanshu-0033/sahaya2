@@ -64,7 +64,7 @@ export default function ResetPassword() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
-              className="mt-1 w-full rounded-xl border border-[var(--rule)] bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--spot)]"
+              className="mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function ResetPassword() {
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-[var(--rule)] bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--spot)]"
+              className="mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]"
             />
           </div>
 

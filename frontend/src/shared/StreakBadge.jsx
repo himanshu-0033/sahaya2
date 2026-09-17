@@ -69,22 +69,15 @@ export default function StreakBadge({ className = '', label = false, compact = f
           ? `Check-in streak: ${days}`
           : `Check-in streak: ${days}. Today's check-in is not done yet.`
       }
-      className={`press flex shrink-0 items-center border border-[var(--rule)] bg-[var(--paper)] ${compact ? 'gap-1 px-2 py-1 text-xs' : 'gap-1.5 px-2.5 py-1.5 text-sm'} font-semibold text-[var(--spot)] transition-colors hover:border-[var(--spot)] hover:bg-[var(--paper-tint)] ${className}`}
+      className={`press flex shrink-0 items-center rounded-full border border-[var(--color-amber)]/40 bg-[var(--color-amber)]/12 ${compact ? 'gap-1 px-2 py-1 text-xs' : 'gap-1.5 px-2.5 py-1.5 text-sm'} font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-amber)]/70 ${className}`}
     >
-      {/* A drawn flame in the spot ink rather than the emoji, which arrived in
-          whatever colour the phone's emoji font chose and was the one
-          full-colour picture left on the sheet. */}
       <svg
         viewBox="0 0 24 24"
         width={compact ? 13 : 15}
         height={compact ? 13 : 15}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="currentColor"
         aria-hidden="true"
-        className="shrink-0"
+        className="shrink-0 text-[var(--color-amber-deep)]"
       >
         <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
       </svg>

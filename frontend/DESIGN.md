@@ -1,106 +1,75 @@
-# DP Sahay: the printed form
+# DP Sahay: soft, photographic, green
 
-The resident app, the landing page and the free check are one visual world: an
-honest instrument sheet, printed in one green ink on white paper. Every
-question, scale, citation and helpline is in plain view, ruled and numbered.
-It replaced a soft wellness look (photo hero, rounded pastel cards, gradients,
-pills), and that look is the thing to steer away from when adding a screen.
+The resident app, the landing page and the free check share one light, soft
+world: white and pale sage grounds, rounded cards with soft shadows tinted to
+the brand green, full-colour photography, and a calm colour per section.
 
-The admin console (`admin/`) is not part of this world.
+A one-ink "printed form" redesign was tried in September 2026 and rolled back
+the same day: without the photographs and the colour it read as cold and
+official. Keep that in mind before stripping either out again.
 
-## Why a form
+The admin console (`admin/`) is its own app and is not covered here.
 
-The one claim this app makes over other wellness apps is that it uses the real
-published questionnaires rather than a quiz of its own. A form is the shape that
-shows that instead of saying it: the landing page prints the real first WHO-5
-question, and ticking an answer starts the free check with that answer kept.
+## Colour
 
-## Inks
+Values live in `tokens.json` (generated into `src/styles/design-tokens.css`)
+and, for the landing page and the check, in the `.welcome` block of
+`src/index.css`.
 
-All values live in `tokens.json` (generated into `src/styles/design-tokens.css`)
-and as the form variables at the top of `src/index.css`.
+| Role | Token | Use |
+| --- | --- | --- |
+| Brand green | `--w-accent-deep` `#0b6b3a` | Primary buttons, headings on the landing page, the ticked state |
+| Forest | `--w-forest` `#0a4f2c` | The announcement strip and the landing footer |
+| Wash | `--w-accent-wash` `#e3f1e8` | Chips, selected answers |
+| App ground | `--color-cream` `#f4f7f3` | Behind every signed-in page |
+| Section hues | `--sec-home`, `--sec-calm`, `--sec-paths`, `--sec-tests`, `--sec-read`, `--sec-inkblot` | Wayfinding: the tab, a page's wash, small markers |
 
-| Role | Token | Value | Use |
-| --- | --- | --- | --- |
-| Paper | `--paper`, `--color-cream` | `#ffffff` | Every ground |
-| Tint | `--paper-tint`, `--color-cream-soft` | `#eef4ef` | Shaded cells, hover on a row or box |
-| Wash | `--spot-wash` | `#dcebe1` | Placeholder fills, hover on a tick box |
-| Spot | `--spot`, `--color-teal` | `#0a5c32` | Rules, box edges, titles, controls, the active tab |
-| Spot deep | `--spot-deep`, `--color-teal-dark` | `#073f22` | Pressed and hovered controls, the landing footer |
-| Key | `--key`, `--color-ink` | `#0f2419` | Reading text |
-| Key soft | `--key-soft`, `--color-ink-soft` | `#3d5045` | Secondary text |
-| Alarm | `--alarm` | `#b3261e` | Emergency lines and the crisis control, nothing else |
-| Rule | `--rule` / `--rule-soft` | spot at 32% / 16% | Hairlines |
+Every hue has a `-deep` step for text. `scripts/contrast.test.mjs` checks each
+one at 4.5:1 on the app ground and on a white card.
 
-Every section hue (`--sec-*`) points at the spot. Wayfinding is the inked tab,
-not a colour per section. Two colour sets stay on purpose: the five mood hues
-(`shared/moods.js`), because mood is a scale people read by colour, and the
-practice accents (`shared/accents.js`), which only colour the practice screen's
-orb and rings, where the practice is the thing you look at.
-
-Contrast is tested: `scripts/contrast.test.mjs` checks every `-deep` token and
-accent on paper and on the tint at 4.5:1. On white: spot 8.1:1, key 16.3:1,
-key soft 8.6:1, alarm 6.5:1.
-
-Photographs are printed in the one ink (`.photo-head`, `.family-thumb`):
-greyscale, with the spot screened over it, so the shadows print green and the
-highlights stay paper.
+Photographs are full colour (`src/shared/photos.js`, self-hosted), with a light
+wash of the section hue on in-app cards (`.photo-head`). The landing hero uses
+the misty forest.
 
 ## Type
 
-Anek Latin (Ek Type, SIL OFL), self-hosted from `public/fonts/`, one variable
-file per subset. One family in three widths:
+Plus Jakarta Sans, self-hosted from `public/fonts/` as one variable file per
+subset (SIL OFL). 600 to 700 for headings with slight negative tracking, 500
+for buttons, 400 for body. The landing page's sizes are a fixed scale enforced
+by `scripts/landing-type.test.mjs`.
 
-| Role | Class | Setting |
-| --- | --- | --- |
-| Titles | `.f-title`, `.font-display` | `font-stretch: 112%`, weight 620 to 650 |
-| Reading | body | normal width, weight 400 |
-| Field labels | `.f-label`, `.marginalia` | `font-stretch: 82%`, weight 600, capitals, 0.06em to 0.08em tracking |
+## Shape and depth
 
-Counts are set in boxed figures (`.f-digits`, `shared/Odometer.jsx`). The
-landing page's type sizes are a fixed scale enforced by
-`scripts/landing-type.test.mjs`.
+- Cards: 18 to 28px radius (`.card`, `.w-card`); buttons and chips are pills.
+- Depth is the Soft UI Evolution shadow: a 1px contact shadow plus a wide
+  diffused one tinted with the ink or the green, never pure black.
+- The landing showcase cards are full gradients in the section colours, with a
+  drawn phone inside.
 
-## Shape
-
-- Square. Tailwind's radius scale is overridden in `@theme` to 1 to 6px, so
-  `rounded-2xl` is a printed corner. `rounded-full` is kept for true circles
-  only: dots, avatars, the breath orb. Never a pill for a button or a tag.
-- A box is a 1px rule (`.card`, `.w-card`); a form box that matters is 1.5px of
-  full spot. A part of a page starts with a 2px spot rule (`.f-part`).
-- No shadows on boxes. The two dialogs and the DP button carry one soft shadow,
-  tinted with the deep green, because they float over the page.
-
-## Components
+## Components worth knowing
 
 | Piece | Where | Notes |
 | --- | --- | --- |
-| Part | `Part` in `features/auth/AppShowcase.jsx` | 2px rule, name in a margin column from 900px; on a phone the name is screen-reader only |
-| Tick box | `shared/Tick.jsx`, `.f-tick`, `.f-option` | A parent with `data-ticked="true"` fills it and draws the tick |
-| Ink button | `.f-btn`, `.f-btn-line`; `shared/Button.jsx` in the app | Square block, arrow nudges 3px on hover |
-| Tear-off slip | `.f-slip` | 1.5px dashed spot border, for the one thing to act on |
-| Tab bar | `layouts/TabBar.jsx` | Phone: a strip with the active tab inked solid. Laptop: an index column of ruled rows |
-| Crisis control | `shared/CrisisContacts.jsx` | Solid alarm red, square, 44px target on every variant |
+| First question card | `FirstQuestion` in `features/auth/Welcome.jsx` | The real WHO-5 item 1 over the hero photo; ticking carries the answer into `/check` |
+| Tick box | `shared/Tick.jsx`, `.f-tick`, `.soft-option` | A parent with `data-ticked="true"` fills it and draws the tick |
+| Count roll | `shared/Odometer.jsx` | Rolls to its value once `go` is true |
+| Reveal | `shared/useReveal.js` | `data-reveal` on a section, `.reveal-item` on what rises |
+| Crisis control | `shared/CrisisContacts.jsx` | Solid red, 44px target on every variant |
 
 ## Motion
 
-One grammar, the sheet being printed: rules draw from their left end, boxes
-feed out top first (clip-path), counts roll like a numbering stamp, a tick is
-drawn by its stroke. Nothing floats, glows or bounces.
-
 - Curves: `--ease-out` `cubic-bezier(0.23, 1, 0.32, 1)` for anything arriving,
   `--ease-in-out` `cubic-bezier(0.77, 0, 0.175, 1)` for anything travelling.
-- Where it runs follows how often a screen is seen. The landing page and the
-  free check are seen rarely, so they are printed as they arrive
-  (`.print-roll`, `.print-feed`, `.print-rise`, `[data-reveal]` via
-  `shared/useReveal.js`). The app is opened daily, so it gets feedback only:
-  press scale 0.97 at 140ms, the tab ink travelling in 220ms, new questions
-  rising 6px in 240ms.
+- The landing page and the free check are seen rarely, so they arrive: the hero
+  rises in order, the photograph opens top down while settling from a slight
+  zoom, sections rise as they scroll into view (once), the counts roll, the
+  showcase phones slide up out of their cards, and a new question rises 6px.
+- The app is opened daily, so it keeps to feedback: press scale, hover lifts on
+  pointer devices, dialogs that arrive in 240ms.
 - Transform, opacity and clip-path only. Hover motion is gated to fine
-  pointers.
-- Under `prefers-reduced-motion` the sheet is already printed: hidden starting
-  states are skipped, not shortened.
+  pointers. Under `prefers-reduced-motion` every hidden starting state is
+  skipped.
 
 ## Copy
 
-Unchanged by the redesign. No em-dashes anywhere, on screen or in source.
+No em-dashes anywhere, on screen or in source.

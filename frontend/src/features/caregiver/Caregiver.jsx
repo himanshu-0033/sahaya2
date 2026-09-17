@@ -184,11 +184,11 @@ export default function Caregiver() {
                       <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
                     </div>
                     {r.flaggedRecently ? (
-                      <span className="rounded-[2px] bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] text-xs px-3 py-1">
+                      <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] text-xs px-3 py-1">
                         Check in soon
                       </span>
                     ) : r.invited && !r.lastCheckIn ? (
-                      <span className="rounded-[2px] bg-[var(--color-teal-soft)] text-[var(--color-teal-dark)] text-xs px-3 py-1">
+                      <span className="rounded-full bg-[var(--color-teal-soft)] text-[var(--color-teal-dark)] text-xs px-3 py-1">
                         Invited
                       </span>
                     ) : null}

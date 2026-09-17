@@ -60,8 +60,8 @@ export default function LoadError({ error, onRetry, retrying = false }) {
     <div
       className="mt-8 rounded-3xl border p-6"
       style={{
-        borderColor: offline ? 'var(--rule)' : 'var(--color-flag)',
-        background: offline ? 'var(--paper-tint)' : 'var(--color-flag-soft)',
+        borderColor: offline ? 'rgba(255,255,255,0.12)' : 'var(--color-flag)',
+        background: offline ? 'rgba(255,255,255,0.03)' : 'var(--color-flag-soft)',
       }}
       role="alert"
     >
@@ -82,7 +82,7 @@ export default function LoadError({ error, onRetry, retrying = false }) {
           type="button"
           onClick={onRetry}
           disabled={retrying}
-          className="press mt-5 inline-flex items-center gap-2 rounded-[2px] border border-[var(--line-3)] bg-[var(--surface-2)] px-5 py-2.5 text-sm transition-colors hover:bg-[var(--surface-3)] disabled:opacity-50"
+          className="press mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] px-5 py-2.5 text-sm transition-colors hover:bg-[var(--surface-3)] disabled:opacity-50"
         >
           <svg
             viewBox="0 0 24 24"

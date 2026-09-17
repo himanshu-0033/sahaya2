@@ -185,7 +185,7 @@ export default function PartnerForm() {
       <button
         type="submit"
         disabled={sending}
-        className="press mt-8 w-full rounded-[2px] py-3.5 text-[0.9375rem] font-semibold tracking-wide text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="press mt-8 w-full rounded-full py-3.5 text-[0.9375rem] font-semibold tracking-wide text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         style={{ background: 'var(--w-accent-deep)' }}
       >
         {sending ? 'Sending…' : 'Submit'}

@@ -39,7 +39,7 @@ function Options({ options }) {
       {options.map((o) => (
         <li
           key={o.value}
-          className="rounded-[2px] border border-[var(--line-2)] px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
+          className="rounded-full border border-[var(--line-2)] px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
         >
           <span className="num text-[var(--color-muted)]">{o.value}</span>
           <span className="ml-1.5">{o.label}</span>
@@ -190,7 +190,7 @@ export default function ReadTest() {
         <header className="mt-5">
           <div className="flex flex-wrap items-center gap-2.5">
             <span
-              className="rounded-[2px] px-2.5 py-1 text-[0.6875rem]"
+              className="rounded-full px-2.5 py-1 text-[0.6875rem]"
               style={{ background: `color-mix(in srgb, ${HUE} 15%, transparent)`, color: HUE }}
             >
               {meta.domain}
@@ -325,7 +325,7 @@ export default function ReadTest() {
           {meta.available !== false && (
             <Link
               to={`/assessments/${meta.id}`}
-              className="press rounded-[2px] px-5 py-2.5 text-sm font-semibold text-white"
+              className="press rounded-full px-5 py-2.5 text-sm text-[#07080a]"
               style={{ background: HUE }}
             >
               Take the {meta.name}
@@ -333,7 +333,7 @@ export default function ReadTest() {
           )}
           <Link
             to="/read"
-            className="press rounded-[2px] border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
+            className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
           >
             Read something else
           </Link>

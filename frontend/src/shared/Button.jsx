@@ -13,16 +13,16 @@ export default function Button({
   ...props
 }) {
   const base =
-    'press w-full rounded-[2px] font-semibold transition-colors duration-150 disabled:cursor-not-allowed';
+    'press w-full rounded-full font-medium transition-all duration-200 disabled:cursor-not-allowed';
   const sizes = {
     default: 'py-4',
     compact: 'py-3 text-sm',
   };
   const variants = {
     primary:
-      'bg-[var(--color-teal)] text-white hover:bg-[var(--color-teal-dark)] disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]',
+      'bg-[var(--color-teal)] text-[#07080a] hover:bg-[var(--color-teal-dark)] disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]',
     secondary:
-      'border-[1.5px] border-[var(--spot)] bg-transparent text-[var(--spot)] hover:bg-[var(--paper-tint)] disabled:opacity-40',
+      'border border-[var(--line-2)] bg-[var(--surface-1)] text-[var(--color-ink)] hover:border-[var(--line-4)] hover:bg-[var(--surface-3)] disabled:opacity-40',
   };
   return (
     <button className={`${base} ${sizes[size]} ${variants[variant]} ${className}`} {...props}>

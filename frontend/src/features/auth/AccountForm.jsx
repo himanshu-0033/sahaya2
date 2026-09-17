@@ -33,7 +33,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
 
   const inputClass = dark
     ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-white/50 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
-    : 'input-soft mt-1 w-full rounded-xl border border-[var(--rule)] bg-white px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--spot)]';
+    : 'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
   const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
   const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/50' : 'text-[var(--color-muted)]'}`;
 
@@ -53,7 +53,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
 
   return (
     <div className="mt-8 animate-fade-up">
-      <h2 className={`f-title text-3xl md:text-4xl leading-tight ${dark ? 'text-center text-white' : 'text-[var(--spot)]'}`}>
+      <h2 className={`font-display text-3xl md:text-4xl leading-tight text-center ${dark ? 'text-white' : ''}`}>
         Let's get to know you a bit better.
       </h2>
 
@@ -92,7 +92,7 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
               className={
                 dark
                   ? 'input-soft rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-3 text-sm text-white outline-none focus:border-[var(--line-6)]'
-                  : 'input-soft rounded-xl border border-[var(--rule)] bg-white px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
+                  : 'input-soft rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
               }
             >
               {COUNTRY_CODES.map((c) => (

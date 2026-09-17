@@ -88,7 +88,7 @@ export default function ChatHistory() {
                   {c.turns.length === 1 ? 'message' : 'messages'}
                 </span>
                 {c.flagged && (
-                  <span className="rounded-[2px] bg-[var(--color-flag-soft)] px-2.5 py-0.5 text-[0.6875rem] text-[var(--color-flag-deep)]">
+                  <span className="rounded-full bg-[var(--color-flag-soft)] px-2.5 py-0.5 text-[0.6875rem] text-[var(--color-flag-deep)]">
                     Crisis contacts were shown
                   </span>
                 )}

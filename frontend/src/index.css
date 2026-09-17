@@ -1,85 +1,49 @@
 @import "tailwindcss";
 @import "./styles/design-tokens.css";
 
-/* Anek Latin, self-hosted. The photographs are self-hosted so that no CDN sees
-   who opens this app (see src/shared/photos.js), and a font served by Google
-   would have been the one request that undid that. One variable file per
-   subset carries every weight and width the sheet uses. SIL Open Font License. */
+/* Plus Jakarta Sans, self-hosted. The photographs are self-hosted so that no
+   CDN sees who opens this app (see src/shared/photos.js), and a font served by
+   Google would have been the one request that undid that. One variable file
+   per subset carries every weight from 200 to 800. SIL Open Font License. */
 @font-face {
-  font-family: "Anek Latin";
+  font-family: "Plus Jakarta Sans";
   font-style: normal;
-  font-weight: 100 800;
-  font-stretch: 75% 125%;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("/fonts/anek-latin.woff2") format("woff2");
+  src: url("/fonts/plus-jakarta-sans.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: "Anek Latin";
+  font-family: "Plus Jakarta Sans";
   font-style: normal;
-  font-weight: 100 800;
-  font-stretch: 75% 125%;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("/fonts/anek-latin-ext.woff2") format("woff2");
+  src: url("/fonts/plus-jakarta-sans-ext.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* The two curves every animation in the app moves on: a strong ease-out for
+   anything arriving, and an ease-in-out for anything travelling across the
+   screen. The built-in keywords are too weak to feel deliberate. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
 
 /* Tailwind's utility theme. The colours moved to tokens.json: they are
    consumed through var() everywhere in this app, never as colour utilities,
-   so they no longer need to be declared here. `font-sans` is a real utility
-   in use, and @theme is the only place that can generate it.
-
-   THE PRINTED FORM. The whole app is set as an honest instrument sheet: white
-   paper, one spot green ink, ruled boxes, square corners. The corners are done
-   here, on Tailwind's radius scale, rather than in the few hundred `rounded-*`
-   classes across the pages: one declaration squares every panel, field and
-   chip together, and `rounded-full` (a dot, an avatar, the breath orb) is not
-   on this scale, so the things that are round because they are circles stay
-   circles. A printed box has a corner, not a curve; the 2 to 4px left here is
-   the softness of ink on paper, not a pill. */
+   so they no longer need to be declared here. The two font families stay —
+   `font-sans` is a real utility in use, and @theme is the only place that
+   can generate it. */
 @theme {
-  --font-sans: "Anek Latin", ui-sans-serif, system-ui, sans-serif;
-  --radius-xs: 1px;
-  --radius-sm: 2px;
-  --radius-md: 2px;
-  --radius-lg: 3px;
-  --radius-xl: 3px;
-  --radius-2xl: 4px;
-  --radius-3xl: 4px;
-  --radius-4xl: 6px;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Anek Latin, from Ek Type in Mumbai. Chosen for the width axis, which lets
-   one family be a semi-expanded title and a condensed form label, and because
-   the same design exists for Devanagari, Bangla, Tamil and seven more Indian
-   scripts, so a translated screen keeps its face instead of falling back. */
 body {
   background-color: var(--color-cream);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-variant-numeric: lining-nums;
-}
-
-/* The two inks, the tint and the one curve the whole app moves on. The spot is
-   the form's printed green: rules, boxes, titles, controls. Key is the ink you
-   read in. Alarm is red ink, and it is spent on emergency lines and nothing
-   else. Measured on white: spot 8.1:1, key 16.3:1, key-soft 8.6:1, alarm
-   6.5:1; on the tint none drops below 5.6:1. */
-:root {
-  --paper: #ffffff;
-  --paper-tint: #eef4ef;
-  --spot: #0a5c32;
-  --spot-deep: #073f22;
-  --spot-wash: #dcebe1;
-  --key: #0f2419;
-  --key-soft: #3d5045;
-  --alarm: #b3261e;
-  --rule: rgb(10 92 50 / 0.32);
-  --rule-soft: rgb(10 92 50 / 0.16);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* ------------------------------------------------------------------ */
@@ -114,24 +78,33 @@ body {
   :root { font-size: 112.5%; }   /* ~18px */
 }
 
-/* One family, three widths. Titles are set semi-expanded, the way a form's
-   name is printed across the top of it; body stays at its normal width; field
-   labels go condensed, so a label can sit in a narrow column beside what it
-   names instead of above it. */
+/* One family now: Plus Jakarta Sans, at 600 for headings, 500 for subheadings
+   and buttons, 400 for body. The serif that used to carry the headlines was the
+   app's one piece of personality, and dropping it is a deliberate trade for a
+   plainer, calmer surface — see the note in the design-system block below.
+   The negative tracking is for the same reason it was set under Inter: both
+   carry a far larger x-height than Cormorant did, and at display sizes an
+   untracked headline in either reads as shouted. */
 .font-display {
   font-family: var(--font-sans);
-  font-weight: 620;
-  font-stretch: 112%;
-  letter-spacing: -0.012em;
+  font-weight: 600;
+  letter-spacing: -0.021em;
 }
 
-/* Condensed capitals for field labels and the wordmark's line under it. */
+/* The hero headline: wide-tracked capitals. */
+.font-hero {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  line-height: 1.08;
+}
+
+/* Small caps used for the wordmark and the eyebrow labels. */
 .font-eyebrow {
   font-family: var(--font-sans);
-  font-stretch: 82%;
-  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.28em;
 }
 
 @keyframes fade-in-up {
@@ -215,12 +188,11 @@ body {
   animation: drift-c 24s ease-in-out infinite;
 }
 
-/* The account form's box: the same ruled box as everything else, drawn at the
-   heavier line because it is the one form a new student fills in first. */
 .card-soft {
-  background: var(--paper);
-  border: 1.5px solid var(--spot);
-  border-radius: 3px;
+  background: var(--color-cream-soft);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.6);
 }
 
 input[type='date'].input-soft::-webkit-calendar-picker-indicator {
@@ -385,15 +357,15 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* The app is used by hostel students, mostly on a phone, often at a  */
 /* bad moment. Three rules fall out of that:                          */
 /*                                                                    */
-/*   1. WAYFINDING IS THE INKED TAB. Every section is printed in the   */
-/*      one green; where you are is the tab or index row inked solid.  */
-/*      The --sec-* names stay, all pointing at the spot, so nothing   */
-/*      that reads them had to change.                                 */
+/*   1. WAYFINDING IS COLOUR. Each section owns a hue, so you know    */
+/*      which part of the app you are in before you read a word.      */
 /*   2. TOUCH GETS ANSWERED. Every pressable thing moves when pressed.*/
 /*      On a phone that is the only feedback there is.                */
-/*   3. ONE FAMILY. Anek Latin throughout, in three widths: titles    */
-/*      semi-expanded, body normal, field labels condensed. A second  */
-/*      face would be a second voice on a form that has one.          */
+/*   3. ONE FAMILY. Plus Jakarta Sans throughout — 600 for headings,  */
+/*      500 for subheadings and buttons, 400 for body. This replaced  */
+/*      a serif headline face that was the app's one piece of visual  */
+/*      personality; the trade was made on purpose, for a plainer     */
+/*      surface. If it comes back, it comes back everywhere at once.  */
 /* ================================================================== */
 
 /* ------------------------------------------------------------------ */
@@ -461,22 +433,18 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
    to say "this is a card" — the content is supposed to be the interesting
    part. Section colour now appears only in small, deliberate places: the
    active tab, a duration pill, a section marker. */
-/* In the printed form a card is a ruled box: a hairline of the spot ink, a
-   square corner, no shadow, because ink on paper has no depth. A box you can
-   open answers the pointer the way a shaded cell does on a form, with the
-   tint, and the rule darkens to full ink. */
 .card {
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms var(--ease-out);
+  background: #ffffff;
+  border: 1px solid rgba(47, 64, 54, 0.1);
+  border-radius: 18px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   a.card:hover,
   button.card:hover {
-    background: var(--paper-tint);
-    border-color: var(--spot);
+    background: #fffdfe;
+    border-color: rgba(47, 64, 54, 0.18);
   }
 }
 
@@ -492,9 +460,9 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 /* Press feedback. `active:` rather than `hover:` because the primary input
    here is a thumb, and a phone has no hover. */
 .press {
-  transition: transform 140ms var(--ease-out), box-shadow 140ms ease;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
 }
-.press:active { transform: scale(0.97); }
+.press:active { transform: scale(0.972); }
 
 /* Lift on hover for pointer devices only, so a tap on a phone doesn't leave
    a card stuck in its hovered state. */
@@ -685,7 +653,7 @@ body::after {
 
 /* Selection in the app's own teal rather than the browser's blue. */
 ::selection {
-  background: rgb(10 92 50 / 0.2);
+  background: rgba(111, 148, 125, 0.32);
   color: var(--color-ink);
 }
 
@@ -709,15 +677,9 @@ body::after {
 /* Keyboard focus stays clearly visible — the custom cursor does nothing for
    anyone navigating by tab, so this carries the whole burden for them. */
 :focus-visible {
-  outline: 2px solid var(--spot);
+  outline: 2px solid var(--color-teal-dark);
   outline-offset: 3px;
-  border-radius: 2px;
-}
-
-/* The caret is the pen. */
-input,
-textarea {
-  caret-color: var(--spot);
+  border-radius: 6px;
 }
 
 /* The skip link, parked off the top of the viewport until it is focused.
@@ -735,8 +697,8 @@ textarea {
   margin: 0.75rem;
   padding: 0.8rem 1.35rem;
   border-radius: 999px;
-  background: var(--spot);
-  color: #ffffff;
+  background: var(--color-teal);
+  color: #07080a;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
@@ -812,14 +774,13 @@ p, li {
    editorial device rather than another badge. */
 .marginalia {
   font-family: var(--font-sans);
-  /* 12px at the base root size. Condensed capitals are narrower than the
-     wide-tracked ones this used to be, so the size can come up a step and the
-     label still takes less room. In rem so it rises with the laptop scale
-     steps instead of staying pinned while the headings around it grow. */
-  font-size: 0.75rem;
-  font-stretch: 82%;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  /* 11px at the base root size, not 10. Wide tracking already costs
+     legibility, and this style labels every section in the app — at 10px on
+     a phone it was decoration that happened to contain words. In rem so it
+     rises with the laptop scale steps instead of staying pinned while the
+     headings around it grow. */
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--color-muted);
 }
@@ -840,320 +801,159 @@ p, li {
 .row-scroll::-webkit-scrollbar { display: none; }
 
 /* ------------------------------------------------------------------ */
-/* The printed form                                                     */
+/* The signed-out landing page                                         */
 /*                                                                     */
-/* The pages a stranger sees and the app behind sign-in are one world  */
-/* now: a form printed in one green ink on white paper. `.welcome` is   */
-/* kept as the wrapper the public pages already use, and its `--w-*`    */
-/* names are kept too, so the enquiry form and anything else written    */
-/* against them follows without an edit. They are aliases of the inks  */
-/* at the top of this file, not a second palette.                      */
+/* A warm, light world, scoped to `.welcome` and nothing else. The app  */
+/* behind sign-in stays dark: it is used at 1 a.m. and the dark theme   */
+/* is right for it. This is the shop window, and a shop window that     */
+/* opens on near-black asks a stranger to trust it before it has said   */
+/* anything.                                                           */
 /*                                                                     */
-/* color-scheme is light because index.html used to set dark on the     */
-/* document, which painted native radios and checkboxes near-black.     */
-/* ------------------------------------------------------------------ */
+/* Modelled on the wedding-planner reference — cream ground, white      */
+/* cards, centred section headers, a gold eyebrow over a serif          */
+/* headline. Two deliberate departures. The accent is sage rather than  */
+/* blush, because the DP mark is green and a pink page under a green    */
+/* logo reads as two brands. And the ornament under each header is the  */
+/* app's own mirrored blot rather than a heart — a heart sitting above  */
+/* a suicide-severity scale is the wrong symbol by some distance.       */
+/*                                                                     */
+/* Every value below is measured against the cream ground: ink 11.1:1,  */
+/* sage 5.8:1, gold 4.8:1. The reference's own gold was 2.7:1 and would */
+/* have failed on the eyebrow it is used for.                           */
+/* The landing room: a white ground and one deep green, after a working
+   Indian mental-health service's site. Every value below was measured. The
+   light green is a FILL, never a letter; anything that has to be read uses the
+   deep step, and the forest ground carries only white or the forest-soft grey.
+   color-scheme is light here because the app sets dark on the document, which
+   would otherwise paint this page's radios and checkboxes near-black. */
 .welcome {
+  --w-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   color-scheme: light;
-  --w-sans: var(--font-sans);
-  --w-cream: var(--paper);
-  --w-band: var(--paper-tint);
-  --w-card: var(--paper);
-  --w-ink: var(--key);
-  --w-ink-soft: var(--key-soft);
-  --w-accent: var(--spot-wash);
-  --w-accent-deep: var(--spot);
-  --w-accent-wash: var(--spot-wash);
-  --w-forest: var(--spot-deep);
-  --w-forest-soft: #cfe3d6; /* secondary text on the deep green: 9.0:1 */
-  --w-lav: var(--alarm);
-  --w-lav-wash: #fbe9e7;
-  --w-line: var(--rule-soft);
-  --w-line-2: var(--rule);
 
-  background: var(--paper);
-  color: var(--key);
-  font-family: var(--font-sans);
+  --w-cream: #ffffff;
+  --w-band: #f4f8f5;
+  --w-card: #ffffff;
+  --w-ink: #14201a;      /* 16.8:1 on white                   */
+  --w-ink-soft: #4a5750; /* 7.6:1 on white, 7.1:1 on the band */
+
+  --w-accent: #a7d7ba;      /* fills only, never text                        */
+  --w-accent-deep: #0b6b3a; /* 6.6:1 as text on white, 5.7:1 on the wash     */
+  --w-accent-wash: #e3f1e8;
+
+  --w-forest: #0a4f2c;      /* strip and footer: white 9.7:1                 */
+  --w-forest-soft: #c9d8cf; /* secondary text on forest: 6.8:1               */
+
+  /* The second family. Two badge tints do a job here: one marks a tag that
+     names a feeling, the other a tag that names a feature. */
+  --w-lav: #6d28d9;      /* 6.5:1 on cream */
+  --w-lav-wash: #ede9fe;
+
+  --w-line: rgba(20, 32, 26, 0.1);
+  --w-line-2: rgba(20, 32, 26, 0.18);
+
+  background: var(--w-cream);
+  color: var(--w-ink);
+  font-family: var(--w-sans);
 }
 
-/* Layered as components, so a Tailwind utility on the same element (a padding,
-   a size, a text colour) wins over the primitive instead of losing to it. */
-@layer components {
-/* A ruled box. Same rules as `.card`, for the pages that were written against
-   this name. */
+/* Soft UI Evolution's shadow: softer than a flat card, clearer than
+   neumorphism. Two layers — a 1px contact shadow so the card sits on the page
+   rather than floating off it, and a wide diffused one tinted with the ink
+   rather than black, which is what stops a pink page looking grey underneath. */
 .w-card {
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  background: var(--w-card);
+  border: 1px solid var(--w-line);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 2px rgba(47, 64, 54, 0.04),
+    0 12px 32px -12px rgba(47, 64, 54, 0.14);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) {
   a.w-card:hover,
   button.w-card:hover {
-    background: var(--paper-tint);
-    border-color: var(--spot);
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 2px rgba(47, 64, 54, 0.05),
+      0 22px 44px -14px rgba(47, 64, 54, 0.2);
   }
 }
 
-/* A field label: condensed capitals in the spot ink. On a form the label
-   names the box beside it or the band it heads; it is never a slogan over a
-   headline. */
-.f-label {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-stretch: 82%;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  line-height: 1.25;
+.w-eyebrow {
+  font-family: var(--w-sans);
   text-transform: uppercase;
-  color: var(--spot);
+  letter-spacing: 0.22em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--w-accent-deep);
 }
 
-.f-title {
-  font-family: var(--font-sans);
-  font-stretch: 112%;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-}
-
-/* A part of the form: a full-ink rule across the top, then the part's name in
-   a narrow column beside what it holds. On a phone the name sits over the
-   content, the way a form continued onto a narrow slip carries its section
-   name. */
-.f-part {
-  border-top: 2px solid var(--spot);
-}
-
-.f-part-grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-@media (min-width: 900px) {
-  .f-part-grid {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
-    gap: 2.5rem;
-  }
-}
-
-/* Ruled rows: every row after the first is separated by a hairline. */
-.f-rows > * + * {
-  border-top: 1px solid var(--rule);
-}
-
-.f-shade {
-  background: var(--paper-tint);
-}
-
-/* A slip meant to be torn off: the perforation is the whole signal. */
-.f-slip {
-  border: 1.5px dashed var(--spot);
-  border-radius: 2px;
-}
-
-/* THE TICK BOX. The one authored moment: the box fills with ink and the tick
-   draws itself, the way a pen does it, before the page moves on. The tick is
-   a stroke revealed by its dash offset rather than an icon that fades in,
-   because a tick is drawn, not placed. Fill first, then the stroke 60ms behind
-   it, both on the strong ease-out: the box answers at once and the mark
-   follows the hand. */
-.f-tick {
-  display: inline-grid;
-  place-items: center;
-  width: 1.375rem;
-  height: 1.375rem;
-  flex-shrink: 0;
-  border: 1.5px solid var(--spot);
-  border-radius: 2px;
-  background: var(--paper);
-  color: #ffffff;
-  transition:
-    background-color 120ms var(--ease-out),
-    transform 120ms var(--ease-out);
-}
-
-.f-tick svg {
-  width: 0.95rem;
-  height: 0.95rem;
-  overflow: visible;
-}
-
-.f-tick path {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-  transition: stroke-dashoffset 220ms var(--ease-out) 60ms;
-}
-
-[data-ticked="true"] .f-tick {
-  background: var(--spot);
-}
-
-[data-ticked="true"] .f-tick path {
-  stroke-dashoffset: 0;
-}
-
-.f-option {
-  cursor: pointer;
-  transition: background-color 120ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .f-option:hover {
-    background: var(--paper-tint);
-  }
-
-  .f-option:hover .f-tick {
-    background: var(--spot-wash);
-  }
-
-  .f-option[data-ticked="true"]:hover .f-tick {
-    background: var(--spot);
-  }
-}
-
-.f-option:active .f-tick {
-  transform: scale(0.92);
-}
-
-/* Counts set in boxed digits, one box a figure, the way an Indian form asks
-   for a PIN code. A count is a value you could copy into a box, so it is
-   printed as one rather than as a big number with a small label under it. */
-.f-digits {
-  display: inline-flex;
-  font-variant-numeric: lining-nums tabular-nums;
-  line-height: 1;
-}
-
-.f-digits > span {
-  display: grid;
-  place-items: center;
-  min-width: 1.05em;
-  padding: 0.14em 0.14em 0.04em;
-  border: 1.5px solid currentColor;
-}
-
-.f-digits > span + span {
-  border-left-width: 0;
-}
-
-/* Ink buttons: a printed block, square, the one filled thing on the line. */
-.f-btn {
-  display: inline-flex;
+/* The section ornament: two hairlines with the mark between them. Same
+   device as the reference's heart, in this product's own vocabulary. */
+.w-ornament {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  min-height: 3rem;
-  padding: 0 1.35rem;
-  border: 1.5px solid var(--spot);
-  border-radius: 2px;
-  background: var(--spot);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.1;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 140ms var(--ease-out);
+  gap: 0.85rem;
 }
 
-.f-btn-line {
-  background: transparent;
-  color: var(--spot);
-}
-
-.f-btn svg {
-  flex-shrink: 0;
-  transition: transform 180ms var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .f-btn:hover {
-    background: var(--spot-deep);
-    border-color: var(--spot-deep);
-  }
-
-  .f-btn-line:hover {
-    background: var(--paper-tint);
-    border-color: var(--spot);
-  }
-
-  .f-btn:hover svg {
-    transform: translateX(3px);
-  }
-}
-
-.f-btn:active {
-  transform: scale(0.97);
-}
-
-.f-btn:disabled {
-  cursor: default;
-  opacity: 0.5;
+.w-ornament::before,
+.w-ornament::after {
+  content: "";
+  height: 1px;
+  width: 3rem;
+  background: var(--w-line-2);
 }
 
 /* The enquiry form's fields: one rule under each, the way a paper form reads.
-   The global rule drops the outline on every input, checkboxes and radios
+   The global rule above drops the outline on every input, checkboxes and radios
    included, so these carry their own focus treatment rather than none. */
 .w-field {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--w-line-2);
   border-radius: 0;
   background: transparent;
   padding: 0.5rem 0;
   font-size: 0.9375rem;
-  color: var(--key);
+  color: var(--w-ink);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .welcome .w-field:focus {
   outline: none;
-  border-bottom-color: var(--spot);
-  box-shadow: 0 1px 0 var(--spot);
+  border-bottom-color: var(--w-accent-deep);
+  box-shadow: 0 1px 0 var(--w-accent-deep);
 }
 
 textarea.w-field {
-  border: 1px solid var(--rule);
-  border-radius: 2px;
+  border: 1px solid var(--w-line-2);
+  border-radius: 12px;
   padding: 0.75rem 0.9rem;
   resize: vertical;
 }
 
 .welcome textarea.w-field:focus {
-  border-color: var(--spot);
-  box-shadow: 0 0 0 1px var(--spot);
+  border-color: var(--w-accent-deep);
+  box-shadow: 0 0 0 1px var(--w-accent-deep);
 }
 
 .w-choice {
   width: 1.05rem;
   height: 1.05rem;
   flex-shrink: 0;
-  accent-color: var(--spot);
+  accent-color: var(--w-accent-deep);
 }
 
 .welcome .w-choice:focus-visible {
-  outline: 2px solid var(--spot);
+  outline: 2px solid var(--w-accent-deep);
   outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .w-card,
-  .f-btn,
-  .f-btn svg,
-  .f-tick,
-  .f-tick path {
-    transition: none;
-  }
-
-  .f-btn:active,
-  .f-option:active .f-tick,
-  .f-btn:hover svg {
-    transform: none;
-  }
-}
+  .w-card { transition: none; }
+  a.w-card:hover, button.w-card:hover { transform: none; }
 }
 
 /* ================================================================== */
@@ -1205,27 +1005,43 @@ textarea.w-field {
   }
 }
 
-/* Feeling cards: the four "right now" shortcuts.
-   A ruled box each. They used to be washes of their own hue with a wave banked
-   across the bottom; on the printed form the hue is spent on the drawn mark
-   and the label, so four of them side by side read as four entries on one
-   sheet rather than four coloured tiles. Same hues, same destinations. */
+/* Feeling cards — horizontal-scroll emotion shortcuts */
+/* These were four chips in a horizontal scroller — a row you could miss, and
+   on a phone a row you had to swipe to see the fourth of. They are a grid of
+   four tall cards now, each a wash of its own hue with a wave banked across
+   the bottom. Same hues, same destinations; only the shape changed. */
 .feeling-card {
   position: relative;
-  min-height: 7.5rem;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 8.5rem;
   padding: 1rem 1.1rem;
-  border-radius: 3px;
+  border-radius: 18px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   gap: 0.65rem;
-  background: var(--paper);
-  border: 1px solid var(--rule);
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 140ms var(--ease-out);
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  border: 1px solid color-mix(in srgb, var(--fc-hue, var(--color-ink)) 18%, transparent);
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--fc-hue, var(--color-teal)) 16%, white),
+      color-mix(in srgb, var(--fc-hue, var(--color-teal)) 4%, white) 62%);
+}
+
+/* Bottom-anchored and behind the text, so the label never sits on the busiest
+   part of the curve. */
+.feeling-card-wave {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3.4rem;
+  z-index: -1;
+  line-height: 0;
 }
 
 .feeling-card-icon {
@@ -1233,34 +1049,70 @@ textarea.w-field {
   place-items: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: 2px;
-  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid color-mix(in srgb, var(--fc-hue, var(--color-ink)) 22%, transparent);
 }
 
 .feeling-card-label {
-  font-size: 1.05rem;
-  font-weight: 600;
-  font-stretch: 108%;
+  font-size: 0.95rem;
+  font-weight: 500;
   margin-top: auto;
 }
 
 .feeling-card:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 @media (hover: hover) and (pointer: fine) {
+  /* The card comes up off the page rather than nudging: a lift, a little
+     scale, and a shadow in its own hue so the colour reads as light coming
+     off the card instead of a grey box under it. */
   .feeling-card:hover {
-    background: var(--paper-tint);
-    border-color: var(--spot);
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 18px 38px -14px color-mix(in srgb, var(--fc-hue, #000) 55%, transparent);
+    border-color: color-mix(in srgb, var(--fc-hue, var(--color-ink)) 42%, transparent);
+    z-index: 1;
+  }
+
+  /* The wave rises a touch further than the card, which is what stops the
+     whole thing reading as a flat rectangle being moved. */
+  .feeling-card:hover .feeling-card-wave {
+    transform: translateY(-3px) scaleY(1.08);
+  }
+
+  .feeling-card:hover .feeling-card-icon {
+    transform: scale(1.08);
   }
 }
 
+.feeling-card-wave,
+.feeling-card-icon {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: bottom center;
+}
+
+/* Entrance and hover both drive `transform`, and an animation filling
+   `both` outranks any rule — including :hover — for as long as it is applied.
+   `backwards` keeps what the stagger needs (invisible through the delay) and
+   hands the property back when the animation ends. Without this the cards
+   arrive correctly and then never lift. */
+.feeling-card.animate-pop {
+  animation-fill-mode: backwards;
+}
+
+/* A hover that moves is still motion. The guards further up cover animations;
+   this one covers the transforms, which they do not. */
 @media (prefers-reduced-motion: reduce) {
-  .feeling-card {
+  .feeling-card,
+  .feeling-card-wave,
+  .feeling-card-icon {
     transition: none;
   }
 
-  .feeling-card:active {
+  .feeling-card:hover,
+  .feeling-card:hover .feeling-card-wave,
+  .feeling-card:hover .feeling-card-icon {
     transform: none;
   }
 }
@@ -1313,8 +1165,7 @@ textarea.w-field {
 /* Section title */
 .home-section-title {
   font-family: var(--font-sans);
-  font-weight: 620;
-  font-stretch: 112%;
+  font-weight: 600;
   font-size: 1.2rem;
   line-height: 1.3;
   color: var(--color-ink);
@@ -1328,16 +1179,17 @@ textarea.w-field {
   grid-template-columns: 42% 1fr;
   gap: 0.9rem;
   padding: 0.55rem;
-  border-radius: 3px;
-  border: 1px solid var(--rule);
-  background: var(--paper-tint);
+  border-radius: 22px;
+  background: linear-gradient(120deg,
+    color-mix(in srgb, var(--ph-hue) 60%, #fff),
+    color-mix(in srgb, var(--ph-hue) 12%, #fff) 50%);
 }
 
 /* Unlayered, like .photo-head itself, so this beats its 16:7 band. */
 .story-frame > .photo-head {
   aspect-ratio: auto;
   min-height: 10rem;
-  border-radius: 2px;
+  border-radius: 16px;
 }
 
 .story-quote {
@@ -1364,26 +1216,33 @@ textarea.w-field {
   width: 5.5rem;
   aspect-ratio: 4 / 3;
   flex-shrink: 0;
-  border-radius: 2px;
+  border-radius: 12px;
 }
 
-/* The numbers band on Read: a tally box printed on the tint. It was a
-   lavender field of soap-bubble circles; on the form a count is a value in a
-   ruled box, and the numbers carry the spot ink. */
+/* The numbers band. Soap-bubble circles are background layers rather than
+   elements, so there is nothing for a screen reader to trip over. Numbers
+   are the deep lavender, not white: white on this lavender is about 2:1. */
 .impact-band {
-  border-radius: 3px;
+  border-radius: 24px;
   padding: 2.25rem 1.25rem 2.5rem;
-  border: 1px solid var(--rule);
-  background: var(--paper-tint);
+  background:
+    radial-gradient(circle at 5% 20%, rgb(255 255 255 / 0.55) 0 1.3rem, transparent 1.35rem),
+    radial-gradient(circle at 94% 14%, rgb(255 255 255 / 0.5) 0 1.6rem, transparent 1.65rem),
+    radial-gradient(circle at 33% 55%, rgb(255 255 255 / 0.4) 0 1rem, transparent 1.05rem),
+    radial-gradient(circle at 68% 80%, rgb(255 255 255 / 0.4) 0 1.2rem, transparent 1.25rem),
+    radial-gradient(circle at 96% 98%, rgb(255 255 255 / 0.5) 0 2.6rem, transparent 2.65rem),
+    radial-gradient(circle at 4% 93%, transparent 0 0.9rem, rgb(255 255 255 / 0.65) 0.95rem 1.25rem, transparent 1.3rem),
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--sec-calm) 34%, #fff),
+      color-mix(in srgb, var(--sec-calm) 22%, #fff));
 }
 
 .impact-num {
   font-size: 2.75rem;
-  font-weight: 650;
-  font-stretch: 112%;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--spot);
+  letter-spacing: -0.04em;
+  color: var(--sec-calm-deep);
 }
 
 @media (min-width: 640px) {
@@ -1392,11 +1251,11 @@ textarea.w-field {
 
 /* Checkin card gradient variant */
 .checkin-card-active {
-  background: var(--paper);
+  background: linear-gradient(135deg, rgba(111, 148, 125, 0.08) 0%, rgba(167, 156, 240, 0.06) 100%);
 }
 
 .checkin-card-done {
-  background: var(--paper-tint);
+  background: linear-gradient(135deg, rgba(111, 148, 125, 0.05) 0%, rgba(143, 214, 180, 0.08) 100%);
 }
 
 /* Staggered child animation helper */
@@ -1414,11 +1273,14 @@ textarea.w-field {
 /* ------------------------------------------------------------------ */
 /* Photography                                                          */
 /*                                                                      */
-/* Printed in the one ink. A spot-colour form cannot print a colour      */
-/* photograph, and ten unrelated stock photos at full saturation pulled  */
-/* the palette apart anyway. So every picture is taken to greyscale and  */
-/* the spot green is screened over it: the shadows print green, the      */
-/* highlights stay paper. One set, whatever the source.                  */
+/* Until now the only bitmap in the signed-in app was a Rorschach plate. */
+/* Every card was an SVG glyph over white, which is why the app read as  */
+/* a well-set document rather than something you use.                   */
+/*                                                                      */
+/* The photograph sits in the card's own corner radius, never in a       */
+/* floating box of its own, and it always carries the section hue as a   */
+/* wash. Ten unrelated stock photos at full saturation would pull the    */
+/* palette apart; tinted, they read as one set.                          */
 
 .photo-head {
   position: relative;
@@ -1426,8 +1288,7 @@ textarea.w-field {
   width: 100%;
   aspect-ratio: 16 / 7;
   overflow: hidden;
-  isolation: isolate;
-  background: var(--spot-wash);
+  background: var(--surface-3);
 }
 
 .photo-head img {
@@ -1435,22 +1296,27 @@ textarea.w-field {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.12);
-  transition: transform 0.45s var(--ease-out);
+  /* Slightly desaturated so a vivid photo cannot out-shout the ink it
+     sits above. The hover lift is on the card, not here. */
+  filter: saturate(0.88);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* The tint. `--ph-hue` is set per card from the section colour it already
+   had, so the photo inherits the colour system rather than adding to it. */
 .photo-head::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--spot);
-  mix-blend-mode: screen;
+  background:
+    linear-gradient(to top, rgba(47, 64, 54, 0.32), transparent 62%),
+    linear-gradient(135deg, color-mix(in srgb, var(--ph-hue, var(--color-teal)) 30%, transparent), transparent 70%);
 }
 
 @media (hover: hover) and (pointer: fine) {
   a:hover > .photo-head img,
   a:hover .photo-head img {
-    transform: scale(1.03);
+    transform: scale(1.045);
   }
 }
 
@@ -1585,29 +1451,19 @@ textarea.w-field {
    full-width banners down one page would be a photo gallery with some
    exercises in it. */
 .family-thumb {
-  position: relative;
   display: block;
   width: 3.5rem;
   height: 3.5rem;
-  border-radius: 2px;
+  border-radius: 14px;
   overflow: hidden;
-  isolation: isolate;
-  background: var(--spot-wash);
+  background: var(--surface-3);
 }
 
 .family-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.12);
-}
-
-.family-thumb::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--spot);
-  mix-blend-mode: screen;
+  filter: saturate(0.85);
 }
 
 /* An icon that overlaps the bottom edge of a photograph.
@@ -1638,55 +1494,26 @@ textarea.w-field {
   height: 1.375rem;
 }
 
-/* Dialogs arrive, they do not appear. From just below and a touch small,
-   on the strong ease-out, so the first frame already moves: 220ms is inside
-   the range where a modal feels answered rather than animated. Modals keep a
-   centred origin; they are not anchored to the thing that opened them. */
-@keyframes dialog-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-}
-
-.dialog-in {
-  animation: dialog-in 220ms var(--ease-out) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dialog-in {
-    animation: none;
-  }
-}
-
 /* ================================================================== */
-/* Motion: the sheet being printed                                     */
+/* Motion                                                              */
 /*                                                                    */
-/* One grammar for every moving thing on the form. A rule draws across */
-/* the way a press lays a line; a box feeds out top first, the way a   */
-/* sheet leaves a printer; a count rolls like a numbering stamp; a     */
-/* tick is drawn by a pen. Nothing floats, glows or bounces.           */
+/* Where it runs follows how often a screen is seen. The landing page  */
+/* and the free check are seen once or twice, so they arrive: the hero */
+/* rises in, the photograph is revealed, sections rise as they scroll  */
+/* into view, counts roll to their number. The app behind sign-in is   */
+/* opened every day, so there it is feedback only.                     */
 /*                                                                    */
-/* Where it runs follows how often it is seen. The landing page and    */
-/* the free check are seen once or twice, so they carry the printing.  */
-/* The app is opened every day and tapped through many times a         */
-/* session, so there it is feedback only: a press, a tab's ink moving  */
-/* to where you tapped, 220ms at most.                                 */
-/*                                                                    */
-/* Curves are the two at the top of this file and nothing else:       */
-/* --ease-out for anything arriving, --ease-in-out for anything that  */
-/* travels across the sheet. Under reduced motion the sheet is simply  */
-/* already printed: every hidden starting state is skipped, not just   */
-/* sped up.                                                           */
+/* Transform, opacity and clip-path only. Under reduced motion every   */
+/* hidden starting state is skipped: the page is simply already there.*/
 /* ================================================================== */
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Every control already answers a press by moving (.press, .f-btn), so the
-   browser's grey tap flash would be a second, uglier answer to the same tap.
-   manipulation drops the double-tap-to-zoom wait without disabling pinch. */
+/* Every control already answers a press by moving (.press), so the browser's
+   grey tap flash would be a second answer to the same tap. manipulation drops
+   the double-tap-to-zoom wait without disabling pinch. */
 a,
 button,
 [role='button'],
@@ -1696,20 +1523,10 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
-@keyframes ink-roll {
-  from { clip-path: inset(-10% 100% -10% 0); }
-  to { clip-path: inset(-10% 0 -10% 0); }
-}
-
-@keyframes sheet-feed {
-  from { clip-path: inset(0 0 100% 0); }
-  to { clip-path: inset(0 0 0 0); }
-}
-
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
 }
 
@@ -1720,25 +1537,43 @@ summary {
   }
 }
 
+@keyframes photo-reveal {
+  from { clip-path: inset(0 0 100% 0 round 1.75rem); }
+  to { clip-path: inset(0 0 0 0 round 1.75rem); }
+}
+
+@keyframes photo-settle {
+  from { transform: scale(1.08); }
+}
+
 @keyframes backdrop-in {
   from { opacity: 0; }
 }
 
-/* The wordmark is inked left to right as the page opens. */
-.print-roll {
-  animation: ink-roll 760ms var(--ease-in-out) 60ms both;
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
 }
 
-/* A box leaves the printer top first. */
-.print-feed {
-  animation: sheet-feed 620ms var(--ease-in-out) var(--d, 0ms) both;
+/* The landing hero, in reading order. Delay set inline as --d. */
+.hero-rise {
+  animation: rise 620ms var(--ease-out) var(--d, 0ms) both;
 }
 
-.print-rise {
-  animation: rise 520ms var(--ease-out) var(--d, 0ms) both;
+/* The hero photograph opens from the top down while the picture inside it
+   settles from a slight zoom, so it reads as a window opening onto the
+   forest rather than an image fading on. */
+.photo-reveal {
+  animation: photo-reveal 1000ms var(--ease-in-out) 120ms both;
 }
 
-/* A new question on the free check: small, quick, from just below. */
+.photo-reveal img {
+  animation: photo-settle 1400ms var(--ease-out) 120ms both;
+}
+
+/* A new question on the free check: small and quick, from just below. */
 .q-enter {
   animation: rise-sm 240ms var(--ease-out) var(--d, 0ms) both;
 }
@@ -1747,96 +1582,129 @@ summary {
   animation: backdrop-in 220ms var(--ease-out) both;
 }
 
-/* Parts of the landing page, printed as they scroll into view. The rule is
-   drawn by a pseudo-element so it can scale from its left end; the border it
-   replaces is kept for anyone without the reveal (no JS, reduced motion). */
-[data-reveal] .f-part {
-  position: relative;
-  border-top-color: transparent;
+/* Modals keep a centred origin: they are not anchored to their trigger. */
+.dialog-in {
+  animation: dialog-in 240ms var(--ease-out) both;
 }
 
-[data-reveal] .f-part::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--spot);
-  transform-origin: left center;
-  transition: transform 820ms var(--ease-in-out);
-}
-
-[data-reveal] .reveal-label,
-[data-reveal] .reveal-body > * {
+/* Sections of the landing page rise as they scroll into view, once. The
+   children marked .reveal-item follow one another 70ms apart (--i). */
+[data-reveal] .reveal-item {
   transition:
-    opacity 560ms var(--ease-out),
-    transform 560ms var(--ease-out);
+    opacity 640ms var(--ease-out),
+    transform 640ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 70ms);
 }
 
-[data-reveal] .reveal-label {
-  transition-delay: 160ms;
-}
-
-[data-reveal] .reveal-body > * {
-  transition-delay: calc(240ms + var(--i, 0) * 70ms);
-}
-
-[data-reveal='pending'] .f-part::before {
-  transform: scaleX(0);
-}
-
-[data-reveal='pending'] .reveal-label,
-[data-reveal='pending'] .reveal-body > * {
+[data-reveal='pending'] .reveal-item {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(22px);
 }
 
-/* Rows that arrive in sequence inside a revealed part: 45ms apart, short
-   enough that the last row is readable before anyone could want to click. */
-[data-reveal] .reveal-rows > * {
-  transition:
-    opacity 420ms var(--ease-out),
-    transform 420ms var(--ease-out);
-  transition-delay: calc(320ms + var(--i, 0) * 45ms);
-}
-
-[data-reveal='pending'] .reveal-rows > * {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-/* The showcase phones slide up out of their shaded band, one after another,
-   once the table is on screen. */
+/* The showcase phones slide up out of their coloured cards, one after
+   another, once the row is on screen. */
 [data-reveal] .reveal-phone {
-  transition: transform 900ms var(--ease-out);
-  transition-delay: calc(360ms + var(--i, 0) * 90ms);
+  transition: transform 1000ms var(--ease-out);
+  transition-delay: calc(260ms + var(--i, 0) * 90ms);
 }
 
 [data-reveal='pending'] .reveal-phone {
-  transform: translateY(70%);
+  transform: translateY(60%);
 }
 
-/* A numbering stamp. Each figure is a column of 0 to 9 twice over, and the
-   column rolls to the final figure in its second run, so a 0 turns a full
-   revolution instead of sitting still while its neighbours move. */
+/* A count that rolls to its number like a mechanical counter. Each figure is
+   a column of 0 to 9 twice over, stopping in its second run, so even a 0 turns
+   once. */
 .odo {
-  display: block;
+  display: inline-block;
   height: 1em;
   overflow: hidden;
   line-height: 1;
+  vertical-align: top;
 }
 
 .odo-strip {
   display: flex;
   flex-direction: column;
-  transition: transform 1150ms var(--ease-out);
+  transition: transform 1200ms var(--ease-out);
 }
 
 .odo-strip > span {
-  display: grid;
+  display: block;
   height: 1em;
+  text-align: center;
+}
+
+/* The tick box on the landing page's question. The box fills, then the tick
+   draws itself 60ms behind, the way a pen marks a form. */
+.f-tick {
+  display: inline-grid;
   place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  border: 1.5px solid var(--w-line-2, rgba(20, 32, 26, 0.18));
+  border-radius: 6px;
+  background: #ffffff;
+  color: #ffffff;
+  transition:
+    background-color 140ms var(--ease-out),
+    border-color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
+}
+
+.f-tick svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  overflow: visible;
+}
+
+.f-tick path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: stroke-dashoffset 240ms var(--ease-out) 60ms;
+}
+
+[data-ticked='true'] .f-tick {
+  background: var(--w-accent-deep, #0b6b3a);
+  border-color: var(--w-accent-deep, #0b6b3a);
+}
+
+[data-ticked='true'] .f-tick path {
+  stroke-dashoffset: 0;
+}
+
+/* An answer on the landing page's question: a soft card of its own. */
+.soft-option {
+  border: 1px solid var(--w-line-2);
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 140ms var(--ease-out);
+}
+
+.soft-option:active {
+  transform: scale(0.98);
+}
+
+.soft-option[data-ticked='true'] {
+  background: var(--w-accent-wash);
+  border-color: var(--w-accent-deep);
+  color: var(--w-accent-deep);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .soft-option:hover {
+    border-color: color-mix(in srgb, var(--w-accent-deep) 45%, transparent);
+    background: color-mix(in srgb, var(--w-accent-wash) 55%, #ffffff);
+  }
+
+  .soft-option:hover .f-tick {
+    border-color: var(--w-accent-deep);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1844,64 +1712,31 @@ summary {
     scroll-behavior: auto;
   }
 
-  .print-roll,
-  .print-feed,
-  .print-rise,
+  .hero-rise,
+  .photo-reveal,
+  .photo-reveal img,
   .q-enter,
-  .backdrop-in {
+  .backdrop-in,
+  .dialog-in {
     animation: none;
   }
 
-  [data-reveal] .f-part::before,
-  [data-reveal] .reveal-label,
-  [data-reveal] .reveal-body > *,
-  [data-reveal] .reveal-rows > *,
+  [data-reveal] .reveal-item,
   [data-reveal] .reveal-phone,
-  .odo-strip {
+  .odo-strip,
+  .f-tick,
+  .f-tick path,
+  .soft-option {
     transition: none;
   }
 
-  [data-reveal='pending'] .f-part::before {
-    transform: none;
-  }
-
-  [data-reveal='pending'] .reveal-label,
-  [data-reveal='pending'] .reveal-body > *,
-  [data-reveal='pending'] .reveal-rows > *,
+  [data-reveal='pending'] .reveal-item,
   [data-reveal='pending'] .reveal-phone {
     opacity: 1;
     transform: none;
   }
-}
 
-/* The tear-off slip on the landing page feeds out of the printer too. The
-   inset runs 4px past the box so the dashed border is not clipped. */
-[data-reveal] .reveal-slip {
-  clip-path: inset(-4px -4px -4px -4px);
-  transition: clip-path 760ms var(--ease-in-out) 120ms;
-}
-
-[data-reveal='pending'] .reveal-slip {
-  clip-path: inset(-4px -4px 100% -4px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal] .reveal-slip,
-  [data-reveal='pending'] .reveal-slip {
-    clip-path: none;
-    transition: none;
-  }
-}
-
-/* The phone tab bar's ink moving to the tab you tapped. Tens of times a
-   session, so it is quick: 220ms, on the in-out curve because the block
-   travels across the bar rather than arriving. */
-.tab-ink {
-  transition: clip-path 220ms var(--ease-in-out);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tab-ink {
-    transition: none;
+  .soft-option:active {
+    transform: none;
   }
 }

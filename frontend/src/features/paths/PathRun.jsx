@@ -20,7 +20,7 @@ import { accent, alpha } from '../../shared/accents.js';
 // rendered next to it and is not collapsible.
 
 function DayRow({ day, path, done, isNext, onToggle, busy }) {
-  const { base, deep } = accent(path.accent);
+  const { base, bright, deep } = accent(path.accent);
 
   return (
     <li
@@ -35,9 +35,9 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
         aria-label={done ? `Mark day ${day.day} not done` : `Mark day ${day.day} done`}
         className="press mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-50"
         style={{
-          borderColor: done ? 'var(--spot)' : 'var(--rule)',
-          background: done ? 'var(--spot)' : 'transparent',
-          color: done ? '#ffffff' : 'var(--color-muted)',
+          borderColor: done ? bright : 'rgba(255,255,255,0.18)',
+          background: done ? bright : 'transparent',
+          color: done ? '#07080a' : 'var(--color-muted)',
         }}
       >
         {done ? (
@@ -64,7 +64,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
 
         <Link
           to={`/grounding/${day.technique}`}
-          className="press mt-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[var(--line-2)] px-3.5 py-1.5 text-xs transition-colors hover:border-[var(--line-4)]"
+          className="press mt-3 inline-flex items-center gap-1.5 rounded-full border border-[var(--line-2)] px-3.5 py-1.5 text-xs transition-colors hover:border-[var(--line-4)]"
         >
           Open the practice
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -81,7 +81,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
 // instrument can resolve is reported as "no measurable change" rather than as
 // a direction, because a 1-point GAD-7 move is noise.
 function Bookend({ path, scores, change }) {
-  const { base, deep } = accent(path.accent);
+  const { base, bright, deep } = accent(path.accent);
   if (!path.closesWith) return null;
 
   const before = scores?.before;
@@ -99,8 +99,8 @@ function Bookend({ path, scores, change }) {
           </p>
           <Link
             to={`/assessments/${path.closesWith}`}
-            className="press mt-4 inline-flex items-center gap-2 rounded-[2px] px-4 py-2 text-sm font-semibold text-white"
-            style={{ background: 'var(--spot)' }}
+            className="press mt-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-[#07080a]"
+            style={{ background: bright }}
           >
             Take it now
           </Link>
@@ -151,7 +151,7 @@ function Bookend({ path, scores, change }) {
                 <p className="text-xs text-[var(--color-muted)]">Now</p>
                 <Link
                   to={`/assessments/${path.closesWith}`}
-                  className="press mt-2 inline-flex items-center gap-2 rounded-[2px] border px-4 py-2 text-sm"
+                  className="press mt-2 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm"
                   style={{ borderColor: alpha(base, 0.4), color: deep }}
                 >
                   Take it again
@@ -288,7 +288,7 @@ export default function PathRun() {
                 type="button"
                 onClick={() => act('leave')}
                 disabled={busy}
-                className="press rounded-[2px] border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-50"
+                className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-50"
               >
                 Leave this path
               </button>
@@ -297,8 +297,8 @@ export default function PathRun() {
                 type="button"
                 onClick={() => act('start')}
                 disabled={busy}
-                className="press rounded-[2px] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: 'var(--spot)' }}
+                className="press rounded-full px-6 py-3 text-sm font-medium text-[#07080a] disabled:opacity-50"
+                style={{ background: colors.bright }}
               >
                 Start this path
               </button>

@@ -30,19 +30,19 @@ import { TEST_INDEX } from '../read/testIndex.js';
 // ─── Quick shortcuts for a bad moment ───────────────────────────────────────
 const QUICK = [
   {
-    mood: 'panic', label: 'Panicking', to: '/grounding/temperature', ink: 'var(--color-flag-deep)',
+    mood: 'panic', label: 'Panicking', to: '/grounding/temperature', hue: 'var(--color-flag)', ink: 'var(--color-flag-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c-2-2.67-4-5.33-4-8 4-5.33 8 0 4 8m0 0c2 2.67 4 5.33 4 8-4 5.33-8 0-4-8Z" /><path d="M12 12c-2.67 2-5.33 4-8 4-5.33-4 0-8 8-4m0 0c2.67-2 5.33-4 8-4 5.33 4 0 8-8 4Z" /></svg>,
   },
   {
-    mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', ink: 'var(--sec-home-deep)',
+    mood: 'anxious', label: 'Anxious', to: '/grounding/cyclic-sighing', hue: 'var(--sec-home)', ink: 'var(--sec-home-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.7 7.7A7.1 7.1 0 0 0 6.3 7.7" /><path d="M9.9 12.6a2.8 2.8 0 0 1 4.2 0" /><path d="M2 12h2M20 12h2M12 2v2M12 20v2" /></svg>,
   },
   {
-    mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', ink: 'var(--color-amber-deep)',
+    mood: 'spiralling', label: 'Spiralling', to: '/grounding/mental-grounding', hue: 'var(--color-amber)', ink: 'var(--color-amber-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12m-1 0a1 1 0 1 0 2 0 1 1 0 1 0-2 0" /><path d="M12 8a4 4 0 0 1 4 4" /><path d="M12 4a8 8 0 0 1 8 8" /><path d="M12 16a4 4 0 0 1-4-4" /><path d="M12 20a8 8 0 0 1-8-8" /></svg>,
   },
   {
-    mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', ink: 'var(--color-rose-deep)',
+    mood: 'sad', label: 'Low', to: '/grounding/self-compassion-break', hue: 'var(--color-rose)', ink: 'var(--color-rose-deep)',
     icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v6M8 4v4M16 4v4" /><path d="M4 10a16 16 0 0 0 16 0" /><path d="M12 14v4M8 16v2M16 16v2" /></svg>,
   },
 ];
@@ -53,6 +53,8 @@ const ACTIONS = [
     to: '/grounding',
     label: 'Grounding',
     sub: (c) => (c.streak ? `${c.streak}-day streak` : c.practices ? `${c.practices} practices` : 'For a bad ten minutes'),
+    hue: 'var(--sec-calm)',
+    bg: 'rgba(167, 156, 240, 0.14)',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 3c2.5 3 4 5.4 4 7.8A4 4 0 0 1 12 15a4 4 0 0 1-4-4.2C8 8.4 9.5 6 12 3Z" />
@@ -64,6 +66,8 @@ const ACTIONS = [
     to: '/assessments',
     label: 'Questionnaires',
     sub: (c) => `${c.questionnaires} published screens`,
+    hue: 'var(--sec-tests)',
+    bg: 'rgba(88, 182, 245, 0.14)',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 11l3 3L22 4" />
@@ -75,6 +79,8 @@ const ACTIONS = [
     to: '/paths',
     label: 'Guided paths',
     sub: (c) => (c.paths ? `${c.paths} multi-day paths` : 'A little each day'),
+    hue: 'var(--sec-paths)',
+    bg: 'rgba(224, 163, 213, 0.14)',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M18 6l-6 6-6-6" />
@@ -86,6 +92,8 @@ const ACTIONS = [
     to: '/read',
     label: 'Reading',
     sub: (c) => `${c.essays} short essays`,
+    hue: 'var(--sec-read)',
+    bg: 'rgba(143, 214, 180, 0.14)',
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -128,7 +136,7 @@ function TodayCard({ name, status }) {
   }
 
   return (
-    <section className="card flex flex-col p-5 sm:p-6" aria-labelledby="today-heading">
+    <section className="animate-slide-up card flex flex-col p-5 sm:p-6" aria-labelledby="today-heading">
       <div className="flex items-center justify-between gap-3">
         <p className="marginalia">
           {greeting()}, {name}
@@ -139,17 +147,17 @@ function TodayCard({ name, status }) {
         <StreakBadge label />
       </div>
 
-      <h1 id="today-heading" className="f-title mt-2 text-[1.75rem] leading-[1.08] text-[var(--spot)] sm:text-[2.25rem]">
+      <h1 id="today-heading" className="font-display mt-2 text-[1.6rem] leading-tight sm:text-[2rem]">
         {done ? "That's today done." : 'How is today, really?'}
       </h1>
 
       {done ? (
         <>
           {status.record?.thought && (
-            <div className="f-shade mt-4 border-t-2 border-[var(--spot)] px-4 py-3.5 sm:px-5 sm:py-4">
+            <div className="mt-4 rounded-2xl border border-[var(--line-1)] bg-white px-4 py-3.5 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:px-5 sm:py-4">
               <p className="marginalia">Thought for today</p>
-              <blockquote className="f-title mt-2 text-[1.15rem] leading-snug sm:text-[1.35rem]">
-                <span aria-hidden="true" className="mr-1 text-[var(--spot)]">
+              <blockquote className="font-display mt-2 text-[1.1rem] leading-snug sm:text-[1.3rem]">
+                <span aria-hidden="true" className="mr-1 text-[var(--color-amber)]">
                   &ldquo;
                 </span>
                 {status.record.thought}
@@ -159,7 +167,7 @@ function TodayCard({ name, status }) {
           <Link
             to="/results"
             state={{ record: status.record }}
-            className="mt-3 inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[var(--spot)] underline decoration-[var(--rule)] underline-offset-4 hover:decoration-[var(--spot)]"
+            className="mt-3 inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[var(--color-teal-dark)] underline-offset-4 hover:underline"
           >
             {moodLabel ? `Checked in as ${moodLabel}.` : 'Checked in.'} See the rest of today
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -170,7 +178,7 @@ function TodayCard({ name, status }) {
       ) : (
         <>
           <div
-            className="mt-4 grid grid-cols-5 border border-[var(--rule)]"
+            className="mt-4 grid grid-cols-5 gap-1 rounded-2xl border border-[var(--line-1)] bg-white p-2 shadow-[0_1px_2px_rgba(47,64,54,0.05)] sm:p-3"
             role="group"
             aria-label="Pick how today feels to start your check-in"
           >
@@ -178,14 +186,13 @@ function TodayCard({ name, status }) {
               const dot = (
                 <span
                   aria-hidden="true"
-                  className="h-8 w-8 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-110 sm:h-10 sm:w-10"
+                  className="h-8 w-8 rounded-full transition-transform duration-200 group-hover:scale-110 sm:h-10 sm:w-10"
                   style={{ background: status.loading ? 'var(--surface-3)' : MOOD_HUE[i] }}
                 />
               );
-              const label = <span className="text-[0.8125rem] text-[var(--color-ink-soft)]">{m.label}</span>;
-              const cell = 'flex flex-col items-center gap-1.5 border-l border-[var(--rule)] py-3 first:border-l-0';
+              const label = <span className="text-[0.6875rem] text-[var(--color-ink-soft)]">{m.label}</span>;
               return status.loading ? (
-                <span key={m.value} className={cell}>
+                <span key={m.value} className="flex flex-col items-center gap-1.5 py-1.5">
                   {dot}
                   {label}
                 </span>
@@ -194,7 +201,7 @@ function TodayCard({ name, status }) {
                   key={m.value}
                   to={`/checkin?mood=${m.value}`}
                   aria-label={`${m.label}. Start today's check-in`}
-                  className={`press group ${cell} transition-colors hover:bg-[var(--paper-tint)]`}
+                  className="press group flex flex-col items-center gap-1.5 rounded-xl py-1.5 transition-colors hover:bg-[var(--surface-2)]"
                 >
                   {dot}
                   {label}
@@ -223,7 +230,7 @@ function TodayCard({ name, status }) {
       <div className="min-h-4 flex-1" aria-hidden="true" />
       <form
         onSubmit={submit}
-        className="flex items-center gap-2 border border-[var(--rule)] bg-[var(--paper)] py-1.5 pr-1.5 pl-4 transition-colors focus-within:border-[var(--spot)]"
+        className="flex items-center gap-2 rounded-full border border-[var(--line-2)] bg-white py-1.5 pr-1.5 pl-4 transition-colors focus-within:border-[var(--color-teal)]"
       >
         <label htmlFor="home-ask" className="sr-only">
           Ask DP anything
@@ -240,7 +247,7 @@ function TodayCard({ name, status }) {
         <button
           type="submit"
           aria-label="Open DP"
-          className="press flex h-9 w-9 shrink-0 items-center justify-center bg-[var(--spot)] text-white transition-colors hover:bg-[var(--spot-deep)]"
+          className="press flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-teal-dark)] text-white"
         >
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -263,7 +270,7 @@ function TodayCard({ name, status }) {
 // half-finished things on the home screen is a list of ways you have already
 // let yourself down.
 function CarryOn({ path, progress }) {
-  const { deep } = accent(path.accent);
+  const { bright, deep } = accent(path.accent);
   const total = path.dayCount;
   const done = progress.completedDays.length;
 
@@ -274,13 +281,14 @@ function CarryOn({ path, progress }) {
       // secondary card in a wide column, and a full-width band put a 165px
       // photograph above three lines of text.
       className="press card card-photo card-photo-side mt-4 block overflow-hidden"
+      style={{ '--ph-hue': bright }}
     >
       <span className="photo-head">
         <img src={pathPhoto(path.id)} alt="" loading="lazy" decoding="async" />
       </span>
       <div className="card-photo-body min-w-0 flex-1">
         <span className="marginalia" style={{ color: deep }}>Carry on</span>
-        <p className="f-title mt-1.5 text-lg leading-snug">{path.name}</p>
+        <p className="font-display mt-1.5 text-lg leading-snug">{path.name}</p>
 
         {/* The same pip row the Paths tab uses, so the two screens agree on
             what progress looks like. */}
@@ -288,10 +296,10 @@ function CarryOn({ path, progress }) {
           {Array.from({ length: total }, (_, i) => i + 1).map((day) => (
             <span
               key={day}
-              className="h-2.5 w-2.5 border-[1.5px]"
+              className="h-1.5 rounded-full"
               style={{
-                borderColor: progress.completedDays.includes(day) ? 'var(--spot)' : 'var(--rule)',
-                background: progress.completedDays.includes(day) ? 'var(--spot)' : 'transparent',
+                width: progress.completedDays.includes(day) ? 18 : 8,
+                background: progress.completedDays.includes(day) ? bright : 'var(--surface-3)',
               }}
             />
           ))}
@@ -424,17 +432,18 @@ export default function Landing() {
         <TodayCard name={first} status={status} />
 
         <nav aria-label="Quick actions" className="grid grid-cols-2 gap-2.5 lg:grid-rows-2 lg:gap-3">
-          {ACTIONS.map((a) => (
+          {ACTIONS.map((a, i) => (
             <Link
               key={a.to}
               to={a.to}
-              className="press card flex flex-col justify-between gap-4 p-4 sm:p-5"
+              className="press card animate-slide-up flex flex-col justify-between gap-4 p-4 sm:p-5"
+              style={{ animationDelay: `${60 + i * 40}ms` }}
             >
-              <span className="flex h-10 w-10 items-center justify-center border-[1.5px] border-[var(--spot)] text-[var(--spot)]">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: a.bg, color: a.hue }}>
                 {a.icon}
               </span>
               <span>
-                <span className="f-title block text-[1.05rem]">{a.label}</span>
+                <span className="block text-sm font-semibold">{a.label}</span>
                 <span className="mt-0.5 block text-xs text-[var(--color-muted)]">
                   {a.sub({ ...counts, questionnaires, essays: ARTICLES.length })}
                 </span>
@@ -446,7 +455,7 @@ export default function Landing() {
 
       {/* ═══════════════════════════════════════════ Where you left off */}
       {carryOn && (
-        <section className="stack-block">
+        <section className="animate-slide-up stack-block" style={{ animationDelay: '180ms' }}>
           <h2 className="home-section-title">Where you left off</h2>
           <CarryOn path={carryOn.path} progress={carryOn.progress} />
         </section>
@@ -455,17 +464,28 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════ Right now
           For a bad moment rather than a day: straight to the practice that
           fits. Four across on a laptop, where the row has the width. */}
-      <section className="stack-block">
+      <section className="animate-slide-up stack-block" style={{ animationDelay: '220ms' }}>
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="home-section-title">Right now, I feel…</h2>
-          <Link to="/grounding" className="text-sm font-semibold text-[var(--spot)] underline decoration-[var(--rule)] underline-offset-4 hover:decoration-[var(--spot)]">
+          <Link to="/grounding" className="text-xs text-[var(--sec-calm-deep)] underline underline-offset-4">
             See all
           </Link>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2.5 lg:grid-cols-4 lg:gap-3">
-          {QUICK.map((q) => (
-            <Link key={q.mood} to={q.to} className="feeling-card press">
-              <span className="feeling-card-icon" aria-hidden="true" style={{ color: q.ink }}>
+          {QUICK.map((q, i) => (
+            <Link
+              key={q.mood}
+              to={q.to}
+              className="feeling-card animate-pop press"
+              style={{ '--fc-hue': q.hue, animationDelay: `${i * 70}ms` }}
+            >
+              <span className="feeling-card-wave" aria-hidden="true">
+                <svg viewBox="0 0 120 48" preserveAspectRatio="none" width="100%" height="100%">
+                  <path d="M0 30 C 22 10, 40 40, 62 24 S 100 8, 120 22 L120 48 L0 48 Z" fill={q.hue} opacity="0.22" />
+                  <path d="M0 38 C 24 22, 44 46, 66 33 S 102 20, 120 31 L120 48 L0 48 Z" fill={q.hue} opacity="0.14" />
+                </svg>
+              </span>
+              <span className="feeling-card-icon" aria-hidden="true" style={{ color: q.hue }}>
                 {q.icon}
               </span>
               <span className="feeling-card-label" style={{ color: q.ink }}>
@@ -476,7 +496,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <div className="stack-block h-px bg-[var(--rule)]" />
+      <div className="rule-fade stack-block" />
 
       {/* ═══════════════════════════════════════════ Footer */}
       <footer className="mt-3 flex flex-wrap items-center justify-between gap-3 pb-1">

@@ -6,6 +6,7 @@ import LoadError from '../../shared/LoadError.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getPaths } from '../../shared/api.js';
+import { accent, alpha } from '../../shared/accents.js';
 import { pathPhoto } from '../../shared/photos.js';
 
 // The paths index.
@@ -23,8 +24,8 @@ function Pips({ total, completed, hue }) {
         return (
           <span
             key={day}
-            className="h-2.5 w-2.5 border-[1.5px]"
-            style={{ borderColor: done ? hue : 'var(--rule)', background: done ? hue : 'transparent' }}
+            className="h-1.5 rounded-full transition-all duration-300"
+            style={{ width: done ? 18 : 8, background: done ? hue : 'rgba(255,255,255,0.14)' }}
           />
         );
       })}
@@ -33,13 +34,14 @@ function Pips({ total, completed, hue }) {
 }
 
 function PathCard({ path, progress, index }) {
+  const { base, bright, deep } = accent(path.accent);
   const done = progress?.done || 0;
   const started = Boolean(progress?.startedAt);
 
   return (
     <Link
       to={`/paths/${path.id}`}
-      style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+      style={{ animationDelay: `${Math.min(index, 8) * 40}ms`, '--ph-hue': bright }}
       className="animate-slide-up card card-photo press flex flex-col"
     >
       <span className="photo-head">
@@ -47,8 +49,11 @@ function PathCard({ path, progress, index }) {
       </span>
       <div className="card-photo-body flex flex-1 flex-col">
       <div className="flex items-start justify-between gap-3">
-        <p className="f-title text-xl leading-snug">{path.name}</p>
-        <span className="shrink-0 border border-[var(--rule)] px-2 py-0.5 text-[0.75rem] whitespace-nowrap text-[var(--spot)]">
+        <p className="font-display text-xl leading-snug">{path.name}</p>
+        <span
+          className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
+          style={{ background: alpha(base, 0.14), color: deep }}
+        >
           {path.dayCount} days
         </span>
       </div>
@@ -58,8 +63,8 @@ function PathCard({ path, progress, index }) {
       <div className="mt-auto pt-4">
         {started ? (
           <>
-            <Pips total={path.dayCount} completed={progress.completedDays} hue="var(--spot)" />
-            <p className="mt-2.5 text-xs text-[var(--spot)]">
+            <Pips total={path.dayCount} completed={progress.completedDays} hue={bright} />
+            <p className="mt-2.5 text-xs" style={{ color: deep }}>
               {progress.finished
                 ? 'Finished'
                 : `Day ${progress.nextDay} next · ${done} of ${path.dayCount} done`}

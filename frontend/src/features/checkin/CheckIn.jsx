@@ -271,7 +271,7 @@ export default function CheckIn() {
               <button
                 type="button"
                 onClick={goToThought}
-                className="press mt-6 w-full rounded-[2px] bg-[var(--color-teal)] py-4 font-semibold text-white"
+                className="press mt-6 w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a]"
               >
                 See today&apos;s thought
               </button>
@@ -352,11 +352,11 @@ export default function CheckIn() {
                       type="button"
                       disabled={plateTyped && !plateUsable}
                       onClick={() => setPlateStep((s) => s + 1)}
-                      className="press w-full rounded-[2px] py-3.5 font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45"
+                      className="press w-full rounded-full py-3.5 font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45"
                       style={
                         plateUsable
-                          ? { background: 'var(--sec-inkblot)', color: '#ffffff' }
-                          : { background: 'var(--surface-2)', color: 'var(--color-ink-soft)' }
+                          ? { background: 'var(--sec-inkblot)', color: '#07080a' }
+                          : { background: 'rgba(255,255,255,0.06)', color: 'var(--color-ink-soft)' }
                       }
                     >
                       {plateTyped ? 'Next plate' : 'Skip this one'}
@@ -366,7 +366,7 @@ export default function CheckIn() {
                       type="button"
                       onClick={handlePlatesFinish}
                       disabled={submitting || (plateTyped && !plateUsable)}
-                      className="press w-full rounded-[2px] py-3.5 font-semibold text-white transition-colors duration-150 disabled:opacity-50"
+                      className="press w-full rounded-full py-3.5 font-medium text-[#07080a] transition-all duration-200 disabled:opacity-50"
                       style={{ background: 'var(--sec-inkblot)' }}
                     >
                       {submitting ? 'Saving…' : 'Finish'}
@@ -378,7 +378,7 @@ export default function CheckIn() {
                   <button
                     type="button"
                     onClick={() => setPlateStep((s) => s - 1)}
-                    className="press mt-3 w-full rounded-[2px] border border-[var(--line-2)] py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
+                    className="press mt-3 w-full rounded-full border border-[var(--line-2)] py-3 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]"
                   >
                     Back a plate
                   </button>
@@ -393,7 +393,7 @@ export default function CheckIn() {
                 <button
                   type="button"
                   onClick={goToThought}
-                  className="press mt-3 w-full rounded-[2px] py-3 text-sm text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink-soft)]"
+                  className="press mt-3 w-full rounded-full py-3 text-sm text-[var(--color-muted)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink-soft)]"
                 >
                   Stop here and take me to my thought for the day
                 </button>
@@ -419,7 +419,7 @@ export default function CheckIn() {
           {/* A five-stop scale rather than five stacked buttons: mood is a
               continuum, and a vertical list makes it look like five unrelated
               options. */}
-          <div className="animate-slide-up mt-6 grid grid-cols-5 border border-[var(--rule)]" style={{ animationDelay: '120ms' }}>
+          <div className="animate-slide-up mt-6 grid grid-cols-5 gap-2" style={{ animationDelay: '120ms' }}>
             {MOOD_OPTIONS.map((m, i) => {
               const selected = mood === m.value;
               const hue = MOOD_HUE[i];
@@ -429,23 +429,26 @@ export default function CheckIn() {
                   type="button"
                   onClick={() => setMood(m.value)}
                   aria-pressed={selected}
-                  className="press group relative flex flex-col items-center gap-2.5 border-l border-[var(--rule)] px-1 py-4 transition-colors duration-150 first:border-l-0"
-                  style={{ background: selected ? `color-mix(in srgb, ${hue} 18%, white)` : 'transparent' }}
+                  className="press group relative flex flex-col items-center gap-2.5 rounded-2xl border px-1 py-4 transition-all duration-300"
+                  style={{
+                    borderColor: selected ? hue : 'rgba(255,255,255,0.08)',
+                    background: selected ? `color-mix(in srgb, ${hue} 15%, transparent)` : 'rgba(255,255,255,0.02)',
+                  }}
                 >
-                  {/* Grows by transform, not by width and height, so choosing
-                      a mood never reflows the row it sits in. */}
                   <span
                     aria-hidden="true"
-                    className="h-5 w-5 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                    className="rounded-full transition-all duration-300"
                     style={{
+                      width: selected ? 15 : 9,
+                      height: selected ? 15 : 9,
                       background: hue,
-                      transform: selected ? 'scale(1.2)' : 'scale(1)',
-                      boxShadow: selected ? '0 0 0 2px #ffffff, 0 0 0 3.5px var(--spot)' : 'none',
+                      opacity: selected ? 1 : 0.45,
+                      boxShadow: selected ? `0 0 18px ${hue}` : 'none',
                     }}
                   />
                   <span
-                    className="text-[0.8125rem] transition-colors duration-150"
-                    style={{ color: selected ? 'var(--spot)' : 'var(--color-ink-soft)', fontWeight: selected ? 600 : 400 }}
+                    className="text-[0.6875rem] transition-colors duration-300"
+                    style={{ color: selected ? hue : 'var(--color-muted)' }}
                   >
                     {m.label}
                   </span>
@@ -493,7 +496,7 @@ export default function CheckIn() {
               type="button"
               disabled={!mood || submitting}
               onClick={() => handleMood(true)}
-              className="press w-full rounded-[2px] bg-[var(--color-teal)] py-4 font-semibold text-white transition-colors duration-150 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
+              className="press w-full rounded-full bg-[var(--color-teal)] py-4 font-medium text-[#07080a] transition-all duration-200 hover:bg-[var(--color-teal-dark)] disabled:cursor-not-allowed disabled:bg-[var(--surface-3)] disabled:text-[var(--ink-faint)]"
             >
               {submitting === 'test' ? 'Saving…' : 'Check in and begin the test'}
             </button>
@@ -501,7 +504,7 @@ export default function CheckIn() {
               type="button"
               disabled={!mood || submitting}
               onClick={() => handleMood(false)}
-              className="press w-full rounded-[2px] border border-[var(--line-3)] py-3.5 font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:text-[var(--ink-faint)]"
+              className="press w-full rounded-full border border-[var(--line-3)] py-3.5 font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--surface-2)] disabled:cursor-not-allowed disabled:text-[var(--ink-faint)]"
             >
               {submitting === 'skip' ? 'Saving…' : 'Just check in, skip the test'}
             </button>

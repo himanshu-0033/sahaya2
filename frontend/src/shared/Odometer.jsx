@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 const RUN = Array.from({ length: 20 }, (_, i) => i % 10);
 
-// A count in boxed figures that rolls to its value like a numbering stamp.
+// A count that rolls to its value like a mechanical counter.
 //
 // `go` starts the roll; until then every figure shows 0. Each column is 0 to 9
 // twice over and stops in the second run, so every figure turns at least once,
@@ -22,35 +22,35 @@ export default function Odometer({ value, go = true, className = '', style }) {
     return () => cancelAnimationFrame(id);
   }, [go]);
 
-  const figures = String(value).split('');
-
   return (
-    <span className={`f-digits ${className}`} style={style} role="img" aria-label={String(value)}>
-      {figures.map((f, i) => {
-        const n = Number(f);
-        const stop = Number.isInteger(n) ? 10 + n : 0;
-        return (
-          <span key={i} aria-hidden="true">
-            {Number.isInteger(n) ? (
-              <span className="odo">
-                <span
-                  className="odo-strip"
-                  style={{
-                    transform: `translateY(-${(rolled ? stop : 0) * 5}%)`,
-                    transitionDelay: `${i * 90}ms`,
-                  }}
-                >
-                  {RUN.map((d, j) => (
-                    <span key={j}>{d}</span>
-                  ))}
-                </span>
+    <span className={`inline-flex tabular-nums ${className}`} style={style} role="img" aria-label={String(value)}>
+      {String(value)
+        .split('')
+        .map((f, i) => {
+          const n = Number(f);
+          if (!Number.isInteger(n)) {
+            return (
+              <span key={i} aria-hidden="true">
+                {f}
               </span>
-            ) : (
-              f
-            )}
-          </span>
-        );
-      })}
+            );
+          }
+          return (
+            <span key={i} className="odo" aria-hidden="true">
+              <span
+                className="odo-strip"
+                style={{
+                  transform: `translateY(-${(rolled ? 10 + n : 0) * 5}%)`,
+                  transitionDelay: `${i * 90}ms`,
+                }}
+              >
+                {RUN.map((d, j) => (
+                  <span key={j}>{d}</span>
+                ))}
+              </span>
+            </span>
+          );
+        })}
     </span>
   );
 }
