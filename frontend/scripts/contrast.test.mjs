@@ -30,9 +30,10 @@ function ratio(a, b) {
 }
 
 // AA for body text. Deliberately not the 3:1 large-text allowance: these are
-// used on labels and marginalia as often as on headings.
+// used on labels and marginalia as often as on headings. The two grounds are the
+// printed form's: white paper, and the tint a shaded cell is printed in.
 const FLOOR = 4.5;
-const GROUNDS = { 'app cream': '#f4f7f3', 'white card': '#ffffff' };
+const GROUNDS = { 'paper': '#ffffff', 'shaded cell': '#eef4ef' };
 
 const css = readFileSync(join(here, '..', 'src', 'styles', 'design-tokens.css'), 'utf8');
 const deepTokens = [...css.matchAll(/--([\w-]*-deep):\s*(#[0-9a-fA-F]{6})/g)];

@@ -30,7 +30,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
 
   const inputClass = dark
     ? 'mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/50 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
-    : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
+    : 'mt-1 w-full rounded-xl border border-[var(--rule)] bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-1 focus:ring-[var(--spot)]';
   const labelClass = `text-[0.6875rem] uppercase tracking-wider ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
 
   function switchMode(next) {
@@ -134,7 +134,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                     className={
                       dark
                         ? 'rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-2.5 text-sm text-white outline-none focus:border-[var(--line-6)]'
-                        : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]'
+                        : 'rounded-xl border border-[var(--rule)] bg-white px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]'
                     }
                   >
                     {COUNTRY_CODES.map((c) => (

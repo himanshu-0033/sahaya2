@@ -3,16 +3,15 @@
 
 /* === PRIMITIVES === */
 :root {
-  --primitive-color-sage-50: #f4f7f3;
-  --primitive-color-sage-100: #e8efe9;
-  --primitive-color-sage-400: #a8c3b0;
-  --primitive-color-sage-500: #6f947d;
-  --primitive-color-sage-600: #526057;
-  --primitive-color-sage-700: #4a6857;
-  --primitive-color-sage-900: #2f4036;
+  --primitive-color-form-paper: #ffffff;
+  --primitive-color-form-tint: #eef4ef;
+  --primitive-color-form-spot: #0a5c32;
+  --primitive-color-form-spot-deep: #073f22;
+  --primitive-color-form-key: #0f2419;
+  --primitive-color-form-key-soft: #3d5045;
+  --primitive-color-form-muted: #56645b;
   --primitive-color-pink-300: #f2789f;
   --primitive-color-pink-600: #b83a63;
-  --primitive-color-gray-500: #616976;
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-amber-700: #8a5716;
   --primitive-color-violet-400: #a79cf0;
@@ -24,11 +23,11 @@
   --primitive-color-orchid-300: #e0a3d5;
   --primitive-color-orchid-600: #a3468f;
   --primitive-color-mint-300: #8fd6b4;
-  --primitive-color-mint-700: #2c7d59;
+  --primitive-color-mint-700: #26744f;
   --primitive-color-paper-100: #f4f2ee;
-  --primitive-channel-ink: 47 64 54;
-  --primitive-channel-paper: 244 247 243;
-  --primitive-channel-sage: 168 195 176;
+  --primitive-channel-ink: 15 36 25;
+  --primitive-channel-paper: 255 255 255;
+  --primitive-channel-sage: 10 92 50;
   --primitive-channel-violet: 167 156 240;
   --primitive-channel-coral: 239 128 100;
   --primitive-channel-sky: 88 182 245;
@@ -37,14 +36,14 @@
 
 /* === SEMANTIC === */
 :root {
-  --color-cream: #f4f7f3;
-  --color-cream-soft: #e8efe9;
-  --color-ink: #2f4036;
-  --color-ink-soft: #526057;
-  --color-muted: #616976;
-  --color-teal: #6f947d;
-  --color-teal-dark: #4a6857;
-  --color-teal-soft: rgb(var(--primitive-channel-sage) / 0.14);
+  --color-cream: #ffffff;
+  --color-cream-soft: #eef4ef;
+  --color-ink: #0f2419;
+  --color-ink-soft: #3d5045;
+  --color-muted: #56645b;
+  --color-teal: #0a5c32;
+  --color-teal-dark: #073f22;
+  --color-teal-soft: rgb(var(--primitive-channel-sage) / 0.1);
   --color-amber: #d9a55c;
   --color-lavender: #a79cf0;
   --color-lavender-soft: rgb(var(--primitive-channel-violet) / 0.16);
@@ -57,18 +56,18 @@
   --color-rose-soft: rgb(var(--primitive-channel-rose) / 0.16);
   --color-amber-deep: #8a5716;
   --color-rose-deep: #b83a63;
-  --sec-home: #6f947d;
-  --sec-paths: #e0a3d5;
-  --sec-calm: #a79cf0;
-  --sec-tests: #58b6f5;
-  --sec-inkblot: #d9a55c;
-  --sec-read: #8fd6b4;
-  --sec-home-deep: #4a6857;
-  --sec-paths-deep: #a3468f;
-  --sec-calm-deep: #5546c0;
-  --sec-tests-deep: #1a6da6;
-  --sec-inkblot-deep: #8a5716;
-  --sec-read-deep: #2c7d59;
+  --sec-home: #0a5c32;
+  --sec-paths: #0a5c32;
+  --sec-calm: #0a5c32;
+  --sec-tests: #0a5c32;
+  --sec-inkblot: #0a5c32;
+  --sec-read: #0a5c32;
+  --sec-home-deep: #0a5c32;
+  --sec-paths-deep: #0a5c32;
+  --sec-calm-deep: #0a5c32;
+  --sec-tests-deep: #0a5c32;
+  --sec-inkblot-deep: #0a5c32;
+  --sec-read-deep: #0a5c32;
   --surface-1: rgb(var(--primitive-channel-ink) / 0.03);
   --surface-2: rgb(var(--primitive-channel-ink) / 0.05);
   --surface-3: rgb(var(--primitive-channel-ink) / 0.08);

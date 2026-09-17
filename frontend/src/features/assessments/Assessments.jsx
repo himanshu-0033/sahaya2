@@ -223,7 +223,7 @@ export default function Assessments() {
             minutes, one set of results.
           </span>
         </span>
-        <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[var(--sec-tests)] px-5 py-2.5 text-sm font-medium text-[#07080a] sm:self-auto">
+        <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-[2px] bg-[var(--sec-tests)] px-5 py-2.5 text-sm font-semibold text-white sm:self-auto">
           Take all three
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -248,9 +248,9 @@ export default function Assessments() {
                 type="button"
                 onClick={() => setFilter(null)}
                 aria-pressed={filter === null}
-                className="press shrink-0 rounded-full border px-4 py-2 text-xs transition-colors"
+                className="press shrink-0 rounded-[2px] border px-4 py-2 text-xs transition-colors"
                 style={{
-                  borderColor: filter === null ? 'var(--sec-tests)' : 'rgba(255,255,255,0.1)',
+                  borderColor: filter === null ? 'var(--sec-tests)' : 'var(--rule)',
                   background: filter === null ? 'rgba(88,182,245,0.14)' : 'transparent',
                   color: filter === null ? 'var(--sec-tests)' : 'var(--color-ink-soft)',
                 }}
@@ -265,9 +265,9 @@ export default function Assessments() {
                     type="button"
                     onClick={() => setFilter(active ? null : domain)}
                     aria-pressed={active}
-                    className="press shrink-0 rounded-full border px-4 py-2 text-xs transition-colors"
+                    className="press shrink-0 rounded-[2px] border px-4 py-2 text-xs transition-colors"
                     style={{
-                      borderColor: active ? 'var(--sec-tests)' : 'rgba(255,255,255,0.1)',
+                      borderColor: active ? 'var(--sec-tests)' : 'var(--rule)',
                       background: active ? 'rgba(88,182,245,0.14)' : 'transparent',
                       color: active ? 'var(--sec-tests)' : 'var(--color-ink-soft)',
                     }}

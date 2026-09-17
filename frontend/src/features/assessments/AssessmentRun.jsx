@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Button from '../../shared/Button.jsx';
+import Tick from '../../shared/Tick.jsx';
 import ScoreRing from './ScoreRing.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import LoadError from '../../shared/LoadError.jsx';
@@ -69,7 +70,7 @@ function SetRail({ names, index, eyebrow, onSkip, skipLabel }) {
             type="button"
             onClick={onSkip}
             aria-label={skipLabel}
-            className="press inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line-3)] bg-[var(--surface-1)] px-3.5 py-1.5 text-xs font-medium text-[var(--color-ink-soft)] transition-colors hover:border-[var(--sec-tests)]/45 hover:text-[var(--color-ink)]"
+            className="press inline-flex shrink-0 items-center gap-1.5 rounded-[2px] border border-[var(--line-3)] bg-[var(--surface-1)] px-3.5 py-1.5 text-xs font-medium text-[var(--color-ink-soft)] transition-colors hover:border-[var(--sec-tests)]/45 hover:text-[var(--color-ink)]"
           >
             Skip this test
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -417,13 +418,6 @@ export default function AssessmentRun() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
-        <div
-          className="absolute inset-x-0 top-0 h-[26rem]"
-          style={{ background: 'radial-gradient(120% 100% at 50% 0%, rgba(88,182,245,0.12), transparent 70%)' }}
-        />
-      </div>
-
       <div
         className={`relative mx-auto flex max-w-2xl flex-col px-6 ${
           taking ? 'h-[100dvh] overflow-y-auto py-6 md:py-8' : 'min-h-screen py-8 md:py-12'
@@ -511,44 +505,35 @@ export default function AssessmentRun() {
                 {item.text}
               </h1>
 
-              <div className="mt-5 grid min-h-0 flex-1 auto-rows-min content-start gap-2 overflow-y-auto">
+              {/* Printed as the instrument's answer column: ruled rows, a tick
+                  box each, and the key that answers it at the end of the row. */}
+              <ul key={`options-${step}`} className="f-rows mt-5 min-h-0 flex-1 overflow-y-auto border-y-[1.5px] border-[var(--spot)]">
                 {item.options.map((option, i) => {
                   // The follow-up's answer is held apart from `answers`, so
                   // the tick has to be read from wherever this step stores it.
                   const chosen = onFollowUp ? followUpAnswer : answers[step];
                   const selected = chosen === option.value;
                   return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => choose(option.value)}
-                      style={{ animationDelay: `${110 + i * 55}ms` }}
-                      className={`animate-rise press group flex w-full items-center gap-4 rounded-2xl border px-5 py-3 text-left transition-all duration-200 ${
-                        selected
-                          ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)]/12'
-                          : 'border-[var(--line-2)] bg-[var(--surface-1)] lift hover:border-[var(--sec-tests)]/45 hover:bg-[var(--surface-2)]'
-                      }`}
-                    >
-                      <span
-                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.6875rem] transition-colors ${
-                          selected
-                            ? 'border-[var(--sec-tests)] bg-[var(--sec-tests)] text-[#07080a]'
-                            : 'border-[var(--color-ink)]/15 text-[var(--color-muted)] group-hover:border-[var(--color-teal)]/40'
+                    <li key={option.value} className="q-enter" style={{ '--d': `${40 + i * 30}ms` }}>
+                      <button
+                        type="button"
+                        onClick={() => choose(option.value)}
+                        aria-pressed={selected}
+                        data-ticked={selected}
+                        className={`f-option flex w-full items-center gap-3.5 px-3 py-3.5 text-left sm:px-4 ${
+                          selected ? 'text-[var(--spot)]' : ''
                         }`}
                       >
-                        {selected ? (
-                          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        ) : (
-                          i + 1
-                        )}
-                      </span>
-                      <span className="text-base leading-snug">{option.label}</span>
-                    </button>
+                        <Tick />
+                        <span className="min-w-0 flex-1 text-base leading-snug">{option.label}</span>
+                        <span className="tnum text-[0.8125rem] text-[var(--color-muted)]" aria-hidden="true">
+                          {i + 1}
+                        </span>
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
 
               {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
@@ -879,7 +864,7 @@ export default function AssessmentRun() {
                     )}
                   </div>
                   <span
-                    className="mt-3 inline-block rounded-full px-3.5 py-1.5 text-xs"
+                    className="mt-3 inline-block rounded-[2px] px-3.5 py-1.5 text-xs"
                     style={{ background: bandTint(r.band), color: bandColor(r.band) }}
                   >
                     {r.band.label}

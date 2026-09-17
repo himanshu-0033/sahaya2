@@ -169,7 +169,7 @@ export default function Results() {
                       )}
                     </div>
                     <span
-                      className="mt-3 inline-block rounded-full px-3.5 py-1.5 text-xs"
+                      className="mt-3 inline-block rounded-[2px] px-3.5 py-1.5 text-xs"
                       style={{ background: bandTint(r.band), color: bandColor(r.band) }}
                     >
                       {r.band.label}
@@ -229,7 +229,7 @@ export default function Results() {
                     {inkblot.summary.recurring.map((r) => (
                       <span
                         key={r.word}
-                        className="font-display rounded-full border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-1.5 text-lg"
+                        className="font-display rounded-[2px] border border-[var(--line-2)] bg-[var(--surface-1)] px-4 py-1.5 text-lg"
                       >
                         {r.word}
                         <span className="tnum ml-2 font-sans text-xs text-[var(--color-muted)]">

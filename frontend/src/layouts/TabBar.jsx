@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../shared/Logo.jsx';
 import CrisisContacts from '../shared/CrisisContacts.jsx';
@@ -37,7 +38,6 @@ const TABS = [
   {
     to: '/',
     label: 'Home',
-    hue: 'var(--sec-home)',
     // Two paths per icon: a filled body at low opacity plus a stroked
     // outline, so the active state can light the fill without swapping icons.
     icon: (
@@ -49,13 +49,11 @@ const TABS = [
   {
     to: '/grounding',
     label: 'Calm',
-    hue: 'var(--sec-calm)',
     icon: <path d="M12 3c2.5 3 4 5.4 4 7.8A4 4 0 0 1 12 15a4 4 0 0 1-4-4.2C8 8.4 9.5 6 12 3ZM5 15.5c2 0 3.5 1 3.5 2.5S7 21 5 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Zm14 0c2 0 3.5 1 3.5 2.5S21 21 19 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Z" />,
   },
   {
     to: '/more',
     label: 'More',
-    hue: 'var(--sec-read)',
     // The sections this tab stands in for, so it lights up while you are
     // inside any of them rather than going dark the moment you arrive.
     owns: ['/paths', '/assessments', '/read', '/inkblot-test'],
@@ -70,25 +68,21 @@ const EXPLORE = [
   {
     to: '/paths',
     label: 'Paths',
-    hue: 'var(--sec-paths)',
     icon: <path d="M18 6l-6 6-6-6M18 18l-6-6-6 6" />,
   },
   {
     to: '/assessments',
     label: 'Tests',
-    hue: 'var(--sec-tests)',
     icon: <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />,
   },
   {
     to: '/read',
     label: 'Read',
-    hue: 'var(--sec-read)',
     icon: <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
   },
   {
     to: '/inkblot-test',
     label: 'Inkblot',
-    hue: 'var(--color-amber)',
     icon: <path d="M12 3c3 3.5 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5.5 5-9Z" />,
   },
 ];
@@ -115,25 +109,24 @@ function TabIcon({ tab, active }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className="transition-all duration-300"
+      className="shrink-0"
     >
       {tab.icon}
     </svg>
   );
 }
 
-// One row in the sidebar. The active row is a filled pill in the section's own
-// hue — the same signal the bottom bar gives with a glow and a dot.
+// One row in the sidebar: a ruled entry in the form's index column. The
+// active row is inked solid, white on the spot green, which is how a printed
+// form marks the part you are on.
 function SideLink({ tab, active }) {
   return (
     <Link
       to={tab.to}
       aria-current={active ? 'page' : undefined}
-      className="press flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors duration-300"
-      style={{
-        color: active ? tab.hue : 'var(--color-ink-soft)',
-        background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
-      }}
+      className={`flex items-center gap-3 border-b border-[var(--rule)] px-5 py-3 text-[0.9375rem] transition-colors duration-150 ${
+        active ? 'bg-[var(--spot)] text-white' : 'text-[var(--color-ink-soft)] hover:bg-[var(--paper-tint)] hover:text-[var(--spot)]'
+      }`}
     >
       <TabIcon tab={tab} active={active} />
       {tab.label}
@@ -141,81 +134,76 @@ function SideLink({ tab, active }) {
   );
 }
 
+// Where the phone bar's ink was last drawn. Every page renders its own shell,
+// so the bar is a new element after each navigation; remembering the last tab
+// here is what lets the ink travel from the tab you left instead of appearing
+// on the one you arrived at.
+let lastInk = -1;
+
+// The clip that shows only tab `i` of `n` from the solid copy of the row.
+function inkClip(i, n) {
+  if (i < 0) return 'inset(0 100% 0 0)';
+  return `inset(0 ${((n - 1 - i) / n) * 100}% 0 ${(i / n) * 100}%)`;
+}
+
 export default function TabBar() {
   const { pathname } = useLocation();
   const session = useSession();
   const profile = session?.profile;
+  const active = TABS.findIndex((tab) => isActive(pathname, tab));
+  const [ink, setInk] = useState(lastInk < 0 ? active : lastInk);
+
+  useEffect(() => {
+    lastInk = active;
+    const id = requestAnimationFrame(() => setInk(active));
+    return () => cancelAnimationFrame(id);
+  }, [active]);
 
   return (
     <>
       {/* ---------------------------- mobile: fixed bottom bar ------------ */}
-      {/* Lifted off the bottom edge and rounded, rather than a full-width
-          slab welded to it, the phone shape the reference for this is built
-          around. The padding below it is the safe-area inset plus a little, so
-          it clears the home indicator instead of sitting under it. */}
+      {/* A strip of tabs along the foot of the sheet, ruled off from the page
+          with the full ink and flush with the edge. The padding below it is
+          the safe-area inset, so it clears the home indicator. */}
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-40 px-3 md:hidden"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.6rem)' }}
+        className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[var(--spot)] bg-[var(--paper)] md:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
-        {/* A gradient scrim above the bar so content scrolling underneath
-            fades out rather than colliding with the icons. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-full h-8 bg-gradient-to-t from-[var(--color-cream)] to-transparent"
-        />
-        <div
-          className="flex items-stretch justify-around rounded-[1.6rem] border border-[var(--line-2)] px-2"
-          style={{
-            height: 'var(--tabbar-h)',
-            background: 'rgba(253, 242, 248, 0.92)',
-            backdropFilter: 'blur(18px)',
-            boxShadow: '0 14px 34px -16px rgba(47, 64, 54, 0.45)',
-          }}
-        >
-          {TABS.map((tab) => {
-            const active = isActive(pathname, tab);
-            return (
-              <Link
-                key={tab.to}
-                to={tab.to}
-                aria-current={active ? 'page' : undefined}
-                className="press relative m-1.5 flex flex-1 flex-col items-center justify-center gap-1.5 rounded-[1.15rem] pt-1 transition-colors"
-                style={{
-                  color: active ? tab.hue : 'var(--color-muted)',
-                  background: active
-                    ? `color-mix(in srgb, ${tab.hue} 13%, transparent)`
-                    : 'transparent',
-                }}
-              >
-                {/* Glow behind the active icon — the thing that makes the bar
-                    feel like an app rather than a row of links. */}
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-1 h-9 w-9 rounded-full opacity-70 blur-md"
-                    style={{ background: tab.hue }}
-                  />
-                )}
-                <span className="relative">
-                  <TabIcon tab={tab} active={active} />
-                </span>
-                <span
-                  className="relative text-[0.625rem] tracking-wide transition-opacity duration-300"
-                  style={{ opacity: active ? 1 : 0.75 }}
-                >
+        <div className="relative flex items-stretch" style={{ height: 'var(--tabbar-h)' }}>
+          {TABS.map((tab, i) => (
+            <Link
+              key={tab.to}
+              to={tab.to}
+              aria-current={i === active ? 'page' : undefined}
+              className="flex flex-1 flex-col items-center justify-center gap-1 border-l border-[var(--rule)] text-[var(--color-ink-soft)] transition-colors duration-150 first:border-l-0 active:bg-[var(--paper-tint)]"
+            >
+              <TabIcon tab={tab} active={false} />
+              <span className="f-label text-[0.75rem]" style={{ color: 'inherit' }}>
+                {tab.label}
+              </span>
+            </Link>
+          ))}
+
+          {/* The ink. A second copy of the row, printed solid and clipped to
+              the active tab, so moving it is one clip-path transition and the
+              green block and its white label travel together instead of three
+              colour changes landing at slightly different moments. Never a
+              target: the links underneath take every tap. */}
+          <div
+            aria-hidden="true"
+            className="tab-ink pointer-events-none absolute inset-0 flex bg-[var(--spot)] text-white"
+            style={{ clipPath: inkClip(ink, TABS.length) }}
+          >
+            {TABS.map((tab) => (
+              <span key={tab.to} className="flex flex-1 flex-col items-center justify-center gap-1">
+                <TabIcon tab={tab} active />
+                <span className="f-label text-[0.75rem]" style={{ color: 'inherit' }}>
                   {tab.label}
                 </span>
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="animate-tab-in absolute bottom-1.5 h-1 w-1 rounded-full"
-                    style={{ background: tab.hue }}
-                  />
-                )}
-              </Link>
-            );
-          })}
+              </span>
+            ))}
+          </div>
         </div>
       </nav>
 
@@ -228,22 +216,21 @@ export default function TabBar() {
           phone; nothing moved, and no route changed. */}
       <nav
         aria-label="Main"
-        className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-[var(--line-1)] px-4 py-5 md:flex"
-        style={{ background: 'rgba(253, 242, 248, 0.72)', backdropFilter: 'blur(18px)' }}
+        className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r-2 border-[var(--spot)] bg-[var(--paper)] md:flex"
       >
-        <Link to="/" className="press group flex shrink-0 items-center gap-2.5 px-2">
-          <Logo size={24} />
-          <span className="font-display text-[1.15rem] leading-none">
-            DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)]">AI</span>
+        <Link to="/" className="flex shrink-0 items-center gap-2.5 border-b-2 border-[var(--spot)] px-5 py-4">
+          <Logo size={26} glow={false} />
+          <span className="f-title text-[1.15rem] leading-none text-[var(--spot)]">
+            DP Sahay<span className="ml-1.5 text-[0.78em]">AI</span>
           </span>
         </Link>
 
-        <div className="mt-7 flex flex-1 flex-col gap-1 overflow-y-auto">
+        <div className="flex flex-1 flex-col overflow-y-auto">
           {TABS.map((tab) => (
             <SideLink key={tab.to} tab={tab} active={isActive(pathname, tab)} />
           ))}
 
-          <p className="marginalia mt-6 mb-1 px-3">Explore</p>
+          <p className="f-label f-shade border-b border-[var(--rule)] px-5 pt-5 pb-2">Explore</p>
           {EXPLORE.map((tab) => (
             <SideLink key={tab.to} tab={tab} active={isActive(pathname, tab)} />
           ))}
@@ -251,16 +238,16 @@ export default function TabBar() {
 
         {/* Pinned to the bottom: who you are, and the one link that has to be
             reachable from anywhere without hunting for it. */}
-        <div className="shrink-0 border-t border-[var(--line-1)] pt-4">
-          <div className="mb-3 px-1">
+        <div className="shrink-0 border-t-2 border-[var(--spot)] px-4 pt-4 pb-4">
+          <div className="mb-3">
             <CrisisContacts variant="link" />
           </div>
           {profile && (
             <Link
               to="/account"
-              className="press flex items-center gap-3 rounded-2xl px-2 py-2 transition-colors hover:bg-[var(--surface-2)]"
+              className="flex items-center gap-3 border border-[var(--rule)] px-2 py-2 transition-colors hover:border-[var(--spot)] hover:bg-[var(--paper-tint)]"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border border-[var(--spot)] bg-[var(--paper-tint)] text-sm font-semibold text-[var(--spot)]">
                 {profile.picture ? (
                   <img src={profile.picture} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -280,4 +267,3 @@ export default function TabBar() {
     </>
   );
 }
-

@@ -30,7 +30,7 @@ function PracticeLink({ id, label, hue }) {
   return (
     <Link
       to={`/grounding/${id}`}
-      className="press my-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors"
+      className="press my-4 inline-flex items-center gap-2 rounded-[2px] border px-4 py-2 text-sm transition-colors"
       style={{ borderColor: `color-mix(in srgb, ${hue} 45%, transparent)`, color: hue }}
     >
       {label}
@@ -102,7 +102,7 @@ export default function ReadArticle() {
         <header className="mt-5">
           <div className="flex items-center gap-2.5">
             <span
-              className="rounded-full px-2.5 py-1 text-[0.6875rem]"
+              className="rounded-[2px] px-2.5 py-1 text-[0.6875rem]"
               style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.hue }}
             >
               {topic.label}
@@ -159,7 +159,7 @@ export default function ReadArticle() {
         <div className="mt-10 flex flex-wrap items-center gap-3 pb-2">
           <Link
             to="/read"
-            className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
+            className="press rounded-[2px] border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)]"
           >
             Read something else
           </Link>

@@ -75,15 +75,15 @@ export default class ErrorBoundary extends Component {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="press stack-block w-full rounded-full py-4 font-medium"
-            style={{ background: 'var(--color-teal)', color: '#07080a' }}
+            className="press stack-block w-full rounded-[2px] py-4 font-medium"
+            style={{ background: 'var(--color-teal)', color: '#ffffff' }}
           >
             Reload the page
           </button>
 
           <a
             href="/"
-            className="press stack-item block w-full rounded-full border py-4 text-center"
+            className="press stack-item block w-full rounded-[2px] border py-4 text-center"
             style={{ borderColor: 'var(--line-2)', background: 'var(--surface-1)' }}
           >
             Back to the start

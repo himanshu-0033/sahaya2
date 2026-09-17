@@ -1,33 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import GoogleSignInButton from './GoogleSignInButton.jsx';
 import PasswordAuthForm from './PasswordAuthForm.jsx';
-import AppShowcase, { Arrow } from './AppShowcase.jsx';
+import AppShowcase, { Arrow, Heading, Part } from './AppShowcase.jsx';
 import CrisisContacts from '../../shared/CrisisContacts.jsx';
 import Logo from '../../shared/Logo.jsx';
-import { PHOTO } from '../../shared/photos.js';
+import Odometer from '../../shared/Odometer.jsx';
+import Tick from '../../shared/Tick.jsx';
+import useReveal from '../../shared/useReveal.js';
+import { getQuickCheck } from '../../shared/api.js';
 import { getSession } from './session.js';
 
 // The page a stranger lands on.
 //
-// Rebuilt to the structure of a working Indian mental-health service's site:
-// a green announcement strip, a white header with one pill, a hero that leads
-// with the name beside a large photograph, the app's screens on coloured
-// cards, a grid of the free tools, one "not sure where to begin" card, the
-// numbers, the approach, and a dark green footer that carries the helplines.
+// Set as a printed instrument sheet: one green ink on white paper, ruled parts
+// with their names in a column beside them, square tick boxes, counts in boxed
+// digits. The claim this app makes over every wellness site is that it uses
+// the real published questionnaires rather than a quiz of its own, and a form
+// is the one shape that shows that instead of saying it. So the first viewport
+// prints the first real WHO-5 question, from the same endpoint the free check
+// uses, and ticking an answer is already the first answer of the check.
 //
-// Three things from that reference were left out on purpose. Its user counts
-// ("1,80,000+ people"): this app cannot measure that and should not claim it,
-// so the numbers here count what is in the box. Its star-rated testimonials:
-// inventing reviews for a mental-health tool is not a thing worth doing. And
-// its clinical-network claims, which are theirs and not this app's.
+// Three things from the reference this page was first built on were left out
+// on purpose, and stay out. User counts ("1,80,000+ people"): this app cannot
+// measure that and should not claim it, so the numbers here count what is in
+// the box. Star-rated testimonials: inventing reviews for a mental-health tool
+// is not a thing worth doing. And clinical-network claims, which were theirs.
 //
 // One ask per screen. The 1-minute check is the primary action because it
 // needs nothing from the visitor; signing in is always the secondary one, and
-// the header pill keeps it one tap away from anywhere on the page.
+// the header keeps it one tap away from anywhere on the page.
 //
 // Sign-in is unchanged. GoogleSignInButton and PasswordAuthForm still own the
-// whole flow; every "sign in" on this page swaps them into the hero.
+// whole flow; every "sign in" on this page swaps them in where the question was.
 
 const TOOLS = [
   {
@@ -79,6 +84,13 @@ const STATS = [
 ];
 
 const SIGN_IN = 'sign-in';
+
+const NAV = [
+  ['#inside', 'Inside the app'],
+  ['#tools', 'Free tools'],
+  ['#trust', 'Why trust it'],
+  ['#approach', 'Our approach'],
+];
 
 const FOOTER = [
   {
@@ -142,68 +154,131 @@ const FOOTER_HURT = [
 
 const tel = (n) => `tel:${n.replace(/[^\d+]/g, '')}`;
 
-const PRIMARY =
-  'press inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-opacity hover:opacity-90';
-const SECONDARY =
-  'press inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] px-7 py-3.5 text-[0.9375rem] font-semibold transition-colors hover:bg-[var(--w-accent-wash)]';
-const GREEN_FILL = { background: 'var(--w-accent-deep)' };
-const GREEN_LINE = { borderColor: 'var(--w-accent-deep)', color: 'var(--w-accent-deep)' };
-const SOFT = { color: 'var(--w-ink-soft)' };
+const SOFT = { color: 'var(--key-soft)' };
+const SPOT = { color: 'var(--spot)' };
 
-function Pill({ children }) {
-  return (
-    <p
-      className="inline-block rounded-full border px-4 py-1.5 text-[0.6875rem] font-medium tracking-[0.18em] uppercase"
-      style={{ borderColor: 'var(--w-line-2)' }}
-    >
-      {children}
-    </p>
-  );
-}
+// How long the ink gets before the page moves on: the box fills in 120ms and the
+// tick finishes drawing at 280ms, so the visitor sees their mark land.
+const TICK_HOLD_MS = 320;
 
-function Heading({ children, className = '' }) {
-  return (
-    <h2
-      className={`text-[2rem] leading-[1.1] font-bold tracking-[-0.02em] sm:text-[2.75rem] ${className}`}
-      style={{ textWrap: 'balance' }}
-    >
-      {children}
-    </h2>
-  );
-}
+// The first question of the free check, printed. Ticking an answer inks the box
+// and carries that answer into /check, where the check opens on question two.
+// While the questionnaire loads the form is blank rather than a spinner: an
+// empty ruled form is what a form looks like before it is filled in. If it
+// cannot load, the box still offers the check by its own name.
+function FirstQuestion({ instrument, failed }) {
+  const navigate = useNavigate();
+  const [ticked, setTicked] = useState(null);
+  const timer = useRef(0);
 
-// A corner of the product under the photograph, so the hero shows what the app
-// is as well as how it should feel. aria-hidden: it is illustration, and read
-// aloud it would sound like somebody's real conversation.
-function ChatPeek() {
-  const bubble = 'max-w-[88%] rounded-2xl px-3.5 py-2 text-[0.8125rem] leading-snug';
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const item = instrument?.items?.[0];
+
+  function tick(value) {
+    if (ticked !== null) return;
+    setTicked(value);
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    timer.current = window.setTimeout(
+      () => navigate('/check', { state: { first: value } }),
+      still ? 0 : TICK_HOLD_MS,
+    );
+  }
+
   return (
-    <div className="w-card w-full p-4 sm:p-5" aria-hidden="true">
-      <div className="flex items-center gap-2">
-        <Logo size={22} glow={false} />
-        <span className="text-[0.9375rem] font-semibold">DP</span>
-        <span
-          className="ml-auto rounded-full px-2.5 py-0.5 text-[0.6875rem] font-medium"
-          style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-        >
-          4-day streak
-        </span>
+    <div className="print-feed border-[1.5px] border-[var(--spot)] bg-[var(--paper)]" style={{ '--d': '220ms' }}>
+      <div className="f-shade flex min-h-11 items-center justify-between gap-4 border-b-[1.5px] border-[var(--spot)] px-4 py-2 sm:px-5">
+        {instrument ? (
+          <>
+            <span className="f-label">{instrument.fullName}</span>
+            <span className="f-label tnum shrink-0">1 of {instrument.items.length}</span>
+          </>
+        ) : (
+          <span className="h-3 w-44 bg-[var(--rule-soft)]" aria-hidden="true" />
+        )}
       </div>
-      <div className="mt-3 flex flex-col gap-2">
-        <span className={`${bubble} self-start`} style={{ background: 'var(--w-accent-wash)' }}>
-          What is sitting heaviest today?
-        </span>
-        <span className={`${bubble} self-end text-white`} style={GREEN_FILL}>
-          exams mostly. and i am not sleeping
-        </span>
-      </div>
+
+      {failed ? (
+        <div className="px-4 py-8 sm:px-6">
+          <Link to="/check" className="f-btn">
+            Take the 1-minute check
+            <Arrow />
+          </Link>
+        </div>
+      ) : (
+        <div role="group" aria-labelledby="first-question" className="min-w-0">
+          <div className="px-4 pt-5 pb-4 sm:px-6 sm:pt-6">
+            <p className="text-[0.9375rem]" style={SOFT}>
+              {instrument ? instrument.prompt : ' '}
+            </p>
+            <p id="first-question" className="f-title mt-1.5 text-[1.75rem] leading-[1.1] sm:text-[2rem]" style={{ textWrap: 'balance' }}>
+              {item ? item.text : ' '}
+            </p>
+          </div>
+
+          <ul className="f-rows border-t border-[var(--rule)]">
+            {(item?.options || Array.from({ length: 6 }, (_, i) => ({ value: i, label: '' }))).map((option) => (
+              <li key={option.value}>
+                <button
+                  type="button"
+                  onClick={() => tick(option.value)}
+                  disabled={!item || ticked !== null}
+                  data-ticked={ticked === option.value}
+                  className="f-option flex w-full items-center gap-3.5 px-4 py-3 text-left text-[1rem] sm:px-6"
+                >
+                  <Tick />
+                  <span className="min-w-0 flex-1">{option.label || ' '}</span>
+                  {item && (
+                    <span className="tnum text-[0.8125rem]" style={SOFT} aria-hidden="true">
+                      {option.value}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {instrument?.citation && (
+        <p className="border-t border-[var(--rule)] px-4 py-2.5 text-[0.8125rem] leading-snug sm:px-6" style={SOFT}>
+          {instrument.citation}
+          {instrument.license ? ` · ${instrument.license}` : ''}
+        </p>
+      )}
+
+      {/* What the check does and does not do, printed in the form's own
+          footer cells rather than as a strip of small print under the hero's
+          buttons: they are facts about this form, so they sit on it. */}
+      <ul className="grid border-t-[1.5px] border-[var(--spot)] text-[0.8125rem] leading-snug sm:grid-cols-3" style={SOFT}>
+        <li className="px-4 py-2.5 sm:px-5">No account for the check</li>
+        <li className="border-t border-[var(--rule)] px-4 py-2.5 sm:border-t-0 sm:border-l sm:px-5">
+          <a href="#trust" className="underline decoration-[var(--rule)] underline-offset-4 hover:decoration-[var(--spot)]" style={SPOT}>
+            Built on PHQ-9, GAD-7 and WHO-5
+          </a>
+        </li>
+        <li className="border-t border-[var(--rule)] px-4 py-2.5 sm:border-t-0 sm:border-l sm:px-5">
+          Seen only by your counsellor and administrator
+        </li>
+      </ul>
     </div>
   );
 }
 
 export default function Welcome({ onSignedIn }) {
   const [signingIn, setSigningIn] = useState(false);
+  const [instrument, setInstrument] = useState(null);
+  const [failed, setFailed] = useState(false);
   const navigate = useNavigate();
+  const [slipRef, slipShown] = useReveal();
+  const signedIn = !onSignedIn && getSession();
+
+  useEffect(() => {
+    if (signedIn) return;
+    getQuickCheck()
+      .then((data) => setInstrument(data.instrument))
+      .catch(() => setFailed(true));
+  }, [signedIn]);
 
   // This page owns the `/welcome` URL, so it also owns what happens after a
   // successful sign-in: go to the dashboard. The `onSignedIn` prop is kept for
@@ -214,9 +289,9 @@ export default function Welcome({ onSignedIn }) {
   };
 
   // Someone who is already signed in has no business on the sign-in page.
-  if (!onSignedIn && getSession()) return <Navigate to="/" replace />;
+  if (signedIn) return <Navigate to="/" replace />;
 
-  // The sign-in panel replaces the hero photograph, at the top of a long page,
+  // The sign-in panel takes the question's place, at the top of a long page,
   // and most of the buttons that open it are further down. Without the scroll,
   // signing in from lower down swaps in a form a screen away and looks like
   // nothing happened.
@@ -228,7 +303,7 @@ export default function Welcome({ onSignedIn }) {
   return (
     <div className="welcome min-h-screen">
       {/* ------------------------------------------------------------- strip */}
-      <div className="text-white" style={{ background: 'var(--w-forest)' }}>
+      <div className="bg-[var(--spot)] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-center gap-4 px-5 py-2 sm:justify-between sm:px-8">
           <p className="hidden text-[0.8125rem] sm:block">
             Free, with no ads: 21 questionnaires, 13 grounding practices and a companion one tap
@@ -236,7 +311,7 @@ export default function Welcome({ onSignedIn }) {
           </p>
           <Link
             to="/check"
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1 text-[0.6875rem] font-semibold tracking-[0.14em] whitespace-nowrap uppercase transition-colors hover:bg-white/10"
+            className="inline-flex items-center gap-1.5 border border-white/70 px-3 py-1 text-[0.8125rem] font-semibold whitespace-nowrap transition-colors hover:bg-white hover:text-[var(--spot)]"
           >
             Take the 1-minute check
             <Arrow size={12} />
@@ -245,26 +320,22 @@ export default function Welcome({ onSignedIn }) {
       </div>
 
       {/* ------------------------------------------------------------ header */}
-      <header
-        className="sticky top-0 z-40 border-b backdrop-blur-md"
-        style={{ borderColor: 'var(--w-line)', background: 'rgba(255,255,255,0.92)' }}
-      >
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
-          <a href="#top" className="flex items-center gap-2 transition-opacity hover:opacity-70" aria-label="DP Sahay AI, back to top">
+      <header className="sticky top-0 z-40 border-b-2 border-[var(--spot)] bg-[var(--paper)]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-2.5 sm:px-8">
+          <a href="#top" className="flex items-center gap-2" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
-            <span className="text-[1.25rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
+            <span className="f-title text-[1.25rem] leading-none whitespace-nowrap" style={SPOT}>
               DP Sahay
             </span>
           </a>
 
-          <nav aria-label="On this page" className="hidden items-center gap-7 text-[0.9375rem] lg:flex">
-            {[
-              ['#inside', 'Inside the app'],
-              ['#tools', 'Free tools'],
-              ['#trust', 'Why trust it'],
-              ['#approach', 'Our approach'],
-            ].map(([href, label]) => (
-              <a key={href} href={href} className="transition-colors hover:text-[var(--w-accent-deep)]">
+          <nav aria-label="On this page" className="hidden items-stretch self-stretch lg:flex">
+            {NAV.map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="flex items-center border-l border-[var(--rule)] px-4 text-[0.9375rem] transition-colors last:border-r hover:bg-[var(--paper-tint)] hover:text-[var(--spot)]"
+              >
                 {label}
               </a>
             ))}
@@ -273,7 +344,7 @@ export default function Welcome({ onSignedIn }) {
           <div className="flex shrink-0 items-center gap-2.5">
             <CrisisContacts variant="link" />
             <span className="hidden sm:block">
-              <button type="button" onClick={go} className={`${PRIMARY} px-5 py-2.5`} style={GREEN_FILL}>
+              <button type="button" onClick={go} className="f-btn min-h-[44px] px-4">
                 Sign in
                 <Arrow size={14} />
               </button>
@@ -283,229 +354,214 @@ export default function Welcome({ onSignedIn }) {
       </header>
 
       {/* -------------------------------------------------------------- hero */}
-      <section id="top" className="mx-auto max-w-6xl scroll-mt-40 px-5 pt-12 pb-20 sm:px-8 sm:pt-16 lg:pb-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
-          <div>
-            <Pill>You matter to us</Pill>
-            <h1
-              className="mt-6 text-[3.5rem] leading-[0.95] font-bold tracking-[-0.035em] sm:text-[5.25rem]"
-              style={{ color: 'var(--w-accent-deep)' }}
-            >
+      <section id="top" className="mx-auto max-w-6xl scroll-mt-40 px-5 pt-10 pb-16 sm:px-8 sm:pt-14 lg:pb-20">
+        <div className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:gap-14">
+          <div className="flex flex-col">
+            <h1 className="print-roll f-title text-[3.5rem] leading-[0.92] sm:text-[5.25rem]" style={SPOT}>
               DP Sahay
               <span className="ml-2 align-top text-[0.34em] tracking-normal">AI</span>
             </h1>
-            <p className="mt-6 max-w-lg text-[1.25rem] leading-snug">
-              A minute a day, and a real look at how you are.
-            </p>
-            <p className="mt-4 flex max-w-lg gap-2.5 text-[0.9375rem] leading-relaxed" style={SOFT}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--w-accent-deep)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
-                <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
-                <path d="M11 18.5h2" />
-              </svg>
-              <span>
-                <strong className="font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
-                  Start with the free check
-                </strong>
-                : five questions, no account, nothing saved. The app adds a 30-second daily
-                check-in and the questionnaires a clinic uses.
-              </span>
+            <p className="print-rise f-title mt-3 text-[1.5rem] leading-tight" style={{ ...SPOT, '--d': '380ms' }}>
+              You matter to us
             </p>
 
+            <div className="print-rise mt-7 border-t-2 border-[var(--spot)] pt-6" style={{ '--d': '460ms' }}>
+              <p className="max-w-lg text-[1.25rem] leading-snug">
+                A minute a day, and a real look at how you are.
+              </p>
+              <p className="mt-4 flex max-w-lg gap-2.5 text-[0.9375rem] leading-relaxed" style={SOFT}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--spot)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
+                  <rect x="6" y="2.5" width="12" height="19" rx="1.5" />
+                  <path d="M11 18.5h2" />
+                </svg>
+                <span>
+                  <strong className="font-semibold" style={SPOT}>
+                    Start with the free check
+                  </strong>
+                  : five questions, no account, nothing saved. The app adds a 30-second daily
+                  check-in and the questionnaires a clinic uses.
+                </span>
+              </p>
+            </div>
+
             {!signingIn && (
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link to="/check" className={PRIMARY} style={GREEN_FILL}>
+              <div className="print-rise mt-8 flex flex-wrap gap-3" style={{ '--d': '540ms' }}>
+                <Link to="/check" className="f-btn">
                   Take the 1-minute check
                   <Arrow />
                 </Link>
-                <button type="button" onClick={go} className={SECONDARY} style={GREEN_LINE}>
+                <button type="button" onClick={go} className="f-btn f-btn-line">
                   Sign in
                   <Arrow />
                 </button>
               </div>
             )}
 
-            <p className="mt-7 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.8125rem]" style={SOFT}>
-              <span>No account for the check</span>
-              <span aria-hidden="true">·</span>
-              <a href="#trust" className="underline-offset-4 hover:underline" style={{ color: 'var(--w-accent-deep)' }}>
-                Built on PHQ-9, GAD-7 and WHO-5
-              </a>
-              <span aria-hidden="true">·</span>
-              <span>Seen only by your counsellor and administrator</span>
-            </p>
+
           </div>
 
-          {/* The photograph, and the moment it is asked for, the door. The
-              form takes the picture's place, so signing in changes a panel
-              that was already there rather than pushing the page around. */}
+          {/* The question, and the moment it is asked for, the door. The
+              sign-in form takes the question's place, so signing in changes a
+              panel that was already there rather than pushing the page around. */}
           <div>
             {signingIn ? (
-              <div className="w-card mx-auto max-w-md p-6 sm:p-7">
-                <GoogleSignInButton onSignedIn={handleSignedIn} />
-                <div className="my-4 flex items-center gap-3 text-[0.6875rem] tracking-wide" style={SOFT}>
-                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
-                  or use email
-                  <span className="h-px flex-1" style={{ background: 'var(--w-line)' }} />
+              <div className="print-feed border-[1.5px] border-[var(--spot)] bg-[var(--paper)]">
+                <p className="f-shade f-label border-b-[1.5px] border-[var(--spot)] px-5 py-3">Sign in</p>
+                <div className="p-5 sm:p-7">
+                  <GoogleSignInButton onSignedIn={handleSignedIn} />
+                  <div className="my-4 flex items-center gap-3 text-[0.8125rem]" style={SOFT}>
+                    <span className="h-px flex-1 bg-[var(--rule)]" />
+                    or use email
+                    <span className="h-px flex-1 bg-[var(--rule)]" />
+                  </div>
+                  <PasswordAuthForm onSignedIn={handleSignedIn} />
+                  <button
+                    type="button"
+                    onClick={() => setSigningIn(false)}
+                    className="mt-4 w-full cursor-pointer text-center text-[0.8125rem] underline underline-offset-4 transition-colors hover:text-[var(--spot)]"
+                    style={SOFT}
+                  >
+                    Back
+                  </button>
                 </div>
-                <PasswordAuthForm onSignedIn={handleSignedIn} />
-                <button
-                  type="button"
-                  onClick={() => setSigningIn(false)}
-                  className="mt-4 w-full cursor-pointer text-center text-[0.8125rem] underline underline-offset-4 transition-opacity hover:opacity-70"
-                  style={SOFT}
-                >
-                  Back
-                </button>
               </div>
             ) : (
-              <div className="mx-auto flex max-w-md flex-col gap-4 lg:max-w-none">
-                <img
-                  src={PHOTO.hero}
-                  alt=""
-                  width="900"
-                  height="1200"
-                  decoding="async"
-                  fetchPriority="high"
-                  className="aspect-[4/3] w-full rounded-[1.75rem] object-cover shadow-[0_40px_80px_-40px_rgba(10,79,44,0.55)]"
-                />
-                <ChatPeek />
-              </div>
+              <FirstQuestion instrument={instrument} failed={failed} />
             )}
           </div>
         </div>
       </section>
 
-      <div style={{ background: 'var(--w-band)' }}>
-        <AppShowcase onStart={go} />
-      </div>
+      <AppShowcase onStart={go} />
 
       {/* ------------------------------------------------------------- tools */}
-      <section id="tools" className="scroll-mt-20 py-20 sm:py-24">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <Heading>
-              Free tools for a hard day,{' '}
-              <span style={{ color: 'var(--w-accent-deep)' }}>built on published instruments</span>
-            </Heading>
-            <p className="mx-auto mt-5 max-w-2xl text-[1rem] leading-relaxed" style={SOFT}>
-              The questionnaires a clinic uses, practices for the next ten minutes, and paths for
-              the next week. All free, and every one says what it is and what it is not.
-            </p>
-          </div>
+      <Part id="tools" label="Free tools" className="pt-16 sm:pt-20">
+        <Heading>
+          Free tools for a hard day,{' '}
+          <span style={SPOT}>built on published instruments</span>
+        </Heading>
+        <p className="mt-5 max-w-2xl text-[1rem] leading-relaxed" style={SOFT}>
+          The questionnaires a clinic uses, practices for the next ten minutes, and paths for
+          the next week. All free, and every one says what it is and what it is not.
+        </p>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((t) => {
-              const inner = (
-                <>
-                  <h3 className="text-[1.25rem] font-semibold">{t.title}</h3>
-                  <p className="mt-2 text-[0.875rem] leading-relaxed" style={SOFT}>
-                    {t.body}
-                  </p>
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[0.875rem] font-semibold" style={{ color: 'var(--w-accent-deep)' }}>
-                    {t.signIn ? 'Sign in to start' : 'Explore'}
-                    <Arrow size={14} />
-                  </span>
-                </>
-              );
-              const cls = 'w-card flex flex-col p-6 text-left sm:p-7';
-              return t.signIn ? (
-                <button key={t.title} type="button" onClick={go} className={`${cls} cursor-pointer`}>
-                  {inner}
-                </button>
-              ) : (
-                <Link key={t.title} to={t.to} className={cls}>
-                  {inner}
-                </Link>
-              );
-            })}
-          </div>
+        <ul className="reveal-rows f-rows mt-10 border-y-[1.5px] border-[var(--spot)]">
+          {TOOLS.map((t, i) => {
+            const inner = (
+              <>
+                <span className="f-title block text-[1.25rem] leading-tight sm:col-span-4">{t.title}</span>
+                <span className="mt-1.5 block text-[0.9375rem] leading-relaxed sm:col-span-6 sm:mt-0" style={SOFT}>
+                  {t.body}
+                </span>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[0.875rem] font-semibold whitespace-nowrap sm:col-span-2 sm:mt-0 sm:justify-self-end" style={SPOT}>
+                  {t.signIn ? 'Sign in to start' : 'Explore'}
+                  <Arrow size={14} />
+                </span>
+              </>
+            );
+            const cls = 'f-option block w-full px-1 py-5 text-left sm:grid sm:grid-cols-12 sm:items-baseline sm:gap-6 sm:px-3';
+            return (
+              <li key={t.title} style={{ '--i': i }}>
+                {t.signIn ? (
+                  <button type="button" onClick={go} className={cls}>
+                    {inner}
+                  </button>
+                ) : (
+                  <Link to={t.to} className={cls}>
+                    {inner}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ul>
 
-          <p className="mt-12 text-center text-[0.8125rem]" style={SOFT}>
-            Popular starting points:
-          </p>
-          <div className="mt-3 flex flex-wrap justify-center gap-2.5">
-            {STARTING_POINTS.map(([label, to]) => (
-              <Link
-                key={to}
-                to={to}
-                className="rounded-full px-4 py-2 text-[0.8125rem] font-medium transition-[filter] hover:brightness-95"
-                style={{ background: 'var(--w-accent-wash)', color: 'var(--w-accent-deep)' }}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
+        <p className="mt-8 text-[0.8125rem]" style={SOFT}>
+          Popular starting points:
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {STARTING_POINTS.map(([label, to]) => (
+            <Link
+              key={to}
+              to={to}
+              className="border border-[var(--rule)] px-3 py-1.5 text-[0.875rem] transition-colors hover:border-[var(--spot)] hover:bg-[var(--paper-tint)]"
+              style={SPOT}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
-      </section>
+      </Part>
 
       {/* ------------------------------------------------------------- begin */}
-      <section className="border-t px-5 py-20 sm:px-8 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
-        <div className="w-card mx-auto max-w-2xl px-6 py-11 text-center sm:px-12">
-          <h2 className="text-[1.75rem] font-bold tracking-[-0.02em] sm:text-[2rem]">Not sure where to begin?</h2>
-          <p className="mx-auto mt-3 max-w-lg text-[0.9375rem] leading-relaxed" style={SOFT}>
+      {/* A slip to tear off: the one part of the page you can take away and
+          act on without reading the rest. */}
+      <section ref={slipRef} data-reveal={slipShown ? 'shown' : 'pending'} className="px-5 py-16 sm:px-8 sm:py-20">
+        <div className="reveal-slip f-slip mx-auto max-w-2xl px-6 py-10 sm:px-12">
+          <h2 className="f-title text-[1.75rem] leading-tight sm:text-[2rem]">Not sure where to begin?</h2>
+          <p className="mt-3 max-w-lg text-[1rem] leading-relaxed" style={SOFT}>
             Answer five quick questions about the last two weeks. You get a score and what it
             means, with no sign-up, and nothing is saved.
           </p>
-          <Link to="/check" className={`${PRIMARY} mt-7`} style={GREEN_FILL}>
+          <Link to="/check" className="f-btn mt-7">
             Start the 1-minute check
+            <Arrow />
           </Link>
-          <p className="mt-5 text-[0.8125rem]" style={SOFT}>
+          <p className="mt-5 border-t border-[var(--rule)] pt-3 text-[0.8125rem]" style={SOFT}>
             Based on the WHO-5 Well-Being Index · a screen, not a diagnosis
           </p>
         </div>
       </section>
 
       {/* ------------------------------------------------------------- trust */}
-      <section id="trust" className="scroll-mt-20 border-t py-20 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
-        <div className="mx-auto max-w-6xl px-5 text-center sm:px-8">
-          <Pill>Why trust it</Pill>
-          <Heading className="mt-6">The real instruments, not our quiz</Heading>
+      <Part id="trust" label="Why trust it" className="pb-16 sm:pb-20">
+        {(shown) => (
+          <>
+            <Heading>The real instruments, not our quiz</Heading>
 
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
-            {STATS.map((s) => (
-              <div key={s.label} className="w-card px-4 py-7">
-                <p className="text-[2rem] leading-none font-bold tracking-[-0.02em] sm:text-[2.75rem]" style={{ color: 'var(--w-accent-deep)' }}>
-                  {s.n}
-                </p>
-                <p className="mt-2 text-[0.875rem]">{s.label}</p>
-              </div>
-            ))}
-          </div>
+            <dl className="mt-10 grid grid-cols-2 border-t-[1.5px] border-l-[1.5px] border-[var(--spot)] lg:grid-cols-4">
+              {STATS.map((s) => (
+                <div key={s.label} className="flex flex-col gap-4 border-r-[1.5px] border-b-[1.5px] border-[var(--spot)] px-4 py-5 sm:px-5">
+                  <dt className="order-2 text-[0.875rem] leading-snug">{s.label}</dt>
+                  <dd className="order-1 self-start">
+                    <Odometer value={s.n} go={shown} className="text-[2rem] font-semibold sm:text-[2.75rem]" style={SPOT} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
 
-          <p className="mx-auto mt-10 max-w-3xl text-[0.9375rem] leading-relaxed" style={SOFT}>
-            PHQ-9 · GAD-7 · WHO-5 · K10 · PSS-10 · UCLA-3 · MSPSS and more, each carrying its full
-            name, citation and licence on the page where you take it. A score places you in a range
-            the instrument&apos;s authors defined. It describes a few weeks, not you.
-          </p>
-        </div>
-      </section>
+            <p className="mt-8 max-w-3xl text-[1rem] leading-relaxed" style={SOFT}>
+              PHQ-9 · GAD-7 · WHO-5 · K10 · PSS-10 · UCLA-3 · MSPSS and more, each carrying its full
+              name, citation and licence on the page where you take it. A score places you in a range
+              the instrument&apos;s authors defined. It describes a few weeks, not you.
+            </p>
+          </>
+        )}
+      </Part>
 
       {/* ---------------------------------------------------------- approach */}
-      <section id="approach" className="scroll-mt-20 border-t py-20 sm:py-24" style={{ borderColor: 'var(--w-line)' }}>
-        <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
-          <Pill>Our approach</Pill>
-          <Heading className="mt-6">A prompt for reflection, never a verdict</Heading>
-          <div className="mt-8 flex flex-col gap-5 text-[1.0625rem] leading-relaxed" style={SOFT}>
-            <p>
-              A bad ten minutes is not the same problem as a bad fortnight, and they do not want the
-              same tool. So this is a check-in for today, a questionnaire when you want a straighter
-              answer, and something to do with your breath when a night gets bad.
-            </p>
-            <p>
-              None of it is a diagnosis. What you record is seen by your counsellor, who is
-              assigned by your institution, and by your institution&apos;s administrator. Nobody
-              else sees it unless you invite them from your account.
-            </p>
-          </div>
-          <div className="mt-10 flex flex-col items-center gap-5">
-            <button type="button" onClick={go} className={`${PRIMARY} px-8 py-4`} style={GREEN_FILL}>
-              Sign in to start
-              <Arrow />
-            </button>
-            <CrisisContacts variant="link" />
-          </div>
+      <Part id="approach" label="Our approach" className="pb-20 sm:pb-24">
+        <Heading>A prompt for reflection, never a verdict</Heading>
+        <div className="mt-6 flex max-w-3xl flex-col gap-5 text-[1.0625rem] leading-relaxed" style={SOFT}>
+          <p>
+            A bad ten minutes is not the same problem as a bad fortnight, and they do not want the
+            same tool. So this is a check-in for today, a questionnaire when you want a straighter
+            answer, and something to do with your breath when a night gets bad.
+          </p>
+          <p>
+            None of it is a diagnosis. What you record is seen by your counsellor, who is
+            assigned by your institution, and by your institution&apos;s administrator. Nobody
+            else sees it unless you invite them from your account.
+          </p>
         </div>
-      </section>
+        <div className="mt-9 flex flex-wrap items-center gap-3 border-t border-[var(--rule)] pt-6">
+          <button type="button" onClick={go} className="f-btn">
+            Sign in to start
+            <Arrow />
+          </button>
+          <CrisisContacts variant="link" />
+        </div>
+      </Part>
 
       {/* The "bring it to your campus" enquiry form sat here. It is off the
           page for now; PartnerForm.jsx, /api/enquiries and the console's
@@ -513,39 +569,40 @@ export default function Welcome({ onSignedIn }) {
           one section. */}
 
       {/* ------------------------------------------------------------ footer */}
-      <footer className="text-white" style={{ background: 'var(--w-forest)' }}>
-        <div className="mx-auto max-w-6xl px-5 pt-20 pb-10 sm:px-8">
-          <p className="max-w-2xl text-[1.25rem] leading-snug font-medium sm:text-[1.75rem]">
+      <footer className="bg-[var(--spot-deep)] text-white">
+        <div className="mx-auto max-w-6xl px-5 pt-16 pb-10 sm:px-8">
+          <p className="max-w-3xl text-[1.25rem] leading-snug font-medium sm:text-[1.75rem]">
             A quiet minute a day, the real questionnaires when you want a straighter answer, and a
             companion to talk it through. Free, in one app.
           </p>
 
-          {/* The helplines on every visit, with the numbers written out and
-              tappable rather than behind a button. */}
-          <div className="mt-10 max-w-3xl rounded-2xl px-6 py-5 text-[0.875rem] leading-relaxed" style={{ background: 'rgba(255,255,255,0.07)' }}>
+          {/* The helplines on every visit, printed on a white slip in red ink
+              so they are the most legible thing in the footer, with every
+              number written out and tappable rather than behind a button. */}
+          <div className="mt-10 max-w-3xl border-t-4 border-[var(--alarm)] bg-[var(--paper)] px-5 py-5 text-[0.9375rem] leading-relaxed text-[var(--key)] sm:px-6">
             <p>
               In crisis or thinking about suicide? You are not alone. Call{' '}
-              <a href={tel('14416')} className="font-semibold underline-offset-4 hover:underline">
+              <a href={tel('14416')} className="font-semibold text-[var(--alarm)] underline underline-offset-4">
                 Tele-MANAS 14416
               </a>{' '}
-              <span style={{ color: 'var(--w-forest-soft)' }}>(Govt. of India, 24/7, free)</span>.
+              <span style={SOFT}>(Govt. of India, 24/7, free)</span>.
             </p>
             <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               {FOOTER_LINES.map(([name, number, note]) => (
                 <span key={number}>
-                  <a href={tel(number)} className="font-semibold underline-offset-4 hover:underline">
+                  <a href={tel(number)} className="font-semibold text-[var(--alarm)] underline-offset-4 hover:underline">
                     {name} {number}
                   </a>
-                  {note && <span style={{ color: 'var(--w-forest-soft)' }}> ({note})</span>}
+                  {note && <span style={SOFT}> ({note})</span>}
                 </span>
               ))}
             </p>
-            <p className="mt-3">
+            <p className="mt-3 border-t border-[var(--rule)] pt-3">
               Someone hurting you?{' '}
               {FOOTER_HURT.map(([name, number], i) => (
                 <span key={number}>
-                  {i > 0 && <span style={{ color: 'var(--w-forest-soft)' }}> · </span>}
-                  <a href={tel(number)} className="font-semibold underline-offset-4 hover:underline">
+                  {i > 0 && <span style={SOFT}> · </span>}
+                  <a href={tel(number)} className="font-semibold text-[var(--alarm)] underline-offset-4 hover:underline">
                     {name} {number}
                   </a>
                 </span>
@@ -553,13 +610,13 @@ export default function Welcome({ onSignedIn }) {
             </p>
           </div>
 
-          <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-14 grid gap-10 border-t border-white/25 pt-10 sm:grid-cols-2 lg:grid-cols-4">
             {FOOTER.map((col) => (
               <div key={col.head}>
-                <p className="text-[1rem] font-semibold">{col.head}</p>
+                <p className="f-label text-white">{col.head}</p>
                 <ul className="mt-4 flex flex-col gap-2.5">
                   {col.links.map(([label, to]) => {
-                    const cls = 'text-[0.875rem] transition-colors hover:text-white';
+                    const cls = 'text-[0.9375rem] underline-offset-4 transition-colors hover:text-white hover:underline';
                     const style = { color: 'var(--w-forest-soft)' };
                     return (
                       <li key={to}>
@@ -578,20 +635,17 @@ export default function Welcome({ onSignedIn }) {
             ))}
           </div>
 
-          <div
-            className="mt-16 flex flex-col items-start gap-6 border-t pt-8 sm:flex-row sm:items-center sm:justify-between"
-            style={{ borderColor: 'rgba(255,255,255,0.18)' }}
-          >
-            <span className="inline-flex items-center gap-2.5 rounded-md border border-white/40 px-4 py-2.5">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+          <div className="mt-14 flex flex-col items-start gap-6 border-t border-white/25 pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <span className="inline-flex items-center gap-2.5 border border-white/50 px-3.5 py-2">
+              <span className="flex h-7 w-7 items-center justify-center bg-white">
                 <Logo size={20} glow={false} />
               </span>
-              <span className="text-[1.0625rem] font-semibold">DP Sahay AI</span>
+              <span className="f-title text-[1.0625rem]">DP Sahay AI</span>
             </span>
             <p className="text-[0.8125rem]" style={{ color: 'var(--w-forest-soft)' }}>
               A reflective prototype, not a medical device.
             </p>
-            <p className="text-[0.6875rem] tracking-[0.14em] uppercase" style={{ color: 'var(--w-forest-soft)' }}>
+            <p className="f-label" style={{ color: 'var(--w-forest-soft)' }}>
               © {new Date().getFullYear()} DP Sahay AI
             </p>
           </div>

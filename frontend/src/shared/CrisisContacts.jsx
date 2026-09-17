@@ -71,13 +71,15 @@ const tel = (number) => `tel:${number.replace(/[^\d+]/g, '')}`;
 // have to squint at. It is always a white sheet with dark text now. Every pair
 // below clears 4.5:1: ink 16.8:1 and soft 7.6:1 on white, white on the red
 // 6.6:1 and on the green 6.6:1.
+// The printed form's inks. Literal rather than var() because the dialog is
+// portalled to <body> and has to read the same wherever it is opened from.
 const C = {
-  ink: '#14201a',
-  soft: '#4a5750',
-  line: '#dfe5e1',
-  row: '#f5f7f6',
-  red: '#b42318',
-  green: '#0b6b3a',
+  ink: '#0f2419',
+  soft: '#3d5045',
+  line: 'rgba(10, 92, 50, 0.32)',
+  row: '#ffffff',
+  red: '#b3261e',
+  green: '#0a5c32',
 };
 
 function Lifebuoy({ size = 16 }) {
@@ -122,7 +124,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-label={compact ? 'Get help now' : undefined}
-        className={`press inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full ${compact ? 'px-3' : 'px-4'} py-2.5 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_rgba(180,35,24,0.7)] transition-[filter] hover:brightness-110 ${
+        className={`press inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[2px] border-[1.5px] border-[#b3261e] ${compact ? 'px-3' : 'px-4'} py-2.5 text-sm font-semibold text-white transition-[filter] hover:brightness-90 ${
           variant === 'button' ? 'w-full px-5 py-3' : 'shrink-0'
         }`}
         style={{ background: C.red }}
@@ -147,7 +149,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
           of the screen. */}
       {open && createPortal(
         <div
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/55 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+          className="backdrop-in fixed inset-0 z-[60] flex items-end justify-center bg-black/55 p-3 backdrop-blur-sm sm:items-center sm:p-4"
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -157,17 +159,17 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
               only the lists scroll, so a way to call is always on screen. */}
           <div
             ref={dialogRef}
-            className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-[28px] bg-white text-left shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)]"
+            className="dialog-in flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-[3px] border-t-4 border-[#b3261e] bg-white text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.45)]"
             style={{ color: C.ink, colorScheme: 'light' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="shrink-0 px-6 pt-6 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[0.6875rem] font-semibold tracking-[0.18em] uppercase" style={{ color: C.red }}>
+                  <p className="f-label" style={{ color: C.red }}>
                     You are not alone
                   </p>
-                  <h3 id="crisis-title" className="mt-1.5 text-[1.45rem] leading-tight font-bold">
+                  <h3 id="crisis-title" className="f-title mt-1.5 text-[1.45rem] leading-tight">
                     Someone is ready to talk right now.
                   </h3>
                 </div>
@@ -175,7 +177,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close"
-                  className="press -mt-1 -mr-1 shrink-0 rounded-full border p-2 transition-colors hover:bg-[#f0f3f1]"
+                  className="press -mt-1 -mr-1 shrink-0 rounded-[2px] border p-2 transition-colors hover:bg-[#eef4ef]"
                   style={{ borderColor: C.line, color: C.soft }}
                 >
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -189,7 +191,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
                   <a
                     key={u.id}
                     href={tel(u.number)}
-                    className="press flex flex-col rounded-2xl px-4 py-3 text-white transition-[filter] hover:brightness-110"
+                    className="press flex flex-col rounded-[2px] px-4 py-3 text-white transition-[filter] hover:brightness-110"
                     style={{ background: u.tone === 'red' ? C.red : C.green }}
                   >
                     <span className="text-[0.75rem] font-semibold">Call {u.name}</span>
@@ -207,7 +209,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
             <div className="min-h-0 flex-1 overflow-y-auto border-t px-6 pb-4" style={{ borderColor: C.line }}>
               {GROUPS.map((group) => (
                 <div key={group.id} className="mt-4">
-                  <p className="mb-2 text-[0.6875rem] font-semibold tracking-[0.16em] uppercase" style={{ color: C.soft }}>
+                  <p className="f-label mb-2" style={{ color: C.soft }}>
                     {group.label}
                   </p>
                   <div className="space-y-2">
@@ -215,7 +217,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
                       <a
                         key={h.id}
                         href={tel(h.number)}
-                        className="press flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 transition-colors hover:border-[#0b6b3a]"
+                        className="press flex items-center justify-between gap-3 rounded-[2px] border px-4 py-3 transition-colors hover:border-[#0a5c32] hover:bg-[#eef4ef]"
                         style={{ background: C.row, borderColor: C.line }}
                       >
                         <span className="min-w-0">
@@ -239,7 +241,7 @@ export default function CrisisContacts({ variant = 'button', compact = false }) 
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="press w-full rounded-full border py-3 text-sm font-medium transition-colors hover:bg-[#f0f3f1]"
+                className="press w-full rounded-[2px] border py-3 text-sm font-medium transition-colors hover:bg-[#eef4ef]"
                 style={{ borderColor: C.line, color: C.soft }}
               >
                 Close

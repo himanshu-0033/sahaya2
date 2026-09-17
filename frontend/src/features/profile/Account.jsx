@@ -37,10 +37,10 @@ const INPUT =
   'w-full rounded-xl border border-[var(--line-2)] bg-white px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]';
 
 const BUTTON =
-  'press rounded-full bg-[var(--color-teal-dark)] px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40';
+  'press rounded-[2px] bg-[var(--color-teal-dark)] px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40';
 
 const GHOST =
-  'press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]';
+  'press rounded-[2px] border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)]';
 
 function readableDate(value) {
   if (!value) return null;
@@ -406,7 +406,7 @@ export default function Account() {
                   <span>{item.label}</span>
                   <span className="flex items-center gap-2 text-[var(--color-muted)]">
                     {item.count != null && (
-                      <span className="num rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-xs">{item.count}</span>
+                      <span className="num rounded-[2px] bg-[var(--surface-2)] px-2 py-0.5 text-xs">{item.count}</span>
                     )}
                     <Chevron />
                   </span>
@@ -491,7 +491,7 @@ export default function Account() {
                         </p>
                       </div>
                       {assigned.includes(e) ? (
-                        <span className="shrink-0 rounded-full bg-[var(--color-teal-soft)] px-3 py-1.5 text-xs text-[var(--color-teal-dark)]">
+                        <span className="shrink-0 rounded-[2px] bg-[var(--color-teal-soft)] px-3 py-1.5 text-xs text-[var(--color-teal-dark)]">
                           Your counsellor
                         </span>
                       ) : (
@@ -499,7 +499,7 @@ export default function Account() {
                         type="button"
                         onClick={() => handleRemove(e)}
                         disabled={removingEmail === e}
-                        className="press shrink-0 rounded-full border border-[var(--color-flag)]/35 px-4 py-2 text-xs text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-50"
+                        className="press shrink-0 rounded-[2px] border border-[var(--color-flag)]/35 px-4 py-2 text-xs text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-50"
                       >
                         {removingEmail === e ? 'Stopping…' : 'Stop sharing'}
                       </button>
@@ -587,7 +587,7 @@ export default function Account() {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="press rounded-full bg-[var(--color-flag-deep)] px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                  className="press rounded-[2px] bg-[var(--color-flag-deep)] px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
                 >
                   Sign out of this device
                 </button>

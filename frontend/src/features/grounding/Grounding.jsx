@@ -7,7 +7,7 @@ import LoadError from '../../shared/LoadError.jsx';
 import { SkeletonCards } from '../../shared/Skeleton.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getGroundingCatalog } from '../../shared/api.js';
-import { accent, alpha, EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../../shared/accents.js';
+import { EVIDENCE_LABEL, SPEED_LABEL, formatDuration } from '../../shared/accents.js';
 import { familyPhoto } from '../../shared/photos.js';
 
 // The grounding index.
@@ -50,8 +50,6 @@ function MoodPicker({ moods, active, onPick }) {
 // never ends on a card beside an empty hole: 1 fills the row, 3 is a pair and a
 // full-width card, and every group reads as even.
 function TechniqueCard({ technique, last, index, wide = false }) {
-  const { base, deep } = accent(technique.accent);
-
   return (
     <Link
       to={`/grounding/${technique.id}`}
@@ -60,15 +58,15 @@ function TechniqueCard({ technique, last, index, wide = false }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-display text-xl leading-snug">{technique.name}</p>
+          <p className="f-title text-xl leading-snug">{technique.name}</p>
           {technique.aka && (
             <p className="mt-1 text-xs text-[var(--color-muted)]">{technique.aka}</p>
           )}
         </div>
-        <span
-          className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] whitespace-nowrap"
-          style={{ background: alpha(base, 0.14), color: deep }}
-        >
+        {/* Printed in the one ink: on the index a practice is an entry on the
+            sheet. Its own colour is kept for the practice screen, where the
+            orb is the thing you look at. */}
+        <span className="shrink-0 border border-[var(--rule)] px-2 py-0.5 text-[0.75rem] whitespace-nowrap text-[var(--spot)]">
           {formatDuration(technique.seconds)}
         </span>
       </div>
@@ -81,7 +79,7 @@ function TechniqueCard({ technique, last, index, wide = false }) {
           however long its tagline runs. */}
       <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-xs text-[var(--color-muted)]">
         <span>{SPEED_LABEL[technique.speed]}</span>
-        {last && <span style={{ color: deep }}>done {last}</span>}
+        {last && <span className="text-[var(--spot)]">done {last}</span>}
       </div>
     </Link>
   );
@@ -171,7 +169,7 @@ export default function Grounding() {
       {data && (
         <>
           {data.streak > 0 && (
-            <p className="mt-6 inline-block rounded-full border border-[var(--line-2)] px-4 py-2 text-xs text-[var(--color-ink-soft)]">
+            <p className="mt-6 inline-block rounded-[2px] border border-[var(--line-2)] px-4 py-2 text-xs text-[var(--color-ink-soft)]">
               <span className="num">{data.streak}</span> day{data.streak === 1 ? '' : 's'} in a row. Nice.
             </p>
           )}

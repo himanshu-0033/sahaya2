@@ -31,21 +31,21 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null, str
   // with, and sign out. It was only reachable from a footer link called "Who
   // can see this", which nobody reads as "my account".
   return (
-    <header className={`flex items-center justify-between gap-3 pt-2 pb-1 ${standalone ? '' : 'md:hidden'}`}>
+    <header className={`flex items-center justify-between gap-3 border-b-2 border-[var(--spot)] pt-2 pb-2.5 ${standalone ? '' : 'md:hidden'}`}>
       <div className="flex min-w-0 items-center gap-3">
         {/* min-w-0 and truncate, so on a narrow phone the name gives way rather
             than the controls on the right being drawn on top of it. */}
         <Link to="/" className="press group flex min-w-0 items-center gap-2">
-          <Logo size={26} />
+          <Logo size={26} glow={false} />
           <span className="block min-w-0">
             {/* "DP Sahay" carries the weight and "AI" is set back, because
                 the two halves are doing different jobs: one is the name, the
                 other is a disclosure. Running them at the same weight would
                 make "AI" look like part of the word. */}
-            <span className="font-display block truncate text-[1.2rem] leading-none sm:text-[1.3rem]">
-              DP Sahay<span className="ml-1.5 text-[0.78em] text-[var(--color-teal-dark)] max-[399px]:hidden">AI</span>
+            <span className="f-title block truncate text-[1.2rem] leading-none text-[var(--spot)] sm:text-[1.3rem]">
+              DP Sahay<span className="ml-1.5 text-[0.78em] max-[399px]:hidden">AI</span>
             </span>
-            <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--color-ink-soft)]">
+            <span className="marginalia mt-1.5 block transition-colors group-hover:text-[var(--spot)]">
               {eyebrow}
             </span>
           </span>
@@ -60,7 +60,7 @@ export default function Header({ eyebrow = 'Daily check-in', leading = null, str
             to="/account"
             aria-label="Your account"
             title={profile.name || 'Your account'}
-            className="press flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--line-3)] bg-[var(--surface-2)] text-sm font-medium transition-colors hover:border-[var(--color-teal)]"
+            className="press flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden border border-[var(--spot)] bg-[var(--paper-tint)] text-sm font-semibold text-[var(--spot)] transition-colors hover:bg-[var(--spot-wash)]"
           >
             {profile.picture ? (
               <img src={profile.picture} alt="" className="h-full w-full object-cover" />

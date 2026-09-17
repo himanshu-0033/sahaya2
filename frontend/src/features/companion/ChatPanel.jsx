@@ -303,7 +303,7 @@ export default function ChatPanel({
             type="button"
             onClick={view === 'history' ? () => setView('chat') : openHistory}
             disabled={busy}
-            className="flex items-center gap-1.5 rounded-full border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)] disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-[2px] border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--surface-2)] disabled:opacity-40"
           >
             {view === 'history' ? (
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -376,12 +376,12 @@ export default function ChatPanel({
                         {c.turns.length === 1 ? 'message' : 'messages'}
                       </span>
                       {c.startedAt === startedAt.current && (
-                        <span className="rounded-full bg-[var(--surface-3)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-ink-soft)]">
+                        <span className="rounded-[2px] bg-[var(--surface-3)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-ink-soft)]">
                           Open now
                         </span>
                       )}
                       {c.flagged && (
-                        <span className="rounded-full bg-[var(--color-flag-soft)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-flag-deep)]">
+                        <span className="rounded-[2px] bg-[var(--color-flag-soft)] px-2 py-0.5 text-[0.6875rem] text-[var(--color-flag-deep)]">
                           Crisis contacts were shown
                         </span>
                       )}
@@ -433,7 +433,7 @@ export default function ChatPanel({
                 key={t.id}
                 type="button"
                 onClick={() => pickTopic(t)}
-                className="press rounded-full border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-teal)] hover:text-[var(--color-ink)]"
+                className="press rounded-[2px] border border-[var(--line-2)] px-3 py-1.5 text-xs text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-teal)] hover:text-[var(--color-ink)]"
               >
                 {t.label}
               </button>
@@ -452,7 +452,7 @@ export default function ChatPanel({
               type="button"
               onClick={openConversation}
               disabled={busy}
-              className="press rounded-full border border-[var(--color-flag-deep)]/40 px-3 py-1 text-xs font-medium text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-40"
+              className="press rounded-[2px] border border-[var(--color-flag-deep)]/40 px-3 py-1 text-xs font-medium text-[var(--color-flag-deep)] transition-colors hover:bg-[var(--color-flag-soft)] disabled:opacity-40"
             >
               Try again
             </button>
@@ -468,7 +468,7 @@ export default function ChatPanel({
           <button
             type="button"
             onClick={startNew}
-            className="shrink-0 rounded-full bg-[var(--color-teal-dark)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--color-ink)]"
+            className="shrink-0 rounded-[2px] bg-[var(--color-teal-dark)] px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-[var(--color-ink)]"
           >
             Start a new one
           </button>
@@ -480,7 +480,7 @@ export default function ChatPanel({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Say as much or as little as you like…"
-          className="min-w-0 flex-1 rounded-full border border-[var(--line-2)] bg-[var(--surface-2)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]"
+          className="min-w-0 flex-1 rounded-[2px] border border-[var(--line-2)] bg-[var(--surface-2)] px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-[var(--color-muted)] focus:border-[var(--color-teal)]"
         />
         {/* Draws nothing in a browser without speech recognition, so the typed
             box is never left sitting next to a control that cannot work. */}
@@ -494,7 +494,7 @@ export default function ChatPanel({
         <button
           type="submit"
           disabled={!draft.trim() || busy}
-          className="shrink-0 rounded-full bg-[var(--color-teal-dark)] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-ink)] disabled:opacity-40"
+          className="shrink-0 rounded-[2px] bg-[var(--color-teal-dark)] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-ink)] disabled:opacity-40"
         >
           Send
         </button>
