@@ -82,6 +82,15 @@ serviceAccountKey.json
 !/.editorconfig
 !/.nvmrc
 
+# The six context files. They are written for whoever, or whatever, picks
+# this repo up next, so they are part of the repo, not somebody's tool.
+!/prd.md
+!/architecture.md
+!/rules.md
+!/design.md
+!/tasks.md
+!/memory.md
+
 # Reference material and the notes that explain it. The PDFs inside stay
 # ignored by the *.pdf rule above — what is committed is the README saying
 # which instrument each one is and where to get it.
