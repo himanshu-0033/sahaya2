@@ -210,6 +210,22 @@ Not a polish pass. These are the ones this codebase has actually got wrong.
 - Give password fields the right `autoComplete`: `new-password` when setting
   one, `current-password` when signing in.
 
+## 4c. Sessions
+
+- **A 401 means the token is dead, so drop it.** `shared/api.js` clears the
+  session and fires `SIGNED_OUT_EVENT`; `useSession` listens and returns null;
+  every page's existing null guard does the rest. Without this an expired tab
+  showed "jwt expired" on every tap with nothing to act on, including on the
+  companion, which is exactly the state somebody would find it in at two in
+  the morning.
+- **`useSession` can return null on a page that is already open.** A Google ID
+  token lasts an hour and this is an app people leave open. Guard before
+  reaching into `session.profile`, or use `session?.` and `Boolean(session)`.
+  `frontend/scripts/session-guard.test.mjs` fails on an unguarded read.
+- Do not make `useSession` hand back a fresh object per render. It holds one
+  reference on purpose: the fetch loop that caused, 400 requests in four
+  seconds against a per-invocation backend, is written up in the hook.
+
 ## 5. Copy
 
 | Rule | Example |

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { getSession } from './session.js';
+import { useEffect, useState } from 'react';
+import { getSession, SIGNED_OUT_EVENT } from './session.js';
 
 // Reads the session once per mount and keeps that reference stable.
 //
@@ -26,6 +26,22 @@ import { getSession } from './session.js';
 // exception, back when it rendered the sign-in screen itself; signing in
 // is its own route now, so Landing only ever reads.
 export function useSession() {
-  const [session] = useState(getSession);
+  const [session, setSession] = useState(getSession);
+
+  // The one transition this hook allows: signed in to signed out, when the
+  // server has told us the token is dead.
+  //
+  // It does not break the stable-identity rule the comment above is about.
+  // That rule is about never handing back a NEW object for the SAME session
+  // on every render, which is what drove the fetch loop. This fires once, and
+  // what it sets is null, which has no identity to churn. Every page already
+  // guards on a null session and sends people to the sign-in screen, so this
+  // is the whole fix: no page needs to know about it.
+  useEffect(() => {
+    const onSignedOut = () => setSession(null);
+    window.addEventListener(SIGNED_OUT_EVENT, onSignedOut);
+    return () => window.removeEventListener(SIGNED_OUT_EVENT, onSignedOut);
+  }, []);
+
   return session;
 }

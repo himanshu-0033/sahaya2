@@ -1,4 +1,4 @@
-import { getSession } from '../features/auth/session.js';
+import { clearSession, getSession, SIGNED_OUT_EVENT } from '../features/auth/session.js';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 // The agent is its own deployable module, so it gets its own base URL.
@@ -81,6 +81,15 @@ async function request(path, options = {}, base = API_BASE) {
 
     const data = await res.json().catch(() => null);
     if (!res.ok) {
+      // 401 means the token we are holding is dead, which is not something a
+      // student can do anything about by reading an error message. Drop it and
+      // say so, so the pages fall back to the sign-in screen through the
+      // guards they already have. The console has done this for a while; the
+      // student app never did.
+      if (res.status === 401) {
+        clearSession();
+        window.dispatchEvent(new CustomEvent(SIGNED_OUT_EVENT, { detail: data?.error }));
+      }
       // A real answer with a real status is the API talking, not a
       // reachability problem — never retried, and reported as it was sent.
       throw new ApiError(data?.error || `Request failed (${res.status})`, { status: res.status });
