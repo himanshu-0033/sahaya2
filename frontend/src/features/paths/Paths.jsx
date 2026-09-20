@@ -57,34 +57,51 @@ function PathStop({ path, progress, index, last }) {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          {/* Three passes over the same curve make a road rather than a line:
-              a coloured kerb, the asphalt over it, and the lane markings down
-              the middle. non-scaling-stroke is what keeps all three an even
-              width after the segment has been stretched to the row's height,
-              which is the whole reason the widths can be trusted at all. */}
+          {/* Four passes over one curve make a highway rather than a line.
+              Widest first, each one narrower, so every layer leaves a strip
+              of the one beneath it showing: the shoulder in the path's own
+              colour, then white, then the tarmac, and the white that is still
+              visible either side of the tarmac IS the edge marking. Drawing
+              edge lines properly would mean offsetting the curve, which SVG
+              will not do; stacking strokes gets the same picture for nothing.
+
+              non-scaling-stroke is what makes the whole trick work, because
+              it keeps all four an even width after the segment has been
+              stretched to whatever height its row turned out to be. Without
+              it the highway would fatten and thin with the blurbs. */}
           <path
             d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
             fill="none"
-            stroke={alpha(base, 0.32)}
-            strokeWidth="26"
+            stroke={alpha(base, 0.3)}
+            strokeWidth="68"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
           />
           <path
             d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
             fill="none"
-            stroke="rgba(20, 27, 45, 0.12)"
-            strokeWidth="22"
+            stroke="rgba(255, 255, 255, 0.9)"
+            strokeWidth="58"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
           />
           <path
             d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.85)"
-            strokeWidth="2.5"
+            stroke="rgba(20, 27, 45, 0.13)"
+            strokeWidth="52"
             strokeLinecap="round"
-            strokeDasharray="9 13"
+            vectorEffect="non-scaling-stroke"
+          />
+          {/* The lane divider. Long dashes with long gaps, which is what makes
+              a road read as fast rather than as a dotted line. */}
+          <path
+            d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.92)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray="16 22"
             vectorEffect="non-scaling-stroke"
           />
         </svg>

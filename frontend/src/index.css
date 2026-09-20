@@ -649,7 +649,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 
 .silk-stop {
   position: relative;
-  min-height: 128px;
+  min-height: 150px;
 }
 
 /* The curve for this row, behind everything. */
@@ -709,7 +709,10 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 .silk-stop-card {
   position: relative;
   z-index: 1;
-  width: calc(50% - 44px);
+  /* The corridor down the middle has to be wider than the highway or the
+     cards sit on the hard shoulder. 68px of road wants more than 88px of
+     gap. */
+  width: calc(50% - 64px);
   /* translate/scale rather than transform: these cards carry
      .animate-slide-up, whose filled animation owns `transform`. */
   transition:
@@ -740,14 +743,14 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 }
 
 @media (max-width: 860px) {
-  .silk-stop { min-height: 0; padding-left: 46px; }
+  .silk-stop { min-height: 0; padding-left: 56px; }
   .silk-stop-card { width: auto; margin: 0; }
   /* The plate moves out of the gutter and sits on the card's top corner
      instead. Centred on a 22px rail it hung off the left edge of the screen,
      and there is no width here to give it. The post and its foot go with it:
      a sign needs something to stand on, and at this size the honest thing is
      a label rather than a half-drawn signpost. */
-  .silk-sign { left: 46px; top: -11px; translate: none; align-items: flex-start; }
+  .silk-sign { left: 56px; top: -11px; translate: none; align-items: flex-start; }
   .silk-sign-post,
   .silk-sign-base { display: none; }
 
@@ -766,23 +769,28 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
     bottom: -18px;
   }
 
-  /* The tarmac. */
+  /* The tarmac, with its edge lines and shoulder done as two rings rather
+     than two more elements: white first, then the path's colour outside it,
+     which is the same order the wide layout stacks its strokes in. */
   .silk-stop::before {
-    left: 14px;
-    width: 16px;
-    border-radius: 8px;
-    background: var(--silk-ink, rgba(20, 27, 45, 0.18));
+    left: 9px;
+    width: 26px;
+    border-radius: 13px;
+    background: rgba(20, 27, 45, 0.13);
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.9),
+      0 0 0 6px var(--silk-ink, rgba(20, 27, 45, 0.18));
   }
 
-  /* The lane markings down the middle of it. */
+  /* The lane divider down the middle of it. */
   .silk-stop::after {
-    left: 21px;
-    width: 2px;
-    border-radius: 1px;
+    left: 20.5px;
+    width: 3px;
+    border-radius: 1.5px;
     background: repeating-linear-gradient(
       to bottom,
-      rgba(255, 255, 255, 0.85) 0 9px,
-      transparent 9px 22px
+      rgba(255, 255, 255, 0.92) 0 14px,
+      transparent 14px 34px
     );
   }
 
