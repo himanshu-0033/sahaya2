@@ -34,6 +34,18 @@ const SITE = 'DP Sahay AI';
 // otherwise swallow it.
 const TITLES = [
   ['/', 'Home'],
+  // The five below were missing, and missing meant pageName() fell through to
+  // its default. So the sign-in page's tab read "Page not found", and the
+  // marker below announced "Page not found" to a screen reader on arrival, on
+  // the two screens that are the top of the funnel: /welcome is where every
+  // new person lands, and /check is where the landing page's hero sends them.
+  // Nothing was broken, which is why nobody noticed. It just said it was.
+  ['/welcome', 'Sign in'],
+  ['/check', 'A quick check'],
+  ['/reset-password', 'Choose a new password'],
+  // Same screen as /account, under the older path.
+  ['/profile', 'Your account'],
+  ['/talks', 'Your conversations'],
   ['/account', 'Your account'],
   ['/more', 'More'],
   ['/checkin', 'Daily check-in'],

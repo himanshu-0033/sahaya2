@@ -198,7 +198,7 @@ export default function Assessments() {
         </div>
       </div>
 
-      {/* The set, above the shelf of twenty-one.
+      {/* The set, above the shelf of the rest.
 
           A catalogue answers "which one do you want", and most people opening
           this page cannot answer that, they want to know where they are, and

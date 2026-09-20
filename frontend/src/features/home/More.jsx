@@ -36,7 +36,7 @@ const SECTIONS = [
     eyebrow: 'Where you are',
     title: 'Questionnaires',
     body: 'The same ones a clinic uses, scored the same way.',
-    meta: '21 questionnaires · 1 to 3 minutes each',
+    meta: '22 questionnaires · 1 to 3 minutes each',
     hue: 'var(--sec-tests)',
   },
   {

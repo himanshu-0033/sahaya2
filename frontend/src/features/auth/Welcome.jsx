@@ -44,7 +44,7 @@ import { getSession } from './session.js';
 const TOOLS = [
   {
     title: 'Questionnaires',
-    body: 'PHQ-9, GAD-7, WHO-5 and eighteen more published screens, each with its citation and licence on the page.',
+    body: 'PHQ-9, GAD-7, WHO-5 and nineteen more published screens, each with its citation and licence on the page.',
     to: '/read/which-test-and-what-for',
     photo: PHOTO.tests,
     span: 'sm:col-span-2 lg:row-span-2',
@@ -92,7 +92,7 @@ const STARTING_POINTS = [
 
 // Counts of what is in the box, never of people. See the note at the top.
 const STATS = [
-  { n: '21', label: 'published questionnaires' },
+  { n: '22', label: 'published questionnaires' },
   { n: '13', label: 'grounding practices' },
   { n: '5', label: 'guided paths' },
   { n: '0', label: 'ads, ever' },
@@ -334,7 +334,7 @@ export default function Welcome({ onSignedIn }) {
       <div className="text-white" style={{ background: 'var(--w-forest)' }}>
         <div className="mx-auto flex max-w-6xl items-center justify-center gap-4 px-5 py-2 sm:justify-between sm:px-8">
           <p className="hidden text-[0.8125rem] sm:block">
-            Free, with no ads: 21 questionnaires, 13 grounding practices and a companion one tap
+            Free, with no ads: 22 questionnaires, 13 grounding practices and a companion one tap
             away.
           </p>
           <Link
@@ -356,7 +356,16 @@ export default function Welcome({ onSignedIn }) {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
           <a href="#top" className="flex items-center gap-2 transition-opacity hover:opacity-70" aria-label="DP Sahay AI, back to top">
             <Logo size={30} glow={false} />
-            <span className="text-[1.25rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap" style={{ color: 'var(--w-accent-deep)' }}>
+            {/* The mark carries the header on a phone and the word comes back
+                at sm. Nothing is lost by dropping it: the hero's h1 directly
+                below says DP Sahay in the largest type on the page, so on a
+                narrow screen this was the same word twice, about 85px apart,
+                and those 85px are what the sign-in action needs. The link
+                keeps its aria-label either way. */}
+            <span
+              className="hidden text-[1.25rem] leading-none font-bold tracking-[-0.02em] whitespace-nowrap sm:inline"
+              style={{ color: 'var(--w-accent-deep)' }}
+            >
               DP Sahay
             </span>
           </a>
@@ -376,6 +385,28 @@ export default function Welcome({ onSignedIn }) {
 
           <div className="flex shrink-0 items-center gap-2.5">
             <CrisisContacts variant="link" />
+            {/* Two shapes of the same action, because the header is tight on a
+                phone and the crisis button is the one control that must never
+                be squeezed for anything.
+
+                Between 360px and sm it is a plain word, so it costs almost no
+                width and still gives a returning student somewhere to press.
+                This page is only ever seen signed out, so on a phone the
+                returning student used to have no sign-in in the header at all
+                and had to scroll into the body copy to find one.
+
+                It only fits because the wordmark text above drops out below
+                sm. With both, the row needed 375px and gave the landing page
+                a horizontal scrollbar at 320 and at 360, measured in the
+                browser rather than guessed at. The crisis button was never a
+                candidate for giving way. */}
+            <button
+              type="button"
+              onClick={go}
+              className="press rounded-full px-3 py-2.5 text-sm font-semibold text-[var(--w-accent-deep)] underline-offset-4 hover:underline sm:hidden"
+            >
+              Sign in
+            </button>
             <span className="hidden sm:block">
               <button type="button" onClick={go} className={`${PRIMARY} px-5 py-2.5`} style={GREEN_FILL}>
                 Sign in
