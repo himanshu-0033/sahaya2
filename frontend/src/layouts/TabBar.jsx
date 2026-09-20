@@ -153,6 +153,7 @@ export default function TabBar() {
   const { pathname } = useLocation();
   const session = useSession();
   const profile = session?.profile;
+  const onHome = pathname === '/';
 
   return (
     <>
@@ -281,7 +282,11 @@ export default function TabBar() {
                 <span className="marginalia block">Account</span>
               </span>
             </Link>
-            <StreakBadge />
+            {/* Not on Home. The Today card there carries the streak with its
+                label, and showing it twice on one screen also squeezed the
+                account name to "Himanshu ..." to make room for the second
+                copy. Every other screen still gets it here. */}
+            {!onHome && <StreakBadge />}
             </div>
           )}
         </div>

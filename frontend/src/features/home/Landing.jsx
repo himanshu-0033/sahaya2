@@ -117,6 +117,76 @@ function greeting() {
   return 'Late one';
 }
 
+// ─── The fortnight behind today ────────────────────────────────────────────
+//
+// Fourteen days, one mark each, coloured by the mood that was logged. The data
+// was already arriving: /api/checkins returns the last fourteen check-ins and
+// this screen dropped them on the floor, so the home page of a daily habit
+// showed nothing at all about the habit.
+//
+// A missed day is a faint mark, never a red one. The app tells people on the
+// paths page that missing a day loses nothing, and a wall of red would be the
+// same product saying the opposite in the same week.
+//
+// Dates are keyed in UTC because that is how the backend keys them
+// (logic.js todayISO). Building these in local time would put a student in
+// India who checks in at 1am on the wrong square, and disagree with the streak
+// counted beside it.
+const DAY_MS = 86400000;
+const utcKey = (ms) => new Date(ms).toISOString().slice(0, 10);
+
+function Fortnight({ history, loading, checkedIn }) {
+  if (loading) return null;
+
+  const logged = new Map((history || []).map((c) => [c.date, c]));
+  const today = utcKey(Date.now());
+  const days = [];
+  for (let i = 13; i >= 0; i -= 1) {
+    const key = utcKey(Date.now() - i * DAY_MS);
+    days.push({ key, record: logged.get(key), isToday: key === today });
+  }
+
+  const count = days.filter((d) => d.record).length;
+  if (count === 0 && !checkedIn) return null;
+
+  return (
+    <div className="mt-5 border-t border-[var(--line-1)] pt-4">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="marginalia">Last 14 days</p>
+        <p className="text-xs text-[var(--color-ink-soft)]">
+          {count} {count === 1 ? 'day' : 'days'} checked in
+        </p>
+      </div>
+
+      {/* One sentence for a screen reader. Fourteen separate announcements of
+          "Tuesday, Steady" would be noise, and the shape is the point. */}
+      <p className="sr-only">
+        You have checked in on {count} of the last 14 days.
+      </p>
+
+      <ul aria-hidden="true" className="mt-2.5 flex items-end gap-[3px]">
+        {days.map((d) => {
+          const mood = Number(d.record?.mood ?? d.record?.moodScore) || null;
+          return (
+            <li
+              key={d.key}
+              title={d.record ? `${d.key}: ${MOOD_OPTIONS.find((m) => m.value === mood)?.label || 'checked in'}` : d.key}
+              className="h-7 flex-1 rounded-[3px] transition-colors"
+              style={{
+                background: mood ? MOOD_HUE[mood - 1] : 'var(--surface-3)',
+                opacity: mood ? 1 : 0.55,
+                // Today, still open, is outlined rather than filled: it is the
+                // one square the person can still change.
+                boxShadow: d.isToday && !d.record ? 'inset 0 0 0 1.5px var(--color-ink-soft)' : 'none',
+              }}
+            />
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 // ─── Today: the card the page is for ───────────────────────────────────────
 //
 // Not checked in: each mood is a link to the check-in with that mood already
@@ -228,6 +298,9 @@ function TodayCard({ name, status }) {
         </>
       )}
 
+      {/* Above the spacer, so the ask bar keeps the card's bottom edge. */}
+      <Fortnight history={status.history} loading={status.loading} checkedIn={done} />
+
       {/* Sends the question into the DP conversation rather than answering it
           here, so there is one chat with one history, not two. */}
       {/* Grows when the card is stretched beside the quick actions, so the ask
@@ -330,7 +403,7 @@ export default function Landing() {
   const [profileError, setProfileError] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, streak: 0, error: null });
+  const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, streak: 0, history: [], error: null });
   // The one unfinished path, or null. Its own state rather than the whole
   // catalogue, so nothing else on this page has to know the paths exist.
   const [carryOn, setCarryOn] = useState(null);
@@ -353,7 +426,16 @@ export default function Landing() {
     setStatus((s) => ({ ...s, loading: true }));
     getStatus()
       .then((data) =>
-        setStatus({ loading: false, checkedIn: data.checkedIn, record: data.record, streak: data.streak || 0, error: null }),
+        setStatus({
+          loading: false,
+          checkedIn: data.checkedIn,
+          record: data.record,
+          streak: data.streak || 0,
+          // Already on the wire: /api/checkins has always returned the last
+          // fourteen days and this screen threw them away.
+          history: data.history || [],
+          error: null,
+        }),
       )
       .catch((err) => setStatus({ loading: false, checkedIn: null, record: null, streak: 0, error: err }));
     getGroundingCatalog()
