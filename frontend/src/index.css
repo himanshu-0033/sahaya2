@@ -502,15 +502,26 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
    pure black. The scale is deliberately tiny; anything larger makes a dense
    grid jitter as the pointer crosses between neighbours. z-index keeps the
    lifted card over its siblings while it is raised. */
+/* `translate` and `scale`, not `transform`.
+   
+   Most cards that lift also carry .animate-slide-up, whose animation is
+   declared `both` and therefore holds `transform: translateY(0)` after it
+   finishes. An animation's filled value beats a plain rule, so a hover
+   written as `transform:` applied its shadow and never moved: the card lit up
+   and stayed put. The independent longhands compose with `transform` instead
+   of competing with it, so the entrance animation and the hover can both own
+   a piece of the same element. */
 @media (hover: hover) and (pointer: fine) {
   .lift {
     transition:
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      translate 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      scale 0.3s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.3s ease,
       border-color 0.3s ease;
   }
   .lift:hover {
-    transform: translateY(-4px) scale(1.012);
+    translate: 0 -4px;
+    scale: 1.012;
     box-shadow:
       0 1px 2px rgba(20, 27, 45, 0.06),
       0 18px 32px -16px rgba(20, 27, 45, 0.24);
@@ -608,6 +619,125 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 @media (prefers-reduced-motion: reduce) {
   .path-stop:hover .path-stop-card { transform: none; box-shadow: none; }
   .path-stop:hover .path-stop-marker { transform: none; }
+}
+
+/* ─── The paths index as one winding road ───────────────────────────────────
+
+   Five paths used to be a two-column grid of photographs. They are stops on a
+   road now: the road runs down the page, the stops alternate either side of
+   it, and the curve between them is what makes it read as a route rather than
+   as a list with a line drawn on it.
+
+   The curve is painted PER ROW rather than once down the whole list. A single
+   SVG stretched over the list would need to know the total height, and these
+   rows are different heights because the blurbs are different lengths. One
+   segment per row, each stretched to its own row with preserveAspectRatio
+   none, joins up exactly however tall the rows turn out to be.
+
+   Each segment leaves and enters at the horizontal centre, and bulges to one
+   side in between. Alternating the bulge makes consecutive segments mirror
+   each other at the join, so the tangents line up and the road reads as one
+   continuous S rather than a stack of arcs.
+
+   Below the breakpoint the wave is gone and the road is a straight rail down
+   the left, the same shape a single path already uses for its days. A
+   serpentine needs width on both sides of the line to put anything, and a
+   390px screen does not have it. */
+.silk-road {
+  position: relative;
+}
+
+.silk-stop {
+  position: relative;
+  min-height: 128px;
+}
+
+/* The curve for this row, behind everything. */
+.silk-stop-rail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* The marker sits where the road passes the row's top edge, which is the one
+   point on the curve whose position does not depend on the bulge. */
+.silk-stop-marker {
+  position: absolute;
+  top: -14px;
+  left: calc(50% - 14px);
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+.silk-stop-card {
+  position: relative;
+  z-index: 1;
+  width: calc(50% - 44px);
+  /* translate/scale rather than transform: these cards carry
+     .animate-slide-up, whose filled animation owns `transform`. */
+  transition:
+    translate 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    scale 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s ease,
+    border-color 0.32s ease;
+}
+
+.silk-stop[data-side='left'] .silk-stop-card { margin-right: auto; }
+.silk-stop[data-side='right'] .silk-stop-card { margin-left: auto; }
+
+@media (hover: hover) and (pointer: fine) {
+  .silk-stop-card:hover {
+    translate: 0 -6px;
+    scale: 1.018;
+    box-shadow:
+      0 1px 2px rgba(20, 27, 45, 0.06),
+      0 24px 44px -18px rgba(20, 27, 45, 0.3);
+    z-index: 3;
+  }
+  /* The stop on the road grows with its card, so the two read as one object
+     being picked up rather than a card moving away from a dot. */
+  .silk-stop-card:hover ~ .silk-stop-marker,
+  .silk-stop:hover .silk-stop-marker {
+    transform: scale(1.18);
+  }
+}
+
+@media (max-width: 860px) {
+  .silk-stop { min-height: 0; padding-left: 46px; }
+  .silk-stop-card { width: auto; margin: 0; }
+  .silk-stop-marker { left: 8px; top: 18px; }
+
+  /* The curve is no use here: it sweeps across the full width and the card
+     sits on top of it, so the road simply disappears. A straight rail down
+     the gutter instead, which is the same shape a single path already uses
+     for its days, and the two pages then read as one idea at this width. */
+  .silk-stop-rail { display: none; }
+
+  .silk-stop::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 46px;
+    bottom: -18px;
+    width: 2px;
+    border-radius: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--silk-ink, rgba(20, 27, 45, 0.18)) 0 7px,
+      transparent 7px 16px
+    );
+  }
+
+  .silk-stop:last-child::before { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .silk-stop-card:hover { translate: none; scale: none; box-shadow: none; }
+  .silk-stop:hover .silk-stop-marker { transform: none; }
 }
 
 /* A slow drift for decorative blobs behind a hero. */
@@ -759,7 +889,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
     animation: none;
   }
   .press:active { transform: none; }
-  .lift:hover { transform: none; box-shadow: none; }
+  .lift:hover { translate: none; scale: none; box-shadow: none; }
 
   /* Hidden rather than frozen. A dozen butterflies stopped dead mid-air
      reads as a rendering fault; the screen loses nothing without them. */

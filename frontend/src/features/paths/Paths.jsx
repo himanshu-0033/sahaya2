@@ -33,16 +33,67 @@ function Pips({ total, completed, hue }) {
   );
 }
 
-function PathCard({ path, progress, index }) {
+// One stop on the road: the marker on the line, the curve down to the next
+// stop, and the card itself, which is still the same link it always was.
+function PathStop({ path, progress, index, last }) {
   const { base, bright, deep } = accent(path.accent);
   const done = progress?.done || 0;
   const started = Boolean(progress?.startedAt);
+  const side = index % 2 === 0 ? 'left' : 'right';
+  // Bulge away from the card, so the road curves into the space the card is
+  // not using instead of running underneath it.
+  const bulge = side === 'left' ? 82 : 18;
+  const finished = Boolean(progress?.finished);
 
   return (
+    <li className="silk-stop" data-side={side} style={{ '--silk-ink': alpha(base, 0.34) }}>
+      {/* preserveAspectRatio="none" is the whole trick: the segment stretches
+          to whatever height this row turns out to be, so rows with longer
+          blurbs still join up. */}
+      {!last && (
+        <svg
+          className="silk-stop-rail"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
+            fill="none"
+            stroke={alpha(base, 0.34)}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeDasharray="7 9"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      )}
+
+      {/* The stop. Filled once the path has been started, so the road shows
+          at a glance which ones have been walked. */}
+      <span
+        className="silk-stop-marker flex h-7 w-7 items-center justify-center rounded-full border-2"
+        aria-hidden="true"
+        style={{
+          borderColor: started ? bright : alpha(base, 0.5),
+          background: started ? bright : 'var(--color-cream)',
+          color: started ? '#07080a' : deep,
+          boxShadow: started && !finished ? `0 0 0 5px ${alpha(base, 0.15)}` : 'none',
+        }}
+      >
+        {finished ? (
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        ) : (
+          <span className="num text-[0.6875rem]">{index + 1}</span>
+        )}
+      </span>
+
     <Link
       to={`/paths/${path.id}`}
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms`, '--ph-hue': bright }}
-      className="animate-slide-up card card-photo press flex flex-col"
+      className="silk-stop-card animate-slide-up card card-photo press flex flex-col"
     >
       <span className="photo-head">
         <img src={pathPhoto(path.id)} alt="" loading="lazy" decoding="async" />
@@ -76,6 +127,7 @@ function PathCard({ path, progress, index }) {
       </div>
       </div>
     </Link>
+    </li>
   );
 }
 
@@ -118,6 +170,9 @@ export default function Paths() {
     return [inProgress, all.filter((p) => !inProgress.includes(p))];
   }, [data, progressFor]);
 
+  // The order the road is walked in.
+  const ordered = useMemo(() => [...active, ...rest], [active, rest]);
+
   if (!session) return null;
 
   return (
@@ -146,24 +201,25 @@ export default function Paths() {
 
       {data && (
         <>
-          {active.length > 0 && (
-            <section className="stack-section">
-              <p className="marginalia">Carry on</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {active.map((path, i) => (
-                  <PathCard key={path.id} path={path} progress={progressFor.get(path.id)} index={i} />
-                ))}
-              </div>
-            </section>
-          )}
-
+          {/* One road, not two. The in-progress paths still come first, but
+              they are no longer a separate section: a road cut in half is
+              just a list again, and a started path already says so on the
+              page through its filled marker and its day count. */}
           <section className="stack-section">
-            <p className="marginalia">{active.length > 0 ? 'Everything else' : 'All paths'}</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {rest.map((path, i) => (
-                <PathCard key={path.id} path={path} progress={progressFor.get(path.id)} index={i} />
+            <p className="marginalia">
+              {active.length > 0 ? 'Carry on, then everything else' : 'All paths'}
+            </p>
+            <ol className="silk-road mt-4">
+              {ordered.map((path, i) => (
+                <PathStop
+                  key={path.id}
+                  path={path}
+                  progress={progressFor.get(path.id)}
+                  index={i}
+                  last={i === ordered.length - 1}
+                />
               ))}
-            </div>
+            </ol>
           </section>
 
           <div className="card stack-section p-6">
