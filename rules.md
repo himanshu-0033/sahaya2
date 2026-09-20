@@ -71,7 +71,15 @@ was wrong, the account is Google-only, or there is no account at all. It also
 runs bcrypt against a decoy hash when there is no account, because an endpoint
 that skips the slow part answers the question in its response time instead.
 
-### 1.8 Every unauthenticated route is metered
+### 1.8 Anything a student typed is defused before it leaves as a CSV
+
+`admin/src/lib/csv.js` prefixes a cell starting with `=`, `+`, `-`, `@`, tab
+or carriage return with an apostrophe. Two exported columns are student-typed,
+the check-in words and the student's own name, and a spreadsheet runs a cell
+before it shows it. Quoting does not help: the quotes come off when the file
+is parsed and the formula is what is left.
+
+### 1.9 Every unauthenticated route is metered
 
 `lib/rate-limit.js`, applied to enquiries, preview, signup, forgot and login.
 Sign-in counts per account as well as per client: a campus shares one IP, so
