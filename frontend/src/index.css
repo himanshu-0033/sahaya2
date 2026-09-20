@@ -663,14 +663,47 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   z-index: 0;
 }
 
-/* The marker sits where the road passes the row's top edge, which is the one
+/* The sign stands where the road passes the row's top edge, which is the one
    point on the curve whose position does not depend on the bulge. */
-.silk-stop-marker {
+.silk-sign {
   position: absolute;
-  top: -14px;
-  left: calc(50% - 14px);
+  top: -34px;
+  left: 50%;
+  translate: -50% 0;
   z-index: 2;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: translate 0.3s cubic-bezier(0.22, 1, 0.36, 1), scale 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The plate. Small caps and a tight box, so it reads as signage rather than
+   as another chip in a page already full of them. */
+.silk-sign-plate {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 3px 9px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px -2px rgba(20, 27, 45, 0.25);
+}
+
+/* The post it stands on, and the foot where it meets the tarmac. */
+.silk-sign-post {
+  width: 2px;
+  height: 14px;
+  background: rgba(20, 27, 45, 0.28);
+}
+
+.silk-sign-base {
+  width: 10px;
+  height: 4px;
+  border-radius: 2px;
 }
 
 .silk-stop-card {
@@ -700,44 +733,66 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   }
   /* The stop on the road grows with its card, so the two read as one object
      being picked up rather than a card moving away from a dot. */
-  .silk-stop-card:hover ~ .silk-stop-marker,
-  .silk-stop:hover .silk-stop-marker {
-    transform: scale(1.18);
+  .silk-stop:hover .silk-sign {
+    translate: -50% -4px;
+    scale: 1.1;
   }
 }
 
 @media (max-width: 860px) {
   .silk-stop { min-height: 0; padding-left: 46px; }
   .silk-stop-card { width: auto; margin: 0; }
-  .silk-stop-marker { left: 8px; top: 18px; }
+  /* The plate moves out of the gutter and sits on the card's top corner
+     instead. Centred on a 22px rail it hung off the left edge of the screen,
+     and there is no width here to give it. The post and its foot go with it:
+     a sign needs something to stand on, and at this size the honest thing is
+     a label rather than a half-drawn signpost. */
+  .silk-sign { left: 46px; top: -11px; translate: none; align-items: flex-start; }
+  .silk-sign-post,
+  .silk-sign-base { display: none; }
 
   /* The curve is no use here: it sweeps across the full width and the card
-     sits on top of it, so the road simply disappears. A straight rail down
-     the gutter instead, which is the same shape a single path already uses
-     for its days, and the two pages then read as one idea at this width. */
+     sits on top of it, so the road simply disappears. A straight run of the
+     same road down the gutter instead, tarmac and lane markings both, so it
+     is the same road as the wide layout rather than a line standing in for
+     one. */
   .silk-stop-rail { display: none; }
 
-  .silk-stop::before {
+  .silk-stop::before,
+  .silk-stop::after {
     content: '';
     position: absolute;
-    left: 21px;
-    top: 46px;
+    top: 0;
     bottom: -18px;
+  }
+
+  /* The tarmac. */
+  .silk-stop::before {
+    left: 14px;
+    width: 16px;
+    border-radius: 8px;
+    background: var(--silk-ink, rgba(20, 27, 45, 0.18));
+  }
+
+  /* The lane markings down the middle of it. */
+  .silk-stop::after {
+    left: 21px;
     width: 2px;
     border-radius: 1px;
     background: repeating-linear-gradient(
       to bottom,
-      var(--silk-ink, rgba(20, 27, 45, 0.18)) 0 7px,
-      transparent 7px 16px
+      rgba(255, 255, 255, 0.85) 0 9px,
+      transparent 9px 22px
     );
   }
 
-  .silk-stop:last-child::before { display: none; }
+  .silk-stop:last-child::before,
+  .silk-stop:last-child::after { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .silk-stop-card:hover { translate: none; scale: none; box-shadow: none; }
-  .silk-stop:hover .silk-stop-marker { transform: none; }
+  .silk-stop:hover .silk-sign { translate: -50% 0; scale: none; }
 }
 
 /* A slow drift for decorative blobs behind a hero. */

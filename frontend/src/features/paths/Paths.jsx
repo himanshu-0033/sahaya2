@@ -57,37 +57,61 @@ function PathStop({ path, progress, index, last }) {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
+          {/* Three passes over the same curve make a road rather than a line:
+              a coloured kerb, the asphalt over it, and the lane markings down
+              the middle. non-scaling-stroke is what keeps all three an even
+              width after the segment has been stretched to the row's height,
+              which is the whole reason the widths can be trusted at all. */}
           <path
             d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
             fill="none"
-            stroke={alpha(base, 0.34)}
-            strokeWidth="2"
+            stroke={alpha(base, 0.32)}
+            strokeWidth="26"
             strokeLinecap="round"
-            strokeDasharray="7 9"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
+            fill="none"
+            stroke="rgba(20, 27, 45, 0.12)"
+            strokeWidth="22"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d={`M50,0 C${bulge},26 ${bulge},74 50,100`}
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.85)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray="9 13"
             vectorEffect="non-scaling-stroke"
           />
         </svg>
       )}
 
-      {/* The stop. Filled once the path has been started, so the road shows
+      {/* A signboard planted at the roadside: a plate on a post, with the
+          length of the journey on it the way a road sign carries a distance.
+          The plate fills in once the path has been started, so the road shows
           at a glance which ones have been walked. */}
-      <span
-        className="silk-stop-marker flex h-7 w-7 items-center justify-center rounded-full border-2"
-        aria-hidden="true"
-        style={{
-          borderColor: started ? bright : alpha(base, 0.5),
-          background: started ? bright : 'var(--color-cream)',
-          color: started ? '#07080a' : deep,
-          boxShadow: started && !finished ? `0 0 0 5px ${alpha(base, 0.15)}` : 'none',
-        }}
-      >
-        {finished ? (
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        ) : (
-          <span className="num text-[0.6875rem]">{index + 1}</span>
-        )}
+      <span className="silk-sign" aria-hidden="true">
+        <span
+          className="silk-sign-plate"
+          style={{
+            background: started ? bright : 'var(--color-cream)',
+            borderColor: started ? bright : alpha(base, 0.55),
+            color: started ? '#07080a' : deep,
+          }}
+        >
+          {finished ? (
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          ) : null}
+          {path.dayCount} days
+        </span>
+        <span className="silk-sign-post" />
+        <span className="silk-sign-base" style={{ background: alpha(base, 0.55) }} />
       </span>
 
     <Link
