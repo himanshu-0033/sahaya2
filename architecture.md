@@ -282,4 +282,14 @@ a missing one means the Google button simply does not render.
    an unreachable server. Then set `VITE_AGENT_URL` on the frontend and
    **redeploy the frontend**.
 5. Back to the backend: set `ALLOWED_ORIGIN` to the frontend and admin URLs and
-   redeploy, so CORS is locked down instead of `*`.
+   redeploy, so CORS is locked down instead of the fallback list.
+
+> [!NOTE]
+> `ALLOWED_ORIGIN` is the **whole** list once it is set. While it is unset, the
+> backend falls back to `https://*.vercel.app` and `http://localhost:*` so dev
+> and preview deployments work with no configuration. Setting it replaces that
+> fallback rather than adding to it, so a production deployment is not left
+> reachable from any vercel.app subdomain. If you want previews to keep
+> working against production, add `https://*.vercel.app` to `ALLOWED_ORIGIN`
+> yourself. An entry may contain one `*`, which stands in for a single label
+> and never for a path.

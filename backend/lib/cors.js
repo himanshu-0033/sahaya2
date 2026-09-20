@@ -23,18 +23,36 @@ function matches(pattern, origin) {
   return !origin.slice(prefix.length, origin.length - suffix.length).includes('/');
 }
 
-// Built-in patterns that are always allowed regardless of ALLOWED_ORIGIN.
-// This covers Vercel preview deployments (new URL on every push) and local dev
-// without requiring env var updates each time.
-const BUILTIN_PATTERNS = [
+// The fallback list, used only while ALLOWED_ORIGIN is unset.
+//
+// These used to be added to the explicit list rather than used instead of it,
+// which meant https://*.vercel.app was allowed on every deployment no matter
+// what ALLOWED_ORIGIN said. Anybody can put a site on a vercel.app subdomain
+// in a couple of minutes, so the allowlist the deploy instructions tell you to
+// set, in the step that says CORS is now locked down instead of `*`, was not
+// locking anything down: the open door was a second list this file kept to
+// itself.
+//
+// It is not the catastrophe it first looks like, because nothing here is
+// authorised by a cookie. Every route reads a bearer token, which another
+// origin cannot read out of this one's storage, so the reachable surface was
+// the unauthenticated routes. That is still sign-in, signup and password
+// reset, called from any page any visitor happens to open, which is exactly
+// the traffic the limiters in those handlers count per client: distributed
+// across a site's visitors, the per-client count is one each.
+//
+// So: convenience while there is no allowlist, and nothing but the allowlist
+// once there is one. An operator who wants preview deployments to keep working
+// puts `https://*.vercel.app` in ALLOWED_ORIGIN themselves, which the wildcard
+// matching above already supports. That is a decision worth making on purpose.
+const FALLBACK_PATTERNS = [
   'https://*.vercel.app',
   'http://localhost:*',
 ];
 
 function resolveOrigin(req) {
   const explicit = allowedOrigins();
-  const all = [...explicit, ...BUILTIN_PATTERNS];
-  if (explicit.length === 0 && BUILTIN_PATTERNS.length === 0) return '*';
+  const all = explicit.length > 0 ? explicit : FALLBACK_PATTERNS;
 
   const origin = req.headers.origin;
   if (origin && all.some((a) => matches(a, origin))) return origin;
