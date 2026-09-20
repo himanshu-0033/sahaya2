@@ -125,8 +125,11 @@ export default function Paths() {
       <Header eyebrow="Paths" />
 
       <div className="animate-slide-up stack-block">
+        {/* Not "7-day paths": three of the five are not. They run 7, 5, 7, 6
+            and 5 days, and each card states its own length, so the heading
+            was contradicted by the first two cards under it. */}
         <h1 className="font-display text-[1.95rem] leading-[1.12] sm:text-[2.6rem]">
-          7-day paths
+          Paths, day by day
           <span className="text-[var(--sec-paths-deep)]">.</span>
         </h1>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-ink-soft)]">

@@ -132,7 +132,21 @@ function Panel({ title, sub, children }) {
 
 // One label-and-value row. `onEdit` puts the pencil on it; `editor` is what the
 // row turns into while it is being edited.
-function DetailRow({ label, value, onEdit, editing, editor, note }) {
+function DetailRow({ label, value, reveal, onEdit, editing, editor, note }) {
+  // Masked rows can be read without editing them.
+  //
+  // The phone and the date of birth are shown dotted out, which is right on a
+  // shared screen and was, until now, the only way they were ever shown. The
+  // mask keeps the last four digits, so a student could check the end of their
+  // number and not the beginning, and the only way to see the rest was to open
+  // the editor on it, which is a strange thing to have to do to read something
+  // and one slip away from changing it.
+  //
+  // That number is what a counsellor rings. A typo in the first six digits was
+  // invisible from this screen.
+  const [shown, setShown] = useState(false);
+  const maskable = Boolean(reveal) && reveal !== value;
+
   return (
     <div className="border-b border-[var(--line-1)] px-5 py-4 last:border-b-0 sm:px-7">
       {editing ? (
@@ -141,7 +155,19 @@ function DetailRow({ label, value, onEdit, editing, editor, note }) {
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs text-[var(--color-muted)]">{label}</p>
-            <p className="mt-1 truncate text-[0.9375rem] font-medium">{value || 'Not added'}</p>
+            <p className="mt-1 truncate text-[0.9375rem] font-medium">
+              {(shown && maskable ? reveal : value) || 'Not added'}
+            </p>
+            {maskable && (
+              <button
+                type="button"
+                onClick={() => setShown((v) => !v)}
+                className="press mt-1 text-xs text-[var(--color-teal-dark)] underline underline-offset-4"
+              >
+                {shown ? 'Hide' : 'Show'}
+                <span className="sr-only"> {label.toLowerCase()}</span>
+              </button>
+            )}
             {note && <p role="status" className="mt-1 text-xs text-[var(--color-muted)]">{note}</p>}
           </div>
           {onEdit && (
@@ -439,6 +465,7 @@ export default function Account() {
               <DetailRow
                 label="Date of birth"
                 value={maskDob(profile?.dob)}
+                reveal={profile?.dob}
                 onEdit={profile ? () => startEdit('dob') : null}
                 editing={editing === 'dob'}
                 editor={editor('dob')}
@@ -446,6 +473,7 @@ export default function Account() {
               <DetailRow
                 label="Mobile number"
                 value={maskPhone(profile?.phone)}
+                reveal={profile?.phone}
                 onEdit={profile ? () => startEdit('phone') : null}
                 editing={editing === 'phone'}
                 editor={editor('phone')}

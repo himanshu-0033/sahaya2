@@ -21,7 +21,17 @@ import { TECHNIQUES } from '../../backend/lib/grounding.js';
 import { PATHS } from '../../backend/lib/paths.js';
 
 const SRC = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src');
-const read = (rel) => fs.readFileSync(path.join(SRC, rel), 'utf8');
+const readRaw = (rel) => fs.readFileSync(path.join(SRC, rel), 'utf8');
+
+// Comments are blanked before the copy is scanned. A comment saying why the
+// heading is no longer "7-day paths" contains the words "7-day paths", and a
+// test that cannot tell the difference between the copy and a note about the
+// copy fails on the fix for the thing it is checking.
+const read = (rel) =>
+  readRaw(rel)
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, ' ')
+    .replace(/^[ 	]*\/\/.*$/gm, '');
 
 const TRUTH = {
   questionnaires: PUBLISHED_INSTRUMENTS.length,
@@ -105,6 +115,22 @@ assert.equal(
   `"PHQ-9, GAD-7, WHO-5 and ${named} more" comes to ${3 + remainder}, ` +
     `but the app has ${TRUTH.questionnaires}`,
 );
+
+// A heading that fixes a length the data does not have.
+//
+// The paths page was titled "7-day paths". They run 7, 5, 7, 6 and 5 days,
+// and every card states its own length, so the heading was contradicted by
+// the first two cards under it. Any heading naming a single day count has to
+// be true of every path, which is only worth saying when they all agree.
+const lengths = [...new Set(PATHS.map((p) => p.days.length))];
+const pathsPage = read('features/paths/Paths.jsx');
+for (const m of pathsPage.matchAll(/(\d+)-day paths/g)) {
+  assert.deepEqual(
+    lengths,
+    [Number(m[1])],
+    `the paths page is headed "${m[0]}" but the paths run ${lengths.sort((a, b) => a - b).join(', ')} days`,
+  );
+}
 
 // A spelled-out count elsewhere drifts the same way and is harder to grep for.
 for (const file of ['features/assessments/Assessments.jsx', 'features/home/More.jsx']) {
