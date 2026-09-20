@@ -8,6 +8,7 @@
 ![blocking](https://img.shields.io/badge/blocking%20launch-3-b42318?style=flat-square)
 ![waiting](https://img.shields.io/badge/awaiting%20permission-2-f2a93b?style=flat-square)
 ![recurring](https://img.shields.io/badge/recurring-2-1f2d52?style=flat-square)
+![tests](https://img.shields.io/badge/tests-30%20suites-1f2d52?style=flat-square)
 
 [prd](prd.md) · [architecture](architecture.md) · [rules](rules.md) · [design](design.md) · **tasks** · [memory](memory.md) · [readme](README.md)
 
@@ -96,7 +97,23 @@ bundles it under a paid Inquisit licence. Once permission exists it needs a
 pictorial option mode in `AssessmentRun`, roughly 15 SVG figures, and
 non-summed scoring across three independent dimensions.
 
-## 3. Recurring, forever
+## 3. Known ceilings, not yet hit
+
+### The dashboard reads the whole database
+
+`/api/admin/overview` fetches every check-in, assessment and chat session and
+narrows them in memory. Fine at prototype size; a thousand students over a year
+is a few hundred thousand check-in documents fetched to draw a fourteen-day
+trend.
+
+It is not simply a date window. The trend is fourteen days and the mood mix
+thirty, but the same pass reports a streak and a lifetime check-in count, and a
+window would quietly truncate the streak, which is the one number a student is
+told about. The upgrade is to denormalise `totalCheckIns`, `streak` and
+`lastCheckIn` onto the resident record at write time, then read a bounded slice
+here. That is a migration plus a second writer, so it wants doing on purpose.
+
+## 4. Recurring, forever
 
 | Check | Cadence | Last done | Why |
 | :--- | :--- | :--- | :--- |
@@ -107,7 +124,7 @@ non-summed scoring across three independent dimensions.
 > `backend/test/grounding.test.mjs` catches **malformed** video ids, not dead
 > ones. A test pass does not mean the videos still play.
 
-## 4. Known and accepted
+## 5. Known and accepted
 
 These are not bugs and do not need fixing. They need to stay true.
 
@@ -120,7 +137,7 @@ These are not bugs and do not need fixing. They need to stay true.
   risk. Its caution text is asserted by name in the test suite. Treat that
   assertion as load-bearing.
 
-## 5. Rejected, closed
+## 6. Rejected, closed
 
 Do not reopen these without new evidence. The reasoning is in
 [memory.md](memory.md#instruments-reviewed-2026-09-04).

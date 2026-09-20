@@ -17,7 +17,7 @@ import { MongoClient } from 'mongodb';
 //
 //   A ceiling. MongoDB refuses any document over 16MB. Every check-in the app
 //   has ever taken lived in one document, so there was a date after which
-//   writes simply began to fail. appendExportLog already carried a hand-rolled
+//   writes simply began to fail. The access log already carried a hand-rolled
 //   2000-entry cap for exactly this reason; nothing else did.
 //
 // Both are properties of the layout, not of the calling code, which is why the

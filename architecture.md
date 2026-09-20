@@ -216,7 +216,7 @@ the console.
 ```bash
 npm run install:all   # once
 npm run dev           # all four, prefixed output, restarts any that exits
-npm test              # backend and admin suites
+npm test              # 30 suites across backend, frontend and admin
 ```
 
 `npm run dev` is the one to use. The two Vite apps fail loudly when they are
