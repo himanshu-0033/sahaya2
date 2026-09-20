@@ -19,10 +19,14 @@ function fakeRes() {
 
 // Each case re-imports the module, because the allowlist is read from the
 // environment and the module is where that reading happens.
-async function allowFor(origin, allowedOrigin) {
+async function allowFor(origin, allowedOrigin, { strict = true } = {}) {
   if (allowedOrigin === undefined) delete process.env.ALLOWED_ORIGIN;
   else process.env.ALLOWED_ORIGIN = allowedOrigin;
-  const { applyCors } = await import(`../lib/cors.js?case=${encodeURIComponent(`${allowedOrigin}|${origin}`)}`);
+  if (strict) process.env.STRICT_ORIGIN = '1';
+  else delete process.env.STRICT_ORIGIN;
+  const { applyCors } = await import(
+    `../lib/cors.js?case=${encodeURIComponent(`${allowedOrigin}|${origin}|${strict}`)}`
+  );
   const res = fakeRes();
   applyCors({ method: 'GET', headers: { origin } }, res);
   return res.headers['access-control-allow-origin'];
@@ -93,6 +97,38 @@ for (const origin of ['http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://
   );
 }
 
+// --- the default keeps the fallback, because turning it off is a migration -
+//
+// This is the half that was missed the first time. Making ALLOWED_ORIGIN the
+// whole list is right, but shipping it as a default took a live deployment
+// down: the code deploys before anybody edits an environment variable, and in
+// that gap every origin leaning on the fallback is refused. Here that was the
+// admin console and every deployment URL, against an ALLOWED_ORIGIN that named
+// the resident app and nothing else.
+//
+// So: off by default, and STRICT_ORIGIN=1 once the list is complete.
+const LOOSE = { strict: false };
+assert.equal(
+  await allowFor('https://sahay-admin.vercel.app', PROD, LOOSE),
+  'https://sahay-admin.vercel.app',
+  'without STRICT_ORIGIN an unlisted vercel.app origin still works, as it did before',
+);
+assert.equal(
+  await allowFor('https://app-git-branch-team.vercel.app', PROD, LOOSE),
+  'https://app-git-branch-team.vercel.app',
+  'including the deployment URLs the Vercel dashboard links to',
+);
+assert.equal(
+  await allowFor(PROD, PROD, LOOSE),
+  PROD,
+  'and the configured origin is allowed either way',
+);
+assert.equal(
+  await allowFor('https://evil.test', PROD, LOOSE),
+  undefined,
+  'the loose default is still a list: a non-vercel origin is refused in both modes',
+);
+
 // --- the wildcard stands in for one label, not for a path ------------------
 assert.equal(
   await allowFor('https://evil.test/x.vercel.app', undefined),
@@ -100,4 +136,4 @@ assert.equal(
   'a path cannot be smuggled past the wildcard',
 );
 
-console.log('cors checks passed: the allowlist is the whole list, and the fallback only covers an unset one');
+console.log('cors checks passed: loose by default, strict under STRICT_ORIGIN, loopback works in dev');

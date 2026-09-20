@@ -284,8 +284,22 @@ a missing one means the Google button simply does not render.
 5. Back to the backend: set `ALLOWED_ORIGIN` to the frontend and admin URLs and
    redeploy, so CORS is locked down instead of the fallback list.
 
+> [!CAUTION]
+> **Tightening this is a two-step change.** `ALLOWED_ORIGIN` is additive by
+> default: the fallback below still applies, which is what keeps the admin
+> console and every Vercel deployment URL working. Setting `STRICT_ORIGIN=1`
+> makes `ALLOWED_ORIGIN` the whole list and drops the fallback.
+>
+> Do it in this order, or the site goes down in the gap between the code
+> deploying and the variable being edited: list **every** origin first (the
+> resident app, the admin console, and `https://*.vercel.app` if you want
+> deployment URLs to keep working), confirm each one still answers, and only
+> then set `STRICT_ORIGIN=1`. Shipping the strict behaviour as a default once
+> took this deployment's console and preview URLs offline against an
+> `ALLOWED_ORIGIN` that named the resident app and nothing else.
+
 > [!NOTE]
-> `ALLOWED_ORIGIN` is the **whole** list once it is set. While it is unset, the
+> Under `STRICT_ORIGIN=1`, `ALLOWED_ORIGIN` is the **whole** list. While it is unset, the
 > backend falls back to `https://*.vercel.app` and `http://localhost:*` so dev
 > and preview deployments work with no configuration. Setting it replaces that
 > fallback rather than adding to it, so a production deployment is not left

@@ -58,9 +58,24 @@ const FALLBACK_PATTERNS = [
   'http://[::1]:*',
 ];
 
+// Tightening an allowlist is a two-step change, and this is the switch.
+//
+// Making ALLOWED_ORIGIN the whole list is the right end state. Doing it in one
+// deploy is not: the code ships before anybody edits an environment variable,
+// and in the gap every origin that was relying on the fallback is refused. On
+// this project that gap took down the admin console and every deployment URL,
+// because ALLOWED_ORIGIN named the resident app and nothing else, and the app
+// reports a refused preflight as "Can't reach the server".
+//
+// So the fallback stays on by default and the lock is opt-in. Set the full
+// list first, confirm every origin still answers, then set STRICT_ORIGIN=1 and
+// the fallback is gone. Off is the old, wide behaviour; on is the narrow one.
+const strictOrigin = () => process.env.STRICT_ORIGIN === '1';
+
 function resolveOrigin(req) {
   const explicit = allowedOrigins();
-  const all = explicit.length > 0 ? explicit : FALLBACK_PATTERNS;
+  const all =
+    explicit.length > 0 && strictOrigin() ? explicit : [...explicit, ...FALLBACK_PATTERNS];
 
   const origin = req.headers.origin;
   if (origin && all.some((a) => matches(a, origin))) return origin;
