@@ -104,8 +104,14 @@ function Pencil() {
 function Note({ tone = 'ok', children }) {
   if (!children) return null;
   const color = tone === 'bad' ? 'var(--color-flag-deep)' : 'var(--color-teal-dark)';
+  // A screen reader is told about this, which it was not before: a save that
+  // failed used to change the screen silently, so the only way to find out was
+  // to notice the button had stopped saying "Saving".
+  //
+  // The role follows the tone. `alert` interrupts whatever is being read,
+  // which is right for a failure and rude for "Saved".
   return (
-    <p role="status" className="text-sm" style={{ color }}>
+    <p role={tone === 'bad' ? 'alert' : 'status'} className="text-sm" style={{ color }}>
       {children}
     </p>
   );
@@ -136,7 +142,7 @@ function DetailRow({ label, value, onEdit, editing, editor, note }) {
           <div className="min-w-0">
             <p className="text-xs text-[var(--color-muted)]">{label}</p>
             <p className="mt-1 truncate text-[0.9375rem] font-medium">{value || 'Not added'}</p>
-            {note && <p className="mt-1 text-xs text-[var(--color-muted)]">{note}</p>}
+            {note && <p role="status" className="mt-1 text-xs text-[var(--color-muted)]">{note}</p>}
           </div>
           {onEdit && (
             <button

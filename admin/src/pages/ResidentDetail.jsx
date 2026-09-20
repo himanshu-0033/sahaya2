@@ -301,7 +301,7 @@ function Counsellors({ residentId, initial }) {
           Assign
         </button>
       </form>
-      {error && <p className="mt-2 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+      {error && <p role="alert" className="mt-2 text-sm text-[var(--color-flag-deep)]">{error}</p>}
       <p className="mt-3 text-xs text-[var(--color-muted)]">
         An assigned counsellor sees this student at once. The student sees who was assigned on their
         account page and cannot remove them.
@@ -354,7 +354,7 @@ export default function ResidentDetail() {
       </Link>
 
       {loading && <p className="text-sm text-[var(--color-muted)]">Loading…</p>}
-      {error && <p className="text-sm text-[var(--color-flag-deep)]">{error}</p>}
+      {error && <p role="alert" className="text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
       {data && (
         <>

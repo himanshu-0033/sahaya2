@@ -99,7 +99,7 @@ export default function Caregiver() {
         </p>
 
         {loading && <SkeletonCards label="Loading residents…" count={4} columns={1} />}
-        {error && <p className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+        {error && <p role="alert" className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
         {residents && (
           <>
@@ -151,7 +151,7 @@ export default function Caregiver() {
                 </button>
               </form>
             )}
-            {addError && <p className="mt-2 text-sm text-[var(--color-flag-deep)]">{addError}</p>}
+            {addError && <p role="alert" className="mt-2 text-sm text-[var(--color-flag-deep)]">{addError}</p>}
 
             <div className="mt-4 flex gap-3">
               <input

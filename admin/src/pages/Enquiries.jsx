@@ -25,7 +25,7 @@ export default function Enquiries() {
         From the form on the landing page, newest first.
       </p>
 
-      {error && <p className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+      {error && <p role="alert" className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
       {!enquiries && !error && <p className="mt-6 text-sm text-[var(--color-muted)]">Loading…</p>}
       {enquiries?.length === 0 && (
         <p className="mt-6 text-sm text-[var(--color-muted)]">Nobody has sent the form yet.</p>

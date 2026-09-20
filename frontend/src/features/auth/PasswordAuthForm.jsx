@@ -208,7 +208,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         )}
 
         {error && (
-          <p className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+          <p role="alert" className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
             {error}
           </p>
         )}

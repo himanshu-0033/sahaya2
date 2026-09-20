@@ -550,7 +550,7 @@ export default function AssessmentRun() {
                 })}
               </div>
 
-              {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
+              {error && <p role="alert" className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
               <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
                 {onFollowUp

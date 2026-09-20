@@ -200,6 +200,13 @@ Not a polish pass. These are the ones this codebase has actually got wrong.
   on a page with fixed ids point both labels at whichever mounted first.
 - A `<select>` with no visible label of its own, like the country code beside a
   phone field, needs `aria-label`.
+- **A message that appears in response to something the user did must reach a
+  live region.** A form fails, React swaps a paragraph in, and on screen that
+  is obvious; to a screen reader it is silence somewhere the cursor is not.
+  Use `role="alert"` for a failure, which interrupts, and `role="status"` for
+  a confirmation, which waits for a pause. Put it on the message element, not
+  on a layout container near it. `frontend/scripts/announce.test.mjs` fails on
+  a message that announces nothing.
 - Give password fields the right `autoComplete`: `new-password` when setting
   one, `current-password` when signing in.
 

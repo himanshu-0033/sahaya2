@@ -63,7 +63,7 @@ export default function ChatHistory() {
       )}
 
       {error && (
-        <div className="stack-section">
+        <div role="alert" className="stack-section">
           <LoadError error={error} retrying={loading} onRetry={() => setReloadKey((k) => k + 1)} />
         </div>
       )}

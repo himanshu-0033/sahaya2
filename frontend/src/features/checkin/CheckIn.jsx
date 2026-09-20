@@ -268,7 +268,7 @@ export default function CheckIn() {
           )}
 
           {platesError && plates.length === 0 && (
-            <div className="mt-8">
+            <div role="alert" className="mt-8">
               <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
                 The plates did not load. Today is saved and your three ranges are recorded,
                 only this last part is missing.
@@ -349,7 +349,7 @@ export default function CheckIn() {
                   </p>
                 )}
 
-                {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+                {error && <p role="alert" className="mt-4 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
                 <div className="mt-6 w-full">
                   {plateStep < plates.length - 1 ? (
@@ -492,7 +492,7 @@ export default function CheckIn() {
             </p>
           </div>
 
-          {error && <p className="mt-5 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+          {error && <p role="alert" className="mt-5 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
           {/* Two ways on from the same tap: the check-in and the test, or the
               check-in alone. */}

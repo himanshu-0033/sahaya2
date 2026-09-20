@@ -194,7 +194,7 @@ export default function InkblotTest() {
           </div>
 
           {error && plates.length > 0 && (
-            <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>
+            <p role="alert" className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>
           )}
 
           <button
@@ -280,7 +280,7 @@ export default function InkblotTest() {
               </p>
             )}
 
-            {error && <p className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
+            {error && <p role="alert" className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
             <div className="mt-6 w-full">
               {step < plates.length - 1 ? (

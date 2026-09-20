@@ -635,7 +635,7 @@ export default function Welcome({ onSignedIn }) {
                   <a href={tel(number)} className="font-semibold underline-offset-4 hover:underline">
                     {name} {number}
                   </a>
-                  {note && <span style={{ color: 'var(--w-forest-soft)' }}> ({note})</span>}
+                  {note && <span role="status" style={{ color: 'var(--w-forest-soft)' }}> ({note})</span>}
                 </span>
               ))}
             </p>

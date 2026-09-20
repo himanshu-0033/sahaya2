@@ -195,7 +195,7 @@ export default function Residents() {
           </button>
         </form>
       )}
-      {inviteError && <p className="text-sm text-[var(--color-flag-deep)]">{inviteError}</p>}
+      {inviteError && <p role="alert" className="text-sm text-[var(--color-flag-deep)]">{inviteError}</p>}
 
       <div className="flex flex-wrap items-center gap-3">
         <input

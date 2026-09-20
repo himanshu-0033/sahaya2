@@ -32,7 +32,7 @@ export default function CaregiverResident() {
           ← All residents
         </Link>
 
-        {error && <p className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+        {error && <p role="alert" className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
         {data && (
           <>
