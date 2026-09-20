@@ -6,9 +6,18 @@ import useDialogFocus from './useDialogFocus.js';
 //   - KIRAN (1800-599-0019) was merged into Tele-MANAS, the national 24/7 line,
 //     so Tele-MANAS leads. 14416 is its short code; 1-800-891-4416 the same
 //     service on a toll-free number for phones that cannot dial short codes.
-//   - iCall answers Monday to Saturday, 10am to 8pm. The old note said 8am to
-//     10pm, which would have sent someone to a line that was closed.
-//   - Vandrevala's national number is +91 9999 666 555 now.
+//   - iCall answers Monday to Saturday, 8am to 9pm, checked against
+//     icallhelpline.org on 2026-09-20. This has now been wrong twice: it
+//     said 8am to 10pm, was "corrected" to 10am to 8pm, and both closed the
+//     line two hours early in the morning. The landline 022-25521111 is
+//     listed first because the site shows the mobile as NOT AVAILABLE NOW,
+//     and the mobile is kept because that status reads like a live one.
+//   - Vandrevala's national number is +91 9999 666 555 now, re-confirmed on
+//     vandrevalafoundation.com on 2026-09-20. Search results still hand back
+//     the retired 1860-266-2345; the foundation's own page does not.
+//   - AASRA is 022-27546669, from aasra.info on 2026-09-20. The number this
+//     app carried before, 9820466726, appears nowhere on AASRA's site. It had
+//     been on a crisis screen here for months.
 //   - The "someone is hurting you" lines are new. A crisis is not always
 //     thoughts of self-harm, and a student being hit at home or harassed on
 //     campus needs a different number from a suicide line.
@@ -28,8 +37,9 @@ const GROUPS = [
     entries: [
       { id: 'telemanas-tollfree', name: 'Tele-MANAS (toll-free)', number: '1-800-891-4416', note: 'Govt. of India, 24/7' },
       { id: 'vandrevala', name: 'Vandrevala Foundation', number: '+91 9999 666 555', note: '24/7, call or text' },
-      { id: 'aasra', name: 'AASRA', number: '+91 98204 66726', note: '24/7' },
-      { id: 'icall', name: 'iCall (TISS)', number: '9152987821', note: 'Mon to Sat, 10am to 8pm' },
+      { id: 'aasra', name: 'AASRA', number: '022-27546669', note: '24/7' },
+      { id: 'icall', name: 'iCall (TISS)', number: '022-25521111', note: 'Mon to Sat, 8am to 9pm' },
+      { id: 'icall-mobile', name: 'iCall (TISS), mobile', number: '9152987821', note: 'Mon to Sat, 8am to 9pm' },
     ],
   },
   {

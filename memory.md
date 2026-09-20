@@ -20,7 +20,7 @@
 > in the diff. Read this before re-proposing something that looks like an
 > obvious improvement. Dates are when the call was made.
 
-## Crisis helplines, verified 2026-09-15
+## Crisis helplines, verified 2026-09-20
 
 Used in `CrisisContacts`, `ErrorBoundary`, the `index.html` noscript block, the
 landing footer (`features/auth/Welcome.jsx`), `agent/lib/persona.js`, and both
@@ -32,9 +32,9 @@ asserts; they are not, and need not be, byte-identical.
 | :--- | :--- | :--- |
 | **Tele-MANAS** | **14416**, also 1-800-891-4416 | 24/7, Govt. of India |
 | Emergency | **112** | 24/7 |
-| iCall (TISS) | 9152987821 | **Mon to Sat, 10am to 8pm** |
+| iCall (TISS) | **022-25521111**, mobile 9152987821 | **Mon to Sat, 8am to 9pm** |
 | Vandrevala Foundation | **+91 9999 666 555** | 24/7 |
-| AASRA | +91 98204 66726 | 24/7 |
+| AASRA | **022-27546669** | 24/7 |
 | Women Helpline | 181 | For abuse |
 | NCW | 7827170170, also 14490 | 24/7 |
 | Childline | 1098 | Under 18 |
@@ -42,9 +42,27 @@ asserts; they are not, and need not be, byte-identical.
 > [!CAUTION]
 > **KIRAN 1800-599-0019 merged into Tele-MANAS. Never list KIRAN again.**
 >
-> Two other corrections already made and not to be undone: iCall's hours were
-> shown as 8am to 10pm, which was wrong, and Vandrevala's old 1860-2662-345
-> number is gone.
+> Vandrevala's old 1860-2662-345 is gone, and search engines still hand it
+> back. The foundation's own page says +91 9999 666 555, which is what this
+> app carries.
+
+Two numbers were wrong until 2026-09-20 and were corrected against the
+organisations' own sites:
+
+- **AASRA was 9820466726**, which appears nowhere on aasra.info. Their
+  published line is **022-27546669**. The wrong one had been on a crisis
+  screen here for months.
+- **iCall's hours have now been wrong twice.** They were listed as 8am to
+  10pm, "corrected" on 2026-09-15 to 10am to 8pm, and the site says **8am to
+  9pm**. Both versions closed the line two hours early in the morning. The
+  landline **022-25521111** is listed first because icallhelpline.org shows
+  the mobile as NOT AVAILABLE NOW, and the mobile is kept because that reads
+  like a live status rather than a retirement.
+
+`backend/test/helplines.test.mjs` now pins every number, keeps the retired
+ones out of all seven surfaces, and fails if the two safety modules disagree.
+Verifying by hand is still the job; the test only stops a correction being
+half-applied.
 
 **Why it matters:** a wrong or closed number on a crisis screen sends someone
 in danger to a dead line.

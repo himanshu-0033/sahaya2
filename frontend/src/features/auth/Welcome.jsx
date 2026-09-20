@@ -150,8 +150,8 @@ const FOOTER = [
 const FOOTER_LINES = [
   ['Emergency', '112', null],
   ['Vandrevala Foundation', '+91 9999 666 555', '24/7'],
-  ['AASRA', '+91 98204 66726', '24/7'],
-  ['iCall (TISS)', '9152987821', 'Mon to Sat, 10am to 8pm'],
+  ['AASRA', '022-27546669', '24/7'],
+  ['iCall (TISS)', '022-25521111', 'Mon to Sat, 8am to 9pm'],
 ];
 
 const FOOTER_HURT = [

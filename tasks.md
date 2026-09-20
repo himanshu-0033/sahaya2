@@ -8,7 +8,7 @@
 ![blocking](https://img.shields.io/badge/blocking%20launch-3-b42318?style=flat-square)
 ![waiting](https://img.shields.io/badge/awaiting%20permission-2-f2a93b?style=flat-square)
 ![recurring](https://img.shields.io/badge/recurring-2-1f2d52?style=flat-square)
-![tests](https://img.shields.io/badge/tests-31%20suites-1f2d52?style=flat-square)
+![tests](https://img.shields.io/badge/tests-32%20suites-1f2d52?style=flat-square)
 
 [prd](prd.md) · [architecture](architecture.md) · [rules](rules.md) · [design](design.md) · **tasks** · [memory](memory.md) · [readme](README.md)
 
@@ -131,12 +131,15 @@ here. That is a migration plus a second writer, so it wants doing on purpose.
 
 | Check | Cadence | Last done | Why |
 | :--- | :--- | :--- | :--- |
-| **Re-verify every helpline** | Before any release touching crisis UI | 2026-09-15 | A dead number on a crisis screen sends someone in danger nowhere |
+| **Re-verify every helpline** | Before any release touching crisis UI | **2026-09-20** | A dead number on a crisis screen sends someone in danger nowhere. Two were wrong on 2026-09-20: AASRA's number and iCall's hours |
 | **Re-check the 52 grounding video ids** | Periodically | When added | They are other people's videos and can be deleted, made private or region-blocked without anyone touching this repo |
 
 > [!NOTE]
 > `backend/test/grounding.test.mjs` catches **malformed** video ids, not dead
-> ones. A test pass does not mean the videos still play.
+> ones, and `backend/test/helplines.test.mjs` pins the numbers but cannot tell
+> you one has gone dead. A test pass is not a verification. Check the
+> organisation's own site, not a search summary: searches still hand back
+> Vandrevala's retired 1860-266-2345.
 
 ## 5. Known and accepted
 

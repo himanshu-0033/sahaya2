@@ -79,7 +79,9 @@ export const LABELS = {
 };
 
 // Verified September 2026. KIRAN (1800-599-0019) was merged into Tele-MANAS;
-// iCall answers Monday to Saturday, 10am to 8pm; Vandrevala's national number
+// iCall answers Monday to Saturday, 8am to 9pm, and its landline 022-25521111
+// is the line icallhelpline.org currently shows as available; the mobile
+// 9152987821 reads NOT AVAILABLE NOW there. Vandrevala's national number
 // is +91 9999 666 555.
 const EMERGENCY = { name: 'Emergency (police, ambulance)', number: '112' };
 const TELE_MANAS = { name: 'Tele-MANAS, Govt. of India mental health line, 24/7', number: '14416' };
@@ -89,8 +91,8 @@ export const HELPLINES = {
     EMERGENCY,
     TELE_MANAS,
     { name: 'Vandrevala Foundation, 24/7', number: '+91 9999 666 555' },
-    { name: 'AASRA, 24/7', number: '+91 98204 66726' },
-    { name: 'iCall (TISS), Mon to Sat 10am to 8pm', number: '9152987821' },
+    { name: 'AASRA, 24/7', number: '022-27546669' },
+    { name: 'iCall (TISS), Mon to Sat 8am to 9pm', number: '022-25521111' },
   ],
   abuse: [
     EMERGENCY,
