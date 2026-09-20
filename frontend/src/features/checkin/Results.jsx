@@ -53,6 +53,12 @@ export default function Results() {
   const navigate = useNavigate();
   const session = useSession();
   const [record, setRecord] = useState(location.state?.record || null);
+  // Set when the three words were screened as a disclosure. It arrives on the
+  // POST that created the check-in and again on the GET below, so a refresh
+  // does not make the help disappear.
+  const [crisis, setCrisis] = useState(
+    location.state?.crisis || location.state?.record?.crisis || null,
+  );
   // Set only when the ten plates were taken as part of this sitting, which the
   // check-in runs straight on into when the test is not skipped. Read once from navigation state
   // rather than fetched: this screen is about today, and a Rorschach from
@@ -83,6 +89,7 @@ export default function Results() {
       .then((data) => {
         if (data.record) setRecord(data.record);
         else navigate('/');
+        if (data.crisis) setCrisis(data.crisis);
       })
       .finally(() => setLoading(false));
   }, [session, record, navigate]);
@@ -97,6 +104,39 @@ export default function Results() {
         <p className="stack-block animate-pulse text-[var(--color-ink-soft)]">Loading today's check-in…</p>
       ) : (
         <>
+          {/* Above the thought, deliberately.
+              
+              Whoever wrote those three words is holding the phone right now,
+              and the counsellor console might not be opened until Monday. A
+              thought for the day at the top of this screen, with help below
+              the fold, would be the app looking away. Same treatment as the
+              questionnaire crisis panel, from the same helpline table. */}
+          {crisis && (
+            <section
+              className="animate-slide-up mt-8 rounded-3xl border border-[var(--color-flag)] bg-[var(--color-flag-soft)] p-6 ring-1 ring-[var(--color-flag)]/40"
+              role="alert"
+            >
+              <p className="font-display text-xl leading-snug text-[var(--color-flag-deep)]">
+                Before anything else.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed">{crisis.message}</p>
+              <ul className="mt-4 space-y-1 text-sm">
+                {crisis.helplines.map((h) => (
+                  <li key={h.number} className="flex justify-between gap-4">
+                    <span className="text-[var(--color-ink-soft)]">{h.name}</span>
+                    <a className="text-[var(--color-teal-dark)]" href={`tel:${h.number}`}>
+                      {h.number}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs leading-relaxed text-[var(--color-ink-soft)]">
+                This check-in is saved to your account. Your counsellor and your
+                institution&apos;s administrator can see it.
+              </p>
+            </section>
+          )}
+
           {/* The thought is the emotional payload, so it gets the largest type
               on the page and no competing chrome. */}
           <section className="animate-slide-up mt-8">

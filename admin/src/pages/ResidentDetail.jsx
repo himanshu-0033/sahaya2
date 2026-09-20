@@ -87,6 +87,52 @@ function RiskBanner({ risk, resident }) {
 // A disclosure of suicide, self-harm or abuse in a chat with DP. Sits with the
 // risk banner, above the topics, and says how it was found: by matching words,
 // so the counsellor reads the conversation before they pick up the phone.
+// The same fact as the chat banner, arriving through a different door: three
+// words typed into a check-in rather than a sentence in a conversation.
+//
+// Its own banner rather than a line in the flag reasons, because the reasons
+// are nudges ("mood has stayed low", "today's words lean heavy") and this is
+// not one. A student can write this on their very first check-in, with no
+// history for any of the mood rules to have noticed, so it has to be able to
+// arrive alone and still be the loudest thing on the page.
+function CheckinSafetyBanner({ safety, resident }) {
+  if (!safety) return null;
+  return (
+    <section className="rounded-2xl border border-[var(--color-flag)] bg-[var(--color-flag-soft)] p-6 ring-1 ring-[var(--color-flag)]/40">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-xl text-[var(--color-flag-deep)]">
+            Wrote about {safety.labels.join(' and ')} in a check-in
+          </p>
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            {safety.checkIns} {safety.checkIns === 1 ? 'check-in' : 'check-ins'} · latest{' '}
+            {ago(safety.date)}
+          </p>
+          {safety.words.filter(Boolean).length > 0 && (
+            <p className="mt-3 text-sm text-[var(--color-ink)]">
+              Their words:{' '}
+              <span className="font-medium">{safety.words.filter(Boolean).join(' · ')}</span>
+            </p>
+          )}
+        </div>
+        {resident.phone && (
+          <a
+            href={`tel:${resident.phone}`}
+            className="whitespace-nowrap rounded-full bg-[var(--color-flag-deep)] px-4 py-2 text-sm font-medium text-white"
+          >
+            Call {resident.phone}
+          </a>
+        )}
+      </div>
+      <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+        Found by matching the words the student wrote, so it can miss things and can misread them.
+        They were shown crisis contacts in the app at the time. It says a conversation is needed,
+        not how serious this is.
+      </p>
+    </section>
+  );
+}
+
 function ChatSafetyBanner({ safety, resident }) {
   if (!safety) return null;
   return (
@@ -343,6 +389,9 @@ export default function ResidentDetail() {
           )}
 
           <RiskBanner risk={data.summary.riskScreen} resident={data.resident} />
+          {/* Above the chat banner: a check-in disclosure is the newer signal
+              and the one with no conversation behind it to soften it. */}
+          <CheckinSafetyBanner safety={data.summary.checkinSafety} resident={data.resident} />
           <ChatSafetyBanner safety={data.summary.chatSafety} resident={data.resident} />
           <ConcernBanner concerns={data.summary.concerns} resident={data.resident} />
 

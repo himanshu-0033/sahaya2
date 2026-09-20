@@ -191,7 +191,12 @@ export default function CheckIn() {
       // A fresh sitting, so nothing an earlier unfinished one stored can reach
       // today's results.
       clearSetResults(SET_IDS);
-      if (withTest) navigate(setStartHref(SET_IDS, AFTER_CHECKIN));
+      // A disclosure ends the sitting here, whatever was queued next.
+      // Handing someone who has just written that they want to die a
+      // three-questionnaire battery, with the helplines waiting politely at
+      // the end of it, is the app finishing its own flow instead of answering
+      // them. The tests are still there tomorrow.
+      if (withTest && !saved.crisis) navigate(setStartHref(SET_IDS, AFTER_CHECKIN));
       else navigate('/results', { state: { record: saved } });
     } catch (err) {
       if (err.message.includes('Create your account')) {

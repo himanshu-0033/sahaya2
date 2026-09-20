@@ -73,6 +73,37 @@ function recentChats(chatSessions) {
   );
 }
 
+// The most recent check-in in the window whose words were screened as a
+// disclosure. Same idea as chatSafetyFor below and deliberately the same
+// shape, because to a counsellor it is the same fact arriving through a
+// different door: three words in a box rather than a sentence in a chat.
+//
+// Kept separate from the flag reasons because those are nudges, and this is
+// not one. A student can write this on their first ever check-in, with no
+// mood history for any of the other rules to have noticed.
+function checkinSafetyFor(checkins, residentId) {
+  const since = Date.now() - RISK_WINDOW_DAYS * DAY_MS;
+  const hits = checkins
+    .filter(
+      (c) =>
+        c.residentId === residentId &&
+        (c.safety || []).length > 0 &&
+        new Date(c.createdAt || c.date).getTime() >= since,
+    )
+    .sort((a, b) => (b.createdAt || b.date).localeCompare(a.createdAt || a.date));
+  if (hits.length === 0) return null;
+  const categories = [...new Set(hits.flatMap((c) => c.safety))];
+  const at = hits[0].createdAt || hits[0].date;
+  return {
+    categories,
+    labels: categories.map((c) => SAFETY_LABELS[c] || c),
+    at,
+    date: at.slice(0, 10),
+    words: hits[0].words || [],
+    checkIns: hits.length,
+  };
+}
+
 // The most recent conversation in the window where the resident disclosed
 // suicide, self-harm or abuse. Counts toward "needs a conversation" and sits
 // with the risk screens, because to a counsellor it is the same kind of fact:
@@ -168,6 +199,7 @@ export function summarizeResident(
   ];
   const riskScreen = riskScreenFor(assessments, resident.id);
   const chatSafety = chatSafetyFor(chatSessions, resident.id);
+  const checkinSafety = checkinSafetyFor(history, resident.id);
 
   const mine = assessments
     .filter((a) => a.residentId === resident.id)
@@ -199,11 +231,15 @@ export function summarizeResident(
     flaggedCount: history.filter((c) => c.flagged).length,
     // Deliberately broader than it used to be — see the note at the top.
     flaggedRecently:
-      checkinFlagRecently || Boolean(riskScreen && riskScreen.recent) || Boolean(chatSafety),
+      checkinFlagRecently ||
+      Boolean(riskScreen && riskScreen.recent) ||
+      Boolean(chatSafety) ||
+      Boolean(checkinSafety),
     checkinFlaggedRecently: checkinFlagRecently,
     checkinFlagReasons,
     riskScreen,
     chatSafety,
+    checkinSafety,
     concerns: concernsFor(chatSessions, resident.id),
     assessmentCount: mine.length,
     lastAssessment,
@@ -234,7 +270,7 @@ export function summarizeResident(
 // alphabetical.
 function triageRank(row) {
   if (row.riskScreen?.recent && row.riskScreen.level === 'acute') return 0;
-  if (row.riskScreen?.recent || row.chatSafety) return 1;
+  if (row.riskScreen?.recent || row.chatSafety || row.checkinSafety) return 1;
   if (row.flaggedRecently) return 2;
   if (row.riskScreen) return 3;
   return 4;
@@ -344,7 +380,9 @@ export function buildOverview(
   }
   recentRiskScreens.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 
-  const atRisk = summaries.filter((s) => (s.riskScreen && s.riskScreen.recent) || s.chatSafety);
+  const atRisk = summaries.filter(
+    (s) => (s.riskScreen && s.riskScreen.recent) || s.chatSafety || s.checkinSafety,
+  );
 
   return {
     generatedAt: new Date().toISOString(),

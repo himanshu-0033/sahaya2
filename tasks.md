@@ -8,7 +8,7 @@
 ![blocking](https://img.shields.io/badge/blocking%20launch-3-b42318?style=flat-square)
 ![waiting](https://img.shields.io/badge/awaiting%20permission-2-f2a93b?style=flat-square)
 ![recurring](https://img.shields.io/badge/recurring-2-1f2d52?style=flat-square)
-![tests](https://img.shields.io/badge/tests-30%20suites-1f2d52?style=flat-square)
+![tests](https://img.shields.io/badge/tests-31%20suites-1f2d52?style=flat-square)
 
 [prd](prd.md) · [architecture](architecture.md) · [rules](rules.md) · [design](design.md) · **tasks** · [memory](memory.md) · [readme](README.md)
 
@@ -55,6 +55,20 @@ Free for research and teaching. Commercial use needs the author's permission.
 Decide which this deployment is before it takes money.
 
 ## 1b. Closed since this file was written
+
+### The daily check-in was not screened, closed 2026-09-20
+
+Every other place a student could type was screened for a crisis disclosure.
+The daily check-in, the one thing every student does every day, was not: it
+went only through the mild-word heuristic, which needs two hits from a
+twenty-four word list with nothing about dying in it. The app flagged "tired
+sad lonely" for a counsellor and did nothing at all for "kill myself tonight",
+and the student who wrote the second one was shown a thought for the day and a
+streak.
+
+Now screened by the same module as the chat and the inkblot. See
+[rules.md](rules.md) 1.4 for what a match has to do, and
+`backend/test/checkin-safety.test.mjs` for the cases.
 
 ### Access logging, closed 2026-09-20
 

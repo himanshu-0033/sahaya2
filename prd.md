@@ -69,6 +69,13 @@ In the background, `backend/lib/logic.js` flags the check-in if mood has been
 low for three check-ins running, or the weekly average is low, or two or more
 of today's words hit a small negative word list.
 
+The three words are also screened for a crisis disclosure, by the same module
+the chat and the inkblot use, joined into one line because a disclosure is a
+phrase and the plates split it across boxes. A match flags the check-in on its
+own, reaches the console as a safety concern, ends the sitting rather than
+handing over a queued questionnaire, and puts helplines at the top of the next
+screen ahead of the thought for the day.
+
 > [!NOTE]
 > The flagging heuristic is intentionally simple. It will both miss real
 > concerns and flag false positives. It is a nudge to check in on someone, not

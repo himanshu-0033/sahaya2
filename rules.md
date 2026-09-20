@@ -51,27 +51,54 @@ The agent screens every user turn **before any model is called**. A crisis
 reply is fixed text, not generated text. Do not move the screen behind a model
 call, and do not let a provider failure skip it.
 
-### 1.4 Caution text is asserted by name
+### 1.4 Every piece of free text a student writes is screened
+
+All of it, not most of it. The chat screens every turn, the inkblot screens
+every response, a positive PHQ-9 item 9 routes into the crisis path, and the
+daily check-in screens its three words as one joined line, because a
+disclosure is a phrase and the plates split it across boxes.
+
+The daily check-in was missed for a long time. It went only through
+`computeFlag`, which matches a twenty-four word list of ordinary heavy words
+and needs two hits, and that list has nothing about dying in it. The app
+flagged "tired sad lonely" for a counsellor and did nothing at all for "kill
+myself tonight". If you add a new place a student can type, screen it there
+and add a case to `backend/test/checkin-safety.test.mjs`.
+
+A screened disclosure does three things, and needs all three:
+
+1. Flags the record on its own, without waiting for a second signal.
+2. Records `safety: [category]`, the same field and shape a chat transcript
+   uses, so it reaches the console through the path that already exists.
+3. **Shows the student help on the next screen**, before anything else on it.
+   The counsellor console is the slow path. Whoever wrote those words is
+   holding the phone now, and the console may not be opened until Monday.
+
+A disclosure also ends the sitting. Do not route someone who has just
+disclosed into a queued questionnaire battery with the helplines waiting at
+the end of it.
+
+### 1.5 Caution text is asserted by name
 
 Cold water and both breath-hold patterns carry caution text that the UI shows
 **before** the start button. The test suite asserts that text by name. If a
 test fails because the caution changed, fix the caution, do not edit the
 assertion.
 
-### 1.5 Say who can see it
+### 1.6 Say who can see it
 
 Never write a screen that promises "nobody sees this unless you share". It is
 not true. Any screen that collects student data says who can see it: their
 counsellor and the institution's administrator. See
 [memory.md](memory.md#access-model-chosen-2026-09-15).
 
-### 1.6 Access is decided on the server
+### 1.7 Access is decided on the server
 
 Every handler touching student data goes through `requireStudentAccess` or
 `requireTeamAccess` in `backend/lib/auth.js`. Hiding a button is not access
 control.
 
-### 1.7 No endpoint says whether an account exists
+### 1.8 No endpoint says whether an account exists
 
 Being a user of this app is itself sensitive. `auth/forgot.js` gives one answer
 to every address, and `auth/login.js` gives one refusal whether the password
@@ -79,7 +106,7 @@ was wrong, the account is Google-only, or there is no account at all. It also
 runs bcrypt against a decoy hash when there is no account, because an endpoint
 that skips the slow part answers the question in its response time instead.
 
-### 1.8 Anything a student typed is defused before it leaves as a CSV
+### 1.9 Anything a student typed is defused before it leaves as a CSV
 
 `admin/src/lib/csv.js` prefixes a cell starting with `=`, `+`, `-`, `@`, tab
 or carriage return with an apostrophe. Two exported columns are student-typed,
@@ -87,7 +114,7 @@ the check-in words and the student's own name, and a spreadsheet runs a cell
 before it shows it. Quoting does not help: the quotes come off when the file
 is parsed and the formula is what is left.
 
-### 1.9 Every unauthenticated route is metered
+### 1.10 Every unauthenticated route is metered
 
 `lib/rate-limit.js`, applied to enquiries, preview, signup, forgot and login.
 Sign-in counts per account as well as per client: a campus shares one IP, so
