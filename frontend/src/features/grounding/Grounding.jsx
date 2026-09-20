@@ -56,7 +56,7 @@ function TechniqueCard({ technique, last, index, wide = false }) {
     <Link
       to={`/grounding/${technique.id}`}
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
-      className={`animate-slide-up card press flex flex-col p-5 ${wide ? 'sm:col-span-2' : ''}`}
+      className={`animate-slide-up card press lift flex flex-col p-5 ${wide ? 'sm:col-span-2' : ''}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

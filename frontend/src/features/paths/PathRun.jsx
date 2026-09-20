@@ -24,20 +24,31 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
 
   return (
     <li
-      className="card flex items-start gap-4 p-4"
-      style={isNext && !done ? { borderColor: alpha(base, 0.4) } : undefined}
+      className="path-stop"
+      style={{
+        // The road takes the path's own accent, faintly, so each path reads as
+        // its own route rather than all five sharing one grey line.
+        '--road-ink': alpha(base, 0.3),
+        '--road-gap': '10px',
+      }}
     >
+      {/* The stop, sitting in the gutter on top of the road. It is still the
+          same button that marks the day done: the road is a drawing around
+          the control, not a replacement for it. */}
       <button
         type="button"
         onClick={() => onToggle(day.day, done)}
         disabled={busy}
         aria-pressed={done}
         aria-label={done ? `Mark day ${day.day} not done` : `Mark day ${day.day} done`}
-        className="press mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-50"
+        className="path-stop-marker press flex h-7 w-7 items-center justify-center rounded-full border-2 transition-colors disabled:opacity-50"
         style={{
-          borderColor: done ? bright : 'rgba(255,255,255,0.18)',
-          background: done ? bright : 'transparent',
-          color: done ? '#07080a' : 'var(--color-muted)',
+          borderColor: done ? bright : isNext ? deep : alpha(base, 0.45),
+          // A stop that has not been reached is the page's own background, not
+          // transparent: the road must not show through the middle of it.
+          background: done ? bright : 'var(--color-cream)',
+          color: done ? '#07080a' : isNext ? deep : 'var(--color-muted)',
+          boxShadow: isNext && !done ? `0 0 0 4px ${alpha(base, 0.16)}` : 'none',
         }}
       >
         {done ? (
@@ -49,6 +60,10 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
         )}
       </button>
 
+      <div
+        className="path-stop-card card p-4"
+        style={isNext && !done ? { borderColor: alpha(base, 0.4) } : undefined}
+      >
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
           <p className={`font-display text-lg leading-snug ${done ? 'text-[var(--color-muted)]' : ''}`}>
@@ -71,6 +86,7 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </Link>
+      </div>
       </div>
     </li>
   );
@@ -266,7 +282,7 @@ export default function PathRun() {
 
           {error && <p role="alert" className="mt-4 text-sm text-[var(--color-flag-deep)]">{error.message}</p>}
 
-          <ol className="stack-section grid gap-2.5">
+          <ol className="path-road stack-section grid gap-2.5">
             {path.days.map((day) => (
               <DayRow
                 key={day.day}

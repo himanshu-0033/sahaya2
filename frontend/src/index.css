@@ -490,10 +490,124 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
 .press:active { transform: scale(0.972); }
 
 /* Lift on hover for pointer devices only, so a tap on a phone doesn't leave
-   a card stuck in its hovered state. */
+   a card stuck in its hovered state.
+
+   The lift now casts a shadow, which is the difference between a card coming
+   off the page and a card being nudged four pixels up. Without one the move
+   reads as a glitch rather than as depth, because nothing about the card's
+   relationship to the page has changed.
+
+   The shadow is the depth rule from DESIGN.md, not a new invention: a 1px
+   contact shadow plus a wide diffused one, both tinted with the ink and never
+   pure black. The scale is deliberately tiny; anything larger makes a dense
+   grid jitter as the pointer crosses between neighbours. z-index keeps the
+   lifted card over its siblings while it is raised. */
 @media (hover: hover) and (pointer: fine) {
-  .lift { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease; }
-  .lift:hover { transform: translateY(-4px); }
+  .lift {
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .lift:hover {
+    transform: translateY(-4px) scale(1.012);
+    box-shadow:
+      0 1px 2px rgba(20, 27, 45, 0.06),
+      0 18px 32px -16px rgba(20, 27, 45, 0.24);
+    z-index: 1;
+  }
+}
+
+/* ─── A path drawn as a road ────────────────────────────────────────────────
+
+   The days of a path used to be a plain stack of cards. They are a route now:
+   a line running down a left gutter with the days as stops on it, which is
+   the thing the page has always been describing in words.
+
+   One rule the metaphor must not break. A road reads as an order, and this
+   product says the opposite in its own footer: do the days in any order, skip
+   what does not help, come back on day nine. So the road is the SHAPE of the
+   path and never a progress bar. It is one continuous faint line whatever has
+   been done, and it is the stops that change: filled where a day is done,
+   wherever that day sits. Nothing is drawn as locked, because nothing is.
+
+   The rail is painted per row rather than once down the list, so it joins each
+   stop to the next without anything having to know how tall a row is. The last
+   row draws no segment, or the road would run off the end into nothing. */
+.path-road {
+  --stop: 30px;      /* centre of the marker, from the gutter's left edge */
+  --gutter: 64px;
+}
+
+/* A narrower gutter on a phone. At 64px the card had 276px left on a 390px
+   screen, which is where a two-line title starts becoming a three-line one.
+   The stop still clears the card by ten pixels at this width. */
+@media (max-width: 640px) {
+  .path-road {
+    --stop: 22px;
+    --gutter: 46px;
+  }
+}
+
+.path-stop {
+  position: relative;
+  padding-left: var(--gutter);
+}
+
+/* The segment from this stop down to the next one. */
+.path-stop::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--stop) - 1px);
+  top: 34px;
+  bottom: calc(-1 * var(--road-gap, 10px));
+  width: 2px;
+  border-radius: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--road-ink, rgba(20, 27, 45, 0.16)) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.path-stop:last-child::before { display: none; }
+
+/* The marker itself sits in the gutter, on top of the road. */
+.path-stop-marker {
+  position: absolute;
+  left: calc(var(--stop) - 14px);
+  top: 6px;
+  z-index: 1;
+}
+
+/* The pop. Same vocabulary as .lift elsewhere: a small rise, the depth rule's
+   two shadows tinted with ink, and pointer-fine only so a tap on a phone does
+   not leave a stop stuck up in the air. */
+@media (hover: hover) and (pointer: fine) {
+  .path-stop-card {
+    transition:
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.28s ease,
+      border-color 0.28s ease;
+  }
+  .path-stop:hover .path-stop-card {
+    transform: translateY(-3px) scale(1.008);
+    box-shadow:
+      0 1px 2px rgba(20, 27, 45, 0.06),
+      0 16px 30px -16px rgba(20, 27, 45, 0.26);
+  }
+  /* The stop grows a little further than its card, so the marker reads as the
+     thing being picked up rather than the rectangle behind it. */
+  .path-stop:hover .path-stop-marker {
+    transform: scale(1.12);
+  }
+}
+
+.path-stop-marker { transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .path-stop:hover .path-stop-card { transform: none; box-shadow: none; }
+  .path-stop:hover .path-stop-marker { transform: none; }
 }
 
 /* A slow drift for decorative blobs behind a hero. */
@@ -645,7 +759,7 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
     animation: none;
   }
   .press:active { transform: none; }
-  .lift:hover { transform: none; }
+  .lift:hover { transform: none; box-shadow: none; }
 
   /* Hidden rather than frozen. A dozen butterflies stopped dead mid-air
      reads as a rendering fault; the screen loses nothing without them. */
