@@ -140,7 +140,7 @@ export default function Residents() {
     <div className="animate-fade-up space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-3xl">Residents</h2>
+          <h2 className="font-display text-3xl">Students</h2>
           <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
             {visible.length} shown of {residents.length} · click anyone to see their full check-in
             history.
@@ -158,7 +158,7 @@ export default function Residents() {
             onClick={() => setShowInvite((v) => !v)}
             className="rounded-full bg-[var(--color-lavender-deep)] px-4 py-2 text-sm font-medium text-white"
           >
-            {showInvite ? 'Cancel' : 'Add resident'}
+            {showInvite ? 'Cancel' : 'Add student'}
           </button>
         </div>
       </div>
@@ -334,7 +334,7 @@ export default function Residents() {
       )}
 
       <p className="text-xs text-[var(--color-muted)]">
-        Exported files contain residents' personal details. Store them the way your institution
+        Exported files contain students&rsquo; personal details. Store them the way your institution
         requires, and delete them when you no longer need them.
       </p>
     </div>

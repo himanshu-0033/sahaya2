@@ -10,12 +10,22 @@ import { matchPath, useLocation, useNavigationType } from 'react-router-dom';
 // used to open already scrolled past its own header — including the flag
 // banner, which is the single thing that page exists to show.
 
-const SITE = 'Counsellor console';
+// The console is the Admin panel. That is what the masthead has said all
+// along and what the institution calls it; only the browser tab still said
+// "Counsellor console", which is also the one word the badge is never
+// supposed to be, since a manager and a super admin are not counsellors.
+const SITE = 'Admin panel';
 
+// Every route the console has. /enquiries and /team were missing, so both
+// fell through to "Not found": the tab said it and the marker below announced
+// it to a screen reader on arrival, on two pages that work perfectly well.
+// The resident app had exactly this bug on five routes.
 const TITLES = [
   ['/', 'Dashboard'],
-  ['/residents', 'Residents'],
-  ['/residents/:residentId', 'Resident'],
+  ['/residents', 'Students'],
+  ['/residents/:residentId', 'Student'],
+  ['/enquiries', 'Enquiries'],
+  ['/team', 'Team'],
 ];
 
 function pageName(pathname) {

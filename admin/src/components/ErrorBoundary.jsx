@@ -47,7 +47,7 @@ export default class ErrorBoundary extends Component {
             <strong className="font-medium text-[var(--color-ink)]">
               Do not read an empty screen as an empty caseload.
             </strong>{' '}
-            No resident data has been changed, and nothing has been sent to anyone.
+            No student data has been changed, and nothing has been sent to anyone.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

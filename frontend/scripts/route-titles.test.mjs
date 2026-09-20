@@ -59,4 +59,43 @@ if (indexOf('/read/:articleId') !== -1 && indexOf('/read/tests/:instrumentId') !
   );
 }
 
-console.log(`route title checks passed: ${routes.length} routes, all named`);
+// --- the console has the same table and had the same gap -------------------
+//
+// /enquiries and /team were missing from it, so both announced "Not found" on
+// arrival. Checked here rather than in a second file because it is the same
+// rule and the same failure, and a rule enforced in one of two apps is how the
+// second one drifts.
+const ADMIN = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'admin', 'src');
+const adminRead = (rel) => fs.readFileSync(path.join(ADMIN, rel), 'utf8');
+
+const adminRoutes = [...adminRead('App.jsx').matchAll(/path="([^"]+)"/g)]
+  .map((m) => m[1])
+  .filter((p) => p !== '*');
+const adminChrome = adminRead('components/RouteChrome.jsx');
+const adminPatterns = [...adminChrome.matchAll(/\['([^']+)',\s*'([^']*)'\]/g)].map((m) => m[1]);
+
+assert.ok(adminRoutes.length > 3, 'the console route scan found almost nothing');
+
+// "/" appears twice in App.jsx, once for the manager-only tree, and both are
+// the same named page.
+const adminUntitled = [...new Set(adminRoutes)].filter((r) => !adminPatterns.includes(r));
+assert.deepEqual(
+  adminUntitled,
+  [],
+  'these console routes have no name in its RouteChrome, so their tab and ' +
+    'their screen reader announcement both say "Not found": ' +
+    adminUntitled.join(', '),
+);
+
+// The console is the Admin panel. Never "Counsellor": a manager and a super
+// admin are both in here and neither is one, which is the whole reason the
+// badge was renamed.
+assert.ok(
+  /const SITE = 'Admin panel';/.test(adminChrome),
+  "the console's browser tab must say Admin panel, matching its masthead",
+);
+
+console.log(
+  `route title checks passed: ${routes.length} app routes and ` +
+    `${new Set(adminRoutes).size} console routes, all named`,
+);

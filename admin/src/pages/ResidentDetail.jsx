@@ -338,7 +338,7 @@ export default function ResidentDetail() {
   }, [residentId]);
 
   function handleExport() {
-    const name = (data.resident.name || 'resident').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const name = (data.resident.name || 'student').toLowerCase().replace(/[^a-z0-9]+/g, '-');
     // See the note in Residents.jsx — recorded, never blocking.
     logExport({ scope: 'resident', residentId, rowCount: data.history.length }).catch(() => {});
     downloadCsv(`sahay-${name}-checkins.csv`, toCsv(CSV_COLUMNS, [...data.history].reverse()));
@@ -350,7 +350,7 @@ export default function ResidentDetail() {
         to="/residents"
         className="inline-block text-sm text-[var(--color-lavender-deep)] underline underline-offset-4"
       >
-        ← All residents
+        ← All students
       </Link>
 
       {loading && <p className="text-sm text-[var(--color-muted)]">Loading…</p>}
@@ -655,7 +655,7 @@ export default function ResidentDetail() {
               </div>
             )}
             <p className="mt-3 text-[10px] leading-relaxed text-[var(--color-muted)]">
-              Scores place a resident in a range the published instrument defines. They are
+              Scores place a student in a range the published instrument defines. They are
               screening measures, not diagnoses.
             </p>
           </section>

@@ -267,7 +267,7 @@ export default function Dashboard({ admin }) {
         </h2>
         <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
           <span className="tabular-nums">{totals.checkedInToday}</span> of{' '}
-          <span className="tabular-nums">{totals.onboarded}</span> residents have checked in ·{' '}
+          <span className="tabular-nums">{totals.onboarded}</span> students have checked in ·{' '}
           <span className="tabular-nums">{totals.residents}</span> on your list,{' '}
           <span className="tabular-nums">{totals.invited}</span> invited
         </p>
@@ -414,7 +414,7 @@ export default function Dashboard({ admin }) {
               ))}
             </div>
             <Link to="/residents" className="text-sm font-medium text-[var(--color-lavender-deep)] underline underline-offset-4">
-              All residents
+              All students
             </Link>
           </div>
         </div>
@@ -551,7 +551,7 @@ export default function Dashboard({ admin }) {
                       {e.actor}
                       <span className="text-[var(--color-muted)]">
                         {' '}
-                        opened {e.subjectName || 'a resident'}&rsquo;s record
+                        opened {e.subjectName || 'a student'}&rsquo;s record
                       </span>
                     </>
                   ) : (
@@ -564,7 +564,7 @@ export default function Dashboard({ admin }) {
                       <span className="text-[var(--color-muted)]">
                         {' '}
                         exported{' '}
-                        {e.scope === 'cohort' ? 'the resident list' : `${e.subjectName || 'a resident'}'s history`}
+                        {e.scope === 'cohort' ? 'the student list' : `${e.subjectName || 'a student'}'s history`}
                       </span>
                     </>
                   )}
