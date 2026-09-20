@@ -63,6 +63,22 @@ Every handler touching student data goes through `requireStudentAccess` or
 `requireTeamAccess` in `backend/lib/auth.js`. Hiding a button is not access
 control.
 
+### 1.7 No endpoint says whether an account exists
+
+Being a user of this app is itself sensitive. `auth/forgot.js` gives one answer
+to every address, and `auth/login.js` gives one refusal whether the password
+was wrong, the account is Google-only, or there is no account at all. It also
+runs bcrypt against a decoy hash when there is no account, because an endpoint
+that skips the slow part answers the question in its response time instead.
+
+### 1.8 Every unauthenticated route is metered
+
+`lib/rate-limit.js`, applied to enquiries, preview, signup, forgot and login.
+Sign-in counts per account as well as per client: a campus shares one IP, so
+the per-client number is loose and the per-account number is the strict one.
+A throttled reset request answers exactly what an unthrottled one answers, or
+the limit becomes the membership check that 1.7 exists to prevent.
+
 ## 2. Instruments
 
 | Rule | Why |

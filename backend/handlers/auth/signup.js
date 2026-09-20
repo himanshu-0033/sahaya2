@@ -6,16 +6,30 @@ import { signSessionToken } from '../../lib/auth.js';
 import { phonesMatch } from '../../lib/phone.js';
 import { isValidEmail, isValidPhone } from '../../lib/contact.js';
 import { invitedPlaceholders } from '../../lib/residents.js';
+import { clientKey, limiter } from '../../lib/rate-limit.js';
 
 function makeId() {
   return 'local_' + randomUUID();
 }
+
+// Account creation is the other unauthenticated write in the app. Unmetered it
+// is a way to fill the residents collection, and every row in there is a name
+// the counsellor console has to show somebody.
+//
+// Looser than the sign-in limit: a person signing up genuinely does it once,
+// but a shared campus network puts a whole hall behind one address, so this is
+// set to stop a script rather than to ration a corridor.
+const perClient = limiter({ windowMs: 60 * 60_000, max: 15 });
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (perClient(clientKey(req))) {
+    return res.status(429).json({ error: 'Too many accounts created from here. Try again later.' });
   }
 
   const { name, email, phone, password } = req.body || {};

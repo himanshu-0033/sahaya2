@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { getResidents, appendRecord, removeRecords } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { deliverResetLink } from '../../lib/reset-delivery.js';
+import { clientKey, limiter } from '../../lib/rate-limit.js';
 
 // Step one of a password reset: prove you can receive mail at the address.
 //
@@ -22,6 +23,19 @@ import { deliverResetLink } from '../../lib/reset-delivery.js';
 //   account, so a link that was forwarded, logged or left in an inbox stops
 //   working the moment a newer one is issued.
 const TTL_MINUTES = 30;
+
+// This endpoint sends mail to an address the caller chose, which makes it the
+// one place in the app a stranger can aim at somebody else's inbox. Unmetered,
+// it is a way to bury a person's mail under reset links they never asked for,
+// and to spend whatever the mail provider charges doing it.
+//
+// Per address as well as per client, because the address is the thing being
+// flooded and rotating IPs is easy. Both counters are hit before the account
+// lookup, so a rate-limited answer looks exactly like every other answer and
+// the limit itself does not become the membership check the rest of this file
+// is built to avoid.
+const perClient = limiter({ windowMs: 15 * 60_000, max: 10 });
+const perAddress = limiter({ windowMs: 60 * 60_000, max: 5 });
 
 // Long enough that guessing is not a strategy: 32 random bytes is 256 bits,
 // and the endpoint that consumes it looks the hash up directly rather than
@@ -54,6 +68,10 @@ export default async function handler(req, res) {
       sent: true,
       message: 'If that address has a password account, a reset link is on its way.',
     });
+
+  // Over the limit answers exactly what under the limit answers. A 429 here
+  // would tell a caller that this address is worth asking about.
+  if (perClient(clientKey(req)) || perAddress(normalized)) return answer();
 
   const residents = await getResidents();
   const resident = residents.find((r) => (r.email || '').toLowerCase() === normalized);
