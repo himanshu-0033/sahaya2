@@ -30,12 +30,20 @@
   `index.html` noscript block, the landing footer, and both `safety.js` files.
   Change one, change all six.
 
-### 1.2 The two safety modules stay identical
+### 1.2 The two safety modules agree on what they screen for
 
-`backend/lib/safety.js` and `agent/lib/safety.js` must not diverge.
-`backend/test/reflection.test.mjs` enforces it. The browser is not trusted to
-report a disclosure, which is the entire reason the backend screens the saved
-transcript a second time.
+`backend/lib/safety.js` and `agent/lib/safety.js` are separate files on
+purpose: `agent/` is its own Vercel project, from its own directory, and
+cannot import across at build time.
+
+What must match is the data, not the file. `backend/test/reflection.test.mjs`
+imports both and asserts `PATTERNS` and `HELPLINES` are deep-equal. The prose
+around them differs because each module is read by someone solving a different
+problem, and that is fine. Do not "fix" the two into one byte-identical file,
+and do not add a pattern or a number to one without the other.
+
+The browser is not trusted to report a disclosure, which is the entire reason
+the backend screens the saved transcript a second time.
 
 ### 1.3 Screen before the model, never after
 
@@ -144,8 +152,29 @@ Plus:
 - Fix the root cause, not the symptom. Grep every caller before editing a
   shared function.
 - Non-trivial logic leaves one runnable check behind, in the existing
-  `node:test` suites under `backend/test/`. No new frameworks, no fixtures.
-- `npm test` passes before a commit.
+  `node:test` suites under `backend/test/`, `frontend/scripts/` or
+  `admin/test/`. No new frameworks, no fixtures.
+- **Register it.** A test that is not in a `package.json` test script is a file
+  nobody runs. The eight frontend suites, including the contrast and type
+  checks this file calls load-bearing, sat outside the root `npm test` for as
+  long as they existed.
+- `npm test` passes before a commit. It runs all three modules.
+
+## 4b. Accessibility
+
+Not a polish pass. These are the ones this codebase has actually got wrong.
+
+- **A `<label>` must name its field.** Either `htmlFor` pointing at the
+  control's `id`, or the control nested inside the label. A label that only
+  sits above an input is a caption: a screen reader announces the field as
+  blank, and tapping the words does not focus it. Every form in the app had
+  this, including sign-up. `frontend/scripts/labels.test.mjs` now fails on it.
+- Use `useId()` for the pair, not a hand-written string. Two copies of one form
+  on a page with fixed ids point both labels at whichever mounted first.
+- A `<select>` with no visible label of its own, like the country code beside a
+  phone field, needs `aria-label`.
+- Give password fields the right `autoComplete`: `new-password` when setting
+  one, `current-password` when signing in.
 
 ## 5. Copy
 

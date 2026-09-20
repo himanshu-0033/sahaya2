@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import Button from '../../shared/Button.jsx';
 import { COUNTRY_CODES } from '../../shared/countryCodes.js';
 import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } from '../../shared/contact.js';
@@ -21,6 +21,11 @@ import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } 
 // Every remaining field says why it is being asked, on screen, next to the
 // field. If a field cannot carry that sentence, it should not be here.
 export default function AccountForm({ name, email, onDone, saving, error, dark = false }) {
+  // A <label> sitting above an input is a caption, not a label: a screen reader
+  // announces the field as blank and tapping the words does not focus it.
+  // useId rather than fixed strings, so a second copy of this form on the same
+  // page does not point both labels at the first field.
+  const fieldId = useId();
   const [values, setValues] = useState({
     name,
     email,
@@ -64,8 +69,10 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         onSubmit={handleSubmit}
       >
         <div>
-          <label className={labelClass}>Full name</label>
+          <label className={labelClass} htmlFor={`${fieldId}-name`}>Full name</label>
           <input
+            id={`${fieldId}-name`}
+            autoComplete="name"
             value={values.name}
             onChange={(e) => set('name', e.target.value)}
             className={inputClass}
@@ -73,8 +80,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         </div>
 
         <div>
-          <label className={labelClass}>Email address</label>
+          <label className={labelClass} htmlFor={`${fieldId}-email`}>Email address</label>
           <input
+            id={`${fieldId}-email`}
             type="email"
             autoComplete="email"
             value={values.email}
@@ -84,9 +92,10 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         </div>
 
         <div>
-          <label className={labelClass}>Phone number</label>
+          <label className={labelClass} htmlFor={`${fieldId}-phone`}>Phone number</label>
           <div className="mt-1 flex gap-2">
             <select
+              aria-label="Country calling code"
               value={values.countryCode}
               onChange={(e) => set('countryCode', e.target.value)}
               className={
@@ -117,8 +126,9 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
         </div>
 
         <div>
-          <label className={labelClass}>Date of birth</label>
+          <label className={labelClass} htmlFor={`${fieldId}-dob`}>Date of birth</label>
           <input
+            id={`${fieldId}-dob`}
             type="date"
             value={values.dob}
             onChange={(e) => set('dob', e.target.value)}

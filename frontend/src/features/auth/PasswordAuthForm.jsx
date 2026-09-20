@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import Button from '../../shared/Button.jsx';
 import { signup, login, requestPasswordReset } from '../../shared/api.js';
 import { decodeJwt, saveSession } from './session.js';
@@ -6,6 +6,12 @@ import { COUNTRY_CODES } from '../../shared/countryCodes.js';
 import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
 export default function PasswordAuthForm({ onSignedIn, dark = false }) {
+  // A <label> that only sits above an input is a caption, not a label: a
+  // screen reader announces the field as blank, and tapping the words does not
+  // focus it. useId rather than fixed strings because this form is rendered in
+  // more than one place on the landing page, and duplicate ids would point
+  // every label at whichever field mounted first.
+  const fieldId = useId();
   const [mode, setMode] = useState('login'); // 'login' | 'signup' | 'forgot'
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -110,13 +116,15 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         {isSignup ? (
           <>
             <div>
-              <label className={labelClass}>Name</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+              <label className={labelClass} htmlFor={`${fieldId}-name`}>Name</label>
+              <input id={`${fieldId}-name`} autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
             </div>
             <div>
-              <label className={labelClass}>Email</label>
+              <label className={labelClass} htmlFor={`${fieldId}-email`}>Email</label>
               <input
+                id={`${fieldId}-email`}
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputClass}
@@ -126,9 +134,10 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                 signup form short enough to fit without scrolling. */}
             {showPhone ? (
               <div>
-                <label className={labelClass}>Phone number (optional)</label>
+                <label className={labelClass} htmlFor={`${fieldId}-phone`}>Phone number (optional)</label>
                 <div className="mt-1 flex gap-2">
                   <select
+                    aria-label="Country calling code"
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
                     className={
@@ -144,6 +153,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                     ))}
                   </select>
                   <input
+                    id={`${fieldId}-phone`}
                     autoFocus
                     type="tel"
                     inputMode="numeric"
@@ -169,9 +179,11 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
           </>
         ) : (
           <div>
-            <label className={labelClass}>Email</label>
+            <label className={labelClass} htmlFor={`${fieldId}-identifier`}>Email</label>
             <input
+              id={`${fieldId}-identifier`}
               type="email"
+              autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               placeholder="you@example.com"
@@ -182,9 +194,11 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
 
         {!isForgot && (
           <div>
-            <label className={labelClass}>Password</label>
+            <label className={labelClass} htmlFor={`${fieldId}-password`}>Password</label>
             <input
+              id={`${fieldId}-password`}
               type="password"
+              autoComplete={isSignup ? 'new-password' : 'current-password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={isSignup ? 'At least 8 characters' : undefined}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Button from '../../shared/Button.jsx';
 import { resetPassword } from '../../shared/api.js';
@@ -16,6 +16,11 @@ import { decodeJwt, saveSession } from './session.js';
 // client-side one, because the session is read at boot and the whole app needs
 // to come up knowing about it.
 export default function ResetPassword() {
+  // A <label> sitting above an input is a caption, not a label: a screen reader
+  // announces the field as blank and tapping the words does not focus it.
+  // useId rather than fixed strings, so a second copy of this form on the same
+  // page does not point both labels at the first field.
+  const fieldId = useId();
   const [params] = useSearchParams();
   const token = params.get('token') || '';
 
@@ -55,11 +60,16 @@ export default function ResetPassword() {
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-3">
           <div>
-            <label className="text-[0.6875rem] tracking-wider text-[var(--color-muted)] uppercase">
+            <label
+              className="text-[0.6875rem] tracking-wider text-[var(--color-muted)] uppercase"
+              htmlFor={`${fieldId}-new`}
+            >
               New password
             </label>
             <input
+              id={`${fieldId}-new`}
               type="password"
+              autoComplete="new-password"
               autoFocus
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -69,11 +79,16 @@ export default function ResetPassword() {
           </div>
 
           <div>
-            <label className="text-[0.6875rem] tracking-wider text-[var(--color-muted)] uppercase">
+            <label
+              className="text-[0.6875rem] tracking-wider text-[var(--color-muted)] uppercase"
+              htmlFor={`${fieldId}-repeat`}
+            >
               Repeat it
             </label>
             <input
+              id={`${fieldId}-repeat`}
               type="password"
+              autoComplete="new-password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className="mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]"

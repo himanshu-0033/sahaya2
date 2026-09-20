@@ -23,7 +23,10 @@
 ## Crisis helplines, verified 2026-09-15
 
 Used in `CrisisContacts`, `ErrorBoundary`, the `index.html` noscript block, the
-landing footer, and both `safety.js` modules.
+landing footer (`features/auth/Welcome.jsx`), `agent/lib/persona.js`, and both
+`safety.js` modules. The two safety modules are separate files that must agree
+on `PATTERNS` and `HELPLINES`, which `backend/test/reflection.test.mjs`
+asserts; they are not, and need not be, byte-identical.
 
 | Line | Number | Hours |
 | :--- | :--- | :--- |

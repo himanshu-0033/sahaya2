@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import GoogleSignInButton from '../auth/GoogleSignInButton.jsx';
@@ -10,6 +10,10 @@ import { MOOD_OPTIONS } from '../../shared/moods.js';
 const moodLabel = (score) => MOOD_OPTIONS.find((m) => m.value === score)?.label || score;
 
 export default function Caregiver() {
+  // A <label> sitting above an input is a caption, not a label: a screen
+  // reader announces the field as blank and tapping the words does not focus
+  // it. useId keeps the pair unique without inventing global names.
+  const fieldId = useId();
   const navigate = useNavigate();
   const [session, setSession] = useState(() => getSession());
   const [residents, setResidents] = useState(null);
@@ -118,17 +122,21 @@ export default function Caregiver() {
                 className="mt-4 flex flex-col gap-2 rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] p-4 sm:flex-row sm:items-end"
               >
                 <div className="flex-1">
-                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Name</label>
+                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-name`}>Name</label>
                   <input
+                    id={`${fieldId}-add-name`}
+                    autoComplete="name"
                     value={addName}
                     onChange={(e) => setAddName(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]">Email</label>
+                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-email`}>Email</label>
                   <input
+                    id={`${fieldId}-add-email`}
                     type="email"
+                    autoComplete="email"
                     value={addEmail}
                     onChange={(e) => setAddEmail(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
