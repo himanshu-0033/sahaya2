@@ -71,7 +71,15 @@ const EXPLORE = [
     to: '/paths',
     label: 'Paths',
     hue: 'var(--sec-paths)',
-    icon: <path d="M18 6l-6 6-6-6M18 18l-6-6-6 6" />,
+    // A route with a start and a finish. The old pair of chevrons met in the
+    // middle and drew an ✕, which is the symbol for closing something.
+    icon: (
+      <>
+        <circle cx="6" cy="19" r="2" />
+        <path d="M8 19h6a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h6" />
+        <circle cx="18" cy="3" r="2" />
+      </>
+    ),
   },
   {
     to: '/assessments',

@@ -124,7 +124,7 @@ export default function Results() {
                 {crisis.helplines.map((h) => (
                   <li key={h.number} className="flex justify-between gap-4">
                     <span className="text-[var(--color-ink-soft)]">{h.name}</span>
-                    <a className="text-[var(--color-teal-dark)]" href={`tel:${h.number}`}>
+                    <a className="font-medium whitespace-nowrap text-[var(--color-teal-dark)] underline-offset-4 hover:underline" href={`tel:${h.number}`}>
                       {h.number}
                     </a>
                   </li>
@@ -295,7 +295,7 @@ export default function Results() {
                     {inkblotHelplines.map((h) => (
                       <li key={h.number} className="flex justify-between gap-4">
                         <span className="text-[var(--color-ink-soft)]">{h.name}</span>
-                        <a className="text-[var(--color-teal-dark)]" href={`tel:${h.number}`}>
+                        <a className="font-medium whitespace-nowrap text-[var(--color-teal-dark)] underline-offset-4 hover:underline" href={`tel:${h.number}`}>
                           {h.number}
                         </a>
                       </li>

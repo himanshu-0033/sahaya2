@@ -224,6 +224,18 @@ export default function QuickCheck() {
                   {error.message}
                 </p>
               )}
+
+              {/* While the questions are being answered, not only after them.
+                  The result screen has carried a crisis button for a while,
+                  on the reasoning that somebody can be in trouble at any
+                  number on this scale; that argument applies just as much to
+                  question three as to the score, and this is the one
+                  questionnaire in the app you can reach with no account, from
+                  a link, at any hour. The signed-in run has had exactly this
+                  in its footer all along. */}
+              <footer className="mt-6 flex justify-end border-t border-[var(--color-ink)]/8 pt-3">
+                <CrisisContacts variant="link" />
+              </footer>
             </div>
           </div>
         )}

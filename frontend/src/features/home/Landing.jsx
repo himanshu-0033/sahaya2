@@ -81,10 +81,15 @@ const ACTIONS = [
     sub: (c) => (c.paths ? `${c.paths} multi-day paths` : 'A little each day'),
     hue: 'var(--sec-paths)',
     bg: 'rgba(224, 163, 213, 0.14)',
+    // A route with a start and a finish, not two chevrons meeting in the
+    // middle. The old pair drew a v over a caret, which renders as an X, so
+    // the one tile you tap to walk a multi-day path wore the universal symbol
+    // for close.
     icon: (
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 6l-6 6-6-6" />
-        <path d="M18 18l-6-6-6 6" />
+        <circle cx="6" cy="19" r="2" />
+        <path d="M8 19h6a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h6" />
+        <circle cx="18" cy="3" r="2" />
       </svg>
     ),
   },
