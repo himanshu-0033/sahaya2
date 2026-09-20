@@ -4,14 +4,20 @@ import {
   getInkblotSessions,
   getAssessments,
   getChatSessions,
+  recordView,
 } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireStudentAccess } from '../../lib/auth.js';
 import { publicResident } from '../../lib/sanitize.js';
 import { historyFor, summarizeResident } from '../../lib/analytics.js';
-import { assignedList, canAdminView, sharedWithList } from '../../lib/sharing.js';
+import { assignedList, canAdminView, normalizeEmail, sharedWithList } from '../../lib/sharing.js';
 import { topicLabel } from '../../lib/topics.js';
 import { LABELS as SAFETY_LABELS } from '../../lib/safety.js';
+
+// One row per viewer per student per quarter hour. Long enough that a refresh,
+// a second tab and a glance back after a meeting are one visit; short enough
+// that two visits in a morning are two rows.
+const VIEW_WINDOW_MS = 15 * 60 * 1000;
 
 export default async function handler(req, res) {
   if (applyCors(req, res)) return;
@@ -40,6 +46,26 @@ export default async function handler(req, res) {
   if (!resident || !canAdminView(resident, admin)) {
     return res.status(404).json({ error: 'Resident not found' });
   }
+
+  // Logged here rather than by the console, for the same reason the safety
+  // screen runs on the saved transcript as well as in the browser: a client
+  // that decides whether to report itself is not a record of anything. This
+  // sits after the access check, so a 404 leaves no row and the log cannot be
+  // used to prove an account exists.
+  //
+  // Awaited, unlike the export write. An export is logged before the file is
+  // built and a failure there would block a counsellor from their own
+  // caseload; here the write is already on the response path, and a view that
+  // silently went unlogged is the failure this endpoint exists to prevent. A
+  // storage error surfaces rather than leaving a gap that looks like nobody
+  // looked.
+  await recordView({
+    actor: normalizeEmail(admin.email),
+    residentId,
+    subjectName: resident.name || null,
+    at: new Date().toISOString(),
+    windowMs: VIEW_WINDOW_MS,
+  });
 
   return res.status(200).json({
     resident: publicResident(resident),

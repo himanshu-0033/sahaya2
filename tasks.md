@@ -42,26 +42,37 @@ Check each against its citation in `backend/lib/instruments.js` and flip the
 flag. K10, MSPSS, CBI, AIS-8 and SAS-SV were on this list and have since been
 verified, so the remaining six are the whole job.
 
-### 1.2 Log views, not only exports
-
-Exports **are** logged. `/api/admin/audit` records every CSV that leaves the
-console, append only, with no delete, and it records that an export happened
-rather than what was in it.
-
-What is still missing is a record of **who opened whose record**. The console
-shows contact details, mood history and written words on a resident page, and
-nothing records that view. That gap matters most in `admin/`.
-
-### 1.3 Verify the OAuth consent screen
+### 1.2 Verify the OAuth consent screen
 
 Google shows an "unverified app" warning until the project goes through
 verification. It matters the moment this is used by people who do not
 personally know the owner.
 
-### 1.4 Clear the PSS-10 licence for its actual use
+### 1.3 Clear the PSS-10 licence for its actual use
 
 Free for research and teaching. Commercial use needs the author's permission.
 Decide which this deployment is before it takes money.
+
+## 1b. Closed since this file was written
+
+### Access logging, closed 2026-09-20
+
+Both halves now exist and `backend/test/audit.test.mjs` holds them in place.
+
+- **Exports** are logged by the console before the CSV is built, because the
+  file is assembled in the browser and the server never sees it happen.
+- **Views** are logged by the server in `handlers/admin/resident.js`, after the
+  access check passes. A client that decides whether to report itself is not a
+  record of anything, so this one is not the browser's call.
+- A refused view writes **no** row, so the log cannot be used to prove an
+  account exists.
+- Repeat visits inside a quarter of an hour collapse to one row, by bucketing
+  the entry id rather than reading the log first, so two racing requests cannot
+  both insert.
+- Reading the log back is **scoped**. It names students, so handing all of it
+  to every counsellor would have made the audit log the widest leak in the
+  console. The super admin sees everything; everyone else sees their own
+  actions.
 
 ## 2. Waiting on someone else
 

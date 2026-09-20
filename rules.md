@@ -89,8 +89,14 @@ control.
 - `dev-server.js` reads the same route table. A route cannot exist locally and
   not in production.
 - `backend/lib/store.js` is the only module that touches persistence.
-- The export log is append-only. It records that an export happened, never what
-  was in it, and there is no delete. A log the viewer can edit is decoration.
+- The access log is append-only. It records that a record was opened or
+  exported, never what was in it, and there is no delete. A log the viewer can
+  edit is decoration.
+- **A view is logged on the server, not by the client.** The browser reports
+  exports because the CSV is built there, but a client that decides whether to
+  report itself is not a record of anything. Log after the access check, so a
+  refusal leaves no row and the log cannot prove an account exists.
+- Anything that reads the access log back must be scoped. It names students.
 
 ## 4. Code
 

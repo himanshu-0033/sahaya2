@@ -107,6 +107,13 @@ export function getEnquiries() {
   return request('/api/enquiries');
 }
 
-export function getExportLog() {
+// Who opened a record and who took a CSV out. Views are written by the server
+// when a record is opened; exports are written by logExport above, because the
+// file is built here and the server never sees it happen.
+//
+// Scoped by the server: the super admin gets every access, everyone else gets
+// their own. `scope` says which came back, so the console can label it
+// honestly rather than implying a counsellor is seeing everything.
+export function getAccessLog() {
   return request('/api/admin/audit');
 }

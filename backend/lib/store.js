@@ -84,6 +84,14 @@ async function ensureIndexes(client) {
       }
     }),
   );
+  // The access log is the one collection read by recency rather than in full,
+  // so it is the one that needs a second index to answer that without a
+  // collection scan. Same rule as above: a failure is logged, never thrown.
+  try {
+    await db.collection('exportLog').createIndex({ at: -1 });
+  } catch (err) {
+    console.error('[store] at index on exportLog not created:', err.message);
+  }
 }
 
 async function collection(name) {
@@ -214,6 +222,29 @@ export async function readAll(name) {
   return col.find({}, { projection: { _id: 0 } }).toArray();
 }
 
+// The newest `limit` records by `at`, without reading the rest.
+//
+// readAll is fine for a collection the app is going to hold in memory anyway.
+// The access log is not one of those: it gains a row every time anybody opens
+// anybody's record, so it is the one collection that grows without a ceiling
+// while only ever being read a screenful at a time. Reading all of it to show
+// eight rows is the kind of thing that works for a year and then does not.
+export async function readRecent(name, limit) {
+  if (!MONGO_URI) {
+    const rows = readFileDb()[name] || [];
+    return [...rows].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, limit);
+  }
+
+  const pending = await pendingKinds();
+  if (pending.has(name)) {
+    await migrateLegacy(name);
+    pending.delete(name);
+  }
+
+  const col = await collection(name);
+  return col.find({}, { projection: { _id: 0 } }).sort({ at: -1 }).limit(limit).toArray();
+}
+
 export async function appendRecord(name, record) {
   if (!MONGO_URI) {
     const db = readFileDb();
@@ -269,7 +300,7 @@ export const getPathProgress = () => readAll('pathProgress');
 // record goes through — see handlers/chat-log.js.
 export const getChatSessions = () => readAll('chatSessions');
 
-// Who looked at what.
+// Who looked at what, and who took it out of here.
 //
 // Append-only, and deliberately separate from everything else: this is the one
 // collection nothing in the app is allowed to edit or delete, because a log a
@@ -279,9 +310,35 @@ export const getChatSessions = () => readAll('chatSessions');
 // one document could not grow past MongoDB's limit; now that entries are their
 // own documents there is no such limit, and silently discarding the oldest
 // audit records was never the behaviour anybody wanted from an audit log.
-export const getExportLog = () => readAll('exportLog');
+//
+// The collection is still called `exportLog` because that is what it held
+// first and renaming a live collection buys a migration to gain a better
+// noun. Entries carry `kind`, which is what actually distinguishes them; an
+// entry written before views were logged has no `kind` and is an export.
+export const getAccessLog = (limit = 200) => readRecent('exportLog', limit);
 export const getEnquiries = () => readAll('enquiries');
 // Admin panel users and their designation: counsellor or manager.
 export const getStaff = () => readAll('staff');
 
-export const appendExportLog = (entry) => appendRecord('exportLog', entry);
+export const appendAccessLog = (entry) => appendRecord('exportLog', entry);
+
+// A view, collapsed to one row per viewer per record per window.
+//
+// A counsellor reading someone's page refreshes it, opens a tab, comes back
+// after lunch. Logging each of those as its own row is technically honest and
+// practically useless: it buries the one thing the log exists to answer, which
+// is who has been looking at this person, under a counsellor's browsing habit.
+//
+// The window is expressed in the id rather than by reading the log first, so
+// two requests racing on the same window cannot both insert. The unique id
+// index does the collapsing, which is the only place it can be done correctly
+// without a read-modify-write.
+export function recordView({ actor, residentId, subjectName, at, windowMs }) {
+  const bucket = Math.floor(new Date(at).getTime() / windowMs) * windowMs;
+  const id = `view:${actor}:${residentId}:${bucket}`;
+  return upsertRecord(
+    'exportLog',
+    { id },
+    { id, kind: 'view', at, actor, residentId, subjectName, scope: 'resident', rowCount: null },
+  );
+}

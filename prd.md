@@ -226,7 +226,8 @@ treatment.
 - [x] Every number is hand-checkable.
 - [x] Every practice with a contraindication shows its caution **before** the
       start button.
-- [x] Every CSV that leaves the console is logged, append only.
+- [x] Every CSV that leaves the console, and every record opened in it, is
+      logged, append only.
 - [ ] Every crisis number is verified within the current release.
 - [ ] Every instrument's wording is transcribed from its source document.
 

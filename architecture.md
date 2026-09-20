@@ -194,10 +194,22 @@ and `requireTeamAccess`, never in the UI alone.
 > not survive between requests. Connect storage with the default `STORAGE`
 > prefix so it lands in `STORAGE_URL`, then redeploy.
 
-The export log is append-only by design: `/api/admin/audit` accepts GET and
-POST and nothing else, and the store never deletes. It records **that** a CSV
-export happened, never what was in it, because a log holding copies of the data
-it protects is a second copy of the problem.
+The access log is append-only by design: `/api/admin/audit` accepts GET and
+POST and nothing else, and the store never deletes. It records **that** a
+record was opened or exported, never what was in it, because a log holding
+copies of the data it protects is a second copy of the problem.
+
+It is the one collection read by recency rather than in full, via
+`readRecent()`, because it gains a row every time anybody opens anybody's
+record. Reading all of it to show eight rows is the kind of thing that works
+for a year and then does not. The collection is still named `exportLog`:
+renaming a live collection buys a migration to gain a better noun, and `kind`
+is what actually distinguishes an entry.
+
+Reading it back is **scoped**. The log names students, so the super admin sees
+every access and everyone else sees only their own actions. Handing the whole
+log to every counsellor would have made the audit log itself the widest leak in
+the console.
 
 ## 7. Running it
 

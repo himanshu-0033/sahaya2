@@ -4,7 +4,7 @@ import FlagBadge from '../components/FlagBadge.jsx';
 import MoodSparkline from '../components/MoodSparkline.jsx';
 import TrendChart from '../components/TrendChart.jsx';
 import { Monogram, Ring, Spark } from '../components/Spark.jsx';
-import { getOverview, getExportLog } from '../lib/api.js';
+import { getOverview, getAccessLog } from '../lib/api.js';
 import { buildCaseload, hasScreen, raisedInChat } from '../lib/caseload.js';
 import { formatDate, moodLabel, daysSince } from '../lib/moods.js';
 import { roleLabel } from '../lib/roles.js';
@@ -165,9 +165,12 @@ export default function Dashboard({ admin }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  // The export log is supporting information, not the point of the page, so a
+  // The access log is supporting information, not the point of the page, so a
   // failure here is swallowed: it must never take the dashboard down with it.
-  const [exports, setExports] = useState([]);
+  const [access, setAccess] = useState([]);
+  // 'all' for the super admin, 'self' for everyone else. The panel says which,
+  // so a counsellor is never left thinking they are seeing the whole log.
+  const [accessScope, setAccessScope] = useState('self');
   const [segment, setSegment] = useState('attention');
   const [day, setDay] = useState(null);
   // Which topic the "Raised in chat" segment is narrowed to. Null is all of them.
@@ -179,8 +182,12 @@ export default function Dashboard({ admin }) {
       .then((res) => !cancelled && setData(res))
       .catch((err) => !cancelled && setError(err.message))
       .finally(() => !cancelled && setLoading(false));
-    getExportLog()
-      .then((res) => !cancelled && setExports(res.entries || []))
+    getAccessLog()
+      .then((res) => {
+        if (cancelled) return;
+        setAccess(res.entries || []);
+        setAccessScope(res.scope || 'self');
+      })
       .catch(() => {});
     return () => {
       cancelled = true;
@@ -502,37 +509,65 @@ export default function Dashboard({ admin }) {
         )}
       </section>
 
-      {/* Who took data out of here. A warning asks people to behave; this is a
-          record, shown rather than merely written, because an audit log nobody
-          can read protects nobody. Collapsed: it is consulted, not read daily. */}
+      {/* Who opened a record, and who took data out of here. A warning asks
+          people to behave; this is a record, shown rather than merely written,
+          because an audit log nobody can read protects nobody. Collapsed: it
+          is consulted, not read daily. */}
       <details className="group mt-10 rounded-2xl border border-[var(--line-1)] bg-white px-6 py-5">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-          <span className="label-eyebrow">Recent exports</span>
+          <span className="label-eyebrow">
+            {accessScope === 'all' ? 'Recent access' : 'Your recent access'}
+          </span>
           <span className="text-xs text-[var(--color-muted)]">
-            {exports.length === 0
+            {access.length === 0
               ? 'none yet'
-              : `${exports.length} logged · latest ${new Date(exports[0].at).toLocaleDateString()}`}
+              : `${access.length} logged · latest ${new Date(access[0].at).toLocaleDateString()}`}
             <span aria-hidden="true" className="ml-2 inline-block transition-transform group-open:rotate-90">
               ›
             </span>
           </span>
         </summary>
 
-        {exports.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--color-muted)]">No CSV has been downloaded from this console yet.</p>
+        {access.length === 0 ? (
+          <p className="mt-4 text-sm text-[var(--color-muted)]">
+            No record has been opened and no CSV downloaded from this console yet.
+          </p>
         ) : (
           <ul className="mt-4 space-y-3">
-            {exports.slice(0, 8).map((e) => (
+            {access.slice(0, 8).map((e) => (
               <li
                 key={e.id}
                 className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-[var(--line-1)] pt-3 first:border-0 first:pt-0"
               >
                 <span className="text-sm">
-                  {e.actor}
-                  <span className="text-[var(--color-muted)]">
-                    {' '}
-                    exported {e.scope === 'cohort' ? 'the resident list' : `${e.subjectName || 'a resident'}'s history`}
-                  </span>
+                  {/* An entry written before views were logged has no kind, and
+                      every one of those was an export. */}
+                  {e.kind === 'view' ? (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle bg-[var(--color-muted)]"
+                      />
+                      {e.actor}
+                      <span className="text-[var(--color-muted)]">
+                        {' '}
+                        opened {e.subjectName || 'a resident'}&rsquo;s record
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle bg-[var(--color-flag,#b42318)]"
+                      />
+                      {e.actor}
+                      <span className="text-[var(--color-muted)]">
+                        {' '}
+                        exported{' '}
+                        {e.scope === 'cohort' ? 'the resident list' : `${e.subjectName || 'a resident'}'s history`}
+                      </span>
+                    </>
+                  )}
                 </span>
                 <span className="text-xs whitespace-nowrap text-[var(--color-muted)]">
                   {e.rowCount != null && `${e.rowCount} rows · `}
@@ -544,8 +579,10 @@ export default function Dashboard({ admin }) {
         )}
 
         <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
-          This log records that an export happened, never what was in it. Entries cannot be edited or
-          deleted from the console.
+          This log records that a record was opened or exported, never what was in it. Repeat visits
+          within a quarter of an hour count once. Entries cannot be edited or deleted from the
+          console.
+          {accessScope === 'self' && ' You are seeing your own activity; the administrator sees everyone’s.'}
         </p>
       </details>
     </div>
