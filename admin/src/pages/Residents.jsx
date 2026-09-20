@@ -204,12 +204,16 @@ export default function Residents() {
           placeholder="Search name, email, phone, or a word they used…"
           className="input-soft min-w-[240px] flex-1"
         />
-        <div className="flex gap-1 rounded-full bg-[var(--surface-2)] p-1 text-xs">
+        {/* Same as the console nav above: five filters come to 367px and the
+            content box on a 390px phone is narrower than that, so this row
+            was the other half of the page being wider than the screen. It
+            scrolls sideways instead. */}
+        <div className="flex max-w-full gap-1 overflow-x-auto rounded-full bg-[var(--surface-2)] p-1 text-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {FILTERS.filter((f) => !f.superAdmin || residents.some((r) => r.counsellors)).map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`rounded-full px-3 py-1.5 transition-colors ${
+              className={`shrink-0 rounded-full px-3 py-1.5 transition-colors ${
                 filter === f.key
                   ? 'bg-[var(--color-lavender-deep)] text-white'
                   : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'

@@ -42,14 +42,23 @@ export default function AdminShell({ admin, onSignOut, children }) {
             </div>
           </div>
 
-          <nav aria-label="Console" className="flex items-center gap-1 rounded-full border border-[var(--line-1)] bg-[var(--surface-1)] p-1 text-sm">
+          {/* Scrolls sideways when it does not fit rather than pushing the
+              page wider than the screen. Four tabs at this size come to 379px
+              and the header's content box on a 390px phone is 342, so the
+              console opened with a horizontal scrollbar and every page under
+              it 28px too wide. The header already wraps; it was the pill
+              itself that could not give. */}
+          <nav
+            aria-label="Console"
+            className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[var(--line-1)] bg-[var(--surface-1)] p-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {items.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `rounded-full px-4 py-1.5 transition-colors ${
+                  `shrink-0 rounded-full px-4 py-1.5 transition-colors ${
                     isActive
                       ? 'bg-[#fde4d6] font-medium text-[var(--color-ink)] shadow-[inset_0_0_0_1px_rgba(214,120,78,0.35)]'
                       : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'
