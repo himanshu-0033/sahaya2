@@ -132,6 +132,24 @@ for (const m of pathsPage.matchAll(/(\d+)-day paths/g)) {
   );
 }
 
+// "the other N questionnaires", on the screen shown after the free check.
+//
+// Another count spelled out and expressed as a subtraction: the reader has
+// just taken one, so the rest is the total minus one. It said twenty while the
+// app served 22, and the first version of this test did not look at this file
+// at all.
+const quick = read('features/checkin/QuickCheck.jsx');
+const other = (quick.match(/the other (\S+) questionnaires/) || [])[1];
+assert.ok(other, 'the "other N questionnaires" line is gone; update this check');
+const otherN = WORDS.indexOf(other);
+assert.notEqual(otherN, -1, `could not read "${other}" as a number`);
+assert.equal(
+  otherN + 1,
+  TRUTH.questionnaires,
+  `the free check offers "the other ${other} questionnaires", which with the ` +
+    `one just taken comes to ${otherN + 1}, but the app has ${TRUTH.questionnaires}`,
+);
+
 // A spelled-out count elsewhere drifts the same way and is harder to grep for.
 for (const file of ['features/assessments/Assessments.jsx', 'features/home/More.jsx']) {
   const src = read(file);

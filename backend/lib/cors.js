@@ -48,6 +48,14 @@ function matches(pattern, origin) {
 const FALLBACK_PATTERNS = [
   'https://*.vercel.app',
   'http://localhost:*',
+  // The same machine under its other name. `vite --host 127.0.0.1` prints a
+  // 127.0.0.1 URL, some editors open one, and Windows resolves localhost to
+  // ::1 first often enough that people switch to the numeric form to get
+  // around it. Every one of those tabs was refused by an allowlist that only
+  // knew the word, and a refused preflight surfaces in the app as "Can't
+  // reach the server" with the backend sitting there answering fine.
+  'http://127.0.0.1:*',
+  'http://[::1]:*',
 ];
 
 function resolveOrigin(req) {

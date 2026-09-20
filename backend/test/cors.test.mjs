@@ -78,6 +78,21 @@ assert.equal(
   'but the fallback is a list, not a wildcard: an arbitrary origin is still refused',
 );
 
+// The same machine under its other names.
+//
+// The fallback knew the word "localhost" and not the number, so a tab opened
+// at 127.0.0.1 had every request refused while the backend answered fine, and
+// what the app showed for that was "Can't reach the server". `vite --host
+// 127.0.0.1` prints exactly that URL, and on Windows people switch to it
+// precisely because localhost resolves to ::1 first.
+for (const origin of ['http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://[::1]:5173']) {
+  assert.equal(
+    await allowFor(origin, undefined),
+    origin,
+    `${origin} is this machine and must work in dev, like localhost does`,
+  );
+}
+
 // --- the wildcard stands in for one label, not for a path ------------------
 assert.equal(
   await allowFor('https://evil.test/x.vercel.app', undefined),

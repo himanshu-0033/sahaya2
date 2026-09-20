@@ -285,7 +285,7 @@ export default function QuickCheck() {
               <h2 className="font-display text-[1.35rem] leading-snug">Keep this, or go further</h2>
               <p className="mt-2 text-[0.9375rem] leading-relaxed" style={{ color: 'var(--w-ink-soft)' }}>
                 Nothing you just answered was saved. An account keeps your scores so you can see
-                which way they move, and opens the other twenty questionnaires, the grounding
+                which way they move, and opens the other twenty-one questionnaires, the grounding
                 practices and the daily check-in. Free, and you can delete all of it.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">

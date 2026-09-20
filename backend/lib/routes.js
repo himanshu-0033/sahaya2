@@ -37,11 +37,19 @@ import adminResidentHandler from '../handlers/admin/resident.js';
 import adminAuditHandler from '../handlers/admin/audit.js';
 import adminTeamHandler from '../handlers/admin/team.js';
 import adminAssignHandler from '../handlers/admin/assign.js';
+import { applyCors } from './cors.js';
 
 // Answers without touching auth or storage, so "is the backend up?" has an
 // answer that never depends on being signed in, and — now that this table is
 // shared — the same answer in production as locally.
+//
+// CORS applies here too. This was the one route in the table that skipped it,
+// which cost nothing while only curl asked, and would have cost the next
+// person an afternoon: a browser status check would have been blocked, and a
+// blocked preflight reads as "the server is unreachable" — the exact thing
+// this endpoint exists to rule out.
 function healthHandler(req, res) {
+  if (applyCors(req, res)) return;
   return res.status(200).json({ ok: true, uptime: Math.round(process.uptime()) });
 }
 
