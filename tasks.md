@@ -1,42 +1,121 @@
-# tasks.md
+<div align="center">
 
-Status as of 2026-09-20. Shipped work is in `git log`, not here.
+# Tasks
 
-## Blocking a real student deployment
+### What is left before this can point at real students, and what has to be re-checked forever
 
-- [ ] **Audit log.** Allowlists gate access on every request, but nothing
-      records who viewed what. Matters most in `admin/`, which shows contact
-      details and exports them to CSV.
-- [ ] **Google OAuth verification.** The consent screen is unverified, so
-      anyone who does not personally know the owner sees an "unverified app"
-      warning.
-- [ ] **Transcribe the unverified instruments.** `wordingVerified: false` in
-      `backend/lib/instruments.js`: K10, MSPSS, CBI, AIS-8, SAS-SV, PHQ-15,
-      PC-PTSD-5, SCOFF, BSMAS, SCS-SF. Check each against its citation.
-- [ ] **PSS-10 licence.** Free for research and teaching, needs the author's
-      permission for commercial use.
+![updated](https://img.shields.io/badge/updated-2026--09--20-1f2d52?style=flat-square)
+![blocking](https://img.shields.io/badge/blocking%20launch-3-b42318?style=flat-square)
+![waiting](https://img.shields.io/badge/awaiting%20permission-2-f2a93b?style=flat-square)
+![recurring](https://img.shields.io/badge/recurring-2-1f2d52?style=flat-square)
 
-## Waiting on someone else
+[prd](prd.md) · [architecture](architecture.md) · [rules](rules.md) · [design](design.md) · **tasks** · [memory](memory.md) · [readme](README.md)
 
-- [ ] **C-SSRS.** Fully implemented with its skip logic and non-additive
-      bands, held by `licenceCleared: false`. Needs a permission request to
-      the Columbia Lighthouse Project. Publishing is then a one-line change.
-- [ ] **SAM.** Needs permission from the Center for the Study of Emotion and
-      Attention (Univ. of Florida) before any build, then a pictorial option
-      mode in `AssessmentRun`, roughly 15 SVG figures, and non-summed scoring
-      across three independent dimensions.
+</div>
 
-## Recurring
+---
 
-- [ ] **Re-verify the helplines** before any release touching crisis UI.
-      Last checked 2026-09-15.
-- [ ] **Re-check the 52 grounding video ids.** They are other people's videos
-      and can be deleted or region-blocked without anyone touching this repo.
-      `backend/test/grounding.test.mjs` catches malformed ids, not dead ones.
+Shipped work is in `git log`, not here. This file holds only what is open.
 
-## Known and accepted
+## 1. Blocking a real student deployment
+
+> [!CAUTION]
+> Do not point this at real students until section 1 is empty.
+
+### 1.1 Transcribe the unverified instruments
+
+`wordingVerified: false` means the items were written from memory rather than
+transcribed from the source document. Six **published** instruments are still
+in that state:
+
+| Instrument | Status |
+| :--- | :--- |
+| ASQ | published, wording unverified |
+| PHQ-15 | published, wording unverified |
+| PC-PTSD-5 | published, wording unverified |
+| SCOFF | published, wording unverified |
+| BSMAS | published, wording unverified |
+| SCS-SF | published, wording unverified |
+| C-SSRS | not published, also unverified, see 2.1 |
+
+Check each against its citation in `backend/lib/instruments.js` and flip the
+flag. K10, MSPSS, CBI, AIS-8 and SAS-SV were on this list and have since been
+verified, so the remaining six are the whole job.
+
+### 1.2 Log views, not only exports
+
+Exports **are** logged. `/api/admin/audit` records every CSV that leaves the
+console, append only, with no delete, and it records that an export happened
+rather than what was in it.
+
+What is still missing is a record of **who opened whose record**. The console
+shows contact details, mood history and written words on a resident page, and
+nothing records that view. That gap matters most in `admin/`.
+
+### 1.3 Verify the OAuth consent screen
+
+Google shows an "unverified app" warning until the project goes through
+verification. It matters the moment this is used by people who do not
+personally know the owner.
+
+### 1.4 Clear the PSS-10 licence for its actual use
+
+Free for research and teaching. Commercial use needs the author's permission.
+Decide which this deployment is before it takes money.
+
+## 2. Waiting on someone else
+
+### 2.1 C-SSRS
+
+- [ ] Request permission from the Columbia Lighthouse Project
+      (`cssrs.columbia.edu`).
+
+Already fully implemented in `backend/lib/instruments.js`, with its skip logic
+and its non-additive risk bands, held only by `licenceCleared: false`. When
+permission clears, publishing is a one-line change plus the wording pass in 1.1.
+
+### 2.2 SAM, the Self-Assessment Manikin
+
+- [ ] Ask the Center for the Study of Emotion and Attention, University of
+      Florida, **before** building anything.
+
+The manikin figures are copyrighted and they *are* the instrument. Convention
+is "adapted with permission from Bradley and Lang (1994)", and Millisecond
+bundles it under a paid Inquisit licence. Once permission exists it needs a
+pictorial option mode in `AssessmentRun`, roughly 15 SVG figures, and
+non-summed scoring across three independent dimensions.
+
+## 3. Recurring, forever
+
+| Check | Cadence | Last done | Why |
+| :--- | :--- | :--- | :--- |
+| **Re-verify every helpline** | Before any release touching crisis UI | 2026-09-15 | A dead number on a crisis screen sends someone in danger nowhere |
+| **Re-check the 52 grounding video ids** | Periodically | When added | They are other people's videos and can be deleted, made private or region-blocked without anyone touching this repo |
+
+> [!NOTE]
+> `backend/test/grounding.test.mjs` catches **malformed** video ids, not dead
+> ones. A test pass does not mean the videos still play.
+
+## 4. Known and accepted
+
+These are not bugs and do not need fixing. They need to stay true.
 
 - The flagging heuristic misses real concerns and produces false positives by
   design. It is a nudge, and the copy says so.
 - The bookend questionnaires are not outcome measures. Reporting on them would
   need a real study design, not this.
+- A guided path is a sequence of practices, not a clinical protocol.
+- The cold-water practice can slow the heart, which is the point and also the
+  risk. Its caution text is asserted by name in the test suite. Treat that
+  assertion as load-bearing.
+
+## 5. Rejected, closed
+
+Do not reopen these without new evidence. The reasoning is in
+[memory.md](memory.md#instruments-reviewed-2026-09-04).
+
+- ~~Dot probe~~ no version with internal reliability above zero.
+- ~~Emotional Stroop~~ the interference index has unacceptably low internal
+  consistency.
+- ~~Facial emotion recognition~~ FER2013 is 48x48 greyscale and made of faces
+  that never consented.

@@ -9,6 +9,20 @@ plain rule-based heuristic — not a diagnosis.
 This is a **reflective prototype, not a medical device**. It does not
 perform clinical assessment of any kind.
 
+## The six context files
+
+This README is the operating manual. The six files beside it are the context,
+for a person or an agent picking the repo up cold.
+
+| File | Answers |
+| :--- | :--- |
+| [prd.md](prd.md) | What this is, who it is for, and the six things it deliberately will not do |
+| [architecture.md](architecture.md) | The four modules, the route table, auth, storage, deploy order |
+| [rules.md](rules.md) | What must not be broken. Safety first, then instruments, backend, code, copy |
+| [design.md](design.md) | Colour, type, motion, and the two visual directions already rejected |
+| [tasks.md](tasks.md) | What is left before this can point at real students |
+| [memory.md](memory.md) | Decisions with their dates and reasons, including three tests rejected on evidence |
+
 ## Structure
 
 Independently deployable modules:
