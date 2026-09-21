@@ -5,7 +5,7 @@ import { decodeJwt, saveSession } from './session.js';
 import { COUNTRY_CODES } from '../../shared/countryCodes.js';
 import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } from '../../shared/contact.js';
 
-export default function PasswordAuthForm({ onSignedIn, dark = false }) {
+export default function PasswordAuthForm({ onSignedIn }) {
   // A <label> that only sits above an input is a caption, not a label: a
   // screen reader announces the field as blank, and tapping the words does not
   // focus it. useId rather than fixed strings because this form is rendered in
@@ -34,10 +34,11 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
       ? identifier.trim().length > 0
       : identifier.trim() && password.length > 0;
 
-  const inputClass = dark
-    ? 'mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/50 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
-    : 'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-  const labelClass = `text-[0.6875rem] uppercase tracking-wider ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
+  const inputClass =
+    'mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
+  const labelClass = 'text-[0.6875rem] uppercase tracking-wider text-[var(--color-muted)]';
+  const tabClass = (active) =>
+    `flex-1 rounded-full py-1.5 transition-colors ${active ? 'bg-white shadow-sm font-medium' : 'text-[var(--color-muted)]'}`;
 
   function switchMode(next) {
     setMode(next);
@@ -77,37 +78,11 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
 
   return (
     <div className="w-full">
-      <div
-        className={`mb-3 flex rounded-full p-1 text-sm ${dark ? 'bg-[var(--surface-2)]' : 'bg-[var(--color-cream-soft)]'}`}
-      >
-        <button
-          type="button"
-          onClick={() => switchMode('login')}
-          className={`flex-1 rounded-full py-1.5 transition-colors ${
-            mode === 'login'
-              ? dark
-                ? 'bg-[var(--surface-5)] font-medium text-white'
-                : 'bg-white shadow-sm font-medium'
-              : dark
-                ? 'text-white/55'
-                : 'text-[var(--color-muted)]'
-          }`}
-        >
+      <div className="mb-3 flex rounded-full bg-[var(--color-cream-soft)] p-1 text-sm">
+        <button type="button" onClick={() => switchMode('login')} aria-pressed={mode === 'login'} className={tabClass(mode === 'login')}>
           Log in
         </button>
-        <button
-          type="button"
-          onClick={() => switchMode('signup')}
-          className={`flex-1 rounded-full py-1.5 transition-colors ${
-            mode === 'signup'
-              ? dark
-                ? 'bg-[var(--surface-5)] font-medium text-white'
-                : 'bg-white shadow-sm font-medium'
-              : dark
-                ? 'text-white/55'
-                : 'text-[var(--color-muted)]'
-          }`}
-        >
+        <button type="button" onClick={() => switchMode('signup')} aria-pressed={isSignup} className={tabClass(isSignup)}>
           Sign up
         </button>
       </div>
@@ -140,14 +115,10 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
                     aria-label="Country calling code"
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
-                    className={
-                      dark
-                        ? 'rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-2.5 text-sm text-white outline-none focus:border-[var(--line-6)]'
-                        : 'rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]'
-                    }
+                    className="rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]"
                   >
                     {COUNTRY_CODES.map((c) => (
-                      <option key={c.code} value={c.code} className="text-black">
+                      <option key={c.code} value={c.code}>
                         {c.code}
                       </option>
                     ))}
@@ -169,9 +140,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
               <button
                 type="button"
                 onClick={() => setShowPhone(true)}
-                className={`text-xs underline underline-offset-4 ${
-                  dark ? 'text-white/60 hover:text-white/70' : 'text-[var(--color-muted)]'
-                }`}
+                className="text-xs text-[var(--color-muted)] underline underline-offset-4"
               >
                 + Add phone number (optional)
               </button>
@@ -208,7 +177,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         )}
 
         {error && (
-          <p role="alert" className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+          <p role="alert" className="text-sm text-[var(--color-flag-deep)]">
             {error}
           </p>
         )}
@@ -216,7 +185,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
         {/* The server will not say whether the address has an account, so this
             is the whole of the answer either way. */}
         {sent && (
-          <p className={`text-sm ${dark ? 'text-white/70' : 'text-[var(--color-ink-soft)]'}`} role="status">
+          <p className="text-sm text-[var(--color-ink-soft)]" role="status">
             {sent}
           </p>
         )}
@@ -239,9 +208,7 @@ export default function PasswordAuthForm({ onSignedIn, dark = false }) {
               setError(null);
               setSent(null);
             }}
-            className={`block text-xs underline underline-offset-2 ${
-              dark ? 'text-white/55 hover:text-white/80' : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]'
-            }`}
+            className="block text-xs text-[var(--color-muted)] underline underline-offset-2 hover:text-[var(--color-ink)]"
           >
             {isForgot ? 'Back to log in' : 'Forgot your password?'}
           </button>

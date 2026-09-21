@@ -292,7 +292,7 @@ export default function InkblotTest() {
                   style={
                     plateUsable
                       ? { background: 'var(--sec-inkblot)', color: '#07080a' }
-                      : { background: 'rgba(255,255,255,0.06)', color: 'var(--color-ink-soft)' }
+                      : { background: 'var(--surface-3)', color: 'var(--color-ink-soft)' }
                   }
                 >
                   {plateTyped ? 'Next plate' : 'Skip this one'}

@@ -82,7 +82,7 @@ export default function Caregiver() {
             Sign in with the Google account your caregiver access is registered under.
           </p>
           <div className="mt-6">
-            <GoogleSignInButton dark onSignedIn={setSession} />
+            <GoogleSignInButton onSignedIn={setSession} />
           </div>
         </div>
       </div>

@@ -361,7 +361,7 @@ export default function CheckIn() {
                       style={
                         plateUsable
                           ? { background: 'var(--sec-inkblot)', color: '#07080a' }
-                          : { background: 'rgba(255,255,255,0.06)', color: 'var(--color-ink-soft)' }
+                          : { background: 'var(--surface-3)', color: 'var(--color-ink-soft)' }
                       }
                     >
                       {plateTyped ? 'Next plate' : 'Skip this one'}
@@ -423,7 +423,14 @@ export default function CheckIn() {
 
           {/* A five-stop scale rather than five stacked buttons: mood is a
               continuum, and a vertical list makes it look like five unrelated
-              options. */}
+              options.
+
+              The same five circles as Home's card, at the same size, so the
+              tap that brought someone here looks like the one they made. The
+              chosen one grows by transform rather than by width, so picking a
+              mood does not push the rest of the screen down, and the others
+              dim rather than the chosen one lighting up. Its label goes to
+              ink: the mood hues are fills, and as letters they are 2:1. */}
           <div className="animate-slide-up mt-6 grid grid-cols-5 gap-2" style={{ animationDelay: '120ms' }}>
             {MOOD_OPTIONS.map((m, i) => {
               const selected = mood === m.value;
@@ -434,26 +441,28 @@ export default function CheckIn() {
                   type="button"
                   onClick={() => setMood(m.value)}
                   aria-pressed={selected}
-                  className="press group relative flex flex-col items-center gap-2.5 rounded-2xl border px-1 py-4 transition-all duration-300"
+                  className="press group relative flex flex-col items-center gap-2 rounded-2xl border px-1 py-3.5 transition-colors duration-300 hover:bg-[var(--surface-2)]"
                   style={{
-                    borderColor: selected ? hue : 'rgba(255,255,255,0.08)',
-                    background: selected ? `color-mix(in srgb, ${hue} 15%, transparent)` : 'rgba(255,255,255,0.02)',
+                    borderColor: selected ? hue : 'transparent',
+                    background: selected ? `color-mix(in srgb, ${hue} 15%, transparent)` : undefined,
                   }}
                 >
                   <span
                     aria-hidden="true"
-                    className="rounded-full transition-all duration-300"
+                    className="h-8 w-8 rounded-full transition-[transform,opacity,box-shadow] duration-300 sm:h-10 sm:w-10"
                     style={{
-                      width: selected ? 15 : 9,
-                      height: selected ? 15 : 9,
                       background: hue,
-                      opacity: selected ? 1 : 0.45,
-                      boxShadow: selected ? `0 0 18px ${hue}` : 'none',
+                      opacity: mood && !selected ? 0.4 : 1,
+                      transform: selected ? 'scale(1.12)' : undefined,
+                      boxShadow: selected ? `0 6px 16px -6px ${hue}` : 'none',
                     }}
                   />
                   <span
                     className="text-[0.6875rem] transition-colors duration-300"
-                    style={{ color: selected ? hue : 'var(--color-muted)' }}
+                    style={{
+                      color: selected ? 'var(--color-ink)' : 'var(--color-ink-soft)',
+                      fontWeight: selected ? 600 : 400,
+                    }}
                   >
                     {m.label}
                   </span>

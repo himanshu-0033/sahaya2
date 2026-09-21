@@ -60,8 +60,8 @@ export default function LoadError({ error, onRetry, retrying = false }) {
     <div
       className="mt-8 rounded-3xl border p-6"
       style={{
-        borderColor: offline ? 'rgba(255,255,255,0.12)' : 'var(--color-flag)',
-        background: offline ? 'rgba(255,255,255,0.03)' : 'var(--color-flag-soft)',
+        borderColor: offline ? 'var(--line-2)' : 'var(--color-flag)',
+        background: offline ? 'var(--surface-1)' : 'var(--color-flag-soft)',
       }}
       role="alert"
     >

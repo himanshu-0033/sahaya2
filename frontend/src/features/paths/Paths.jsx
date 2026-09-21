@@ -25,7 +25,7 @@ function Pips({ total, completed, hue }) {
           <span
             key={day}
             className="h-1.5 rounded-full transition-all duration-300"
-            style={{ width: done ? 18 : 8, background: done ? hue : 'rgba(255,255,255,0.14)' }}
+            style={{ width: done ? 18 : 8, background: done ? hue : 'var(--surface-4)' }}
           />
         );
       })}

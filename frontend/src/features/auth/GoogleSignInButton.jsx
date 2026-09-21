@@ -10,7 +10,7 @@ const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const GIS_MIN_WIDTH = 200;
 const GIS_MAX_WIDTH = 400;
 
-export default function GoogleSignInButton({ onSignedIn, dark = false }) {
+export default function GoogleSignInButton({ onSignedIn }) {
   const wrapRef = useRef(null);
   const slotRef = useRef(null);
   const [width, setWidth] = useState(0);
@@ -57,7 +57,7 @@ export default function GoogleSignInButton({ onSignedIn, dark = false }) {
       // renderButton appends, so clear first or resizes stack up copies.
       slotRef.current.innerHTML = '';
       window.google.accounts.id.renderButton(slotRef.current, {
-        theme: dark ? 'filled_black' : 'outline',
+        theme: 'outline',
         size: 'large',
         shape: 'pill',
         width: Math.min(GIS_MAX_WIDTH, Math.max(GIS_MIN_WIDTH, width)),
@@ -79,13 +79,12 @@ export default function GoogleSignInButton({ onSignedIn, dark = false }) {
       cancelled = true;
       if (poll) clearInterval(poll);
     };
-  }, [onSignedIn, dark, width]);
+  }, [onSignedIn, width]);
 
   if (error) {
-    // On the dark heroes the light coral is the readable one; on cream it is
-    // 2.4:1 and the deep step is 5.5:1.
+    // The deep step: the light coral is 2.4:1 on cream, this is 5.5:1.
     return (
-      <p className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+      <p className="text-sm text-[var(--color-flag-deep)]">
         {error}
       </p>
     );
