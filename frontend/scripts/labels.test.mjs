@@ -46,7 +46,15 @@ for (const root of ROOTS) {
     const open = /<label\b[^>]*>/g;
     let match;
     while ((match = open.exec(src))) {
-      if (match[0].includes('htmlFor')) continue;
+      const target = match[0].match(/htmlFor=(\{`[^`]*`\}|\{[^}]*\}|"[^"]*")/)?.[1];
+      // htmlFor only associates if something carries that id. The phone field
+      // on the sign-up form had a label pointing at an id nothing had.
+      if (target) {
+        if (!src.includes(`id=${target}`)) {
+          orphans.push(`${path.relative(ROOTS[0], file).split(path.sep).join('/')}:${src.slice(0, match.index).split('\n').length} (htmlFor ${target} has no matching id)`);
+        }
+        continue;
+      }
       const close = src.indexOf('</label>', match.index);
       const inner = close === -1 ? '' : src.slice(match.index + match[0].length, close);
       // Nested control: implicitly associated, nothing more needed.

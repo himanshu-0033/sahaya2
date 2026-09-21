@@ -20,7 +20,7 @@ import { EMAIL_MESSAGE, PHONE_MESSAGE, digitsOnly, isValidEmail, isValidPhone } 
 //
 // Every remaining field says why it is being asked, on screen, next to the
 // field. If a field cannot carry that sentence, it should not be here.
-export default function AccountForm({ name, email, onDone, saving, error, dark = false }) {
+export default function AccountForm({ name, email, onDone, saving, error }) {
   // A <label> sitting above an input is a caption, not a label: a screen reader
   // announces the field as blank and tapping the words does not focus it.
   // useId rather than fixed strings, so a second copy of this form on the same
@@ -36,11 +36,10 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
   // Caught here, before anything is sent. The server checks the same rules.
   const [localError, setLocalError] = useState(null);
 
-  const inputClass = dark
-    ? 'input-soft mt-1 w-full rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-4 py-3 text-white outline-none transition-colors placeholder:text-white/50 focus:border-[var(--line-6)] focus:ring-2 focus:ring-white/10'
-    : 'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
-  const labelClass = `text-xs uppercase tracking-wide ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`;
-  const hintClass = `mt-1.5 text-xs leading-relaxed ${dark ? 'text-white/50' : 'text-[var(--color-muted)]'}`;
+  const inputClass =
+    'input-soft mt-1 w-full rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-4 py-3 outline-none transition-colors focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal-soft)]';
+  const labelClass = 'text-xs uppercase tracking-wide text-[var(--color-muted)]';
+  const hintClass = 'mt-1.5 text-xs leading-relaxed text-[var(--color-muted)]';
 
   function set(key, value) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -58,14 +57,12 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
 
   return (
     <div className="mt-8 animate-fade-up">
-      <h2 className={`font-display text-3xl md:text-4xl leading-tight text-center ${dark ? 'text-white' : ''}`}>
+      <h2 className="font-display text-3xl md:text-4xl leading-tight text-center">
         Let's get to know you a bit better.
       </h2>
 
       <form
-        className={`mt-8 space-y-5 rounded-3xl p-6 md:p-8 ${
-          dark ? 'border border-[var(--line-2)] bg-[var(--surface-2)] backdrop-blur' : 'card-soft'
-        }`}
+        className="card-soft mt-8 space-y-5 rounded-3xl p-6 md:p-8"
         onSubmit={handleSubmit}
       >
         <div>
@@ -98,19 +95,16 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
               aria-label="Country calling code"
               value={values.countryCode}
               onChange={(e) => set('countryCode', e.target.value)}
-              className={
-                dark
-                  ? 'input-soft rounded-xl border border-[var(--line-3)] bg-[var(--surface-2)] px-2 py-3 text-sm text-white outline-none focus:border-[var(--line-6)]'
-                  : 'input-soft rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]'
-              }
+              className="input-soft rounded-xl border border-[var(--color-ink)]/10 bg-white/70 px-2 py-3 text-sm outline-none focus:border-[var(--color-teal)]"
             >
               {COUNTRY_CODES.map((c) => (
-                <option key={c.code} value={c.code} className="text-black">
+                <option key={c.code} value={c.code}>
                   {c.code}
                 </option>
               ))}
             </select>
             <input
+              id={`${fieldId}-phone`}
               type="tel"
               inputMode="numeric"
               autoComplete="tel-national"
@@ -139,14 +133,14 @@ export default function AccountForm({ name, email, onDone, saving, error, dark =
           </p>
         </div>
 
-        <p className={`text-xs leading-relaxed ${dark ? 'text-white/55' : 'text-[var(--color-muted)]'}`}>
+        <p className="text-xs leading-relaxed text-[var(--color-muted)]">
           Your institution&apos;s administrator can see your check-ins and assign
           you a counsellor, who can see them too. Anyone else sees them only if
           you invite them from your account.
         </p>
 
         {(localError || error) && (
-          <p role="alert" className={`text-sm ${dark ? 'text-[var(--color-flag)]' : 'text-[var(--color-flag-deep)]'}`}>
+          <p role="alert" className="text-sm text-[var(--color-flag-deep)]">
             {localError || error}
           </p>
         )}

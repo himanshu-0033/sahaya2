@@ -7,7 +7,7 @@ import VoiceInputButton from '../../shared/VoiceInputButton.jsx';
 import StreakBadge from '../../shared/StreakBadge.jsx';
 import { MOOD_HUE, MOOD_OPTIONS } from '../../shared/moods.js';
 import { ASK_DP_EVENT } from '../companion/AskDP.jsx';
-import DarkAccountHero from '../auth/DarkAccountHero.jsx';
+import AccountSetup from '../auth/AccountSetup.jsx';
 import { useSession } from '../auth/useSession.js';
 import { getStatus, getProfile, saveProfile, getGroundingCatalog, getPaths } from '../../shared/api.js';
 import { pathPhoto } from '../../shared/photos.js';
@@ -495,7 +495,7 @@ export default function Landing() {
 
   if (!profile?.onboarded) {
     return (
-      <DarkAccountHero
+      <AccountSetup
         name={profile?.name || session.profile.name}
         email={profile?.email || session.profile.email}
         onDone={handleCreateAccount}
