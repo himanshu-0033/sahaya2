@@ -40,7 +40,10 @@ function DayRow({ day, path, done, isNext, onToggle, busy }) {
         onClick={() => onToggle(day.day, done)}
         disabled={busy}
         aria-pressed={done}
-        aria-label={done ? `Mark day ${day.day} not done` : `Mark day ${day.day} done`}
+        // One label, and aria-pressed says which way it is. A label that also
+        // flipped was read as "Mark day 1 not done, pressed", which contradicts
+        // itself.
+        aria-label={`Day ${day.day} done`}
         className="path-stop-marker press flex h-7 w-7 items-center justify-center rounded-full border-2 transition-colors disabled:opacity-50"
         style={{
           borderColor: done ? bright : isNext ? deep : alpha(base, 0.45),
@@ -267,6 +270,20 @@ export default function PathRun() {
             </p>
             <p className="mt-2 text-sm text-[var(--color-muted)]">For: {path.forWhom}</p>
 
+            {/* Up here rather than under the seven days: it is the page's
+                one action, and it used to be the last thing on it. */}
+            {!started && (
+              <button
+                type="button"
+                onClick={() => act('start')}
+                disabled={busy}
+                className="press mt-5 rounded-full px-6 py-3 text-sm font-medium text-[#07080a] disabled:opacity-50"
+                style={{ background: colors.bright }}
+              >
+                Start this path
+              </button>
+            )}
+
             {started && (
               <p className="mt-5 text-sm">
                 <span className="num text-2xl" style={{ color: colors.deep }}>
@@ -299,7 +316,7 @@ export default function PathRun() {
           <Bookend path={path} scores={data.scores} change={data.change} />
 
           <div className="stack-section flex flex-wrap items-center gap-3">
-            {started ? (
+            {started && (
               <button
                 type="button"
                 onClick={() => act('leave')}
@@ -307,16 +324,6 @@ export default function PathRun() {
                 className="press rounded-full border border-[var(--line-2)] px-5 py-2.5 text-sm text-[var(--color-ink-soft)] transition-colors hover:border-[var(--line-4)] disabled:opacity-50"
               >
                 Leave this path
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => act('start')}
-                disabled={busy}
-                className="press rounded-full px-6 py-3 text-sm font-medium text-[#07080a] disabled:opacity-50"
-                style={{ background: colors.bright }}
-              >
-                Start this path
               </button>
             )}
             <CrisisContacts variant="link" />

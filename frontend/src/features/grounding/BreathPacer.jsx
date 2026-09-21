@@ -181,7 +181,7 @@ export default function BreathPacer({ pacer, accent: accentName, running, speakA
       </p>
 
       <p className="mt-3 text-xs text-[var(--color-muted)] tabular-nums">
-        Round {Math.min(round, pacer.rounds)} of {pacer.rounds} · {secondsLeft}s left
+        Round {Math.min(round, pacer.rounds)} of {pacer.rounds} · {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} left
       </p>
     </div>
   );
