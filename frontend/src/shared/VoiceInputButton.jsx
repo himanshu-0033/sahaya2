@@ -133,7 +133,9 @@ export default function VoiceInputButton({
         type="button"
         onClick={toggle}
         disabled={disabled}
-        aria-label={listening ? 'Stop listening' : 'Answer by voice'}
+        // Fixed, with aria-pressed saying whether it is on: a label that flipped
+        // as well was read as "Stop listening, pressed".
+        aria-label="Answer by voice"
         aria-pressed={listening}
         className={`flex ${box} shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-40 ${
           listening

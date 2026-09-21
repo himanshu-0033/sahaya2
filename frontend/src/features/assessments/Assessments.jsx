@@ -248,9 +248,11 @@ export default function Assessments() {
       {!loading && instruments.length > 0 && (
         <>
           {/* Horizontal scrolling filter — 14 domains will never fit as a
-              wrapped row on a phone without eating half the screen. */}
-          <div className="animate-slide-up stack-block -mx-5 overflow-x-auto px-5 pb-1" style={{ animationDelay: '60ms' }}>
-            <div className="flex w-max items-center gap-2">
+              wrapped row on a phone without eating half the screen. From sm
+              up there is room, so they wrap, rather than a laptop showing a
+              scrollbar and half a chip at the edge. */}
+          <div className="animate-slide-up stack-block row-scroll -mx-5 px-5 pb-1 sm:mx-0 sm:px-0" style={{ animationDelay: '60ms' }}>
+            <div className="flex w-max items-center gap-2 sm:w-auto sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => setFilter(null)}

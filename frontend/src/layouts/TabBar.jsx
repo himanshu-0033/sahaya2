@@ -261,8 +261,15 @@ export default function TabBar() {
         </Link>
 
         <div className="mt-7 flex flex-1 flex-col gap-1 overflow-y-auto">
+          {/* More stands in for the Explore rows on the phone. Here those rows
+              are on screen, so the one you are in lights and More does not:
+              two lit rows both claimed to be the current page. */}
           {TABS.map((tab) => (
-            <SideLink key={tab.to} tab={tab} active={isActive(pathname, tab)} />
+            <SideLink
+              key={tab.to}
+              tab={tab}
+              active={isActive(pathname, tab.to === '/more' ? { to: tab.to } : tab)}
+            />
           ))}
 
           <p className="marginalia mt-6 mb-1 px-3">Explore</p>
