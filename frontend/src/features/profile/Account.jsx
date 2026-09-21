@@ -162,7 +162,7 @@ function DetailRow({ label, value, reveal, onEdit, editing, editor, note }) {
               <button
                 type="button"
                 onClick={() => setShown((v) => !v)}
-                className="press mt-1 text-xs text-[var(--color-teal-dark)] underline underline-offset-4"
+                className="press hit mt-1 text-xs text-[var(--color-teal-dark)] underline underline-offset-4"
               >
                 {shown ? 'Hide' : 'Show'}
                 <span className="sr-only"> {label.toLowerCase()}</span>
@@ -411,7 +411,7 @@ export default function Account() {
         <aside className="card animate-slide-up overflow-hidden lg:sticky lg:top-6">
           <div className="flex flex-col items-center px-5 pt-7 pb-5 text-center">
             <Avatar name={name} picture={session?.profile?.picture} />
-            <p className="font-display mt-4 max-w-full truncate text-xl">{name || 'You'}</p>
+            <h1 className="font-display mt-4 max-w-full truncate text-xl">{name || 'You'}</h1>
             <p className="mt-0.5 max-w-full truncate text-sm text-[var(--color-muted)]">{emailAddress}</p>
           </div>
           <nav aria-label="Account sections" className="border-t border-[var(--line-1)]">

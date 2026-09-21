@@ -82,9 +82,12 @@ function SetRail({ names, index, eyebrow, onSkip, skipLabel }) {
   );
 }
 
+// Each dot draws 6px but is a 12 by 24 target: the button is the target and
+// the dot is a span inside it, so nothing moves and there is no dead gap
+// between two dots for a thumb to land in.
 function Dots({ answers, current, onJump }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="-my-[9px] flex flex-wrap items-center">
       {answers.map((answer, i) => {
         const state = i === current ? 'current' : answer !== null ? 'done' : 'todo';
         return (
@@ -94,14 +97,18 @@ function Dots({ answers, current, onJump }) {
             onClick={() => onJump(i)}
             aria-label={`Question ${i + 1}`}
             aria-current={i === current}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              state === 'current'
-                ? 'w-6 bg-[var(--sec-tests)]'
-                : state === 'done'
-                  ? 'w-1.5 bg-[var(--sec-tests)]/45 hover:bg-[var(--sec-tests)]/70'
-                  : 'w-1.5 bg-[var(--color-ink)]/12 hover:bg-[var(--color-ink)]/25'
-            }`}
-          />
+            className="group flex h-6 items-center px-[3px]"
+          >
+            <span
+              className={`block h-1.5 rounded-full transition-all duration-300 ${
+                state === 'current'
+                  ? 'w-6 bg-[var(--sec-tests)]'
+                  : state === 'done'
+                    ? 'w-1.5 bg-[var(--sec-tests)]/45 group-hover:bg-[var(--sec-tests)]/70'
+                    : 'w-1.5 bg-[var(--color-ink)]/12 group-hover:bg-[var(--color-ink)]/25'
+              }`}
+            />
+          </button>
         );
       })}
     </div>
@@ -444,7 +451,7 @@ export default function AssessmentRun() {
                   if (inSet) clearSetResults(setIds);
                   navigate(handsOffToCheckin ? '/checkin?stage=plates' : '/assessments');
                 }}
-                className="press flex items-center gap-2 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
+                className="press hit flex items-center gap-2 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
               >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M15 18l-6-6 6-6" />

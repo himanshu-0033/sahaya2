@@ -36,7 +36,7 @@ export default function CaregiverResident() {
 
         {data && (
           <>
-            <h2 className="font-display text-3xl mt-6">{data.resident.name}</h2>
+            <h1 className="font-display text-3xl mt-6">{data.resident.name}</h1>
             <p className="text-sm text-[var(--color-muted)]">{data.resident.email}</p>
 
             <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-[var(--color-cream-soft)] p-6 text-sm">

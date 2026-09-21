@@ -1047,6 +1047,18 @@ body::after {
   .skip-link { transition: none; }
 }
 
+/* A target bigger than what is drawn. The back links at the top of every flow
+   are one line of 12px text, 16px tall, and they are how you get out of a
+   questionnaire or a practice on a phone. This grows what a thumb can hit to
+   44px tall without moving anything on screen. Only for links with open space
+   around them: two of these stacked closer than 44px would overlap. */
+.hit { position: relative; }
+.hit::after {
+  content: '';
+  position: absolute;
+  inset: -14px -10px;
+}
+
 /* Text fields style their own focus (border goes teal, background lifts), so
    the global ring on top of that was drawing two concentric outlines around
    every input. Their own treatment is a sufficient focus indicator, so the

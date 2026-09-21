@@ -77,7 +77,7 @@ export default function Caregiver() {
       <div className="min-h-screen px-6 py-10 md:py-16">
         <div className="mx-auto max-w-xl">
           <Header />
-          <h2 className="font-display text-3xl stack-block">Caregiver access</h2>
+          <h1 className="font-display text-3xl stack-block">Caregiver access</h1>
           <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
             Sign in with the Google account your caregiver access is registered under.
           </p>
@@ -93,7 +93,7 @@ export default function Caregiver() {
     <div className="min-h-screen px-6 py-10 md:py-16">
       <div className="mx-auto max-w-2xl">
         <Header />
-        <h2 className="font-display text-3xl stack-block">Residents</h2>
+        <h1 className="font-display text-3xl stack-block">Residents</h1>
         <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
           Flagged residents are surfaced first. This is a heuristic nudge, not a diagnosis.
         </p>
@@ -215,7 +215,7 @@ export default function Caregiver() {
           </>
         )}
 
-        <Link to="/" className="mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
+        <Link to="/" className="hit mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
           Back to check-in
         </Link>
       </div>

@@ -118,7 +118,7 @@ export default function More() {
             destination, at the size of a link someone is meant to find. */}
         <Link
           to="/account"
-          className="press text-xs text-[var(--color-ink-soft)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
+          className="press hit text-xs text-[var(--color-ink-soft)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
         >
           Your account
         </Link>

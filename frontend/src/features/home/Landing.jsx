@@ -568,7 +568,7 @@ export default function Landing() {
       <section className="animate-slide-up stack-block" style={{ animationDelay: '220ms' }}>
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="home-section-title">Right now, I feel…</h2>
-          <Link to="/grounding" className="text-xs text-[var(--sec-calm-deep)] underline underline-offset-4">
+          <Link to="/grounding" className="hit text-xs text-[var(--sec-calm-deep)] underline underline-offset-4">
             See all
           </Link>
         </div>
