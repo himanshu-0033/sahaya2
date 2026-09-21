@@ -57,9 +57,9 @@ export default function AccountForm({ name, email, onDone, saving, error }) {
 
   return (
     <div className="mt-8 animate-fade-up">
-      <h2 className="font-display text-3xl md:text-4xl leading-tight text-center">
+      <h1 className="font-display text-3xl md:text-4xl leading-tight text-center">
         Let's get to know you a bit better.
-      </h2>
+      </h1>
 
       <form
         className="card-soft mt-8 space-y-5 rounded-3xl p-6 md:p-8"

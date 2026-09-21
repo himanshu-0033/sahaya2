@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
 import PageShell from '../../layouts/PageShell.jsx';
@@ -222,7 +222,7 @@ function TodayCard({ name, status }) {
         <StreakBadge label />
       </div>
 
-      <h1 id="today-heading" className="font-display mt-2 text-[1.6rem] leading-tight sm:text-[2rem]">
+      <h1 id="today-heading" tabIndex={-1} className="font-display mt-2 text-[1.6rem] leading-tight focus:outline-none sm:text-[2rem]">
         {done ? "That's today done." : 'How is today, really?'}
       </h1>
 
@@ -402,6 +402,10 @@ export default function Landing() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
   const [loadError, setLoadError] = useState(null);
+  // Saving the profile swaps the form for home without a route change, so
+  // nothing resets scroll or focus: home opened scrolled to where the button
+  // was, and focus fell to <body> with the button that held it.
+  const justOnboarded = useRef(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [status, setStatus] = useState({ loading: true, checkedIn: null, record: null, streak: 0, history: [], error: null });
   // The one unfinished path, or null. Its own state rather than the whole
@@ -460,10 +464,20 @@ export default function Landing() {
     setSavingProfile(true);
     setProfileError(null);
     saveProfile(values)
-      .then((data) => setProfile(data.profile))
+      .then((data) => {
+        justOnboarded.current = true;
+        setProfile(data.profile);
+      })
       .catch((err) => setProfileError(err.message))
       .finally(() => setSavingProfile(false));
   }
+
+  useEffect(() => {
+    if (!justOnboarded.current || !profile?.onboarded) return;
+    justOnboarded.current = false;
+    window.scrollTo(0, 0);
+    document.getElementById('today-heading')?.focus({ preventScroll: true });
+  }, [profile]);
 
   // Signed out is its own page at its own URL, not a branch of the home
   // screen. It used to render here, which meant the sign-in screen and the

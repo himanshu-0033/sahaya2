@@ -205,12 +205,14 @@ export default function TabBar() {
                 }}
               >
                 {/* Glow behind the active icon — the thing that makes the bar
-                    feel like an app rather than a row of links. */}
+                    feel like an app rather than a row of links. Lifted toward
+                    white, because Home's lake is dark and blurred at full
+                    strength it was a smudge through the icon, not a glow. */}
                 {active && (
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute top-1 h-9 w-9 rounded-full opacity-70 blur-md"
-                    style={{ background: tab.hue }}
+                    style={{ background: `color-mix(in srgb, ${tab.hue} 60%, white)` }}
                   />
                 )}
                 <span className="relative">
