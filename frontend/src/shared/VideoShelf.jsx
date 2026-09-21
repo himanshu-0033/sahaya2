@@ -30,7 +30,7 @@ function VideoCard({ video, accentName }) {
   if (playing) {
     return (
       <div
-        className="overflow-hidden rounded-2xl border"
+        className="overflow-hidden rounded-2xl border bg-white"
         style={{ borderColor: alpha(base, 0.35) }}
       >
         <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
@@ -50,9 +50,13 @@ function VideoCard({ video, accentName }) {
     );
   }
 
+  // The title sits under the thumbnail, not on it. YouTube thumbnails carry
+  // their own big lettering, so a title laid over one read as two headlines
+  // printed on top of each other, and a panel over an image is the one thing
+  // the design system rules out.
   return (
     <div
-      className="group lift overflow-hidden rounded-2xl border transition-colors"
+      className="group lift overflow-hidden rounded-2xl border bg-white transition-colors"
       style={{ borderColor: alpha(base, 0.18) }}
     >
       <button
@@ -81,32 +85,29 @@ function VideoCard({ video, accentName }) {
           />
         )}
 
-        <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-
         <span
           className="absolute top-1/2 left-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full pl-1 text-white shadow-lg transition-transform duration-300 group-hover:scale-110"
           style={{ background: alpha(base, 0.92) }}
         >
           <PlayIcon />
         </span>
-
-        <span className="absolute right-3 bottom-3 left-3">
-          <span className="block text-sm leading-snug text-white drop-shadow">{video.title}</span>
-          <span className="mt-0.5 block text-[0.6875rem] text-white/70">{video.channel}</span>
-        </span>
       </button>
 
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5">
-        <span className="text-[0.6875rem] text-[var(--color-muted)]">Plays here, on YouTube</span>
-        <a
-          href={`https://www.youtube.com/watch?v=${video.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[0.6875rem] underline underline-offset-4"
-          style={{ color: deep }}
-        >
-          Open on YouTube
-        </a>
+      <div className="px-4 pt-3 pb-2.5">
+        <p className="text-sm leading-snug">{video.title}</p>
+        <p className="mt-0.5 text-[0.6875rem] text-[var(--color-muted)]">{video.channel}</p>
+        <div className="mt-2.5 flex items-center justify-between gap-3">
+          <span className="text-[0.6875rem] text-[var(--color-muted)]">Plays here, on YouTube</span>
+          <a
+            href={`https://www.youtube.com/watch?v=${video.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hit text-[0.6875rem] underline underline-offset-4"
+            style={{ color: deep }}
+          >
+            Open on YouTube
+          </a>
+        </div>
       </div>
     </div>
   );

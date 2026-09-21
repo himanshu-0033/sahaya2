@@ -1062,7 +1062,7 @@ textarea:focus-visible {
 /* Headline balance. `text-wrap: balance` stops a two-line hero breaking with
    one orphaned word, which is the single most common thing that makes a
    layout look unconsidered. */
-h1, h2, .font-hero {
+h1, h2, h3, .font-hero {
   text-wrap: balance;
 }
 

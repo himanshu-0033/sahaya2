@@ -21,6 +21,7 @@ function Bubble({ role, children }) {
             : 'border border-[var(--line-2)] bg-[var(--surface-2)] text-[var(--color-ink)]'
         }`}
       >
+        <span className="sr-only">{mine ? 'You: ' : 'DP: '}</span>
         {children}
       </div>
     </div>
@@ -397,8 +398,12 @@ export default function ChatPanel({
         </div>
       ) : (
       <>
+      {/* A log, so a reply is read out when it arrives. Without it a screen
+          reader user sent a message and heard nothing come back. */}
       <div
         ref={scrollRef}
+        role="log"
+        aria-label="Conversation with DP"
         className={`mt-4 space-y-2.5 overflow-y-auto pr-1 ${
           variant === 'overlay' ? 'max-h-[52vh] min-h-[9rem]' : 'max-h-72'
         }`}
