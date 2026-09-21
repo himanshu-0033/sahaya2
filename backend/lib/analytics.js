@@ -104,6 +104,35 @@ function checkinSafetyFor(checkins, residentId) {
   };
 }
 
+// The most recent inkblot sitting in the window whose free text was screened
+// as a disclosure. Same shape as the chat and check-in versions below and
+// above, because to a counsellor it is the same fact arriving through a third
+// door: ten plates answered in the student's own words.
+function inkblotSafetyFor(inkblotSessions, residentId) {
+  const since = Date.now() - RISK_WINDOW_DAYS * DAY_MS;
+  const hits = (inkblotSessions || [])
+    .filter(
+      (s) =>
+        s.residentId === residentId &&
+        (s.safety || []).length > 0 &&
+        new Date(s.createdAt || s.date).getTime() >= since,
+    )
+    .sort((a, b) => (b.createdAt || b.date).localeCompare(a.createdAt || a.date));
+  if (hits.length === 0) return null;
+  const categories = [...new Set(hits.flatMap((s) => s.safety))];
+  const at = hits[0].createdAt || hits[0].date;
+  return {
+    categories,
+    labels: categories.map((c) => SAFETY_LABELS[c] || c),
+    at,
+    date: at.slice(0, 10),
+    // Which plates matched, so a counsellor can go straight to the response
+    // rather than reading all ten.
+    plates: (hits[0].summary?.crisisHits || []).map((h) => h.plateId),
+    sittings: hits.length,
+  };
+}
+
 // The most recent conversation in the window where the resident disclosed
 // suicide, self-harm or abuse. Counts toward "needs a conversation" and sits
 // with the risk screens, because to a counsellor it is the same kind of fact:
@@ -177,7 +206,7 @@ export function historyFor(checkins, residentId) {
 export function summarizeResident(
   resident,
   checkins,
-  { detailed = false, assessments = [], chatSessions = [] } = {},
+  { detailed = false, assessments = [], chatSessions = [], inkblotSessions = [] } = {},
 ) {
   const history = historyFor(checkins, resident.id);
   const last = history[history.length - 1] || null;
@@ -200,6 +229,7 @@ export function summarizeResident(
   const riskScreen = riskScreenFor(assessments, resident.id);
   const chatSafety = chatSafetyFor(chatSessions, resident.id);
   const checkinSafety = checkinSafetyFor(history, resident.id);
+  const inkblotSafety = inkblotSafetyFor(inkblotSessions, resident.id);
 
   const mine = assessments
     .filter((a) => a.residentId === resident.id)
@@ -234,12 +264,14 @@ export function summarizeResident(
       checkinFlagRecently ||
       Boolean(riskScreen && riskScreen.recent) ||
       Boolean(chatSafety) ||
-      Boolean(checkinSafety),
+      Boolean(checkinSafety) ||
+      Boolean(inkblotSafety),
     checkinFlaggedRecently: checkinFlagRecently,
     checkinFlagReasons,
     riskScreen,
     chatSafety,
     checkinSafety,
+    inkblotSafety,
     concerns: concernsFor(chatSessions, resident.id),
     assessmentCount: mine.length,
     lastAssessment,
@@ -270,7 +302,7 @@ export function summarizeResident(
 // alphabetical.
 function triageRank(row) {
   if (row.riskScreen?.recent && row.riskScreen.level === 'acute') return 0;
-  if (row.riskScreen?.recent || row.chatSafety || row.checkinSafety) return 1;
+  if (row.riskScreen?.recent || row.chatSafety || row.checkinSafety || row.inkblotSafety) return 1;
   if (row.flaggedRecently) return 2;
   if (row.riskScreen) return 3;
   return 4;
@@ -291,10 +323,15 @@ export function summarizeResidents(residents, checkins, options) {
 export function buildOverview(
   residents,
   checkins,
-  { trendDays = 14, assessments = [], chatSessions = [] } = {},
+  { trendDays = 14, assessments = [], chatSessions = [], inkblotSessions = [] } = {},
 ) {
   const today = isoDay(0);
-  const summaries = summarizeResidents(residents, checkins, { detailed: false, assessments, chatSessions });
+  const summaries = summarizeResidents(residents, checkins, {
+    detailed: false,
+    assessments,
+    chatSessions,
+    inkblotSessions,
+  });
 
   const trend = [];
   for (let i = trendDays - 1; i >= 0; i--) {
@@ -381,7 +418,7 @@ export function buildOverview(
   recentRiskScreens.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 
   const atRisk = summaries.filter(
-    (s) => (s.riskScreen && s.riskScreen.recent) || s.chatSafety || s.checkinSafety,
+    (s) => (s.riskScreen && s.riskScreen.recent) || s.chatSafety || s.checkinSafety || s.inkblotSafety,
   );
 
   return {

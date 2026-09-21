@@ -65,6 +65,12 @@ flagged "tired sad lonely" for a counsellor and did nothing at all for "kill
 myself tonight". If you add a new place a student can type, screen it there
 and add a case to `backend/test/checkin-safety.test.mjs`.
 
+All four screened paths do this now. The inkblot was the last one to only do
+part of it: it handed the student helplines and set `flagged`, but analytics
+never read inkblot sessions at all, so the disclosure reached the flag lists
+and not the risk surfaces. Telling the person and not the counsellor is the
+half-done version of this rule, and it is the easy half to leave.
+
 A screened disclosure does three things, and needs all three:
 
 1. Flags the record on its own, without waiting for a second signal.

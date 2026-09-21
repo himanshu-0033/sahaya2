@@ -87,6 +87,54 @@ function RiskBanner({ risk, resident }) {
 // A disclosure of suicide, self-harm or abuse in a chat with DP. Sits with the
 // risk banner, above the topics, and says how it was found: by matching words,
 // so the counsellor reads the conversation before they pick up the phone.
+// The third door. A disclosure written on an inkblot plate is the same fact
+// as one typed into the chat or a check-in, and until now it was the one that
+// told the student and not the counsellor: the plates set `flagged`, which
+// reaches the flag lists, but nothing read them into the risk surfaces, so
+// somebody who wrote about dying on a plate never counted as at risk and
+// never sorted up the caseload.
+function InkblotSafetyBanner({ safety, resident }) {
+  if (!safety) return null;
+  return (
+    <section className="rounded-2xl border border-[var(--color-flag)] bg-[var(--color-flag-soft)] p-6 ring-1 ring-[var(--color-flag)]/40">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="font-display text-xl text-[var(--color-flag-deep)]">
+            Wrote about {safety.labels.join(' and ')} on the plates
+          </p>
+          <p className="mt-1 text-sm text-[var(--color-ink-soft)]">
+            {safety.sittings} {safety.sittings === 1 ? 'sitting' : 'sittings'} · latest{' '}
+            {ago(safety.date)}
+          </p>
+          {safety.plates.length > 0 && (
+            <p className="mt-3 text-sm text-[var(--color-ink)]">
+              {/* Which plates matched, so this is one click rather than ten. */}
+              On {safety.plates.length === 1 ? 'plate' : 'plates'}{' '}
+              <span className="font-medium">
+                {safety.plates.map((p) => String(p).replace(/^plate-0?/, '')).join(', ')}
+              </span>
+              . The words are under Inkblot sittings below.
+            </p>
+          )}
+        </div>
+        {resident.phone && (
+          <a
+            href={`tel:${resident.phone}`}
+            className="whitespace-nowrap rounded-full bg-[var(--color-flag-deep)] px-4 py-2 text-sm font-medium text-white"
+          >
+            Call {resident.phone}
+          </a>
+        )}
+      </div>
+      <p className="mt-4 text-[10px] leading-relaxed text-[var(--color-muted)]">
+        The plates are not scored. This is word matching over what the student wrote, so it can miss
+        things and can misread them. They were shown crisis contacts at the time. It says a
+        conversation is needed, not how serious this is.
+      </p>
+    </section>
+  );
+}
+
 // The same fact as the chat banner, arriving through a different door: three
 // words typed into a check-in rather than a sentence in a conversation.
 //
@@ -392,6 +440,7 @@ export default function ResidentDetail() {
           {/* Above the chat banner: a check-in disclosure is the newer signal
               and the one with no conversation behind it to soften it. */}
           <CheckinSafetyBanner safety={data.summary.checkinSafety} resident={data.resident} />
+          <InkblotSafetyBanner safety={data.summary.inkblotSafety} resident={data.resident} />
           <ChatSafetyBanner safety={data.summary.chatSafety} resident={data.resident} />
           <ConcernBanner concerns={data.summary.concerns} resident={data.resident} />
 

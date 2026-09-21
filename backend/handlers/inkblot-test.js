@@ -88,6 +88,16 @@ export default async function handler(req, res) {
       summary,
       flagged: summary.flagged,
       flagReasons: summary.flagReasons,
+      // The same field and shape a screened chat transcript and a screened
+      // check-in carry.
+      //
+      // Without it this was the one screened path that told the student and
+      // not the counsellor: the plates set `flagged`, which reaches the
+      // flag lists, but nothing read them into the console's risk surfaces,
+      // so somebody who wrote about dying on a plate never counted as at
+      // risk and never sorted up the caseload. rules.md 1.4 asks a screened
+      // disclosure to do three things and this one was doing two.
+      safety: [...new Set((summary.crisisHits || []).map((h) => h.category))],
       createdAt: new Date().toISOString(),
     };
 

@@ -1,4 +1,4 @@
-import { getCheckins, getResidents, getAssessments, getChatSessions } from '../../lib/store.js';
+import { getCheckins, getResidents, getAssessments, getChatSessions, getInkblotSessions } from '../../lib/store.js';
 import { applyCors } from '../../lib/cors.js';
 import { requireStudentAccess } from '../../lib/auth.js';
 import { buildOverview } from '../../lib/analytics.js';
@@ -30,11 +30,12 @@ export default async function handler(req, res) {
   const admin = await requireStudentAccess(req, res);
   if (!admin) return;
 
-  const [residents, checkins, assessments, chatSessions] = await Promise.all([
+  const [residents, checkins, assessments, chatSessions, inkblotSessions] = await Promise.all([
     getResidents(),
     getCheckins(),
     getAssessments(),
     getChatSessions(),
+    getInkblotSessions(),
   ]);
   // The cohort figures are built straight from the check-in and assessment
   // collections, so narrowing the resident list alone is not enough — the
@@ -45,6 +46,7 @@ export default async function handler(req, res) {
     buildOverview(visible, recordsForResidents(checkins, visible), {
       assessments: recordsForResidents(assessments, visible),
       chatSessions: recordsForResidents(chatSessions, visible),
+      inkblotSessions: recordsForResidents(inkblotSessions, visible),
     }),
   );
 }

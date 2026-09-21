@@ -8,7 +8,7 @@
 ![blocking](https://img.shields.io/badge/blocking%20launch-3-b42318?style=flat-square)
 ![waiting](https://img.shields.io/badge/awaiting%20permission-2-f2a93b?style=flat-square)
 ![recurring](https://img.shields.io/badge/recurring-2-1f2d52?style=flat-square)
-![tests](https://img.shields.io/badge/tests-34%20suites-1f2d52?style=flat-square)
+![tests](https://img.shields.io/badge/tests-37%20suites-1f2d52?style=flat-square)
 
 [prd](prd.md) · [architecture](architecture.md) · [rules](rules.md) · [design](design.md) · **tasks** · [memory](memory.md) · [readme](README.md)
 

@@ -77,7 +77,7 @@ export default async function handler(req, res) {
           assignedAt: resident.assignedBy?.[email]?.at || null,
         }))
       : undefined,
-    summary: summarizeResident(resident, checkins, { detailed: true, assessments, chatSessions }),
+    summary: summarizeResident(resident, checkins, { detailed: true, assessments, chatSessions, inkblotSessions }),
     history: historyFor(checkins, residentId),
     inkblotSessions: inkblotSessions
       .filter((s) => s.residentId === residentId)
