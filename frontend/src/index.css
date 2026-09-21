@@ -473,15 +473,6 @@ input[type='date'].input-soft::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Kept for the two places that genuinely sit over moving colour — the crisis
-   dialog and the chat panel — where a flat translucent panel would let the
-   background bleed through the text. */
-.glass {
-  background: rgba(14, 16, 19, 0.86);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-}
-
 /* Press feedback. `active:` rather than `hover:` because the primary input
    here is a thumb, and a phone has no hover. */
 .press {

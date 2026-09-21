@@ -83,6 +83,11 @@ function Stages({ current }) {
   );
 }
 
+// The answer box takes focus when a plate appears only where there is a
+// mouse. On a phone that focus raises the keyboard, which covers the plate you
+// were asked to look at and scrolls the page past where you are in the ten.
+const FINE_POINTER = typeof window !== 'undefined' && window.matchMedia?.('(pointer: fine)').matches;
+
 // The plate step no longer collects three words, and the API still wants the
 // field. Three blanks is the shape it already accepts: it is exactly what
 // tapping "Nothing comes to mind" three times used to send.
@@ -330,7 +335,7 @@ export default function CheckIn() {
                   style={{ animationDelay: '130ms' }}
                 >
                   <textarea
-                    autoFocus
+                    autoFocus={FINE_POINTER}
                     rows={3}
                     value={answers[plate.id] || ''}
                     onChange={(e) => recordText(plate.id, e.target.value)}

@@ -11,6 +11,11 @@ import { useSession } from '../auth/useSession.js';
 import { hasRealWord } from '../../shared/words.js';
 import { getInkblotTest, submitInkblotTest } from '../../shared/api.js';
 
+// The answer box takes focus when a plate appears only where there is a
+// mouse. On a phone that focus raises the keyboard, which covers the plate you
+// were asked to look at and scrolls the page past where you are in the ten.
+const FINE_POINTER = typeof window !== 'undefined' && window.matchMedia?.('(pointer: fine)').matches;
+
 // Ten plates of free text.
 //
 // The presentation problem here is different from the rest of the app: this
@@ -261,7 +266,7 @@ export default function InkblotTest() {
               style={{ animationDelay: '130ms' }}
             >
               <textarea
-                autoFocus
+                autoFocus={FINE_POINTER}
                 rows={3}
                 value={answers[plate.id] || ''}
                 onChange={(e) => recordText(plate.id, e.target.value)}

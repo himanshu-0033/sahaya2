@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../layouts/Header.jsx';
+import PageShell from '../../layouts/PageShell.jsx';
 import GoogleSignInButton from '../auth/GoogleSignInButton.jsx';
 import { SkeletonCards } from '../../shared/Skeleton.jsx';
 import { getSession } from '../auth/session.js';
@@ -72,153 +73,159 @@ export default function Caregiver() {
       .finally(() => setAddSaving(false));
   }
 
+  // The shared shell without its tabs: this is someone else's screen, and the
+  // tab bar would invite them into a student's sections. The header is told
+  // it stands alone, because it hides itself on a laptop where the sidebar
+  // usually carries the name, and there is no sidebar here. Before this the
+  // laptop view was a heading on an empty page, with no crisis control.
   if (!session) {
     return (
-      <div className="min-h-screen px-6 py-10 md:py-16">
-        <div className="mx-auto max-w-xl">
-          <Header />
-          <h1 className="font-display text-3xl stack-block">Caregiver access</h1>
-          <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
-            Sign in with the Google account your caregiver access is registered under.
-          </p>
-          <div className="mt-6">
-            <GoogleSignInButton onSignedIn={setSession} />
-          </div>
+      <PageShell tabs={false} width="narrow">
+        <Header eyebrow="Caregiver" streak={false} standalone />
+        <h1 className="font-display text-3xl stack-block">Caregiver access</h1>
+        <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
+          Sign in with the Google account your caregiver access is registered under.
+        </p>
+        <div className="mt-6">
+          <GoogleSignInButton onSignedIn={setSession} />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="min-h-screen px-6 py-10 md:py-16">
-      <div className="mx-auto max-w-2xl">
-        <Header />
-        <h1 className="font-display text-3xl stack-block">Residents</h1>
-        <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
-          Flagged residents are surfaced first. This is a heuristic nudge, not a diagnosis.
-        </p>
+    <PageShell tabs={false}>
+      <Header eyebrow="Caregiver" streak={false} standalone />
+      <h1 className="font-display text-3xl stack-block">Residents</h1>
+      <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
+        Flagged residents are surfaced first. This is a heuristic nudge, not a diagnosis.
+      </p>
 
-        {loading && <SkeletonCards label="Loading residents…" count={4} columns={1} />}
-        {error && <p role="alert" className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
+      {loading && <SkeletonCards label="Loading residents…" count={4} columns={1} />}
+      {error && <p role="alert" className="mt-6 text-sm text-[var(--color-flag-deep)]">{error}</p>}
 
-        {residents && (
-          <>
-            <div className="mt-6 flex items-center justify-between gap-4 text-sm">
-              <span className="text-[var(--color-ink-soft)]">
-                <span className="text-[var(--color-flag-deep)] font-medium">{flaggedCount}</span> flagged ·{' '}
-                {activeCount} active · {residents.length} total
-              </span>
+      {residents && (
+        <>
+          <div className="mt-6 flex items-center justify-between gap-4 text-sm">
+            <span className="text-[var(--color-ink-soft)]">
+              <span className="text-[var(--color-flag-deep)] font-medium">{flaggedCount}</span> flagged ·{' '}
+              {activeCount} active · {residents.length} total
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowAddForm((v) => !v)}
+              aria-expanded={showAddForm}
+              className="press hit shrink-0 text-[var(--color-teal-dark)] underline underline-offset-4"
+            >
+              {showAddForm ? 'Cancel' : '+ Add resident'}
+            </button>
+          </div>
+
+          {showAddForm && (
+            <form
+              onSubmit={handleAddResident}
+              className="mt-4 flex flex-col gap-2 rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] p-4 sm:flex-row sm:items-end"
+            >
+              <div className="flex-1">
+                <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-name`}>Name</label>
+                <input
+                  id={`${fieldId}-add-name`}
+                  autoComplete="name"
+                  value={addName}
+                  onChange={(e) => setAddName(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-email`}>Email</label>
+                <input
+                  id={`${fieldId}-add-email`}
+                  type="email"
+                  autoComplete="email"
+                  value={addEmail}
+                  onChange={(e) => setAddEmail(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
+                />
+              </div>
               <button
-                onClick={() => setShowAddForm((v) => !v)}
-                className="shrink-0 text-[var(--color-teal-dark)] underline underline-offset-4"
+                type="submit"
+                disabled={addSaving}
+                className="rounded-lg bg-[var(--color-teal)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] disabled:opacity-50"
               >
-                {showAddForm ? 'Cancel' : '+ Add resident'}
+                {addSaving ? 'Adding…' : 'Add'}
               </button>
-            </div>
+            </form>
+          )}
+          {addError && <p role="alert" className="mt-2 text-sm text-[var(--color-flag-deep)]">{addError}</p>}
 
-            {showAddForm && (
-              <form
-                onSubmit={handleAddResident}
-                className="mt-4 flex flex-col gap-2 rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] p-4 sm:flex-row sm:items-end"
-              >
-                <div className="flex-1">
-                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-name`}>Name</label>
-                  <input
-                    id={`${fieldId}-add-name`}
-                    autoComplete="name"
-                    value={addName}
-                    onChange={(e) => setAddName(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="text-xs uppercase tracking-wide text-[var(--color-muted)]" htmlFor={`${fieldId}-add-email`}>Email</label>
-                  <input
-                    id={`${fieldId}-add-email`}
-                    type="email"
-                    autoComplete="email"
-                    value={addEmail}
-                    onChange={(e) => setAddEmail(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-[var(--color-ink)]/10 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={addSaving}
-                  className="rounded-lg bg-[var(--color-teal)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] disabled:opacity-50"
-                >
-                  {addSaving ? 'Adding…' : 'Add'}
-                </button>
-              </form>
+          <div className="mt-4 flex gap-3">
+            <input
+              type="search"
+              aria-label="Search residents by name or email"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by name or email…"
+              className="flex-1 rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] px-4 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]"
+            />
+            <button
+              type="button"
+              onClick={() => setFlaggedOnly((v) => !v)}
+              aria-pressed={flaggedOnly}
+              className={`press shrink-0 rounded-xl border px-4 py-2.5 text-sm transition-colors ${
+                flaggedOnly
+                  ? 'border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
+                  : 'border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] text-[var(--color-ink-soft)]'
+              }`}
+            >
+              Flagged only
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {visibleResidents.length === 0 && (
+              <p className="text-sm text-[var(--color-muted)]">
+                {residents.length === 0 ? 'No residents yet.' : 'No residents match this search.'}
+              </p>
             )}
-            {addError && <p role="alert" className="mt-2 text-sm text-[var(--color-flag-deep)]">{addError}</p>}
-
-            <div className="mt-4 flex gap-3">
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by name or email…"
-                className="flex-1 rounded-xl border border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] px-4 py-2.5 text-sm outline-none focus:border-[var(--color-teal)]"
-              />
+            {visibleResidents.map((r) => (
               <button
-                onClick={() => setFlaggedOnly((v) => !v)}
-                className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm transition-colors ${
-                  flaggedOnly
-                    ? 'border-[var(--color-flag)]/40 bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)]'
-                    : 'border-[var(--color-ink)]/10 bg-[var(--color-cream-soft)] text-[var(--color-ink-soft)]'
-                }`}
+                key={r.id}
+                type="button"
+                onClick={() => navigate(`/caregiver/${r.id}`)}
+                className="card press lift block w-full p-5 text-left"
               >
-                Flagged only
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {visibleResidents.length === 0 && (
-                <p className="text-sm text-[var(--color-muted)]">
-                  {residents.length === 0 ? 'No residents yet.' : 'No residents match this search.'}
-                </p>
-              )}
-              {visibleResidents.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => navigate(`/caregiver/${r.id}`)}
-                  className={`w-full rounded-2xl bg-[var(--color-cream-soft)] p-5 text-left shadow-sm transition-colors hover:brightness-125 ${
-                    r.lastCheckIn ? '' : 'opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{r.name}</p>
-                      <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
-                    </div>
-                    {r.flaggedRecently ? (
-                      <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] text-xs px-3 py-1">
-                        Check in soon
-                      </span>
-                    ) : r.invited && !r.lastCheckIn ? (
-                      <span className="rounded-full bg-[var(--color-teal-soft)] text-[var(--color-teal-dark)] text-xs px-3 py-1">
-                        Invited
-                      </span>
-                    ) : null}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{r.name}</p>
+                    <p className="text-xs text-[var(--color-muted)]">{r.email}</p>
                   </div>
-                  <p className="mt-3 text-xs text-[var(--color-muted)]">
-                    {r.lastCheckIn
-                      ? `Last check-in ${r.lastCheckIn.date} · ${moodLabel(r.lastCheckIn.mood)}`
-                      : r.invited
-                        ? 'Invited, not joined yet'
-                        : 'No check-ins yet'}{' '}
-                    · streak {r.streak}d
-                  </p>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+                  {r.flaggedRecently ? (
+                    <span className="rounded-full bg-[var(--color-flag-soft)] text-[var(--color-flag-deep)] text-xs px-3 py-1">
+                      Check in soon
+                    </span>
+                  ) : r.invited && !r.lastCheckIn ? (
+                    <span className="rounded-full bg-[var(--color-teal-soft)] text-[var(--color-teal-dark)] text-xs px-3 py-1">
+                      Invited
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-3 text-xs text-[var(--color-muted)]">
+                  {r.lastCheckIn
+                    ? `Last check-in ${r.lastCheckIn.date} · ${moodLabel(r.lastCheckIn.mood)}`
+                    : r.invited
+                      ? 'Invited, not joined yet'
+                      : 'No check-ins yet'}{' '}
+                  · streak {r.streak}d
+                </p>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
-        <Link to="/" className="hit mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
-          Back to check-in
-        </Link>
-      </div>
-    </div>
+      <Link to="/" className="hit mt-8 inline-block text-sm text-[var(--color-teal-dark)] underline">
+        Back to home
+      </Link>
+    </PageShell>
   );
 }

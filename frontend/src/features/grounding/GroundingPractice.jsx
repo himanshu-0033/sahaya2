@@ -328,7 +328,7 @@ export default function GroundingPractice() {
         />
       </div>
 
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 md:py-12">
+      <main id="main" tabIndex={-1} className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8 focus:outline-none md:py-12">
         {loading && !technique && (
           <p className="stack-section animate-pulse text-[var(--color-ink-soft)]">Loading…</p>
         )}
@@ -615,7 +615,7 @@ export default function GroundingPractice() {
             </footer>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

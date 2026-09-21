@@ -39,6 +39,9 @@ const TABS = [
     label: 'Home',
     hue: 'var(--sec-home)',
     ink: 'var(--sec-home-deep)',
+    // The check-in starts on Home's card and ends here, so its last screen
+    // should not leave the bar with nothing lit.
+    owns: ['/results'],
     // Two paths per icon: a filled body at low opacity plus a stroked
     // outline, so the active state can light the fill without swapping icons.
     icon: (
@@ -108,13 +111,14 @@ const EXPLORE = [
   },
 ];
 
-// `/` is only "Home" when it is exactly `/`; every other tab also owns its
-// children, so /grounding/box-breathing keeps the Calm tab lit — and More
-// stays lit across every section it stands in for.
+// `/` is "Home" when it is exactly `/` or a route Home owns, since every path
+// starts with `/`; every other tab also owns its children, so
+// /grounding/box-breathing keeps the Calm tab lit, and More stays lit across
+// every section it stands in for.
 function isActive(pathname, tab) {
   const { to, owns = [] } = tab;
-  if (to === '/') return pathname === '/';
   const matches = (base) => pathname === base || pathname.startsWith(`${base}/`);
+  if (to === '/') return pathname === '/' || owns.some(matches);
   return matches(to) || owns.some(matches);
 }
 

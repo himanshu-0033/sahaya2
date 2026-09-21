@@ -431,8 +431,10 @@ export default function AssessmentRun() {
         />
       </div>
 
-      <div
-        className={`relative mx-auto flex max-w-2xl flex-col px-6 ${
+      <main
+        id="main"
+        tabIndex={-1}
+        className={`relative mx-auto flex max-w-2xl flex-col px-6 focus:outline-none ${
           taking ? 'h-[100dvh] overflow-y-auto py-6 md:py-8' : 'min-h-screen py-8 md:py-12'
         }`}
       >
@@ -529,6 +531,7 @@ export default function AssessmentRun() {
                       key={option.value}
                       type="button"
                       onClick={() => choose(option.value)}
+                      aria-pressed={selected}
                       style={{ animationDelay: `${110 + i * 55}ms` }}
                       className={`animate-rise press group flex w-full items-center gap-4 rounded-2xl border px-5 py-3 text-left transition-all duration-200 ${
                         selected
@@ -939,12 +942,22 @@ export default function AssessmentRun() {
           </div>
         )}
 
+        {/* Every question had the crisis control under it, and the screen
+            where a score lands had none unless the score itself was severe.
+            A number is exactly where someone may need it. When the helplines
+            are already on screen above, this would be a second copy. */}
+        {(liveResult || setDone) && !helplines && (
+          <footer className="stack-section border-t border-[var(--color-ink)]/8 pt-3">
+            <CrisisContacts variant="link" />
+          </footer>
+        )}
+
         {instrument && !setDone && (
           <p className="stack-section text-[0.6875rem] leading-relaxed text-[var(--color-muted)]">
             {instrument.fullName}. {instrument.citation}. Licence: {instrument.license}.
           </p>
         )}
-      </div>
+      </main>
     </div>
   );
 }
