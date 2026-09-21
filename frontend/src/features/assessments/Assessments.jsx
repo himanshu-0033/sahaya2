@@ -257,9 +257,9 @@ export default function Assessments() {
                 aria-pressed={filter === null}
                 className="press shrink-0 rounded-full border px-4 py-2 text-xs transition-colors"
                 style={{
-                  borderColor: filter === null ? 'var(--sec-tests)' : 'rgba(255,255,255,0.1)',
+                  borderColor: filter === null ? 'var(--sec-tests)' : 'var(--line-2)',
                   background: filter === null ? 'rgba(88,182,245,0.14)' : 'transparent',
-                  color: filter === null ? 'var(--sec-tests)' : 'var(--color-ink-soft)',
+                  color: filter === null ? 'var(--sec-tests-deep)' : 'var(--color-ink-soft)',
                 }}
               >
                 All {instruments.length}
@@ -274,9 +274,9 @@ export default function Assessments() {
                     aria-pressed={active}
                     className="press shrink-0 rounded-full border px-4 py-2 text-xs transition-colors"
                     style={{
-                      borderColor: active ? 'var(--sec-tests)' : 'rgba(255,255,255,0.1)',
+                      borderColor: active ? 'var(--sec-tests)' : 'var(--line-2)',
                       background: active ? 'rgba(88,182,245,0.14)' : 'transparent',
-                      color: active ? 'var(--sec-tests)' : 'var(--color-ink-soft)',
+                      color: active ? 'var(--sec-tests-deep)' : 'var(--color-ink-soft)',
                     }}
                   >
                     {domain}

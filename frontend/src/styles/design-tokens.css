@@ -13,7 +13,7 @@
   --primitive-color-lake-600: #2f6b8a;
   --primitive-color-lake-700: #245670;
   --primitive-color-pink-300: #f2789f;
-  --primitive-color-pink-600: #b83a63;
+  --primitive-color-pink-600: #ae375e;
   --primitive-color-gray-500: #5c6574;
   --primitive-color-amber-400: #d9a55c;
   --primitive-color-amber-700: #8a5716;
@@ -26,7 +26,7 @@
   --primitive-color-orchid-300: #e0a3d5;
   --primitive-color-orchid-600: #a3468f;
   --primitive-color-mint-300: #8fd6b4;
-  --primitive-color-mint-700: #2c7d59;
+  --primitive-color-mint-700: #297554;
   --primitive-color-paper-100: #f4f2ee;
   --primitive-channel-ink: 20 27 45;
   --primitive-channel-paper: 245 246 248;
@@ -58,7 +58,7 @@
   --color-rose: #f2789f;
   --color-rose-soft: rgb(var(--primitive-channel-rose) / 0.16);
   --color-amber-deep: #8a5716;
-  --color-rose-deep: #b83a63;
+  --color-rose-deep: #ae375e;
   --sec-home: #2f6b8a;
   --sec-paths: #e0a3d5;
   --sec-calm: #a79cf0;
@@ -70,7 +70,7 @@
   --sec-calm-deep: #5546c0;
   --sec-tests-deep: #1a6da6;
   --sec-inkblot-deep: #8a5716;
-  --sec-read-deep: #2c7d59;
+  --sec-read-deep: #297554;
   --surface-1: rgb(var(--primitive-channel-ink) / 0.03);
   --surface-2: rgb(var(--primitive-channel-ink) / 0.05);
   --surface-3: rgb(var(--primitive-channel-ink) / 0.08);

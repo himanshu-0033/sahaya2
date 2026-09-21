@@ -26,12 +26,12 @@ function Note({ children }) {
   );
 }
 
-function PracticeLink({ id, label, hue }) {
+function PracticeLink({ id, label, hue, deep }) {
   return (
     <Link
       to={`/grounding/${id}`}
       className="press my-4 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors"
-      style={{ borderColor: `color-mix(in srgb, ${hue} 45%, transparent)`, color: hue }}
+      style={{ borderColor: `color-mix(in srgb, ${hue} 45%, transparent)`, color: deep }}
     >
       {label}
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -41,7 +41,7 @@ function PracticeLink({ id, label, hue }) {
   );
 }
 
-function Block({ block, hue }) {
+function Block({ block, hue, deep }) {
   if (block.p) {
     return <p className="mt-5 text-[1.02rem] leading-[1.75] text-[var(--color-ink-soft)]">{block.p}</p>;
   }
@@ -58,7 +58,7 @@ function Block({ block, hue }) {
     );
   }
   if (block.note) return <Note>{block.note}</Note>;
-  if (block.practice) return <PracticeLink id={block.practice} label={block.label} hue={hue} />;
+  if (block.practice) return <PracticeLink id={block.practice} label={block.label} hue={hue} deep={deep} />;
   return null;
 }
 
@@ -103,7 +103,7 @@ export default function ReadArticle() {
           <div className="flex items-center gap-2.5">
             <span
               className="rounded-full px-2.5 py-1 text-[0.6875rem]"
-              style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.hue }}
+              style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.deep }}
             >
               {topic.label}
             </span>
@@ -125,7 +125,7 @@ export default function ReadArticle() {
             <section key={section.heading} className="mt-10 first:mt-6">
               <h2 className="font-display text-[1.35rem] leading-snug">{section.heading}</h2>
               {section.blocks.map((block, i) => (
-                <Block key={i} block={block} hue={topic.hue} />
+                <Block key={i} block={block} hue={topic.hue} deep={topic.deep} />
               ))}
             </section>
           ))}

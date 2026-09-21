@@ -38,6 +38,7 @@ const TABS = [
     to: '/',
     label: 'Home',
     hue: 'var(--sec-home)',
+    ink: 'var(--sec-home-deep)',
     // Two paths per icon: a filled body at low opacity plus a stroked
     // outline, so the active state can light the fill without swapping icons.
     icon: (
@@ -50,12 +51,14 @@ const TABS = [
     to: '/grounding',
     label: 'Calm',
     hue: 'var(--sec-calm)',
+    ink: 'var(--sec-calm-deep)',
     icon: <path d="M12 3c2.5 3 4 5.4 4 7.8A4 4 0 0 1 12 15a4 4 0 0 1-4-4.2C8 8.4 9.5 6 12 3ZM5 15.5c2 0 3.5 1 3.5 2.5S7 21 5 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Zm14 0c2 0 3.5 1 3.5 2.5S21 21 19 21s-3.5-1-3.5-3 1.5-2.5 3.5-2.5Z" />,
   },
   {
     to: '/more',
     label: 'More',
     hue: 'var(--sec-read)',
+    ink: 'var(--sec-read-deep)',
     // The sections this tab stands in for, so it lights up while you are
     // inside any of them rather than going dark the moment you arrive.
     owns: ['/paths', '/assessments', '/read', '/inkblot-test'],
@@ -71,6 +74,7 @@ const EXPLORE = [
     to: '/paths',
     label: 'Paths',
     hue: 'var(--sec-paths)',
+    ink: 'var(--sec-paths-deep)',
     // A route with a start and a finish. The old pair of chevrons met in the
     // middle and drew an ✕, which is the symbol for closing something.
     icon: (
@@ -85,18 +89,21 @@ const EXPLORE = [
     to: '/assessments',
     label: 'Tests',
     hue: 'var(--sec-tests)',
+    ink: 'var(--sec-tests-deep)',
     icon: <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />,
   },
   {
     to: '/read',
     label: 'Read',
     hue: 'var(--sec-read)',
+    ink: 'var(--sec-read-deep)',
     icon: <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />,
   },
   {
     to: '/inkblot-test',
     label: 'Inkblot',
-    hue: 'var(--color-amber)',
+    hue: 'var(--sec-inkblot)',
+    ink: 'var(--sec-inkblot-deep)',
     icon: <path d="M12 3c3 3.5 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5.5 5-9Z" />,
   },
 ];
@@ -139,7 +146,7 @@ function SideLink({ tab, active }) {
       aria-current={active ? 'page' : undefined}
       className="press flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors duration-300"
       style={{
-        color: active ? tab.hue : 'var(--color-ink-soft)',
+        color: active ? tab.ink : 'var(--color-ink-soft)',
         background: active ? `color-mix(in srgb, ${tab.hue} 14%, transparent)` : 'transparent',
       }}
     >
@@ -191,7 +198,7 @@ export default function TabBar() {
                 aria-current={active ? 'page' : undefined}
                 className="press relative m-1.5 flex flex-1 flex-col items-center justify-center gap-1.5 rounded-[1.15rem] pt-1 transition-colors"
                 style={{
-                  color: active ? tab.hue : 'var(--color-muted)',
+                  color: active ? tab.ink : 'var(--color-muted)',
                   background: active
                     ? `color-mix(in srgb, ${tab.hue} 13%, transparent)`
                     : 'transparent',

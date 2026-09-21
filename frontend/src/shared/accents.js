@@ -17,11 +17,11 @@
 // changed, because nothing is wrong with them where they are used as light.
 // Text takes `deep`; everything that is a fill keeps `base` and `bright`.
 const ACCENTS = {
-  teal: { base: '#1fae95', bright: '#5fd6bf', deep: '#0f7e6b' },
+  teal: { base: '#1fae95', bright: '#5fd6bf', deep: '#0b6b5b' },
   sky: { base: '#58b6f5', bright: '#8fd0ff', deep: '#1a6da6' },
   lavender: { base: '#a79cf0', bright: '#c4bcff', deep: '#5546c0' },
   amber: { base: '#d9a55c', bright: '#f0c68a', deep: '#8a5716' },
-  rose: { base: '#f2789f', bright: '#ffa3c0', deep: '#b83a63' },
+  rose: { base: '#f2789f', bright: '#ffa3c0', deep: '#ae375e' },
 };
 
 const FALLBACK = ACCENTS.teal;

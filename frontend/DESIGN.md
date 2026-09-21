@@ -33,8 +33,11 @@ and, for the landing page and the check, in the `.welcome` block of
 
 The other section hues (`--sec-calm`, `--sec-paths`, `--sec-tests`,
 `--sec-read`, `--sec-inkblot`) and the five mood hues stay as they are: they
-are wayfinding and a scale, not decoration. `scripts/contrast.test.mjs` checks
-every `-deep` token and accent at 4.5:1 on the app ground and on a white card.
+are wayfinding and a scale, not decoration. They are fills and never letters:
+text in a section's colour, including the active tab's label, takes the
+`-deep` step. `scripts/contrast.test.mjs` checks every `-deep` token and accent
+at 4.5:1 on the app ground, on a white card, and on an 18% wash of its own hue,
+which is where chips and the active tab put it.
 
 Photographs are full colour (`src/shared/photos.js`, self-hosted), with a light
 wash of the section hue on in-app cards (`.photo-head`).

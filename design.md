@@ -129,7 +129,7 @@ Under `prefers-reduced-motion`, every hidden starting state is skipped.
 
 | Check | Enforces |
 | :--- | :--- |
-| `scripts/contrast.test.mjs` | Every `-deep` token and accent at 4.5:1 on the app ground and on a white card |
+| `scripts/contrast.test.mjs` | Every `-deep` token and accent at 4.5:1 on the app ground, on a white card, and on a wash of its own hue |
 | `scripts/landing-type.test.mjs` | The landing page's fixed type scale |
 | `scripts/quick-start.test.mjs` | The hero hand-off: 0 is a real answer, an unoffered value is refused, a one-item check never skips past its end |
 

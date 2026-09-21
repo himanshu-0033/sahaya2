@@ -29,6 +29,7 @@ const SECTIONS = [
     body: 'One practice a day, in an order that builds.',
     meta: '5 paths · about 5 minutes a day',
     hue: 'var(--sec-paths)',
+    ink: 'var(--sec-paths-deep)',
   },
   {
     to: '/assessments',
@@ -38,6 +39,7 @@ const SECTIONS = [
     body: 'The same ones a clinic uses, scored the same way.',
     meta: '22 questionnaires · 1 to 3 minutes each',
     hue: 'var(--sec-tests)',
+    ink: 'var(--sec-tests-deep)',
   },
   {
     to: '/read',
@@ -47,6 +49,7 @@ const SECTIONS = [
     body: 'What the numbers can and cannot tell you.',
     meta: 'Essays and per-questionnaire notes',
     hue: 'var(--sec-read)',
+    ink: 'var(--sec-read-deep)',
   },
   {
     to: '/inkblot-test',
@@ -55,6 +58,7 @@ const SECTIONS = [
     title: 'The ten-plate inkblot',
     body: 'Ten plates, in your own words. Nothing is scored.',
     hue: 'var(--sec-inkblot)',
+    ink: 'var(--sec-inkblot-deep)',
     meta: '10 plates · about 10 minutes',
   },
 ];
@@ -88,7 +92,7 @@ export default function More() {
               <img src={section.photo} alt="" loading="lazy" decoding="async" />
             </span>
             <div className="card-photo-body min-w-0 flex-1">
-              <span className="marginalia" style={{ color: section.hue }}>
+              <span className="marginalia" style={{ color: section.ink }}>
                 {section.eyebrow}
               </span>
               <p className="font-display mt-2 text-[1.45rem] leading-snug">{section.title}</p>

@@ -81,7 +81,7 @@ function ArticleCard({ article, index }) {
       <div className="flex items-center gap-2.5">
         <span
           className="rounded-full px-2.5 py-1 text-[0.6875rem]"
-          style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.hue }}
+          style={{ background: `color-mix(in srgb, ${topic.hue} 15%, transparent)`, color: topic.deep }}
         >
           {topic.label}
         </span>
@@ -95,7 +95,7 @@ function ArticleCard({ article, index }) {
         {article.standfirst}
       </p>
 
-      <span className="mt-5 inline-flex items-center gap-1.5 text-xs" style={{ color: topic.hue }}>
+      <span className="mt-5 inline-flex items-center gap-1.5 text-xs" style={{ color: topic.deep }}>
         Read
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M5 12h14M13 6l6 6-6 6" />
