@@ -196,6 +196,22 @@ cd admin && npm run dev           # Vite on :5174, proxies /api to :3000
 backend is up, without needing a sign-in — the quickest way to tell "the
 server is down" from "the server said no".
 
+`/api/health` is a liveness check only. Use `/api/ready` to check the database:
+it returns 200 when MongoDB answers a ping, or 503 when storage is unavailable
+(including a Vercel deployment with no persistent database configured).
+Readiness responses are not cached and never include connection credentials.
+
+If health succeeds but profile and check-in requests fail with `querySrv
+ENOTFOUND`, check **Vercel → Storage → your MongoDB database**. A suspended
+database may show **Cluster Paused**. Open it in MongoDB Atlas and resume the
+existing cluster, then wait for it to become available. Atlas can
+[automatically pause an idle Free cluster](https://www.mongodb.com/docs/atlas/pause-terminate-cluster/).
+Do not remove the database connection variable to work around this: that
+switches to temporary file storage on Vercel instead of restoring existing data.
+The backend retries failed initial connections on the next request. Older
+deployments that cached a rejected connection require a redeploy after resuming
+the cluster to clear their failed connection state.
+
 Open http://localhost:5173 for the resident app and http://localhost:5174 for
 the counsellor console — they're meant to be two windows, and each keeps its
 own sign-in. Without `STORAGE_URL` set, the backend stores
