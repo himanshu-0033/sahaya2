@@ -1,4 +1,5 @@
 import { resolveRoute } from '../lib/routes.js';
+import { applyCors } from '../lib/cors.js';
 
 // Every /api/* request enters here.
 //
@@ -30,6 +31,7 @@ function pathnameOf(req) {
 }
 
 export default async function handler(req, res) {
+  if (applyCors(req, res)) return;
   const pathname = pathnameOf(req);
   const route = resolveRoute(pathname);
 
@@ -37,9 +39,20 @@ export default async function handler(req, res) {
     // Answered here rather than by the platform's own 404, which carries no
     // CORS headers — the browser then blocks it and the app reports an
     // unreachable server instead of a missing route.
-    res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(404).json({ error: `No such route: ${pathname}` });
   }
 
-  return route(req, res);
+  try {
+    return await route(req, res);
+  } catch (err) {
+    // Keep runtime failures inside our response contract. Letting them escape
+    // produces a platform error without CORS, masking a database outage as a
+    // browser connection failure.
+    console.error(`[${req.method} ${pathname}]`, err);
+    if (res.headersSent) {
+      res.destroy();
+      return;
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 }

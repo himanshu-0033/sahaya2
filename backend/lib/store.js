@@ -34,12 +34,34 @@ const LEGACY_COLLECTION = 'state';
 let clientPromise = null;
 function getClient() {
   if (!clientPromise) {
-    clientPromise = new MongoClient(MONGO_URI).connect().then(async (client) => {
-      await ensureIndexes(client);
-      return client;
-    });
+    const client = new MongoClient(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+    clientPromise = (async () => {
+      try {
+        await client.connect();
+        await ensureIndexes(client);
+        return client;
+      } catch (err) {
+        // A paused Atlas cluster can fail DNS discovery. Cache successful
+        // connections, not rejected promises, so resuming it restores service
+        // without waiting for every warm serverless instance to be replaced.
+        await client.close().catch(() => {});
+        clientPromise = null;
+        throw err;
+      }
+    })();
   }
   return clientPromise;
+}
+
+// Unlike liveness, readiness must exercise the dependency that stores data.
+// Do not read resident records or report credentials in a public health check.
+export async function checkStorageReady() {
+  if (!MONGO_URI) {
+    if (process.env.VERCEL) throw new Error('Persistent storage is not configured');
+    return;
+  }
+  const client = await getClient();
+  await client.db(DB_NAME).command({ ping: 1 }, { timeoutMS: 5000 });
 }
 
 // Every record in every collection carries its own `id`, and two records with

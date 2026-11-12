@@ -38,6 +38,7 @@ import adminAuditHandler from '../handlers/admin/audit.js';
 import adminTeamHandler from '../handlers/admin/team.js';
 import adminAssignHandler from '../handlers/admin/assign.js';
 import { applyCors } from './cors.js';
+import { checkStorageReady } from './store.js';
 
 // Answers without touching auth or storage, so "is the backend up?" has an
 // answer that never depends on being signed in, and — now that this table is
@@ -53,8 +54,20 @@ function healthHandler(req, res) {
   return res.status(200).json({ ok: true, uptime: Math.round(process.uptime()) });
 }
 
+async function readyHandler(req, res) {
+  if (applyCors(req, res)) return;
+  res.setHeader('Cache-Control', 'no-store');
+  try {
+    await checkStorageReady();
+    return res.status(200).json({ ok: true });
+  } catch {
+    return res.status(503).json({ ok: false, error: 'Database unavailable' });
+  }
+}
+
 export const routes = {
   '/api/health': healthHandler,
+  '/api/ready': readyHandler,
   '/api/checkins': checkinsHandler,
   '/api/profile': profileHandler,
   '/api/sharing': sharingHandler,
